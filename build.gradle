@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'net.apartium.cocoa-beans'
+version '1.0-SNAPSHOT'
+
+allprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+}
