@@ -3,7 +3,9 @@ package net.apartium.cocoabeans.spigot.lazies;
 import com.google.common.reflect.ClassPath;
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.Ensures;
+import net.apartium.cocoabeans.spigot.CommandHelpers;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,6 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.util.Locale;
 
 /**
  * Command auto registration for spigot.
@@ -24,19 +27,38 @@ public class CommandAutoRegistration {
     private final JavaPlugin
             plugin;
 
-    private final boolean
+    boolean
+            allowDirectCommandMapRegistration,
             loadDevCommands;
 
     /**
      * Creates a new instance of command auto registration
      * @param plugin plugin instance to be associated with new commands
-     * @param loadDevCommands should commands for dev servers should be loaded:
-     * @see Command#devServer() indicates if a command should only be available on developer servers
      */
-    public CommandAutoRegistration(JavaPlugin plugin, boolean loadDevCommands) {
+    public CommandAutoRegistration(JavaPlugin plugin) {
         Ensures.notNull(plugin, "plugin +-");
         this.plugin = plugin;
-        this.loadDevCommands = loadDevCommands;
+    }
+
+    /**
+     * Indicates whether to enable dev commands or not. default value is false.
+     * @param value should commands for dev servers should be loaded:
+     * @return current instance
+     * @see Command#devServer() indicates if a command should only be available on developer servers
+     */
+    public CommandAutoRegistration enableDevCommands(boolean value) {
+        this.loadDevCommands = value;
+        return this;
+    }
+
+    /**
+     * Admits you are a lazy ass developer and lets you register command without putting them in your plugin.yml file.
+     * By default, this is disabled since everyone should be given a chance.
+     * @return current instance
+     */
+    public CommandAutoRegistration iAmALazyAssDeveloper() {
+        this.allowDirectCommandMapRegistration = true;
+        return this;
     }
 
     /**
@@ -88,9 +110,20 @@ public class CommandAutoRegistration {
             CommandExecutor instance = createInstance(clazz);
 
             PluginCommand pluginCommand = plugin.getCommand(annotation.value());
-            if (pluginCommand == null)
-                plugin.getLogger().warning("Command /" + annotation.value() + " is not registered to this plugin!");
-            else {
+            if (pluginCommand == null) {
+                if (this.allowDirectCommandMapRegistration) {
+                    CommandHelpers.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), new org.bukkit.command.Command(annotation.value()) {
+
+                        @Override
+                        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+                            return instance.onCommand(sender, this, commandLabel, args);
+                        }
+
+                    });
+
+                } else
+                    plugin.getLogger().warning("Command /" + annotation.value() + " is not registered to this plugin!");
+            } else {
                 pluginCommand.setExecutor(instance);
                 plugin.getLogger().info("Loaded " + (devCommand ? "dev" : "") + " command /" + annotation.value() + "!");
             }
