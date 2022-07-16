@@ -1,9 +1,9 @@
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-gradle/wrapper/
+/gradle/
+
 
 ### IntelliJ IDEA ###
 *.iws
@@ -12,7 +12,6 @@ gradle/wrapper/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-.idea
 !.idea/copyright
 
 ### Eclipse ###
@@ -29,3 +28,4 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/.idea/
