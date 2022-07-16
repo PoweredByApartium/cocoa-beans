@@ -6,14 +6,14 @@ group 'net.apartium.cocoa-beans'
 version '1.0-SNAPSHOT'
 
 allprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-
+        api 'com.fasterxml.jackson.core:jackson-annotations:2.12.7'
     }
 
     test {
