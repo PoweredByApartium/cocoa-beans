@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.lazies;
 
 import com.google.common.reflect.ClassPath;
 import net.apartium.cocoabeans.Dispensers;
+import net.apartium.cocoabeans.Ensures;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,13 +17,14 @@ import java.lang.reflect.Constructor;
 /**
  * Command auto registration for spigot.
  * @author Voigon
+ * @see CommandExecutor
  */
 public class CommandAutoRegistration {
 
-    final JavaPlugin
+    private final JavaPlugin
             plugin;
 
-    final boolean
+    private final boolean
             loadDevCommands;
 
     /**
@@ -32,6 +34,7 @@ public class CommandAutoRegistration {
      * @see Command#devServer() indicates if a command should only be available on developer servers
      */
     public CommandAutoRegistration(JavaPlugin plugin, boolean loadDevCommands) {
+        Ensures.notNull(plugin, "plugin +-");
         this.plugin = plugin;
         this.loadDevCommands = loadDevCommands;
     }
@@ -51,6 +54,8 @@ public class CommandAutoRegistration {
      * @param deep whether sub packages of given package should also be queried
      */
     public void register(String packageName, boolean deep) {
+        Ensures.notEmpty(packageName, "plugin +-");
+
         ClassLoader classLoader = plugin.getClass().getClassLoader();
         ClassPath classPath;
         try {
