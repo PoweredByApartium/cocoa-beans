@@ -16,8 +16,18 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+/**
+ * A class consisting of string utility methods
+ * @author Voigon
+ */
 public class StringHelpers {
 
+    /**
+     * Attempts to parse given string arg as a number.
+     *
+     * @param arg string argument
+     * @return empty if parsing was not successful, otherwise resulting number boxed with option
+     */
     public static OptionalInt parseInteger(String arg) {
         try {
             return OptionalInt.of(Integer.parseInt(arg));
@@ -26,6 +36,12 @@ public class StringHelpers {
         }
     }
 
+    /**
+     * Attempts to parse given string arg as a number.
+     *
+     * @param arg string argument
+     * @return empty if parsing was not successful, otherwise resulting number boxed with option
+     */
     public static OptionalDouble parseDouble(String arg) {
         try {
             return OptionalDouble.of(Double.parseDouble(arg));
@@ -34,6 +50,12 @@ public class StringHelpers {
         }
     }
 
+    /**
+     * Attempts to parse given string arg as a number.
+     *
+     * @param arg string argument
+     * @return empty if parsing was not successful, otherwise resulting number boxed with option
+     */
     public static OptionalFloat parseFloat(String arg) {
         try {
             return OptionalFloat.of(Float.parseFloat(arg));
@@ -42,6 +64,12 @@ public class StringHelpers {
         }
     }
 
+    /**
+     * Attempts to parse given string arg as a number.
+     *
+     * @param arg string argument
+     * @return empty if parsing was not successful, otherwise resulting number boxed with option
+     */
     public static OptionalLong parseLong(String arg) {
         try {
             return OptionalLong.of(Long.parseLong(arg));
@@ -50,6 +78,11 @@ public class StringHelpers {
         }
     }
 
+    /**
+     * Checks if given string is null or empty.
+     * @param arg given string
+     * @return true if null or empty, else false
+     */
     public static boolean isNullOrEmpty(String arg) {
         return arg == null || arg.isEmpty();
     }

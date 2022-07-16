@@ -13,6 +13,10 @@ package net.apartium.cocoabeans;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Helper class used to validate conditions
+ * @author Voigon
+ */
 public class Ensures {
 
     /**

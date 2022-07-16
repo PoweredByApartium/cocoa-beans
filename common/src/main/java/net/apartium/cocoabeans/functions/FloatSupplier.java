@@ -10,6 +10,10 @@
 
 package net.apartium.cocoabeans.functions;
 
+/**
+ * @see FunctionalInterface
+ * @author Voigon
+ */
 @FunctionalInterface
 public interface FloatSupplier {
 
