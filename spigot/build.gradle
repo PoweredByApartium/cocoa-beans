@@ -1,3 +1,7 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
 group = 'net.apartium.cocoa-beans'
 version = parent.version
 
@@ -12,9 +16,26 @@ repositories {
     }
 }
 
+publishing {
+    publications {
+        spigot(MavenPublication) {
+            groupId = 'net.apartium.cocoa-beans'
+            artifactId = 'spigot'
+
+            artifact shadowJar
+
+        }
+    }
+
+}
+
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
     api project(":common")
+}
+
+shadow {
+
 }
 
 processResources {
