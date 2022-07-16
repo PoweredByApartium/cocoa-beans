@@ -6,6 +6,19 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
+publishing {
+    publications {
+        common(MavenPublication) {
+            groupId = 'net.apartium.cocoa-beans'
+            artifactId = 'common'
+
+            artifact jar
+
+        }
+    }
+
+}
+
 test {
     useJUnitPlatform()
 }
