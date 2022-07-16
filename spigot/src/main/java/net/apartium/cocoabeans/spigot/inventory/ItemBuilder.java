@@ -11,15 +11,23 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
+import org.bukkit.entity.EntityCategory;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * This class constructs ItemStacks from 0, makes them possibly easier to create,
+ * Chained class used to modify and create item stacks.
  * via the building structure and allows easy and flexible ways to create ItemStacks.
  *
  * @author ofirtim
@@ -36,9 +44,11 @@ public class ItemBuilder {
 
     private int amount;
 
+    private short durability;
+
     private Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
 
-    private final int maxStackSize;
+    private int maxStackSize;
 
     public ItemBuilder(Material matType, String displayName) {
         this.maxStackSize = 64;
@@ -47,16 +57,48 @@ public class ItemBuilder {
         this.itemToBeCreated = new ItemStack(matType, amount);
     }
 
-    public ItemBuilder setAmount(int newQuantity) {
+    public ItemBuilder(Material matType, short durability, String displayName) {
+
+    }
+
+    /**
+     * Set the amount of the item in the stack
+     * @param newQuantity new amount to set
+     * @return current instance
+     */
+    public ItemBuilder amount(int newQuantity) {
         this.amount = newQuantity;
         return this;
     }
 
-    public ItemBuilder addEnchantment(Enchantment enchantment, int level, boolean unsafe) {
+    /**
+     *
+     *
+     * @param enchantment
+     * @param level
+     * @param forceReplace
+     */
+    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
+        enchantmentMap.put(enchantment, level);
+        return this;
+    }
+
+    /**
+     * This method requires to include the {@link EnchantGlow} class.
+     * Makes the item glow like its enchanted, but does not actually register
+     * the enchantment as anything, simply commits that the item is enchanted.
+     *
+     * @param isGlowing Set the item to glow, if false this will revoke glow.
+     */
+    public ItemBuilder setGlowing(boolean isGlowing) {
         return this;
     }
 
     public ItemStack build(boolean force) {
-        return new ItemStack()
+        ItemStack itemStack = this.itemToBeCreated;
+        itemStack.setItemMeta(itemMeta);
+        itemStack.setAmount(amount);
+        itemStack.addUnsafeEnchantments(enchantmentMap);
+        return itemStack;
     }
 }
