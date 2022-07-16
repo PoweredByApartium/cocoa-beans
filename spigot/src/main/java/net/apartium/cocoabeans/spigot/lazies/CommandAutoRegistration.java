@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.lazies;
 import com.google.common.reflect.ClassPath;
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.Ensures;
-import net.apartium.cocoabeans.spigot.CommandHelpers;
+import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -112,7 +112,7 @@ public class CommandAutoRegistration {
             PluginCommand pluginCommand = plugin.getCommand(annotation.value());
             if (pluginCommand == null) {
                 if (this.allowDirectCommandMapRegistration) {
-                    CommandHelpers.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), new org.bukkit.command.Command(annotation.value()) {
+                    Commands.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), new org.bukkit.command.Command(annotation.value()) {
 
                         @Override
                         public boolean execute(CommandSender sender, String commandLabel, String[] args) {

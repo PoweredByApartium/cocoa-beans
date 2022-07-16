@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * Helper class to work with Bukkit's command system
  * @author Voigon
  */
-public class CommandHelpers {
+public class Commands {
 
     private static final MethodHandle getCommandMap = getCommandMap0();
 
