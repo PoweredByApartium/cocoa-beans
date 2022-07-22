@@ -18,11 +18,13 @@ import org.bukkit.entity.EntityCategory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,13 +44,16 @@ public class ItemBuilder {
 
     private Material matType;
 
-    private int amount;
+    private int
+            maxStackSize,
+            amount,
+            customModelData;
 
     private short durability;
 
     private Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
 
-    private int maxStackSize;
+    private List<String> lore;
 
     public ItemBuilder(Material matType, String displayName) {
         this.maxStackSize = 64;
@@ -58,7 +63,6 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(Material matType, short durability, String displayName) {
-
     }
 
     /**
@@ -72,11 +76,11 @@ public class ItemBuilder {
     }
 
     /**
+     * Adds an enchantment to the map list to finally enchant the item
+     * when is constructed.
      *
-     *
-     * @param enchantment
-     * @param level
-     * @param forceReplace
+     * @param enchantment The enchantment to use
+     * @param level The level to set the enchantment to (is allowing unsafe.)
      */
     public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
         enchantmentMap.put(enchantment, level);
@@ -91,6 +95,31 @@ public class ItemBuilder {
      * @param isGlowing Set the item to glow, if false this will revoke glow.
      */
     public ItemBuilder setGlowing(boolean isGlowing) {
+        enchantmentMap.put(EnchantGlow.getGlow(), 1);
+        return this;
+    }
+
+    public ItemBuilder setCustomModelId(int id) {
+        this.customModelData = id;
+        return this;
+    }
+
+    /**
+     *
+     * @param loreLines
+     * @return
+     */
+    public ItemBuilder addLoreLines(String... loreLines) {
+
+        return this;
+    }
+
+    /**
+     *
+     * @param newLoreList
+     * @return
+     */
+    public ItemBuilder addLoreLines(List<String> newLoreList) {
         return this;
     }
 
@@ -99,6 +128,7 @@ public class ItemBuilder {
         itemStack.setItemMeta(itemMeta);
         itemStack.setAmount(amount);
         itemStack.addUnsafeEnchantments(enchantmentMap);
+        itemMeta.setCustomModelData(customModelData);
         return itemStack;
     }
 }
