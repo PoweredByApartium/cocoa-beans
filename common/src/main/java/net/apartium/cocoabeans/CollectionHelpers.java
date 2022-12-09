@@ -27,6 +27,8 @@ public class CollectionHelpers {
      * @return null if collection is empty, the first entry if there is only one or a random entry
      */
     public static <E> E randomEntry(Collection<E> collection, Random random) {
+        if (collection.isEmpty())
+            return null;
         int index = random.nextInt(collection.size());
         return pickEntry(collection, index);
     }
