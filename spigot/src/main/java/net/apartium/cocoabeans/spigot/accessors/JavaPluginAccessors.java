@@ -44,7 +44,7 @@ public class JavaPluginAccessors {
      * @param plugin specified plugin
      * @return jar file associated with specified plugin
      */
-    public /* static */ File getPluginFile(@NonNull JavaPlugin plugin) {
+    public static File getPluginFile(@NonNull JavaPlugin plugin) {
         try {
             return (File) getFile.invoke(plugin);
         } catch (Throwable throwable) {

@@ -1,10 +1,10 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
 group 'net.apartium.cocoa-beans'
-version '0.0.8'
+version '0.0.12'
 
 allprojects {
     apply plugin: 'java-library'
@@ -39,6 +39,14 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            name = 'spigotmc-repo'
+            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        }
+        maven {
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/groups/public/'
+        }
 
     }
 
