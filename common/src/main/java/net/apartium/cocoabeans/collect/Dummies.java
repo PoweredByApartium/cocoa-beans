@@ -170,19 +170,19 @@ public class Dummies {
         @NotNull
         @Override
         public Set<K> keySet() {
-            return new HashSet<>();
+            return dummySet();
         }
 
         @NotNull
         @Override
         public Collection<V> values() {
-            return new HashSet<>();
+            return dummySet();
         }
 
         @NotNull
         @Override
         public Set<Entry<K, V>> entrySet() {
-            return new HashSet<>();
+            return dummySet();
         }
     }
 
