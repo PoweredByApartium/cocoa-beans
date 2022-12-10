@@ -14,6 +14,14 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+
+    maven{
+        url = "https://repo.codemc.io/repository/nms/"
+    }
+
+    maven {
+        url "https://libraries.minecraft.net"
+    }
 }
 
 publishing {
@@ -30,7 +38,10 @@ publishing {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.19.2-R0.1-SNAPSHOT'
+
+    compileOnly group: 'com.mojang', name: 'authlib', version: '3.11.49'
+
     api project(":common")
 }
 
