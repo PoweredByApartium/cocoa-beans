@@ -12,6 +12,10 @@ package net.apartium.cocoabeans.spigot.utils;
 
 import org.bukkit.Bukkit;
 
+/**
+ * @deprecated Will be replaced with an actually normal util later on. Not for use outside the library itself
+ */
+@Deprecated(forRemoval = true)
 public class NMSUtils {
 
     private static String version;
@@ -34,7 +38,8 @@ public class NMSUtils {
     }
 
     public static String getVersion() {
-        if (version == null) version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        if (version == null)
+            version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         return version;
     }
 

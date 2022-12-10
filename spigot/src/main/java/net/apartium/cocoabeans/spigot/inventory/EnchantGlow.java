@@ -25,7 +25,27 @@ import java.util.Set;
 
 public class EnchantGlow extends Enchantment {
 
-	private static Enchantment glow;
+	public static final NamespacedKey
+			ENCHANT_GLOW_KEY = new NamespacedKey(JavaPlugin.getProvidingPlugin(EnchantGlow.class), "glow");
+
+	public static final Enchantment ENCHANT_GLOW = getGlow();
+
+	private static Enchantment getGlow() {
+		try {
+			Field acceptingNew = Enchantment.class.getDeclaredField("acceptingNew");
+			acceptingNew.setAccessible(true);
+			acceptingNew.set(null, true);
+			acceptingNew.setAccessible(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		JavaPlugin plugin = JavaPlugin.getProvidingPlugin(EnchantGlow.class);
+		EnchantGlow glow = new EnchantGlow(ENCHANT_GLOW_KEY);
+		if (Enchantment.getByKey(ENCHANT_GLOW_KEY) == null)
+			Enchantment.registerEnchantment(glow);
+		return glow;
+	}
 
 	public EnchantGlow(NamespacedKey id) {
 		super(id);
@@ -70,23 +90,6 @@ public class EnchantGlow extends Enchantment {
 	public boolean isCursed() {
 		return false;
 	}
-
-	public static Enchantment getGlow() {
-		try {
-			Field f = Enchantment.class.getDeclaredField("acceptingNew");
-			f.setAccessible(true);
-			f.set(null, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		JavaPlugin plugin = JavaPlugin.getProvidingPlugin(EnchantGlow.class);
-		glow = new EnchantGlow(new NamespacedKey(plugin, "glow"));
-		if (Enchantment.getByKey(NamespacedKey.fromString("glow", plugin)) == null)
-			Enchantment.registerEnchantment(glow);
-		return glow;
-	}
-
 
 	public @NotNull Component displayName(int level) {
 		return null;

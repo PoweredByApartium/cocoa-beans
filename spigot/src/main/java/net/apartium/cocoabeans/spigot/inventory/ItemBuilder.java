@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -295,6 +296,7 @@ public class ItemBuilder {
         return this;
     }
 
+    @Beta
     public ItemBuilder addCanDestroy(String... ids) {
         item.setItemMeta(meta);
 
@@ -329,10 +331,11 @@ public class ItemBuilder {
             // ignored
         } finally {
             meta = item.getItemMeta();
-            return this;
         }
+        return this;
     }
 
+    @Beta
     public ItemBuilder addCanPlaceOn(String... ids) {
         item.setItemMeta(meta);
 
@@ -367,16 +370,14 @@ public class ItemBuilder {
             // ignored
         } finally {
             meta = item.getItemMeta();
-            return this;
         }
+        return this;
     }
 
     public ItemStack build() {
         item.setItemMeta(meta);
-        return item;
+        return item.clone();
     }
-
-    // Static methods
 
     private static GameProfile createProfile(String base64) {
         GameProfile profile = new GameProfile(UUID.randomUUID(), "");
