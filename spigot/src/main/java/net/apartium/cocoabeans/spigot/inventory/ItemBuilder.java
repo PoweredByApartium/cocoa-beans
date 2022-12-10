@@ -14,9 +14,6 @@ import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.apartium.cocoabeans.spigot.utils.NMSUtils;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -302,19 +299,28 @@ public class ItemBuilder {
         item.setItemMeta(meta);
 
         try {
-            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack)
-                    Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
-                            getMethod("asNMSCopy").
-                            invoke(null, item);
+            Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack");
 
-            NBTTagList idsTag = new NBTTagList();
-            for (String id : ids) idsTag.add(NBTTagString.a(id));
+            Object stack = craftItemStack.
+                    getMethod("asNMSCopy").
+                    invoke(null, item);
 
-            NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
+            Object idsTag = Class.forName("net.minecraft.nbt.NBTTagList").getConstructors()[0].newInstance();
+            for (String id : ids)
+                Class.forName("net.minecraft.nbt.NBTTagList").
+                        getMethod("add", Object.class).invoke(idsTag,
+                                Class.forName("net.minecraft.nbt.NBTTagString").getMethod("a", String.class).invoke(null, id)
+                        );
 
-            tag.a("CanDestroy", idsTag);
+            Object tag =
+                    craftItemStack.getMethod("u").invoke(null) != null ?
+                            craftItemStack.getMethod("u").invoke(null) :
+                            Class.forName("net.minecraft.nbt.NBTTagCompound").getConstructors()[0].newInstance();
 
-            net.minecraft.world.item.ItemStack.a(tag);
+            Class.forName("net.minecraft.nbt.NBTTagCompound").getMethod("a", String.class, Class.forName("net.minecraft.nbt.NBTTagList"))
+                            .invoke(tag, "CanDestroy", Class.forName("net.minecraft.nbt.NBTTagList").cast(idsTag));
+
+            Class.forName("net.minecraft.world.item.ItemStack").getMethod("a", Class.forName("net.minecraft.nbt.NBTTagCompound")).invoke(tag);
 
 
             item = (ItemStack) Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
@@ -332,19 +338,29 @@ public class ItemBuilder {
         item.setItemMeta(meta);
 
         try {
-            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack)
-                    Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
-                            getMethod("asNMSCopy").
-                            invoke(null, item);
+            Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack");
 
-            NBTTagList idsTag = new NBTTagList();
-            for (String id : ids) idsTag.add(NBTTagString.a(id));
+            Object stack = craftItemStack.
+                    getMethod("asNMSCopy").
+                    invoke(null, item);
 
-            NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
+            Object idsTag = Class.forName("net.minecraft.nbt.NBTTagList").getConstructors()[0].newInstance();
+            for (String id : ids)
+                Class.forName("net.minecraft.nbt.NBTTagList").
+                        getMethod("add", Object.class).invoke(idsTag,
+                                Class.forName("net.minecraft.nbt.NBTTagString").getMethod("a", String.class).invoke(null, id)
+                        );
 
-            tag.a("CanPlaceOn", idsTag);
+            Object tag =
+                    craftItemStack.getMethod("u").invoke(null) != null ?
+                            craftItemStack.getMethod("u").invoke(null) :
+                            Class.forName("net.minecraft.nbt.NBTTagCompound").getConstructors()[0].newInstance();
 
-            net.minecraft.world.item.ItemStack.a(tag);
+            Class.forName("net.minecraft.nbt.NBTTagCompound").getMethod("a", String.class, Class.forName("net.minecraft.nbt.NBTTagList"))
+                    .invoke(tag, "CanPlaceOn", Class.forName("net.minecraft.nbt.NBTTagList").cast(idsTag));
+
+            Class.forName("net.minecraft.world.item.ItemStack").getMethod("a", Class.forName("net.minecraft.nbt.NBTTagCompound")).invoke(tag);
+
 
             item = (ItemStack) Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
                     getMethod("asBukkitCopy").
