@@ -56,7 +56,7 @@ public class Ensures {
      */
     public static void notEmpty(Collection<?> collection, RuntimeException ex) {
         notNull(collection, ex);
-        if (collection.size() > 0)
+        if (collection.isEmpty())
             throw ex;
 
     }
@@ -83,7 +83,7 @@ public class Ensures {
         notNull(ex, "ex +-");
         notNull(map, ex);
 
-        if (map.size() > 0)
+        if (map.isEmpty())
             throw ex;
 
     }
@@ -109,7 +109,7 @@ public class Ensures {
     public static void notEmpty(Object[] array, RuntimeException ex) {
         notNull(array, ex);
 
-        if (array.length > 0)
+        if (array.length == 0)
             throw ex;
 
     }
@@ -156,7 +156,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void largerThan(int num1, int num2, RuntimeException ex) {
-        if (num1 <= num2)
+        if (num1 < num2)
             if (ex != null)
                 throw ex;
     }
@@ -170,7 +170,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void largerThan(int num1, int num2, String message) {
-        largerThan(num1, num2, new NullPointerException(message.replaceAll("\\+-", "must be larger than")));
+        largerThan(num1, num2, new RuntimeException(message.replaceAll("\\+-", "must be larger than")));
 
     }
 
