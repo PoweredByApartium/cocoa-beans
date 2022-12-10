@@ -159,12 +159,12 @@ public class Dummies {
 
         @Override
         public void putAll(@NotNull Map<? extends K, ? extends V> m) {
-
+            // nothing to do
         }
 
         @Override
         public void clear() {
-
+            // nothing to do
         }
 
         @NotNull
