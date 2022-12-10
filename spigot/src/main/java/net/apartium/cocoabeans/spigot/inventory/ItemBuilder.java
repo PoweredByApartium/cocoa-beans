@@ -13,13 +13,13 @@ package net.apartium.cocoabeans.spigot.inventory;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.apartium.cocoabeans.spigot.utils.NMSUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -301,41 +301,60 @@ public class ItemBuilder {
     public ItemBuilder addCanDestroy(String... ids) {
         item.setItemMeta(meta);
 
-        net.minecraft.world.item.ItemStack stack = CraftItemStack.asNMSCopy(item);
+        try {
+            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack)
+                    Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
+                            getMethod("asNMSCopy").
+                            invoke(null, item);
 
-        NBTTagList idsTag = new NBTTagList();
-        for (String id : ids) idsTag.add(NBTTagString.a(id));
+            NBTTagList idsTag = new NBTTagList();
+            for (String id : ids) idsTag.add(NBTTagString.a(id));
 
-        NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
+            NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
 
-        tag.a("CanDestroy", idsTag);
+            tag.a("CanDestroy", idsTag);
 
-        net.minecraft.world.item.ItemStack.a(tag);
+            net.minecraft.world.item.ItemStack.a(tag);
 
-        item = CraftItemStack.asBukkitCopy(stack);
-        meta = item.getItemMeta();
 
-        return this;
+            item = (ItemStack) Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
+                    getMethod("asBukkitCopy").
+                    invoke(null, stack);
+        } catch (Exception e) {
+            // ignored
+        } finally {
+            meta = item.getItemMeta();
+            return this;
+        }
     }
 
     public ItemBuilder addCanPlaceOn(String... ids) {
         item.setItemMeta(meta);
 
-        net.minecraft.world.item.ItemStack stack = CraftItemStack.asNMSCopy(item);
+        try {
+            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack)
+                    Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
+                            getMethod("asNMSCopy").
+                            invoke(null, item);
 
-        NBTTagList idsTag = new NBTTagList();
-        for (String id : ids) idsTag.add(NBTTagString.a(id));
+            NBTTagList idsTag = new NBTTagList();
+            for (String id : ids) idsTag.add(NBTTagString.a(id));
 
-        NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
+            NBTTagCompound tag = stack.u() != null ? stack.u() : new NBTTagCompound();
 
-        tag.a("CanPlaceOn", idsTag);
+            tag.a("CanPlaceOn", idsTag);
 
-        net.minecraft.world.item.ItemStack.a(tag);
+            net.minecraft.world.item.ItemStack.a(tag);
 
-        item = CraftItemStack.asBukkitCopy(stack);
-        meta = item.getItemMeta();
-
-        return this;
+            item = (ItemStack) Class.forName("org.bukkit.craftbukkit." + NMSUtils.getVersion() + ".inventory.CraftItemStack").
+                    getMethod("asBukkitCopy").
+                    invoke(null, stack);
+        } catch (Exception e) {
+            // ignored
+        } finally {
+            meta = item.getItemMeta();
+            return this;
+        }
     }
 
     public ItemStack build() {
