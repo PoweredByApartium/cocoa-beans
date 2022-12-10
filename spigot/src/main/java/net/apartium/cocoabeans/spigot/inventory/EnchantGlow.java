@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import dev.gdalia.commandsplus.Main;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
