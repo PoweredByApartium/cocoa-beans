@@ -15,9 +15,46 @@ import org.bukkit.Bukkit;
 public class NMSUtils {
 
     private static String version;
+    private static final Class<?> craftItemStack;
+    private static final Class<?> nbtTagList;
+    private static final Class<?> nbtTagString;
+    private static final Class<?> nbtTagCompound;
+    private static final Class<?> itemStack;
+
+    static {
+        try {
+            craftItemStack = Class.forName("org.bukkit.craftbukkit." + getVersion() + ".inventory.CraftItemStack");
+            nbtTagList = Class.forName("net.minecraft.nbt.NBTTagList");
+            nbtTagString = Class.forName("net.minecraft.nbt.NBTTagString");
+            nbtTagCompound = Class.forName("net.minecraft.nbt.NBTTagCompound");
+            itemStack = Class.forName("net.minecraft.world.item.ItemStack");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static String getVersion() {
         if (version == null) version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         return version;
+    }
+
+    public static Class<?> getCraftItemStack() {
+        return craftItemStack;
+    }
+
+    public static Class<?> getNBTTagList() {
+        return nbtTagList;
+    }
+
+    public static Class<?> getNbtTagString() {
+        return nbtTagString;
+    }
+
+    public static Class<?> getNBTTagCompound() {
+        return nbtTagCompound;
+    }
+
+    public static Class<?> getItemStack() {
+        return itemStack;
     }
 }
