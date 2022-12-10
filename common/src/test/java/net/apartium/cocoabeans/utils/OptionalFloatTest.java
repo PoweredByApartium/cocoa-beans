@@ -12,9 +12,7 @@ package net.apartium.cocoabeans.utils;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.text.html.Option;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;

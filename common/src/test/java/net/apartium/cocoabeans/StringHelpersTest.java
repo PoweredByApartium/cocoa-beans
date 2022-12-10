@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
