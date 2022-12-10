@@ -263,8 +263,8 @@ public class ItemBuilder {
      * @param isGlowing Set the item to glow, if false this will revoke glow.
      */
     public ItemBuilder setGlowing(boolean isGlowing) {
-        if (isGlowing) addEnchantment   (EnchantGlow.getGlow(), 1);
-        else           removeEnchantment(EnchantGlow.getGlow());
+        if (isGlowing) addEnchantment   (EnchantGlow.ENCHANT_GLOW, 1);
+        else           removeEnchantment(EnchantGlow.ENCHANT_GLOW);
         return this;
     }
 
@@ -296,18 +296,16 @@ public class ItemBuilder {
         return this;
     }
 
-    @Beta
-    public ItemBuilder addCanDestroy(String... ids) {
+    public ItemBuilder addNbtTagStringList(String key, String... values) {
         item.setItemMeta(meta);
 
         try {
-
             Object stack = NMSUtils.getCraftItemStack().
                     getMethod("asNMSCopy").
                     invoke(null, item);
 
             Object idsTag = NMSUtils.getNBTTagList().getConstructors()[0].newInstance();
-            for (String id : ids)
+            for (String id : values)
                 NMSUtils.getNBTTagList().
                         getMethod("add", Object.class).invoke(idsTag,
                                 NMSUtils.getNbtTagString().getMethod("a", String.class).invoke(null, id)
@@ -319,7 +317,7 @@ public class ItemBuilder {
                             NMSUtils.getNBTTagCompound().getConstructors()[0].newInstance();
 
             NMSUtils.getNBTTagCompound().getMethod("a", String.class, NMSUtils.getNBTTagList())
-                            .invoke(tag, "CanDestroy", NMSUtils.getNBTTagList().cast(idsTag));
+                    .invoke(tag, key, NMSUtils.getNBTTagList().cast(idsTag));
 
             NMSUtils.getItemStack().getMethod("a", NMSUtils.getNBTTagCompound()).invoke(tag);
 
@@ -328,49 +326,23 @@ public class ItemBuilder {
                     getMethod("asBukkitCopy").
                     invoke(null, stack);
         } catch (Exception e) {
-            // ignored
-        } finally {
             meta = item.getItemMeta();
+            return this;
         }
+
+        meta = item.getItemMeta();
+        return this;
+    }
+
+    @Beta
+    public ItemBuilder addCanDestroy(String... ids) {
+        addNbtTagStringList("CanDestroy", ids);
         return this;
     }
 
     @Beta
     public ItemBuilder addCanPlaceOn(String... ids) {
-        item.setItemMeta(meta);
-
-        try {
-
-            Object stack = NMSUtils.getCraftItemStack().
-                    getMethod("asNMSCopy").
-                    invoke(null, item);
-
-            Object idsTag = NMSUtils.getNBTTagList().getConstructors()[0].newInstance();
-            for (String id : ids)
-                NMSUtils.getNBTTagList().
-                        getMethod("add", Object.class).invoke(idsTag,
-                                NMSUtils.getNbtTagString().getMethod("a", String.class).invoke(null, id)
-                        );
-
-            Object tag =
-                    NMSUtils.getCraftItemStack().getMethod("u").invoke(null) != null ?
-                            NMSUtils.getCraftItemStack().getMethod("u").invoke(null) :
-                            NMSUtils.getNBTTagCompound().getConstructors()[0].newInstance();
-
-            NMSUtils.getNBTTagCompound().getMethod("a", String.class, NMSUtils.getNBTTagList())
-                    .invoke(tag, "CanPlaceOn", NMSUtils.getNBTTagList().cast(idsTag));
-
-            NMSUtils.getItemStack().getMethod("a", NMSUtils.getNBTTagCompound()).invoke(tag);
-
-
-            item = (ItemStack)NMSUtils.getCraftItemStack().
-                    getMethod("asBukkitCopy").
-                    invoke(null, stack);
-        } catch (Exception e) {
-            // ignored
-        } finally {
-            meta = item.getItemMeta();
-        }
+        addNbtTagStringList("CanPlaceOn", ids);
         return this;
     }
 

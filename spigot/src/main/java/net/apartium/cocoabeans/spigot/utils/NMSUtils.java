@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 /**
  * @deprecated Will be replaced with an actually normal util later on. Not for use outside the library itself
  */
-@Deprecated(forRemoval = true)
 public class NMSUtils {
 
     private static String version;
