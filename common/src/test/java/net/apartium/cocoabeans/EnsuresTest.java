@@ -64,13 +64,20 @@ class EnsuresTest {
 
         assertThrows(NullPointerException.class, () -> {
             Ensures.notEmpty((Collection<?>) null, "arg +-");
+        }, "arg cannot be empty / null");
+
+        assertThrows(NullPointerException.class, () -> {
             Ensures.notEmpty(Collections.emptyList(), "arg +-");
         }, "arg cannot be empty / null");
 
         assertThrows(RuntimeException.class, () -> {
             Ensures.notEmpty((Collection<?>) null, e);
+        }, "test");
+
+        assertThrows(RuntimeException.class, () -> {
             Ensures.notEmpty(Collections.emptyList(), e);
         }, "test");
+
 
     }
 
@@ -80,14 +87,21 @@ class EnsuresTest {
         Ensures.notEmpty(Map.of("", ""), "arg +-");
 
         assertThrows(RuntimeException.class, () -> {
-            Ensures.notEmpty(Map.of(), "arg +-");
             Ensures.notEmpty((Map<?, ?>) null, "arg +-");
         }, "arg cannot be empty / null");
 
         assertThrows(RuntimeException.class, () -> {
-            Ensures.notEmpty(Map.of(), e);
+            Ensures.notEmpty(Map.of(), "arg +-");
+        }, "arg cannot be empty / null");
+
+        assertThrows(RuntimeException.class, () -> {
             Ensures.notEmpty((Map<?, ?>) null, e);
         }, "test");
+
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.notEmpty(Map.of(), e);
+        }, "test");
+
 
     }
 
@@ -97,14 +111,21 @@ class EnsuresTest {
         Ensures.notEmpty(new String[] { "X" }, "arg +-");
 
         assertThrows(RuntimeException.class, () -> {
-            Ensures.notEmpty(new String[0], "arg +-");
             Ensures.notEmpty((String[]) null, "arg +-");
         }, "arg cannot be empty / null");
 
         assertThrows(RuntimeException.class, () -> {
-            Ensures.notEmpty(new String[0], e);
+            Ensures.notEmpty(new String[0], "arg +-");
+        }, "arg cannot be empty / null");
+
+        assertThrows(RuntimeException.class, () -> {
             Ensures.notEmpty((String[]) null, e);
         }, "test");
+
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.notEmpty(new String[0], e);
+        }, "test");
+
     }
 
     @Test
