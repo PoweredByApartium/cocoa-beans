@@ -14,11 +14,11 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
-
     maven {
         name = 'minecraft-libraries'
         url = 'https://libraries.minecraft.net'
     }
+
 }
 
 publishing {
@@ -27,8 +27,19 @@ publishing {
             groupId = 'net.apartium.cocoa-beans'
             artifactId = 'spigot'
 
-            artifact shadowJar
+            artifact jar
 
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.api.allDependencies.each {
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', it.group)
+                    dependencyNode.appendNode('artifactId', it.name)
+                    dependencyNode.appendNode('version', it.version)
+                }
+            }
         }
     }
 
@@ -37,7 +48,6 @@ publishing {
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
     compileOnly 'com.mojang:authlib:3.11.49'
-
     api project(":common")
 }
 

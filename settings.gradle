@@ -2,4 +2,5 @@ rootProject.name = 'cocoa-beans'
 
 include 'spigot'
 include 'common'
+include 'plugin'
 

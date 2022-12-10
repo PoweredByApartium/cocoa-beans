@@ -1,0 +1,26 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group = 'net.apartium.cocoa-beans'
+version = parent.version
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+    shadow project(':spigot')
+
+}
+
+shadow {
+    archivesBaseName = 'cocoa-beans'
+
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}

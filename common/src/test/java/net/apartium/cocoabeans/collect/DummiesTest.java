@@ -8,24 +8,42 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans;
+package net.apartium.cocoabeans.collect;
 
-public class Dispensers {
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Propagate given exception, wrap as RuntimeException if needed
-     * @param throwable throwable
-     */
-    public static void dispense(Throwable throwable) {
-        Ensures.notNull(throwable, "throwable +-");
+import java.util.Set;
 
-        if (throwable instanceof Error error)
-            throw error;
-        else if (throwable instanceof RuntimeException e) {
-            throw e;
-        } else
-            throw new RuntimeException(throwable);
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Voigon (Lior S.)
+ */
+class DummiesTest {
+
+    @Test
+    void dummyMap() {
+        var map = Dummies.dummyMap();
+        assertEquals(0, map.size());
+        assertNull(map.put("", null));
+        assertEquals(0, map.size());
+        assertNull(map.remove(""));
+        assertTrue(map.isEmpty());
+        assertFalse(map.containsKey("X"));
+        assertFalse(map.containsValue("Z"));
+        assertNull(map.get("X"));
     }
 
+    @Test
+    void dummySet() {
+        var set = Dummies.dummySet();
+        assertEquals(0, set.size());
+        assertFalse(set.add("AA"));
+        assertEquals(0, set.size());
+        assertFalse(set.remove(""));
+        assertTrue(set.isEmpty());
+        assertFalse(set.contains("X"));
+        assertFalse(set.containsAll(Set.of("X", "Z")));
+
+    }
 }

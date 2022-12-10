@@ -8,24 +8,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans;
+package net.apartium.cocoabeans.spigot;
 
-public class Dispensers {
+import org.bukkit.plugin.java.JavaPlugin;
 
-    /**
-     * Propagate given exception, wrap as RuntimeException if needed
-     * @param throwable throwable
-     */
-    public static void dispense(Throwable throwable) {
-        Ensures.notNull(throwable, "throwable +-");
+public final class CocoaBeansSpigotLoader extends JavaPlugin {
 
-        if (throwable instanceof Error error)
-            throw error;
-        else if (throwable instanceof RuntimeException e) {
-            throw e;
-        } else
-            throw new RuntimeException(throwable);
+    @Override
+    public void onEnable() {
+        // Plugin startup logic
 
     }
 
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+    }
 }

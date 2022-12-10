@@ -27,6 +27,8 @@ public class CollectionHelpers {
      * @return null if collection is empty, the first entry if there is only one or a random entry
      */
     public static <E> E randomEntry(Collection<E> collection, Random random) {
+        if (collection.isEmpty())
+            return null;
         int index = random.nextInt(collection.size());
         return pickEntry(collection, index);
     }
@@ -45,6 +47,9 @@ public class CollectionHelpers {
         if (collection instanceof List<E> list)
             return list.get(index);
         else {
+            if (collection.size() < index + 1)
+                throw new IndexOutOfBoundsException(String.format("Index %d out of bound for size %d", index, collection.size()));
+
             for (E e : collection) {
                 if (index == 0)
                     return e;
@@ -58,9 +63,13 @@ public class CollectionHelpers {
      * Checks whether given string contains AT LEAST ONE OF the values in given collection
      * @param collection collection
      * @param value string
+     * @param appendToElement string to append to the beginning of each collection element
      * @return true if string contains at least one of the values in given collection, else false.
      */
     public static boolean containsStartsWith(Collection<String> collection, String value, String appendToElement) {
+        if (appendToElement == null)
+            appendToElement = "";
+
         if (collection == null || value == null) // Avoid npe
             return false;
 
