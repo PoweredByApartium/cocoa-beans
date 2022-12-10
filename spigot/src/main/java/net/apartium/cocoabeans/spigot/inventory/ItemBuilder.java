@@ -29,10 +29,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Chained class used to modify and create item stacks.
@@ -53,7 +50,7 @@ public class ItemBuilder {
     public ItemBuilder(UUID uuid) {
         this.item = new ItemStack(Material.PLAYER_HEAD);
         this.meta = item.getItemMeta();
-        ((SkullMeta) meta).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+        ((SkullMeta) Objects.requireNonNull(meta)).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
     }
 
     public ItemBuilder(String value) {
@@ -313,7 +310,7 @@ public class ItemBuilder {
 
         tag.a("CanDestroy", idsTag);
 
-        stack.a(tag);
+        net.minecraft.world.item.ItemStack.a(tag);
 
         item = CraftItemStack.asBukkitCopy(stack);
         meta = item.getItemMeta();
@@ -333,7 +330,7 @@ public class ItemBuilder {
 
         tag.a("CanPlaceOn", idsTag);
 
-        stack.a(tag);
+        net.minecraft.world.item.ItemStack.a(tag);
 
         item = CraftItemStack.asBukkitCopy(stack);
         meta = item.getItemMeta();
