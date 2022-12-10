@@ -10,21 +10,26 @@
 
 package net.apartium.cocoabeans;
 
-public class Dispensers {
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Propagate given exception, wrap as RuntimeException if needed
-     * @param throwable throwable
-     */
-    public static void dispense(Throwable throwable) {
-        Ensures.notNull(throwable, "throwable +-");
+import static org.junit.jupiter.api.Assertions.*;
 
-        if (throwable instanceof Error error)
-            throw error;
-        else if (throwable instanceof RuntimeException e) {
-            throw e;
-        } else
-            throw new RuntimeException(throwable);
+/**
+ * @author Voigon (Lior S.)
+ */
+class DispensersTest {
+
+    @Test
+    void dispense() {
+        assertThrows(Error.class, () -> {
+            Dispensers.dispense(new Error());
+        });
+
+        assertThrows(RuntimeException.class, () -> {
+            Dispensers.dispense(new RuntimeException());
+            Dispensers.dispense(new Exception());
+
+        });
 
     }
 

@@ -101,12 +101,13 @@ public class ImmutableByteArrayList {
      */
     @NotNull
     public Iterator<Byte> iterator() {
-        return new Iterator<Byte>() {
-            int position;
+
+        return new Iterator<>() {
+            int position = -1;
 
             @Override
             public boolean hasNext() {
-                return position < content.length;
+                return position + 1 < content.length;
             }
 
             @Override

@@ -8,39 +8,42 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.reflect;
+package net.apartium.cocoabeans.collect;
 
-import java.lang.reflect.Field;
+import org.junit.jupiter.api.Test;
+
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Voigon (Lior S.)
  */
-public class FieldUtils {
+class DummiesTest {
 
-    /**
-     * Get all declared fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
-     */
-    public static Set<Field> getDeclaredFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getDeclaredFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
-                .collect(Collectors.toSet());
+    @Test
+    void dummyMap() {
+        var map = Dummies.dummyMap();
+        assertEquals(0, map.size());
+        assertNull(map.put("", null));
+        assertEquals(0, map.size());
+        assertNull(map.remove(""));
+        assertTrue(map.isEmpty());
+        assertFalse(map.containsKey("X"));
+        assertFalse(map.containsValue("Z"));
+        assertNull(map.get("X"));
     }
 
-    /**
-     * Get all fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
-     */
-    public static Set<Field> getFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
-                .collect(Collectors.toSet());
-    }
+    @Test
+    void dummySet() {
+        var set = Dummies.dummySet();
+        assertEquals(0, set.size());
+        assertFalse(set.add("AA"));
+        assertEquals(0, set.size());
+        assertFalse(set.remove(""));
+        assertTrue(set.isEmpty());
+        assertFalse(set.contains("X"));
+        assertFalse(set.containsAll(Set.of("X", "Z")));
 
+    }
 }
