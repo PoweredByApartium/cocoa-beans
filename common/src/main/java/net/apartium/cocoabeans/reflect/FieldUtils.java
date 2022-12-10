@@ -19,12 +19,24 @@ import java.util.stream.Collectors;
  */
 public class FieldUtils {
 
+    /**
+     * Get all declared fields whose type is the same of given fieldType
+     * @param clazz clazz to lookup fields from
+     * @param fieldType expected field types
+     * @return a mutable set of fields found
+     */
     public static Set<Field> getDeclaredFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
         return ReflectionCache.getDeclaredFields(clazz)
                 .filter(field -> field.getType().equals(fieldType))
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Get all fields whose type is the same of given fieldType
+     * @param clazz clazz to lookup fields from
+     * @param fieldType expected field types
+     * @return a mutable set of fields found
+     */
     public static Set<Field> getFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
         return ReflectionCache.getFields(clazz)
                 .filter(field -> field.getType().equals(fieldType))
