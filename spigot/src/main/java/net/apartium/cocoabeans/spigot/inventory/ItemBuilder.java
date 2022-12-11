@@ -14,7 +14,6 @@ import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.apartium.cocoabeans.spigot.utils.NMSUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -300,25 +299,25 @@ public class ItemBuilder {
         item.setItemMeta(meta);
 
         try {
-            Object stack = NMSUtils.getCraftItemStack_asNMSCopy().invoke(null, item);
+            Object stack = InventoryNMSUtils.getCraftItemStack_asNMSCopy().invoke(null, item);
 
-            Object idsTag = NMSUtils.getNbtTagList_constructors().newInstance();
+            Object idsTag = InventoryNMSUtils.getNbtTagList_constructors().newInstance();
             for (String id : values)
-                NMSUtils.getNbtTagList_add().invoke(idsTag,
-                                NMSUtils.getNbtTagString_aString().invoke(null, id)
+                InventoryNMSUtils.getNbtTagList_add().invoke(idsTag,
+                                InventoryNMSUtils.getNbtTagString_aString().invoke(null, id)
                         );
 
             Object tag =
-                    NMSUtils.getCraftItemStack_u().invoke(stack) != null ?
-                            NMSUtils.getCraftItemStack_u().invoke(stack) :
-                            NMSUtils.getNbtTagCompound_constructors().newInstance();
+                    InventoryNMSUtils.getCraftItemStack_u().invoke(stack) != null ?
+                            InventoryNMSUtils.getCraftItemStack_u().invoke(stack) :
+                            InventoryNMSUtils.getNbtTagCompound_constructors().newInstance();
 
-            NMSUtils.getNbtTagString_a().invoke(tag, key, NMSUtils.getNBTTagList().cast(idsTag));
+            InventoryNMSUtils.getNbtTagString_a().invoke(tag, key, InventoryNMSUtils.getNBTTagList().cast(idsTag));
 
-            NMSUtils.getItemStack_a().invoke(tag);
+            InventoryNMSUtils.getItemStack_a().invoke(tag);
 
 
-            item = (ItemStack) NMSUtils.getCraftItemStack_asBukkitCopy().
+            item = (ItemStack) InventoryNMSUtils.getCraftItemStack_asBukkitCopy().
                     invoke(null, stack);
         } catch (Exception e) {
             meta = item.getItemMeta();
