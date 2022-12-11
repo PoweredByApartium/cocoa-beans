@@ -300,30 +300,25 @@ public class ItemBuilder {
         item.setItemMeta(meta);
 
         try {
-            Object stack = NMSUtils.getCraftItemStack().
-                    getMethod("asNMSCopy").
-                    invoke(null, item);
+            Object stack = NMSUtils.getCraftItemStack_asNMSCopy().invoke(null, item);
 
-            Object idsTag = NMSUtils.getNBTTagList().getConstructors()[0].newInstance();
+            Object idsTag = NMSUtils.getNbtTagList_constructors().newInstance();
             for (String id : values)
-                NMSUtils.getNBTTagList().
-                        getMethod("add", Object.class).invoke(idsTag,
-                                NMSUtils.getNbtTagString().getMethod("a", String.class).invoke(null, id)
+                NMSUtils.getNbtTagList_add().invoke(idsTag,
+                                NMSUtils.getNbtTagString_aString().invoke(null, id)
                         );
 
             Object tag =
-                    NMSUtils.getCraftItemStack().getMethod("u").invoke(null) != null ?
-                            NMSUtils.getCraftItemStack().getMethod("u").invoke(null) :
-                            NMSUtils.getNBTTagCompound().getConstructors()[0].newInstance();
+                    NMSUtils.getCraftItemStack_u().invoke(stack) != null ?
+                            NMSUtils.getCraftItemStack_u().invoke(stack) :
+                            NMSUtils.getNbtTagCompound_constructors().newInstance();
 
-            NMSUtils.getNBTTagCompound().getMethod("a", String.class, NMSUtils.getNBTTagList())
-                    .invoke(tag, key, NMSUtils.getNBTTagList().cast(idsTag));
+            NMSUtils.getNbtTagString_a().invoke(tag, key, NMSUtils.getNBTTagList().cast(idsTag));
 
-            NMSUtils.getItemStack().getMethod("a", NMSUtils.getNBTTagCompound()).invoke(tag);
+            NMSUtils.getItemStack_a().invoke(tag);
 
 
-            item = (ItemStack)NMSUtils.getCraftItemStack().
-                    getMethod("asBukkitCopy").
+            item = (ItemStack) NMSUtils.getCraftItemStack_asBukkitCopy().
                     invoke(null, stack);
         } catch (Exception e) {
             meta = item.getItemMeta();
