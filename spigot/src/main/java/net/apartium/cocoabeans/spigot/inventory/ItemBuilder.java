@@ -69,10 +69,8 @@ public class ItemBuilder {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
         try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullMeta, createProfile(base64));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            InventoryNMSUtils.getSkullMeta_profile().set(skullMeta, createProfile(base64));
+        } catch (IllegalAccessException e) {
             return this;
         }
 

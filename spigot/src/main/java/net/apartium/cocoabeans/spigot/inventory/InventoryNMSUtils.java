@@ -11,8 +11,10 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -39,6 +41,8 @@ import java.lang.reflect.Method;
     private static final Method nbtTagList_add;
     private static final Method itemStack_a;
 
+    private static final Field skullMeta_profile;
+
     static {
         try {
             // Classes
@@ -64,7 +68,10 @@ import java.lang.reflect.Method;
             nbtTagList_add = nbtTagList.getMethod("add", Object.class);
 
             itemStack_a = itemStack.getMethod("a", nbtTagCompound);
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+
+            skullMeta_profile = SkullMeta.class.getDeclaredField("profile");
+            skullMeta_profile.setAccessible(true);
+        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -136,4 +143,11 @@ import java.lang.reflect.Method;
     public static Method getItemStack_a() {
         return itemStack_a;
     }
+
+    // Fields
+
+    public static Field getSkullMeta_profile() {
+        return skullMeta_profile;
+    }
+
 }
