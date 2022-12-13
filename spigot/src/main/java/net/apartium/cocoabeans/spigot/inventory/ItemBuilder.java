@@ -24,8 +24,13 @@ import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -68,11 +73,7 @@ public class ItemBuilder {
     public ItemBuilder setSkullBase(String base64) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
-        try {
-            InventoryNMSUtils.getSkullMeta_profile().set(skullMeta, createProfile(base64));
-        } catch (IllegalAccessException e) {
-            return this;
-        }
+        skullMeta.setOwnerProfile(Bukkit.getServer().createPlayerProfile(base64));
 
         return this;
     }
@@ -300,19 +301,20 @@ public class ItemBuilder {
             Object stack = InventoryNMSUtils.getCraftItemStack_asNMSCopy().invoke(null, item);
 
             Object idsTag = InventoryNMSUtils.getNbtTagList_constructors().newInstance();
-            for (String id : values)
+            for (String id : values) {
                 InventoryNMSUtils.getNbtTagList_add().invoke(idsTag,
-                                InventoryNMSUtils.getNbtTagString_aString().invoke(null, id)
-                        );
+                        InventoryNMSUtils.getNbtTagString_aString().invoke(null, id)
+                );
+            }
 
             Object tag =
-                    InventoryNMSUtils.getCraftItemStack_u().invoke(stack) != null ?
-                            InventoryNMSUtils.getCraftItemStack_u().invoke(stack) :
+                    InventoryNMSUtils.getItemStack_u().invoke(stack) != null ?
+                            InventoryNMSUtils.getItemStack_u().invoke(stack) :
                             InventoryNMSUtils.getNbtTagCompound_constructors().newInstance();
 
-            InventoryNMSUtils.getNbtTagString_a().invoke(tag, key, InventoryNMSUtils.getNBTTagList().cast(idsTag));
+            InventoryNMSUtils.getNbtTagString_a().invoke(tag, key, idsTag);
 
-            InventoryNMSUtils.getItemStack_a().invoke(tag);
+            InventoryNMSUtils.getItemStack_a().invoke(null, tag);
 
 
             item = (ItemStack) InventoryNMSUtils.getCraftItemStack_asBukkitCopy().
@@ -343,9 +345,13 @@ public class ItemBuilder {
         return item.clone();
     }
 
-    private static GameProfile createProfile(String base64) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-        profile.getProperties().put("textures", new Property("textures", base64));
+    private static PlayerProfile createProfile(String base64) {
+        PlayerProfile profile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), "");
+        try {
+            profile.getTextures().setSkin(new URL(new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8)));
+        } catch (MalformedURLException e) {
+            return profile;
+        }
         return profile;
     }
 

@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Constructor;
@@ -29,19 +30,18 @@ import java.lang.reflect.Method;
     private static final Class<?> nbtTagString;
     private static final Class<?> nbtTagCompound;
     private static final Class<?> itemStack;
+    private static final Class<?> nbtBase;
 
     private static final Constructor<?> nbtTagCompound_constructors;
     private static final Constructor<?> nbtTagList_constructors;
 
     private static final Method craftItemStack_asNMSCopy;
     private static final Method craftItemStack_asBukkitCopy;
-    private static final Method craftItemStack_u;
     private static final Method nbtTagString_a;
     private static final Method nbtTagString_aString;
     private static final Method nbtTagList_add;
     private static final Method itemStack_a;
-
-    private static final Field skullMeta_profile;
+    private static final Method itemStack_u;
 
     static {
         try {
@@ -51,6 +51,7 @@ import java.lang.reflect.Method;
             nbtTagString = Class.forName("net.minecraft.nbt.NBTTagString");
             nbtTagCompound = Class.forName("net.minecraft.nbt.NBTTagCompound");
             itemStack = Class.forName("net.minecraft.world.item.ItemStack");
+            nbtBase = Class.forName("net.minecraft.nbt.NBTBase");
 
             // Constructors
             nbtTagCompound_constructors = nbtTagCompound.getDeclaredConstructors()[0];
@@ -58,20 +59,18 @@ import java.lang.reflect.Method;
 
             // Methods
 
-            craftItemStack_asNMSCopy = craftItemStack.getMethod("asNMSCopy");
-            craftItemStack_asBukkitCopy = craftItemStack.getMethod("asBukkitCopy");
-            craftItemStack_u = craftItemStack.getMethod("u");
+            craftItemStack_asNMSCopy = craftItemStack.getMethod("asNMSCopy", ItemStack.class);
+            craftItemStack_asBukkitCopy = craftItemStack.getMethod("asBukkitCopy", itemStack);
 
-            nbtTagString_a = nbtTagString.getMethod("a", String.class, nbtTagList);
+            nbtTagString_a = nbtTagCompound.getMethod("a", String.class, nbtBase);
             nbtTagString_aString = nbtTagString.getMethod("a", String.class);
 
             nbtTagList_add = nbtTagList.getMethod("add", Object.class);
 
             itemStack_a = itemStack.getMethod("a", nbtTagCompound);
+            itemStack_u = itemStack.getMethod("u");
 
-            skullMeta_profile = SkullMeta.class.getDeclaredField("profile");
-            skullMeta_profile.setAccessible(true);
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
@@ -136,18 +135,12 @@ import java.lang.reflect.Method;
         return nbtTagList_add;
     }
 
-    public static Method getCraftItemStack_u() {
-        return craftItemStack_u;
+    public static Method getItemStack_u() {
+        return itemStack_u;
     }
 
     public static Method getItemStack_a() {
         return itemStack_a;
-    }
-
-    // Fields
-
-    public static Field getSkullMeta_profile() {
-        return skullMeta_profile;
     }
 
 }
