@@ -10,69 +10,208 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import com.google.common.annotations.Beta;
+import com.google.common.collect.Multimap;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.EntityCategory;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.inventory.meta.*;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Chained class used to modify and create item stacks.
  * via the building structure and allows easy and flexible ways to create ItemStacks.
  *
- * @author ofirtim
+ * @author Thebotgame, ofirtim
  */
 public class ItemBuilder {
 
-    private ItemStack itemToBeCreated;
+    private ItemStack item;
+    private ItemMeta meta;
 
-    private ItemMeta itemMeta;
-
-    private String displayName;
-
-    private Material matType;
-
-    private int
-            maxStackSize,
-            amount,
-            customModelData;
-
-    private short durability;
-
-    private Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
-
-    private List<String> lore;
-
-    public ItemBuilder(Material matType, String displayName) {
-        this.maxStackSize = 64;
-        this.amount = 1;
-        this.matType = matType;
-        this.itemToBeCreated = new ItemStack(matType, amount);
+    public ItemBuilder(ItemStack item) {
+        this.item = item;
+        this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder(Material matType, short durability, String displayName) {
+    public ItemBuilder(UUID uuid) {
+        this.item = new ItemStack(Material.PLAYER_HEAD);
+        this.meta = item.getItemMeta();
+        ((SkullMeta) Objects.requireNonNull(meta)).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+    }
+
+    public ItemBuilder(String value) {
+        this.item = new ItemStack(Material.PLAYER_HEAD);
+        this.meta = item.getItemMeta();
+        setSkullBase(value);
+    }
+
+    public ItemBuilder(Material material) {
+        this.item = new ItemStack(material);
+        this.meta = item.getItemMeta();
+    }
+
+    /**
+     * @param base64 set skull texture with base64
+     * @return current instance
+     */
+    public ItemBuilder setSkullBase(String base64) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+
+        skullMeta.setOwnerProfile(Bukkit.getServer().createPlayerProfile(base64));
+
+        return this;
+    }
+
+    /**
+     * @param texts set lore with texts
+     * @return current instance
+     */
+    public ItemBuilder setLore(String... texts) {
+        if (texts == null || texts.length == 0) return this;
+        meta.setLore(Arrays.asList(texts));
+        return this;
+    }
+
+    /**
+     * @param lore set lore
+     * @return current instance
+     */
+    public ItemBuilder setLore(List<String> lore) {
+        if (lore == null || lore.size() == 0) return this;
+        meta.setLore(lore);
+        return this;
+    }
+
+    /**
+     * @param durability set durability to the item
+     * @return current instance
+     */
+    public ItemBuilder setDurability(short durability) {
+        if (!(meta instanceof Damageable damageable)) return this;
+        damageable.setDamage(durability);
+        return this;
+    }
+
+    /**
+     * @param name set item name to name
+     * @return current instance
+     */
+    public ItemBuilder setDisplayName(String name) {
+        meta.setDisplayName(name);
+        return this;
+    }
+
+    /**
+     * set nbt with key type and value
+     * @param namespacedKey nbt key
+     * @param persistentDataType data type
+     * @param object object as value
+     * @return current instance
+     */
+    public ItemBuilder setNBT(NamespacedKey namespacedKey, Object persistentDataType, Object object) {
+        meta.getPersistentDataContainer().set(namespacedKey, (PersistentDataType) persistentDataType, object);
+        return this;
+    }
+
+    public ItemBuilder setAttributeModifiers(Multimap<Attribute, AttributeModifier> map) {
+        meta.setAttributeModifiers(map);
+        return this;
+    }
+
+    public ItemBuilder addAttributeModifiers(Attribute attribute, AttributeModifier attributeModifier) {
+        meta.addAttributeModifier(attribute, attributeModifier);
+        return this;
     }
 
     /**
      * Set the amount of the item in the stack
-     * @param newQuantity new amount to set
+     * @param  amount new amount to set
      * @return current instance
      */
-    public ItemBuilder amount(int newQuantity) {
-        this.amount = newQuantity;
+    public ItemBuilder setAmount(int amount) {
+        item.setAmount(amount);
         return this;
+    }
+
+    /**
+     * Add lines to lore of the item
+     * @param lines add lines to lore
+     * @return current instance
+     */
+    public ItemBuilder addLine(String... lines) {
+        if (meta.getLore() == null) meta.setLore(Arrays.asList(lines));
+        meta.getLore().addAll(List.of(lines));
+        return this;
+    }
+
+    /**
+     * @param text remove line by text
+     * @return current instance
+     */
+    public ItemBuilder removeLine(String text) {
+        if (meta.getLore() != null) meta.getLore().remove(text);
+        return this;
+    }
+
+    /**
+     * @param index remove line by index
+     * @return current instance
+     */
+    public ItemBuilder removeLine(int index) {
+        if (meta.getLore() == null) return this;
+
+        if (index < 0) return this;
+        if (meta.getLore().size() >= index) return this;
+
+        meta.getLore().remove(index);
+        return this;
+    }
+
+    public ItemBuilder setCustomModelData(int data) {
+        meta.setCustomModelData(data);
+        return this;
+    }
+
+    public ItemBuilder setColor(Color color) {
+        if (meta instanceof LeatherArmorMeta leatherArmorMeta) {
+            leatherArmorMeta.setColor(color);
+            return this;
+        }
+
+        if (meta instanceof PotionMeta potionMeta) {
+            potionMeta.setColor(color);
+            return this;
+        }
+
+        if (meta instanceof FireworkMeta fireworkMeta) {
+            for (FireworkEffect fireworkEffect : fireworkMeta.getEffects()) {
+                fireworkEffect.getColors().clear();
+                fireworkEffect.getColors().add(color);
+                fireworkEffect.getFadeColors().clear();
+                fireworkEffect.getFadeColors().add(color);
+            }
+
+            return this;
+        }
+
+        return this;
+
     }
 
     /**
@@ -83,7 +222,34 @@ public class ItemBuilder {
      * @param level The level to set the enchantment to (is allowing unsafe.)
      */
     public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
-        enchantmentMap.put(enchantment, level);
+        if (meta instanceof EnchantmentStorageMeta enchantmentStorageMeta) {
+            enchantmentStorageMeta.addStoredEnchant(enchantment, level, true);
+            return this;
+        }
+        meta.addEnchant(enchantment, level, true);
+        return this;
+    }
+
+    /**
+     * Removes an enchantment from the map list to finally enchant the item
+     * when is constructed.
+     *
+     * @param enchantment The enchantment to remove
+     */
+    public ItemBuilder removeEnchantment(Enchantment enchantment) {
+        meta.removeEnchant(enchantment);
+        return this;
+    }
+
+    /**
+     * Sets an enchantment to the map list to finally enchant the item
+     * when is constructed.
+     *
+     * @param enchantments The enchantments to use
+     */
+    public ItemBuilder setEnchantment(Map<Enchantment, Integer> enchantments) {
+        for (Enchantment enchantment : Enchantment.values()) meta.removeEnchant(enchantment);
+        for (var entry : enchantments.entrySet()) addEnchantment(entry.getKey(), entry.getValue());
         return this;
     }
 
@@ -95,40 +261,99 @@ public class ItemBuilder {
      * @param isGlowing Set the item to glow, if false this will revoke glow.
      */
     public ItemBuilder setGlowing(boolean isGlowing) {
-        enchantmentMap.put(EnchantGlow.getGlow(), 1);
+        if (isGlowing) addEnchantment   (EnchantGlow.ENCHANT_GLOW, 1);
+        else           removeEnchantment(EnchantGlow.ENCHANT_GLOW);
         return this;
     }
 
-    public ItemBuilder setCustomModelId(int id) {
-        this.customModelData = id;
+
+    public ItemBuilder setType(Material material) {
+        item.setType(material);
         return this;
     }
 
-    /**
-     *
-     * @param loreLines
-     * @return
-     */
-    public ItemBuilder addLoreLines(String... loreLines) {
-
+    public ItemBuilder setUnbreakable(boolean b) {
+        meta.setUnbreakable(b);
         return this;
     }
 
-    /**
-     *
-     * @param newLoreList
-     * @return
-     */
-    public ItemBuilder addLoreLines(List<String> newLoreList) {
+    public ItemBuilder addItemFlags(ItemFlag... itemFlags) {
+        meta.addItemFlags(itemFlags);
         return this;
     }
 
-    public ItemStack build(boolean force) {
-        ItemStack itemStack = this.itemToBeCreated;
-        itemStack.setItemMeta(itemMeta);
-        itemStack.setAmount(amount);
-        itemStack.addUnsafeEnchantments(enchantmentMap);
-        itemMeta.setCustomModelData(customModelData);
-        return itemStack;
+    public ItemBuilder setPotionData(PotionData potionData) {
+        if (!(meta instanceof PotionMeta potionMeta)) return this;
+        potionMeta.setBasePotionData(potionData);
+        return this;
     }
+
+    public ItemBuilder addPotionEffect(PotionEffect potionEffect) {
+        if (!(meta instanceof PotionMeta potionMeta)) return this;
+        potionMeta.addCustomEffect(potionEffect, true);
+        return this;
+    }
+
+    public ItemBuilder addNbtTagStringList(String key, String... values) {
+        item.setItemMeta(meta);
+
+        try {
+            Object stack = InventoryNMSUtils.getCraftItemStack_asNMSCopy().invoke(null, item);
+
+            Object idsTag = InventoryNMSUtils.getNbtTagList_constructors().newInstance();
+            for (String id : values) {
+                InventoryNMSUtils.getNbtTagList_add().invoke(idsTag,
+                        InventoryNMSUtils.getNbtTagString_aString().invoke(null, id)
+                );
+            }
+
+            Object tag =
+                    InventoryNMSUtils.getItemStack_u().invoke(stack) != null ?
+                            InventoryNMSUtils.getItemStack_u().invoke(stack) :
+                            InventoryNMSUtils.getNbtTagCompound_constructors().newInstance();
+
+            InventoryNMSUtils.getNbtTagString_a().invoke(tag, key, idsTag);
+
+            InventoryNMSUtils.getItemStack_a().invoke(null, tag);
+
+
+            item = (ItemStack) InventoryNMSUtils.getCraftItemStack_asBukkitCopy().
+                    invoke(null, stack);
+        } catch (Exception e) {
+            meta = item.getItemMeta();
+            return this;
+        }
+
+        meta = item.getItemMeta();
+        return this;
+    }
+
+    @Beta
+    public ItemBuilder addCanDestroy(String... ids) {
+        addNbtTagStringList("CanDestroy", ids);
+        return this;
+    }
+
+    @Beta
+    public ItemBuilder addCanPlaceOn(String... ids) {
+        addNbtTagStringList("CanPlaceOn", ids);
+        return this;
+    }
+
+    public ItemStack build() {
+        item.setItemMeta(meta);
+        return item.clone();
+    }
+
+    private static PlayerProfile createProfile(String base64) {
+        PlayerProfile profile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), "");
+        try {
+            profile.getTextures().setSkin(new URL(new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8)));
+        } catch (MalformedURLException e) {
+            return profile;
+        }
+        return profile;
+    }
+
+
 }

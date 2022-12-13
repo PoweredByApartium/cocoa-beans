@@ -1,5 +1,25 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
 group = 'net.apartium.cocoa-beans'
 version = parent.version
+
+repositories {
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'minecraft-libraries'
+        url = 'https://libraries.minecraft.net'
+    }
+
+}
 
 publishing {
     publications {
@@ -27,7 +47,19 @@ publishing {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
+    compileOnly 'com.mojang:authlib:3.11.49'
     api project(":common")
+}
+
+shadow {
 
 }
 
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
