@@ -1,3 +1,13 @@
+/*
+ * Copyright 2023 Apartium
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package net.apartium.cocoabeans.spigot.lazies;
 
 import com.google.common.reflect.ClassPath;
@@ -7,7 +17,9 @@ import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -15,7 +27,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Command auto registration for spigot.
@@ -87,48 +102,60 @@ public class CommandAutoRegistration {
             return;
         }
 
-        for (ClassPath.ClassInfo classInfo : deep ? classPath.getTopLevelClassesRecursive(packageName) : classPath.getTopLevelClasses(packageName)) {
-            Class<?> clazz;
-            try {
-                clazz = classLoader.loadClass(classInfo.getName());
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                continue;
-            }
+        Set<ClassPath.ClassInfo> searchScope = deep ? classPath.getTopLevelClassesRecursive(packageName) : classPath.getTopLevelClasses(packageName);
+        for (ClassPath.ClassInfo classInfo : searchScope)
+            loadCommand(classLoader, classInfo);
 
-            if (!CommandExecutor.class.isAssignableFrom(clazz))
-                continue;
+    }
 
-            Command annotation = clazz.getAnnotation(Command.class);
-            if (annotation == null)
-                continue;
-
-            boolean devCommand = annotation.devServer();
-            if (devCommand && !loadDevCommands)
-                continue;
-
-            CommandExecutor instance = createInstance(clazz);
-
-            PluginCommand pluginCommand = plugin.getCommand(annotation.value());
-            if (pluginCommand == null) {
-                if (this.allowDirectCommandMapRegistration) {
-                    Commands.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), new org.bukkit.command.Command(annotation.value()) {
-
-                        @Override
-                        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-                            return instance.onCommand(sender, this, commandLabel, args);
-                        }
-
-                    });
-
-                } else
-                    plugin.getLogger().warning("Command /" + annotation.value() + " is not registered to this plugin!");
-            } else {
-                pluginCommand.setExecutor(instance);
-                plugin.getLogger().info("Loaded " + (devCommand ? "dev" : "") + " command /" + annotation.value() + "!");
-            }
-
+    private void loadCommand(ClassLoader classLoader, ClassPath.ClassInfo classInfo) {
+        Class<?> clazz;
+        try {
+            clazz = classLoader.loadClass(classInfo.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return;
         }
+
+        if (!CommandExecutor.class.isAssignableFrom(clazz))
+            return;
+
+        Command annotation = clazz.getAnnotation(Command.class);
+        if (annotation == null)
+            return;
+
+        boolean devCommand = annotation.devServer();
+        if (devCommand && !loadDevCommands)
+            return;
+
+        CommandExecutor instance = createInstance(clazz);
+        PluginCommand pluginCommand = plugin.getCommand(annotation.value());
+        org.bukkit.command.Command finalCommand = null;
+
+        if (pluginCommand == null) {
+            if (this.allowDirectCommandMapRegistration) {
+                finalCommand = new DelegatingCommand(annotation, instance);
+                if (annotation.aliases().length > 0)
+                    finalCommand.setAliases(Arrays.asList(annotation.aliases()));
+
+                Commands.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), finalCommand);
+
+            } else {
+                plugin.getLogger().warning("Command /" + annotation.value() + " is not registered to this plugin!");
+                return;
+            }
+        } else {
+            finalCommand = pluginCommand;
+            pluginCommand.setExecutor(instance);
+            plugin.getLogger().info("Loaded " + (devCommand ? "dev" : "") + " command /" + annotation.value() + "!");
+        }
+
+        if (!annotation.permission().isEmpty())
+            finalCommand.setPermission(annotation.permission());
+
+        if (!annotation.description().isEmpty())
+            finalCommand.setDescription(annotation.description());
+
 
     }
 
@@ -155,6 +182,21 @@ public class CommandAutoRegistration {
         String value();
 
         /**
+         * Set permission to be required for every player executing that command
+         */
+        String permission() default "";
+
+        /**
+         * Command aliases
+         */
+        String[] aliases() default {};
+
+        /**
+         * Command description
+         */
+        String description() default "";
+
+        /**
          *
          * @return true if this command should be enabled only if loadDevCommands param is passed as true
          */
@@ -162,4 +204,29 @@ public class CommandAutoRegistration {
 
     }
 
+    private static class DelegatingCommand extends org.bukkit.command.Command {
+
+        private final CommandExecutor instance;
+
+        public DelegatingCommand(Command annotation, CommandExecutor instance) {
+            super(annotation.value());
+            this.instance = instance;
+        }
+
+        @Override
+        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+            return instance.onCommand(sender, this, commandLabel, args);
+        }
+
+        @NotNull
+        @Override
+        public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+            if (instance instanceof TabCompleter tabCompleter) {
+                List<String> result = tabCompleter.onTabComplete(sender, this, alias, args);
+                return result == null ? List.of() : result;
+            }
+
+            return super.tabComplete(sender, alias, args);
+        }
+    }
 }
