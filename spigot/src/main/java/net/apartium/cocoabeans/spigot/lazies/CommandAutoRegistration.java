@@ -135,9 +135,6 @@ public class CommandAutoRegistration {
         if (pluginCommand == null) {
             if (this.allowDirectCommandMapRegistration) {
                 finalCommand = new DelegatingCommand(annotation, instance);
-                if (annotation.aliases().length > 0)
-                    finalCommand.setAliases(Arrays.asList(annotation.aliases()));
-
                 Commands.getCommandMap().register(annotation.value(), plugin.getName().toLowerCase(Locale.ROOT), finalCommand);
 
             } else {
@@ -211,6 +208,10 @@ public class CommandAutoRegistration {
         public DelegatingCommand(Command annotation, CommandExecutor instance) {
             super(annotation.value());
             this.instance = instance;
+
+            if (annotation.aliases().length > 0)
+                setAliases(Arrays.asList(annotation.aliases()));
+
         }
 
         @Override
