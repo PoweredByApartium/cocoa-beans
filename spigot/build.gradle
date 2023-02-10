@@ -27,6 +27,7 @@ publishing {
             groupId = 'net.apartium.cocoa-beans'
             artifactId = 'spigot'
 
+            artifact packageJavadoc
             artifact jar
 
             pom.withXml {

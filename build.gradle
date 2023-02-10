@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'net.apartium.cocoa-beans'
-version '0.0.13'
+version '0.0.14'
 
 allprojects {
     apply plugin: 'java-library'
@@ -58,6 +58,11 @@ allprojects {
 
     test {
         useJUnitPlatform()
+    }
+
+    task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+        from javadoc.destinationDir
+        classifier = 'javadoc'
     }
 
 }
