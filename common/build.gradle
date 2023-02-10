@@ -12,6 +12,7 @@ publishing {
             groupId = 'net.apartium.cocoa-beans'
             artifactId = 'common'
 
+            artifact packageJavadoc
             artifact jar
 
             pom.withXml {
