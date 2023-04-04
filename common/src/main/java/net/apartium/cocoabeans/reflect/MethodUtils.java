@@ -10,38 +10,34 @@
 
 package net.apartium.cocoabeans.reflect;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Utilities to work with java Field class
- * @see Field
+ * Utilities to work with java Method class
+ * @see Method
  * @author Voigon (Lior S.)
  */
-public class FieldUtils {
+public class MethodUtils {
 
     /**
-     * Get all declared fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
+     * Get declared methods from given class
+     * @param clazz class
+     * @return set consisting of all declared methods from given class
      */
-    public static Set<Field> getDeclaredFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getDeclaredFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
+    public static Set<Method> getDeclaredMethods(Class<?> clazz) {
+        return ReflectionCache.getDeclaredMethods(clazz)
                 .collect(Collectors.toSet());
     }
 
     /**
-     * Get all fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
+     * Get methods from given class
+     * @param clazz class
+     * @return set consisting of all methods from given class
      */
-    public static Set<Field> getFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
+    public static Set<Method> getMethods(Class<?> clazz) {
+        return ReflectionCache.getMethods(clazz)
                 .collect(Collectors.toSet());
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Apartium
+ * Copyright 2023 Apartium
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.reflect;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -35,6 +36,7 @@ class FieldUtilsTest {
         var iterator = result2.iterator();
         while (iterator.hasNext()) {
             Field next = iterator.next();
+            Assertions.assertTrue(next.isAccessible());
             for (Field field : result) {
                 if (next == field)
                     iterator.remove();
@@ -57,6 +59,7 @@ class FieldUtilsTest {
         var iterator = result2.iterator();
         while (iterator.hasNext()) {
             Field next = iterator.next();
+            Assertions.assertTrue(next.isAccessible());
             for (Field field : result) {
                 if (next == field)
                     iterator.remove();
