@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.reflect;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
@@ -26,6 +27,18 @@ import java.util.stream.Stream;
             return new ClassCachedData();
         }
     };
+
+    /* package-private */ static Stream<Constructor> getDeclaredConstructors(Class<?> clazz) {
+        ClassCachedData result = getCachedData(clazz);
+        if (result.constructors == null) {
+            synchronized (result) {
+                if (result.constructors == null) {
+                    result.constructors = setAccessible(clazz.getDeclaredConstructors());
+                }
+            }
+        }
+        return Stream.of(result.constructors);
+    }
 
     /* package-private */ static Stream<Field> getDeclaredFields(Class<?> clazz) {
         ClassCachedData result = getCachedData(clazz);
@@ -95,5 +108,9 @@ import java.util.stream.Stream;
         private Method[]
                 methods,
                 declaredMethods;
+
+        private Constructor[]
+                constructors;
+
     }
 }
