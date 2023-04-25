@@ -12,7 +12,9 @@ package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -27,6 +29,7 @@ import org.bukkit.profile.PlayerProfile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 /**
  * Chained class used to modify and create item stacks.
@@ -96,7 +99,11 @@ public class ItemBuilder {
      * @return current instance
      */
     public ItemBuilder setLore(String... texts) {
-        if (texts == null || texts.length == 0) return this;
+        if (texts == null || texts.length == 0) {
+            meta.lore(List.of());
+            return this;
+        }
+
         meta.setLore(Arrays.asList(texts));
         return this;
     }
@@ -105,8 +112,16 @@ public class ItemBuilder {
      * @param lore set lore
      * @return current instance
      */
-    public ItemBuilder setLore(List<String> lore) {
-        if (lore == null || lore.size() == 0) return this;
+    public ItemBuilder setLore(List<Component> lore) {
+        meta.lore(lore);
+        return this;
+    }
+
+    /**
+     * @param lore set lore
+     * @return current instance
+     */
+    public ItemBuilder setLoreAsText(List<String> lore) {
         meta.setLore(lore);
         return this;
     }
@@ -118,6 +133,17 @@ public class ItemBuilder {
     public ItemBuilder setDurability(short durability) {
         if (!(meta instanceof Damageable damageable)) return this;
         damageable.setDamage(durability);
+        return this;
+    }
+
+
+    /**
+     * @param component set item name to component name
+     * @return current instance
+     */
+
+    public ItemBuilder setDisplayName(Component component) {
+        meta.displayName(component);
         return this;
     }
 

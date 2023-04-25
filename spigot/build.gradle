@@ -7,16 +7,17 @@ version = parent.version
 
 repositories {
     maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-    maven {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
         name = 'minecraft-libraries'
         url = 'https://libraries.minecraft.net'
+    }
+
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
     }
 
 }
@@ -47,7 +48,7 @@ publishing {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
+    compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     compileOnly 'com.mojang:authlib:3.11.49'
     api project(":common")
 }
