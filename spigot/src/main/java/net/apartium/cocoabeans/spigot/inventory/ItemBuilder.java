@@ -12,8 +12,6 @@ package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -25,12 +23,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
 
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -55,12 +50,6 @@ public class ItemBuilder {
         ((SkullMeta) Objects.requireNonNull(meta)).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
     }
 
-    public ItemBuilder(String value) {
-        this.item = new ItemStack(Material.PLAYER_HEAD);
-        this.meta = item.getItemMeta();
-        setSkullBase(value);
-    }
-
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
@@ -70,10 +59,33 @@ public class ItemBuilder {
      * @param base64 set skull texture with base64
      * @return current instance
      */
-    public ItemBuilder setSkullBase(String base64) {
+    public ItemBuilder setSkullTextureBase64(String base64) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
-        skullMeta.setOwnerProfile(Bukkit.getServer().createPlayerProfile(base64));
+        String decodeText = new String(Base64.getDecoder().decode(base64));
+
+        int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
+        if (start == -1 || end == -1) return this;
+        setSkullTextureURL(decodeText.substring(start, end));
+
+        return this;
+    }
+
+    /**
+     * @param url set skull texture with url to the texture
+     * @return current instance
+     */
+    public ItemBuilder setSkullTextureURL(String url) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+
+        PlayerProfile playerProfile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), null);
+        try {
+            playerProfile.getTextures().setSkin(new URL(url));
+        } catch (MalformedURLException e) {
+            return this;
+        }
+
+        skullMeta.setOwnerProfile(playerProfile);
 
         return this;
     }
@@ -343,16 +355,6 @@ public class ItemBuilder {
     public ItemStack build() {
         item.setItemMeta(meta);
         return item.clone();
-    }
-
-    private static PlayerProfile createProfile(String base64) {
-        PlayerProfile profile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), "");
-        try {
-            profile.getTextures().setSkin(new URL(new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8)));
-        } catch (MalformedURLException e) {
-            return profile;
-        }
-        return profile;
     }
 
 
