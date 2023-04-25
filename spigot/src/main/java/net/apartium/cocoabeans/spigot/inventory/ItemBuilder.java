@@ -100,7 +100,7 @@ public class ItemBuilder {
      */
     public ItemBuilder setLore(String... texts) {
         if (texts == null || texts.length == 0) {
-            meta.lore(List.of());
+            meta.setLore(List.of());
             return this;
         }
 
