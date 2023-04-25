@@ -44,10 +44,11 @@ public class ItemBuilder {
         this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder(UUID uuid) {
+    public ItemBuilder(OfflinePlayer player) {
         this.item = new ItemStack(Material.PLAYER_HEAD);
         this.meta = item.getItemMeta();
-        ((SkullMeta) Objects.requireNonNull(meta)).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+
+        ((SkullMeta) meta).setOwningPlayer(player);
     }
 
     public ItemBuilder(Material material) {
