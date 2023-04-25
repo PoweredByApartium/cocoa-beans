@@ -358,5 +358,13 @@ public class ItemBuilder {
         return item.clone();
     }
 
+    public static boolean isAirOrNull(final ItemStack item) {
+        return item == null || item.getType().equals(Material.AIR);
+    }
+
+    public static boolean isArmor(ItemStack item) {
+        return ArmorSlot.getArmorSlotType(item) == null;
+    }
+
 
 }
