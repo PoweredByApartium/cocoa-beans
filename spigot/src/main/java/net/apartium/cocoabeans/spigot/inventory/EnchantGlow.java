@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import io.papermc.paper.enchantments.EnchantmentRarity;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -60,13 +62,18 @@ public class EnchantGlow extends Enchantment {
 	}
 
 	@Override
+	public @NotNull Component displayName(int level) {
+		return Component.empty();
+	}
+
+	@Override
 	public boolean conflictsWith(Enchantment other) {
 		return false;
 	}
 
 	@Override
 	public EnchantmentTarget getItemTarget() {
-		return null;
+		return EnchantmentTarget.ALL;
 	}
 
 	@Override
@@ -94,10 +101,6 @@ public class EnchantGlow extends Enchantment {
 		return false;
 	}
 
-	public @NotNull Component displayName(int level) {
-		return null;
-	}
-
 	public boolean isTradeable() {
 		return false;
 	}
@@ -106,15 +109,20 @@ public class EnchantGlow extends Enchantment {
 		return false;
 	}
 
+	@Override
+	public @NotNull EnchantmentRarity getRarity() {
+		return EnchantmentRarity.COMMON;
+	}
+
 	public float getDamageIncrease(int level, @NotNull EntityCategory entityCategory) {
 		return 0;
 	}
 
 	public @NotNull Set<EquipmentSlot> getActiveSlots() {
-		return null;
+		return Set.of();
 	}
 
 	public @NotNull String translationKey() {
-		return null;
+		return Enchantment.CHANNELING.translationKey();
 	}
 }
