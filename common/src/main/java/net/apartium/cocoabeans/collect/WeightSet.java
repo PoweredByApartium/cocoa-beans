@@ -91,7 +91,13 @@ public class WeightSet<T> {
         if (num <= 0) throw new RuntimeException("Number of elements must be bigger than 0");
         if (elements.size() < num) throw new RuntimeException("Number of elements must be smaller/equals elements size");
 
-        if (elements.size() == num) return clone();
+        if (elements.size() == num) {
+            try {
+                return (WeightSet<T>) clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         WeightSet<T> result = new WeightSet<>();
 
@@ -116,14 +122,6 @@ public class WeightSet<T> {
         }
 
         return result;
-    }
-
-    public WeightSet<T> clone() {
-        try {
-            return (WeightSet<T>) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
