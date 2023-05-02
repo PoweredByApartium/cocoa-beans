@@ -12,9 +12,128 @@ package net.apartium.cocoabeans.collect;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class WeightSetTest {
+
+    @Test
+    void testEmptySet() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        assertTrue(weightSet.isEmpty());
+        weightSet.put("meow", 11);
+        assertFalse(weightSet.isEmpty());
+        weightSet.remove("meow");
+        assertTrue(weightSet.isEmpty());
+    }
+
+    @Test
+    void testPickOne() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.put("testing", 81.3);
+        assertEquals(weightSet.pickOne(), "testing");
+        weightSet.put("random", 31.2);
+        assertNotNull(weightSet.pickOne());
+    }
+
+    @Test
+    void testPickMany() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.put("test", 712.68);
+        weightSet.put("test1", 26.4);
+        weightSet.put("test2", 144.12);
+        WeightSet<String> many = weightSet.pickMany(2);
+        assert many.size() == 2 && (many.contains("test") || many.contains("test1") || many.contains("test2"));
+    }
+
+    @Test
+    void testPutAll() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.putAll(Map.of(
+                "test", 21.0,
+                "test2", 81.3,
+                "test3", 0.1
+        ));
+        assertEquals(weightSet.size(), 3);
+        assertTrue(weightSet.containsAll(List.of("test", "test2", "test3")));
+    }
+
+    @Test
+    void testPut() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        assertThrows(RuntimeException.class,() -> weightSet.put("test", -7));
+        weightSet.put("test", 2);
+        assertEquals(weightSet.size(), 1);
+    }
+
+    @Test
+    void testContains() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.put("test", 1);
+        weightSet.put("test2", 2);
+        weightSet.put("test3", 3);
+
+        assertTrue(weightSet.contains("test2"));
+        assertFalse(weightSet.contains("test4"));
+    }
+
+    @Test
+    void testSize() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.put("test", 62.1);
+        weightSet.put("test5", 2.7);
+        weightSet.put("test2", 3.1);
+
+        assertEquals(weightSet.size(), 3);
+        weightSet.put("test2", 3.4);
+        assertEquals(weightSet.size(), 3);
+
+        weightSet.remove("test5");
+        assertEquals(weightSet.size(), 2);
+    }
+
+    @Test
+    void testTotalWeight() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        weightSet.putAll(Map.of(
+                "test", 761.257,
+                "test2", 124.6,
+                "test3", 65.1
+        ));
+
+        assert Math.abs(weightSet.totalWeight() - 950.957) < 0.001;
+
+        weightSet.put("test4", 316.0);
+        assert Math.abs(weightSet.totalWeight() - 1266.957) < 0.001;
+
+        weightSet.remove("test2");
+
+        assert Math.abs(weightSet.totalWeight() - 1142.357) < 0.001;
+    }
+
+    @Test
+    void testIterator() {
+        WeightSet<String> weightSet = new WeightSet<>();
+
+        assertNotNull(weightSet.iterator());
+        assertFalse(weightSet.iterator().hasNext());
+        assertThrows(NoSuchElementException.class, () -> weightSet.iterator().next());
+
+        weightSet.put("meow", 1);
+
+        assert weightSet.iterator().hasNext();
+    }
+
+    @Test
+    void testRemove() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        assertFalse(weightSet.remove("test"));
+        weightSet.put("test", 18.3);
+        assertTrue(weightSet.remove("test"));
+    }
 
     @Test
     void weightSet() {

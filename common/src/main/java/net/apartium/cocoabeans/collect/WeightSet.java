@@ -10,27 +10,49 @@
 
 package net.apartium.cocoabeans.collect;
 
-import net.apartium.cocoabeans.Ensures;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class WeightSet<T> {
-
-    private static final Random RANDOM = new Random();
+public class WeightSet<E> implements Set<E> {
 
     private double weight;
-    private final Map<T, Double> elements;
+    private final Map<E, Double> elements;
 
     public WeightSet() {
         weight = 0;
         elements = new HashMap<>();
     }
 
-    public void put(T element, double weight) {
+    public WeightSet(WeightSet<E> weightSet) {
+        this.weight = weightSet.weight;
+        this.elements = new HashMap<>(weightSet.elements);
+    }
+
+    public WeightSet(Map<? extends E, ? extends Double> map) {
+        double weight = 0;
+
+        for (Double num : map.values()) {
+            if (num.isInfinite() || num.isNaN()) throw new RuntimeException("Can't be infinity or nan");
+            weight += num;
+        }
+
+        this.weight = weight;
+        this.elements = new HashMap<>(map);
+    }
+
+    public OptionalDouble put(E element, double weight) {
         if (weight < 0) throw new RuntimeException("Weight must be larger than 0");
         remove(element);
-        elements.put(element, weight);
+        Double oldWeight = elements.put(element, weight);
         this.weight += weight;
+        if (oldWeight == null || oldWeight.isNaN()) return OptionalDouble.empty();
+        return OptionalDouble.of(oldWeight);
+    }
+
+    public void putAll(Map<? extends E, ? extends Double> map) {
+        for (var entry : map.entrySet()) put(entry.getKey(), entry.getValue());
     }
 
     public void clear() {
@@ -38,44 +60,105 @@ public class WeightSet<T> {
         elements.clear();
     }
 
-    public double getWeight(T element) {
+    public double getWeight(E element) {
         return elements.get(element);
     }
 
-    public double getWeightOrDefault(T element, double defaultValue) {
+    public double getWeightOrDefault(E element, double defaultValue) {
         return elements.getOrDefault(element, defaultValue);
     }
 
-    public boolean contains(T element) {
-        return elements.containsKey(element);
-    }
 
-    public double getPercentage(T element) {
+    public double getPercentage(E element) {
         return elements.get(element) / weight * 100;
     }
 
-    public Set<T> values() {
-        return elements.keySet();
+    public Set<E> values() {
+        return Collections.unmodifiableSet(elements.keySet());
     }
 
     public double totalWeight() {
         return weight;
     }
 
-    public void remove(T element) {
-        if (!elements.containsKey(element)) return;
-        weight -= elements.remove(element);
+    @Override
+    public boolean remove(Object o) {
+        Double value = elements.remove(o);
+        if (value == null || value.isNaN()) return false;
+        weight -= value;
+        return true;
     }
 
     public int size() {
         return elements.size();
     }
 
-    public T pickOne() {
-        return pickOne(RANDOM);
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
     }
 
-    public T pickOne(Random random) {
+    @Override
+    public boolean contains(Object o) {
+        return elements.containsKey(o);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<E> iterator() {
+        return elements.keySet().iterator();
+    }
+
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        return elements.entrySet().toArray();
+    }
+
+    @NotNull
+    @Override
+    public <T> T[] toArray(@NotNull T[] ts) {
+        return elements.keySet().toArray(ts);
+    }
+
+    @Override
+    public boolean add(E element) {
+        return put(element, 0).isEmpty();
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> collection) {
+        return elements.keySet().containsAll(collection);
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends E> collection) {
+        if (collection instanceof WeightSet<? extends E> weightSet) {
+            for (var entry : weightSet.elements.entrySet())
+                put(entry.getKey(), entry.getValue());
+            return true;
+        }
+
+        for (E element : collection) put(element, 0);
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> collection) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> collection) {
+        for (Object obj : collection) remove(obj);
+        return true;
+    }
+
+    public E pickOne() {
+        return pickOne(ThreadLocalRandom.current());
+    }
+
+    public E pickOne(Random random) {
         if (elements.size() == 0) return null;
         double target = random.nextDouble() * weight;
 
@@ -88,26 +171,19 @@ public class WeightSet<T> {
         return null;
     }
 
-    public WeightSet<T> pickMany(int num) {
-        return pickMany(num, RANDOM);
+    public WeightSet<E> pickMany(int num) {
+        return pickMany(num, ThreadLocalRandom.current());
     }
 
-    public WeightSet<T> pickMany(int num, Random random) {
+    public WeightSet<E> pickMany(int num, Random random) {
         if (num <= 0) throw new RuntimeException("Number of elements must be bigger than 0");
         if (elements.size() < num) throw new RuntimeException("Number of elements must be smaller/equals elements size");
 
-        if (elements.size() == num) {
-            try {
-                return (WeightSet<T>) clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        WeightSet<T> result = new WeightSet<>();
+        if (elements.size() == num) return new WeightSet<>(this);
+        WeightSet<E> result = new WeightSet<>();
 
         double total = weight;
-        List<T> list = new ArrayList<>(values());
+        List<E> list = new ArrayList<>(values());
 
 
         for (int i = 0; i < num; i++) {
@@ -115,13 +191,13 @@ public class WeightSet<T> {
             double target = random.nextDouble() * total;
             int index = 0;
 
-            for (T key : list) {
+            for (E key : list) {
                 count += getWeight(key);
                 if (count >= target) break;
                 index++;
             }
 
-            T element = list.remove(index);
+            E element = list.remove(index);
             total -= getWeight(element);
             result.put(element, getWeight(element));
         }
