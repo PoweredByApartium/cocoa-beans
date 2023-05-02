@@ -37,6 +37,7 @@ class WeightSetTest {
         assertNotNull(weightSet.pickOne());
         weightSet.remove(11);
         assertEquals(weightSet.totalWeight(), 93.3);
+        assertNotNull(weightSet.pickOne());
         assertEquals(weightSet.size(), 2);
         assertThrows(RuntimeException.class, () -> weightSet.put(98, -8));
     }
