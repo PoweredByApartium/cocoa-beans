@@ -27,6 +27,7 @@ class WeightSetTest {
         assertEquals(weightSet.totalWeight(), 2.3);
         assertEquals(weightSet.size(), 1);
         assertEquals(weightSet.getWeight(7), 2.3);
+        assertEquals(weightSet.pickOne().intValue(), 7);
         weightSet.put(11, 9);
         assertEquals(weightSet.totalWeight(), 11.3);
         assertEquals(weightSet.size(), 2);
