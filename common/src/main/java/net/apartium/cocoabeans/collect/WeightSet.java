@@ -63,7 +63,12 @@ public class WeightSet<T> {
     }
 
     public void remove(T element) {
-        weight -= elements.getOrDefault(element, 0.0);
+        if (!elements.containsKey(element)) return;
+        weight -= elements.remove(element);
+    }
+
+    public int size() {
+        return elements.size();
     }
 
     public T pickOne() {
