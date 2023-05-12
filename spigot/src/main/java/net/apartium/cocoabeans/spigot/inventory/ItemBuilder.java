@@ -10,11 +10,10 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -25,13 +24,12 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 
 /**
  * Chained class used to modify and create item stacks.
@@ -44,23 +42,30 @@ public class ItemBuilder {
     private ItemStack item;
     private ItemMeta meta;
 
+    /**
+     * Construct a new ItemBuilder instance based on given item stack
+     * @param item item stack to start from, given instance will be cloned and not modified
+     */
     public ItemBuilder(ItemStack item) {
-        this.item = item;
+        this.item = item.clone();
         this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder(UUID uuid) {
+    /**
+     * Create player skull of given player
+     * @param player player
+     */
+    public ItemBuilder(OfflinePlayer player) {
         this.item = new ItemStack(Material.PLAYER_HEAD);
         this.meta = item.getItemMeta();
-        ((SkullMeta) Objects.requireNonNull(meta)).setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+
+        ((SkullMeta) meta).setOwningPlayer(player);
     }
 
-    public ItemBuilder(String value) {
-        this.item = new ItemStack(Material.PLAYER_HEAD);
-        this.meta = item.getItemMeta();
-        setSkullBase(value);
-    }
-
+    /**
+     * Construct a new item builder instance
+     * @param material type of item
+     */
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
@@ -70,10 +75,33 @@ public class ItemBuilder {
      * @param base64 set skull texture with base64
      * @return current instance
      */
-    public ItemBuilder setSkullBase(String base64) {
+    public ItemBuilder setSkullTextureBase64(String base64) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
-        skullMeta.setOwnerProfile(Bukkit.getServer().createPlayerProfile(base64));
+        String decodeText = new String(Base64.getDecoder().decode(base64));
+
+        int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
+        if (start == -1 || end == -1) return this;
+        setSkullTextureURL(decodeText.substring(start, end));
+
+        return this;
+    }
+
+    /**
+     * @param url set skull texture with url to the texture
+     * @return current instance
+     */
+    public ItemBuilder setSkullTextureURL(String url) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+
+        PlayerProfile playerProfile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), null);
+        try {
+            playerProfile.getTextures().setSkin(new URL(url));
+        } catch (MalformedURLException e) {
+            return this;
+        }
+
+        skullMeta.setOwnerProfile(playerProfile);
 
         return this;
     }
@@ -83,7 +111,11 @@ public class ItemBuilder {
      * @return current instance
      */
     public ItemBuilder setLore(String... texts) {
-        if (texts == null || texts.length == 0) return this;
+        if (texts == null || texts.length == 0) {
+            meta.setLore(List.of());
+            return this;
+        }
+
         meta.setLore(Arrays.asList(texts));
         return this;
     }
@@ -92,8 +124,16 @@ public class ItemBuilder {
      * @param lore set lore
      * @return current instance
      */
-    public ItemBuilder setLore(List<String> lore) {
-        if (lore == null || lore.size() == 0) return this;
+    public ItemBuilder setLore(List<Component> lore) {
+        meta.lore(lore);
+        return this;
+    }
+
+    /**
+     * @param lore set lore
+     * @return current instance
+     */
+    public ItemBuilder setLoreAsText(List<String> lore) {
         meta.setLore(lore);
         return this;
     }
@@ -105,6 +145,17 @@ public class ItemBuilder {
     public ItemBuilder setDurability(short durability) {
         if (!(meta instanceof Damageable damageable)) return this;
         damageable.setDamage(durability);
+        return this;
+    }
+
+
+    /**
+     * @param component set item name to component name
+     * @return current instance
+     */
+
+    public ItemBuilder setDisplayName(Component component) {
+        meta.displayName(component);
         return this;
     }
 
@@ -129,11 +180,24 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Set attribute modifiers of the item.
+     * @param map attribute modifiers
+     * @return current instance
+     * @see ItemMeta#setAttributeModifiers(Multimap)
+     */
     public ItemBuilder setAttributeModifiers(Multimap<Attribute, AttributeModifier> map) {
         meta.setAttributeModifiers(map);
         return this;
     }
 
+    /**
+     * Add attribute modifier the the item.
+     * @param attribute attribute
+     * @param attributeModifier modifier
+     * @return current instance
+     * @see ItemMeta#addAttributeModifier(Attribute, AttributeModifier)
+     */
     public ItemBuilder addAttributeModifiers(Attribute attribute, AttributeModifier attributeModifier) {
         meta.addAttributeModifier(attribute, attributeModifier);
         return this;
@@ -183,23 +247,34 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Set custom model data of the item.
+     * @param data custom model data
+     * @return current instance
+     * @see ItemMeta#setCustomModelData(Integer)
+     */
     public ItemBuilder setCustomModelData(int data) {
         meta.setCustomModelData(data);
         return this;
     }
 
+    /**
+     * Set item color if item meta supports it
+     * @param color color to set
+     * @return current instance
+     * @see LeatherArmorMeta#setColor(Color)
+     * @see PotionMeta#setColor(Color)
+     * @see FireworkEffect#getColors()
+     * @see FireworkEffect#getFadeColors()
+     */
     public ItemBuilder setColor(Color color) {
         if (meta instanceof LeatherArmorMeta leatherArmorMeta) {
             leatherArmorMeta.setColor(color);
             return this;
-        }
-
-        if (meta instanceof PotionMeta potionMeta) {
+        } else if (meta instanceof PotionMeta potionMeta) {
             potionMeta.setColor(color);
             return this;
-        }
-
-        if (meta instanceof FireworkMeta fireworkMeta) {
+        } else if (meta instanceof FireworkMeta fireworkMeta) {
             for (FireworkEffect fireworkEffect : fireworkMeta.getEffects()) {
                 fireworkEffect.getColors().clear();
                 fireworkEffect.getColors().add(color);
@@ -211,7 +286,6 @@ public class ItemBuilder {
         }
 
         return this;
-
     }
 
     /**
@@ -266,35 +340,67 @@ public class ItemBuilder {
         return this;
     }
 
-
+    /**
+     * Set type of the item.
+     * @param material type to set
+     * @return current instance
+     */
     public ItemBuilder setType(Material material) {
         item.setType(material);
+        meta = item.getItemMeta();
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean b) {
-        meta.setUnbreakable(b);
+    /**
+     * Set this item as unbreakable or not
+     * @param value true for unbreakable, else false
+     * @return current instance
+     * @see ItemMeta#setUnbreakable(boolean)
+     */
+    public ItemBuilder setUnbreakable(boolean value) {
+        meta.setUnbreakable(value);
         return this;
     }
 
+    /**
+     * Add item flags to the item.
+     * @param itemFlags item flags to add
+     * @return current instance
+     */
     public ItemBuilder addItemFlags(ItemFlag... itemFlags) {
         meta.addItemFlags(itemFlags);
         return this;
     }
 
+    /**
+     * Set potion data if this item stack is a potion, otherwise do nothing
+     * @param potionData potion data to set
+     * @return current instance
+     */
     public ItemBuilder setPotionData(PotionData potionData) {
         if (!(meta instanceof PotionMeta potionMeta)) return this;
         potionMeta.setBasePotionData(potionData);
         return this;
     }
 
+    /**
+     * Add potion effect to this item if potion, otherwise do nothing
+     * @param potionEffect potion effect to add
+     * @return current instance
+     */
     public ItemBuilder addPotionEffect(PotionEffect potionEffect) {
         if (!(meta instanceof PotionMeta potionMeta)) return this;
         potionMeta.addCustomEffect(potionEffect, true);
         return this;
     }
 
-    public ItemBuilder addNbtTagStringList(String key, String... values) {
+    /**
+     * Add nbt tag of type string list to the item
+     * @param key nbt key
+     * @param values values
+     * @return current instance
+     */
+    private ItemBuilder addNbtTagStringList(String key, String... values) {
         item.setItemMeta(meta);
 
         try {
@@ -328,32 +434,35 @@ public class ItemBuilder {
         return this;
     }
 
-    @Beta
+    /**
+     * Add can destroy flag to the current item
+     * @param ids ids
+     * @return current instance
+     */
+    @ApiStatus.Experimental
     public ItemBuilder addCanDestroy(String... ids) {
         addNbtTagStringList("CanDestroy", ids);
         return this;
     }
 
-    @Beta
+    /**
+     * Add can place on flag to the current item
+     * @param ids ids
+     * @return current instance
+     */
+    @ApiStatus.Experimental
     public ItemBuilder addCanPlaceOn(String... ids) {
         addNbtTagStringList("CanPlaceOn", ids);
         return this;
     }
 
+    /**
+     * Build current item builder instance and return a copy of produced item
+     * @return cloned item stack instance
+     */
     public ItemStack build() {
         item.setItemMeta(meta);
         return item.clone();
     }
-
-    private static PlayerProfile createProfile(String base64) {
-        PlayerProfile profile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), "");
-        try {
-            profile.getTextures().setSkin(new URL(new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8)));
-        } catch (MalformedURLException e) {
-            return profile;
-        }
-        return profile;
-    }
-
 
 }
