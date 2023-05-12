@@ -46,7 +46,18 @@ class WeightSetTest {
         weightSet.put("test1", 26.4);
         weightSet.put("test2", 144.12);
         WeightSet<String> many = weightSet.pickMany(2);
-        assert many.size() == 2 && (many.contains("test") || many.contains("test1") || many.contains("test2"));
+        assertEquals(2, many.size());
+
+        int included = 0;
+        if (many.contains("test"))
+            included++;
+        if (many.contains("test1"))
+            included++;
+        if (many.contains("test2"))
+            included++;
+
+        assertEquals(2, included);
+
     }
 
     @Test
@@ -104,14 +115,14 @@ class WeightSetTest {
                 "test3", 65.1
         ));
 
-        assert Math.abs(weightSet.totalWeight() - 950.957) < 0.001;
+        assertTrue(Math.abs(weightSet.totalWeight() - 950.957) < 0.001);
 
         weightSet.put("test4", 316.0);
-        assert Math.abs(weightSet.totalWeight() - 1266.957) < 0.001;
+        assertTrue(Math.abs(weightSet.totalWeight() - 1266.957) < 0.001);
 
         weightSet.remove("test2");
+        assertTrue(Math.abs(weightSet.totalWeight() - 1142.357) < 0.001);
 
-        assert Math.abs(weightSet.totalWeight() - 1142.357) < 0.001;
     }
 
     @Test
@@ -124,7 +135,7 @@ class WeightSetTest {
 
         weightSet.put("meow", 1);
 
-        assert weightSet.iterator().hasNext();
+        assertTrue(weightSet.iterator().hasNext());
     }
 
     @Test
