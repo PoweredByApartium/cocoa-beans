@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import com.google.common.annotations.Beta;
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -25,6 +24,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,11 +42,19 @@ public class ItemBuilder {
     private ItemStack item;
     private ItemMeta meta;
 
+    /**
+     * Construct a new ItemBuilder instance based on given item stack
+     * @param item item stack to start from, given instance will be cloned and not modified
+     */
     public ItemBuilder(ItemStack item) {
-        this.item = item;
+        this.item = item.clone();
         this.meta = item.getItemMeta();
     }
 
+    /**
+     * Create player skull of given player
+     * @param player player
+     */
     public ItemBuilder(OfflinePlayer player) {
         this.item = new ItemStack(Material.PLAYER_HEAD);
         this.meta = item.getItemMeta();
@@ -54,6 +62,10 @@ public class ItemBuilder {
         ((SkullMeta) meta).setOwningPlayer(player);
     }
 
+    /**
+     * Construct a new item builder instance
+     * @param material type of item
+     */
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
@@ -168,11 +180,24 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Set attribute modifiers of the item.
+     * @param map attribute modifiers
+     * @return current instance
+     * @see ItemMeta#setAttributeModifiers(Multimap)
+     */
     public ItemBuilder setAttributeModifiers(Multimap<Attribute, AttributeModifier> map) {
         meta.setAttributeModifiers(map);
         return this;
     }
 
+    /**
+     * Add attribute modifier the the item.
+     * @param attribute attribute
+     * @param attributeModifier modifier
+     * @return current instance
+     * @see ItemMeta#addAttributeModifier(Attribute, AttributeModifier)
+     */
     public ItemBuilder addAttributeModifiers(Attribute attribute, AttributeModifier attributeModifier) {
         meta.addAttributeModifier(attribute, attributeModifier);
         return this;
@@ -222,23 +247,34 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Set custom model data of the item.
+     * @param data custom model data
+     * @return current instance
+     * @see ItemMeta#setCustomModelData(Integer)
+     */
     public ItemBuilder setCustomModelData(int data) {
         meta.setCustomModelData(data);
         return this;
     }
 
+    /**
+     * Set item color if item meta supports it
+     * @param color color to set
+     * @return current instance
+     * @see LeatherArmorMeta#setColor(Color)
+     * @see PotionMeta#setColor(Color)
+     * @see FireworkEffect#getColors()
+     * @see FireworkEffect#getFadeColors()
+     */
     public ItemBuilder setColor(Color color) {
         if (meta instanceof LeatherArmorMeta leatherArmorMeta) {
             leatherArmorMeta.setColor(color);
             return this;
-        }
-
-        if (meta instanceof PotionMeta potionMeta) {
+        } else if (meta instanceof PotionMeta potionMeta) {
             potionMeta.setColor(color);
             return this;
-        }
-
-        if (meta instanceof FireworkMeta fireworkMeta) {
+        } else if (meta instanceof FireworkMeta fireworkMeta) {
             for (FireworkEffect fireworkEffect : fireworkMeta.getEffects()) {
                 fireworkEffect.getColors().clear();
                 fireworkEffect.getColors().add(color);
@@ -250,7 +286,6 @@ public class ItemBuilder {
         }
 
         return this;
-
     }
 
     /**
@@ -305,35 +340,67 @@ public class ItemBuilder {
         return this;
     }
 
-
+    /**
+     * Set type of the item.
+     * @param material type to set
+     * @return current instance
+     */
     public ItemBuilder setType(Material material) {
         item.setType(material);
+        meta = item.getItemMeta();
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean b) {
-        meta.setUnbreakable(b);
+    /**
+     * Set this item as unbreakable or not
+     * @param value true for unbreakable, else false
+     * @return current instance
+     * @see ItemMeta#setUnbreakable(boolean)
+     */
+    public ItemBuilder setUnbreakable(boolean value) {
+        meta.setUnbreakable(value);
         return this;
     }
 
+    /**
+     * Add item flags to the item.
+     * @param itemFlags item flags to add
+     * @return current instance
+     */
     public ItemBuilder addItemFlags(ItemFlag... itemFlags) {
         meta.addItemFlags(itemFlags);
         return this;
     }
 
+    /**
+     * Set potion data if this item stack is a potion, otherwise do nothing
+     * @param potionData potion data to set
+     * @return current instance
+     */
     public ItemBuilder setPotionData(PotionData potionData) {
         if (!(meta instanceof PotionMeta potionMeta)) return this;
         potionMeta.setBasePotionData(potionData);
         return this;
     }
 
+    /**
+     * Add potion effect to this item if potion, otherwise do nothing
+     * @param potionEffect potion effect to add
+     * @return current instance
+     */
     public ItemBuilder addPotionEffect(PotionEffect potionEffect) {
         if (!(meta instanceof PotionMeta potionMeta)) return this;
         potionMeta.addCustomEffect(potionEffect, true);
         return this;
     }
 
-    public ItemBuilder addNbtTagStringList(String key, String... values) {
+    /**
+     * Add nbt tag of type string list to the item
+     * @param key nbt key
+     * @param values values
+     * @return current instance
+     */
+    private ItemBuilder addNbtTagStringList(String key, String... values) {
         item.setItemMeta(meta);
 
         try {
@@ -367,30 +434,35 @@ public class ItemBuilder {
         return this;
     }
 
-    @Beta
+    /**
+     * Add can destroy flag to the current item
+     * @param ids ids
+     * @return current instance
+     */
+    @ApiStatus.Experimental
     public ItemBuilder addCanDestroy(String... ids) {
         addNbtTagStringList("CanDestroy", ids);
         return this;
     }
 
-    @Beta
+    /**
+     * Add can place on flag to the current item
+     * @param ids ids
+     * @return current instance
+     */
+    @ApiStatus.Experimental
     public ItemBuilder addCanPlaceOn(String... ids) {
         addNbtTagStringList("CanPlaceOn", ids);
         return this;
     }
 
+    /**
+     * Build current item builder instance and return a copy of produced item
+     * @return cloned item stack instance
+     */
     public ItemStack build() {
         item.setItemMeta(meta);
         return item.clone();
     }
-
-    public static boolean isAirOrNull(final ItemStack item) {
-        return item == null || item.getType().equals(Material.AIR);
-    }
-
-    public static boolean isArmor(ItemStack item) {
-        return ArmorSlot.getArmorSlotType(item) == null;
-    }
-
 
 }

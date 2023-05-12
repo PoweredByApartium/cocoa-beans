@@ -10,17 +10,20 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 
-import static net.apartium.cocoabeans.spigot.inventory.ItemBuilder.isAirOrNull;
-
+/**
+ * Represents a possible armor slot, for example helmet or boots
+ */
 public enum ArmorSlot {
-    HELMET    (5),
+
+    HELMET(5),
     CHESTPLATE(6),
-    LEGGINGS  (7),
-    BOOTS     (8);
+    LEGGINGS(7),
+    BOOTS(8);
 
     private final int slot;
 
@@ -28,20 +31,41 @@ public enum ArmorSlot {
         this.slot = slot;
     }
 
+    /**
+     * Return matching armor slot for given item stack based on type
+     * @param item item stack instance
+     * @return armor slot if any, otherwise null
+     */
     @Nullable
     public static ArmorSlot getArmorSlotType(ItemStack item) {
-        if (isAirOrNull(item)) return null;
-        String type = item.getType().name();
+        if (item == null)
+            return null;
 
-        if (type.endsWith("_HELMET") || type.endsWith("_SKULL") ||
-                type.endsWith("_HEAD") || type.endsWith("CARVED_PUMPKIN")) return HELMET;
+        return getArmorSlotType(item.getType());
+    }
 
-        if (type.endsWith("_CHESTPLATE") || type.equals("ELYTRA")) return CHESTPLATE;
-        if (type.endsWith("_LEGGINGS")) return LEGGINGS;
-        if (type.endsWith("_BOOTS")) return BOOTS;
+    /**
+     * Return matching armor slot for given item stack based on type
+     * @param type item stack material
+     * @return armor slot if any, otherwise null
+     */
+    @Nullable
+    public static ArmorSlot getArmorSlotType(Material type) {
+        String typeName = type.name();
+
+        if (typeName.endsWith("_HELMET") || typeName.endsWith("_SKULL") ||
+                typeName.endsWith("_HEAD") || typeName.endsWith("CARVED_PUMPKIN")) return HELMET;
+
+        if (typeName.endsWith("_CHESTPLATE") || typeName.equals("ELYTRA")) return CHESTPLATE;
+        if (typeName.endsWith("_LEGGINGS")) return LEGGINGS;
+        if (typeName.endsWith("_BOOTS")) return BOOTS;
         return null;
     }
 
+    /**
+     * Get inventory slot associated with armor slot
+     * @return inventory slot associated with armor slot
+     */
     public int getSlot() {
         return slot;
     }
