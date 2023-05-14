@@ -59,11 +59,12 @@ public class WeightSet<E> implements Set<E> {
      */
     public OptionalDouble put(E element, double weight) {
         if (weight < 0) throw new RuntimeException("Weight must be larger than 0");
+        OptionalDouble oldWeight = getWeight(element);
         remove(element);
-        Double oldWeight = elements.put(element, weight);
+        elements.put(element, weight);
         this.totalWeight += weight;
-        if (oldWeight == null || oldWeight.isNaN()) return OptionalDouble.empty();
-        return OptionalDouble.of(oldWeight);
+        if (oldWeight.isEmpty()) return OptionalDouble.empty();
+        return oldWeight;
     }
 
     /**

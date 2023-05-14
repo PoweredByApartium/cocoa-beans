@@ -104,6 +104,7 @@ class WeightSetTest {
         weightSet.put("test", 2);
         assertEquals(weightSet.size(), 1);
         assertEquals(2, weightSet.totalWeight());
+        assertEquals(weightSet.put("test", 5).orElse(0), 2);
     }
 
     @Test
@@ -185,6 +186,37 @@ class WeightSetTest {
     }
 
     @Test
+    void testPercentage() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        String s = "meow";
+        weightSet.put(s, 10);
+        assertEquals(weightSet.getPercentage(s).orElse(0), 100);
+        weightSet.put("wow", 90);
+        assertEquals(weightSet.getPercentage("meow").orElse(0), 10);
+        weightSet.put("jeff", 60);
+        assertEquals(weightSet.getPercentage("jeff").orElse(0), 37.5);
+    }
+
+    @Test
+    void testNewWithMap() {
+        WeightSet<String> weightSet = new WeightSet<>(Map.of(
+                "meow", 6.0,
+                "woof", 15.0
+        ));
+
+        assertEquals(weightSet.size(), 2);
+        assertEquals(weightSet.getWeightOrDefault("meow", 0), 6);
+    }
+
+    @Test
+    void testGetOrDefault() {
+        WeightSet<String> weightSet = new WeightSet<>();
+        assertEquals(weightSet.getWeightOrDefault("test", 8), 8);
+        weightSet.put("test", 9);
+        assertEquals(weightSet.getWeightOrDefault("test", 8), 9);
+    }
+
+    @Test
     void weightSet() {
         WeightSet<Integer> weightSet = new WeightSet<>();
         assertNull(weightSet.pickOne());
@@ -194,7 +226,7 @@ class WeightSetTest {
         weightSet.put(7,2.3);
         assertEquals(weightSet.totalWeight(), 2.3);
         assertEquals(weightSet.size(), 1);
-        assertEquals(weightSet.getWeight(7), 2.3);
+        assertEquals(weightSet.getWeight(7).orElse(0), 2.3);
         assertEquals(weightSet.pickOne().intValue(), 7);
         weightSet.put(11, 9);
         assertEquals(weightSet.totalWeight(), 11.3);
