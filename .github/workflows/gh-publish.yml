@@ -7,6 +7,7 @@ name: Publish package to GitHub Packages
 on:
   push:
     tags:
+      - v0.0.*
 jobs:
   publish:
     runs-on: ubuntu-latest
