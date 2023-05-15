@@ -55,7 +55,7 @@ class StringHelpersTest {
     void parseFloat() {
         var parsed = StringHelpers.parseFloat("1.2");
         assertTrue(parsed.isPresent());
-        assertEquals(1.2, parsed.getAsFloat());
+        assertEquals(1.2, parsed.getAsFloat(), 0.0001);
     }
 
     @Test
