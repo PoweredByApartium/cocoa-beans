@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Apartium
+ * Copyright 2023 Apartium
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -10,10 +10,10 @@
 
 package net.apartium.cocoabeans.reflect;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 /**
@@ -21,25 +21,82 @@ import java.util.stream.Stream;
  */
 /* package-private */ class ReflectionCache {
 
-    private static final Map<Class<?>, ClassCachedData>
-            cache = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final ClassValue<ClassCachedData> CLASS_CACHE_REF = new ClassValue<>() {
+        @Override
+        protected ClassCachedData computeValue(Class<?> type) {
+            return new ClassCachedData();
+        }
+    };
+
+    /* package-private */ static Stream<Constructor> getDeclaredConstructors(Class<?> clazz) {
+        ClassCachedData result = getCachedData(clazz);
+        if (result.constructors == null) {
+            synchronized (result) {
+                if (result.constructors == null) {
+                    result.constructors = setAccessible(clazz.getDeclaredConstructors());
+                }
+            }
+        }
+        return Stream.of(result.constructors);
+    }
 
     /* package-private */ static Stream<Field> getDeclaredFields(Class<?> clazz) {
         ClassCachedData result = getCachedData(clazz);
-        if (result.declaredFields == null)
-            result.declaredFields = clazz.getDeclaredFields();
+        if (result.declaredFields == null) {
+            synchronized (result) {
+                if (result.declaredFields == null) {
+                    result.declaredFields = setAccessible(clazz.getDeclaredFields());
+                }
+            }
+        }
         return Stream.of(result.declaredFields);
     }
 
     /* package-private */ static Stream<Field> getFields(Class<?> clazz) {
         ClassCachedData result = getCachedData(clazz);
-        if (result.fields == null)
-            result.fields = clazz.getFields();
+        if (result.fields == null) {
+            synchronized (result) {
+                if (result.fields == null) {
+                    result.fields = setAccessible(clazz.getFields());
+                }
+            }
+        }
         return Stream.of(result.fields);
     }
 
+    /* package-private */ static Stream<Method> getMethods(Class<?> clazz) {
+        ClassCachedData result = getCachedData(clazz);
+        if (result.methods == null) {
+            synchronized (result) {
+                if (result.methods == null) {
+                    result.methods = setAccessible(clazz.getMethods());
+                }
+            }
+        }
+        return Stream.of(result.methods);
+    }
+
+    /* package-private */ static Stream<Method> getDeclaredMethods(Class<?> clazz) {
+        ClassCachedData result = getCachedData(clazz);
+        if (result.declaredMethods == null) {
+            synchronized (result) {
+                if (result.declaredMethods == null) {
+                    result.declaredMethods = setAccessible(clazz.getDeclaredMethods());
+                }
+            }
+        }
+        return Stream.of(result.declaredMethods);
+    }
+
     private static ClassCachedData getCachedData(Class<?> clazz) {
-        return cache.computeIfAbsent(clazz, cl -> new ClassCachedData());
+        return CLASS_CACHE_REF.get(clazz);
+    }
+
+    private static <T extends AccessibleObject> T[] setAccessible(T[] array) {
+        for (AccessibleObject object : array) {
+            object.setAccessible(true);
+        }
+        return array;
     }
 
     private static class ClassCachedData {
@@ -47,6 +104,13 @@ import java.util.stream.Stream;
         private Field[]
                 fields,
                 declaredFields;
+
+        private Method[]
+                methods,
+                declaredMethods;
+
+        private Constructor[]
+                constructors;
 
     }
 }

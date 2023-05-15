@@ -10,38 +10,32 @@
 
 package net.apartium.cocoabeans.reflect;
 
-import java.lang.reflect.Field;
+import net.apartium.cocoabeans.Ensures;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Utilities to work with java Field class
- * @see Field
+ * Utilities to work with java Constructor class
+ * @see Constructor
  * @author Voigon (Lior S.)
  */
-public class FieldUtils {
+public class ConstructorUtils {
 
     /**
-     * Get all declared fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
+     * Retrieves all constructors of given class object from library cache
+     * @param clazz clazz
+     * @return all constructors in given class
+     * @param <T> class type
      */
-    public static Set<Field> getDeclaredFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getDeclaredFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
-                .collect(Collectors.toSet());
-    }
+    @SuppressWarnings("unchecked")
+    public static <T> Set<Constructor<T>> getDeclaredConstructors(Class<T> clazz) {
+        Ensures.isTrue(!Modifier.isInterface(clazz.getModifiers()), "clazz cannot be interface");
 
-    /**
-     * Get all fields whose type is the same of given fieldType
-     * @param clazz clazz to lookup fields from
-     * @param fieldType expected field types
-     * @return a mutable set of fields found
-     */
-    public static Set<Field> getFieldsByExactType(Class<?> clazz, Class<?> fieldType) {
-        return ReflectionCache.getFields(clazz)
-                .filter(field -> field.getType().equals(fieldType))
+        return ReflectionCache.getDeclaredConstructors(clazz)
+                .map(i -> (Constructor<T>) i)
                 .collect(Collectors.toSet());
     }
 
