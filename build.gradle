@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'net.apartium.cocoa-beans'
-version '0.0.14'
+version '0.0.15'
 
 allprojects {
     apply plugin: 'java-library'
