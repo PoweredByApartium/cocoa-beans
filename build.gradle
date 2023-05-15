@@ -62,7 +62,7 @@ allprojects {
 
     task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
         from javadoc.destinationDir
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
     }
 
 }
