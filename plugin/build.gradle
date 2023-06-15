@@ -7,7 +7,7 @@ version = parent.version
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
-    shadow project(':spigot')
+    implementation project(':spigot')
 
 }
 
