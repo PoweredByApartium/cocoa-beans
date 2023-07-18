@@ -3,4 +3,7 @@ rootProject.name = 'cocoa-beans'
 include 'spigot'
 include 'common'
 include 'plugin'
+include 'spigot:spigot-1-8'
+include 'spigot:spigot-1-20'
+findProject(':spigot:spigot-1-20')?.name = 'spigot-1-20'
 

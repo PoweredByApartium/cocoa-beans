@@ -46,28 +46,8 @@ public class ItemBuilder {
      * Construct a new ItemBuilder instance based on given item stack
      * @param item item stack to start from, given instance will be cloned and not modified
      */
-    public ItemBuilder(ItemStack item) {
+    /* package-private */ ItemBuilder(ItemStack item) {
         this.item = item.clone();
-        this.meta = item.getItemMeta();
-    }
-
-    /**
-     * Create player skull of given player
-     * @param player player
-     */
-    public ItemBuilder(OfflinePlayer player) {
-        this.item = new ItemStack(Material.PLAYER_HEAD);
-        this.meta = item.getItemMeta();
-
-        ((SkullMeta) meta).setOwningPlayer(player);
-    }
-
-    /**
-     * Construct a new item builder instance
-     * @param material type of item
-     */
-    public ItemBuilder(Material material) {
-        this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
     }
 
