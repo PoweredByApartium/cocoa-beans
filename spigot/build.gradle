@@ -48,13 +48,13 @@ publishing {
 }
 
 dependencies {
-    implementation project(path: ':spigot:spigot-1-8')
-    implementation project(path: ':spigot:spigot-1-12')
-    implementation project(path: ':spigot:spigot-1-16')
-    implementation project(path: ':spigot:spigot-1-17')
-    implementation project(path: ':spigot:spigot-1-18')
-    implementation project(path: ':spigot:spigot-1-19')
-    implementation project(path: ':spigot:spigot-1-20')
+    implementation project(':spigot:spigot-1-8')
+    implementation project(':spigot:spigot-1-12')
+    implementation project(':spigot:spigot-1-16')
+    implementation project(':spigot:spigot-1-17')
+    implementation project(':spigot:spigot-1-18')
+    implementation project(':spigot:spigot-1-19')
+    implementation project(':spigot:spigot-1-20')
     compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     compileOnly 'com.mojang:authlib:3.11.49'
     api project(":common")
