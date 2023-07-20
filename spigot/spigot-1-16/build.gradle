@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+}
+
+group = parent.group
+version = parent.version
+
+dependencies {
+    compileOnly "org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT"
+    compileOnly 'com.mojang:authlib:3.11.49'
+    implementation project(":spigot")
+}

@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.collect.Multimap;
+import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.Color;
@@ -62,8 +63,18 @@ public class ItemBuilder {
 
         int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
         if (start == -1 || end == -1) return this;
-        setSkullTextureURL(decodeText.substring(start, end));
+        try {
+            setSkullTextureURL(new URL(decodeText.substring(start, end)));
+        } catch (MalformedURLException e) {
+            return this;
+        }
 
+        return this;
+    }
+
+    public ItemBuilder setOwingPlayer(OfflinePlayer offlinePlayer) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        skullMeta.setOwningPlayer(offlinePlayer);
         return this;
     }
 
@@ -71,15 +82,11 @@ public class ItemBuilder {
      * @param url set skull texture with url to the texture
      * @return current instance
      */
-    public ItemBuilder setSkullTextureURL(String url) {
+    public ItemBuilder setSkullTextureURL(URL url) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
         PlayerProfile playerProfile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), null);
-        try {
-            playerProfile.getTextures().setSkin(new URL(url));
-        } catch (MalformedURLException e) {
-            return this;
-        }
+        playerProfile.getTextures().setSkin(url);
 
         skullMeta.setOwnerProfile(playerProfile);
 
