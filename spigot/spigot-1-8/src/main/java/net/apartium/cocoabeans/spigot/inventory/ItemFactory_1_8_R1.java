@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ItemFactory_1_8_R1 implements ItemFactory {
@@ -47,7 +48,11 @@ public class ItemFactory_1_8_R1 implements ItemFactory {
     public ItemBuilder skullBuilder(String base64) {
         ItemBuilder builder = builder(Material.SKULL_ITEM);
         builder.setDurability((short) 3);
-        builder.setSkullTextureBase64(base64);
+        try {
+            builder.setSkullTextureBase64(base64);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
         return builder;
     }
 }

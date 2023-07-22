@@ -56,18 +56,14 @@ public class ItemBuilder {
      * @param base64 set skull texture with base64
      * @return current instance
      */
-    public ItemBuilder setSkullTextureBase64(String base64) {
+    public ItemBuilder setSkullTextureBase64(String base64) throws MalformedURLException {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
         String decodeText = new String(Base64.getDecoder().decode(base64));
 
         int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
         if (start == -1 || end == -1) return this;
-        try {
-            setSkullTextureURL(new URL(decodeText.substring(start, end)));
-        } catch (MalformedURLException e) {
-            return this;
-        }
+        setSkullTextureURL(new URL(decodeText.substring(start, end)));
 
         return this;
     }

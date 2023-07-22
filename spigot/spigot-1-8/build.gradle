@@ -7,6 +7,5 @@ version = parent.version
 
 dependencies {
     compileOnly "com.hpfxd.pandaspigot:pandaspigot-api:1.8.8-R0.1-SNAPSHOT"
-    compileOnly 'com.mojang:authlib:3.11.49'
     compileOnly project(":spigot")
 }
