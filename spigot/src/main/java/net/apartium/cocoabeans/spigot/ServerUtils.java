@@ -10,26 +10,40 @@
 
 package net.apartium.cocoabeans.spigot;
 
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utils to work with the running minecraft server
+ */
 public class ServerUtils {
 
     public static final String VERSION_PATTERN = "\\d+(\\.\\d+)*";
 
-    public static int[] getVersion() {
+    private static final MinecraftVersion version = detectVersion();
+
+    /**
+     * Get game version of the running server
+     * For example GameVersion(1, 8, 0)
+     * @return game version, if not explicitly specified defaults to 0
+     * @see MinecraftVersion
+     */
+    public static @NotNull MinecraftVersion getVersion() {
+        return version;
+    }
+
+    private static MinecraftVersion detectVersion() {
         String version = extractVersionNumber(Bukkit.getBukkitVersion());
-
-        if (version == null) return null;
-
-        String[] split = version.split("\\.");
-        int[] result = new int[split.length];
-        for (int i = 0; i < result.length; i++)
-            result[i] = Integer.parseInt(split[i]);
-
-        return result;
+        if (version == null) {
+            return MinecraftVersion.UNKNOWN;
+        } else {
+            String[] split = version.split("\\.");
+            return new MinecraftVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]));
+        }
     }
 
     private static String extractVersionNumber(String versionString) {

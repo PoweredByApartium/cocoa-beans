@@ -8,23 +8,39 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot.inventory;
+package net.apartium.cocoabeans.structs;
 
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
+/**
+ * Represents version in the game.
+ * Format: major.update.minor, ex 1.8.3
+ * @param major major version, currently only 1
+ * @param update, update version
+ * @param minor minor version, if not explictly specified defaults to 0
+ */
+public record MinecraftVersion(
+        int major,
+        int update,
+        int minor
+) {
 
-@ApiStatus.Internal
-public class ItemBuilder_1_8_R1 extends ItemBuilder {
+    public static final MinecraftVersion UNKNOWN = new MinecraftVersion(0, 0, 0);
 
-    @ApiStatus.Internal
-    public ItemBuilder_1_8_R1(ItemStack itemStack) {
-        super(itemStack);
+    /**
+     * Helper method to check if current instance equals to given major and update version
+     * @param major major
+     * @param update update
+     * @return true if eq, else false
+     */
+    public boolean updateEq(int major, int update) {
+        return this.major == major && this.update == update;
     }
 
-    @Override
-    public ItemBuilder setDurability(short durability) {
-        item.setDurability(durability);
-        return this;
+    /**
+     * Detects whether current instance represents an unknown version
+     * @return true if unknown, else false
+     */
+    public boolean isUnknown() {
+        return major == 0 && update == 0 && minor == 0;
     }
 
 }

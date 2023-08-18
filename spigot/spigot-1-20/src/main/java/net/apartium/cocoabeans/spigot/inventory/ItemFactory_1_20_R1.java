@@ -13,10 +13,12 @@ package net.apartium.cocoabeans.spigot.inventory;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@ApiStatus.Internal
 public class ItemFactory_1_20_R1 implements ItemFactory {
     @Override
     public ItemBuilder builder(ItemStack itemStack) {

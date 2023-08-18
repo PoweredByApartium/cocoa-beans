@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.collect.Multimap;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -40,42 +41,54 @@ import java.util.List;
  */
 public abstract class ItemBuilder {
 
-    private static final ItemFactory factory = getFactory();
+    private static final ItemFactory factory = ItemFactoryInstantiator.create();
 
-    private static ItemFactory getFactory() {
-        int[] version = ServerUtils.getVersion();
-        if (version == null || version.length == 1) return null;
-        if (version[1] == 8) return new ItemFactory_1_8_R1();
-        return new ItemFactory_1_20_R1();
-    }
-
-
+    /**
+     * Create a new item builder instance from given item stack.
+     * Clones given item stack to avoid problems.
+     * @param itemStack item stack to copy into new builder instance
+     * @return new builder instance
+     */
     public static ItemBuilder builder(ItemStack itemStack) {
-        if (factory == null) throw new RuntimeException("No factory has been found");
         return factory.builder(itemStack);
     }
 
+    /**
+     * Create a new item builder instance based on given material
+     * @param material material to use
+     * @return new builder instance
+     */
     public static ItemBuilder builder(Material material) {
-        if (factory == null) throw new RuntimeException("No factory has been found");
         return factory.builder(material);
     }
 
+    /**
+     * Create a new item builder instance constituting of given player's skull
+     * @param offlinePlayer offline player to make skull of
+     * @return new builder instance
+     */
     public static ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
-        if (factory == null) throw new RuntimeException("No factory has been found");
         return factory.skullBuilder(offlinePlayer);
 
     }
 
+    /**
+     * Create a new item builder instance constituting of skull from given url
+     * @param url skull url
+     * @return new builder instance
+     */
     public static ItemBuilder skullBuilder(URL url) {
-        if (factory == null) throw new RuntimeException("No factory has been found");
         return factory.skullBuilder(url);
     }
 
+    /**
+     * Create a new item builder instance constituting of skull by given base64 encoded string
+     * @param base64 head value
+     * @return new builder instance
+     */
     public static ItemBuilder skullBuilder(String base64) {
-        if (factory == null) throw new RuntimeException("No factory has been found");
         return factory.skullBuilder(base64);
     }
-
 
     /* package-private */ ItemStack item;
     /* package-private */ ItemMeta meta;
@@ -84,6 +97,7 @@ public abstract class ItemBuilder {
      * Construct a new ItemBuilder instance based on given item stack
      * @param item item stack to start from, given instance will be cloned and not modified
      */
+    @ApiStatus.Internal
     /* package-private */ ItemBuilder(ItemStack item) {
         this.item = item.clone();
         this.meta = item.getItemMeta();
@@ -105,6 +119,14 @@ public abstract class ItemBuilder {
         return this;
     }
 
+    /**
+     * Applicable for skulls.
+     * @param offlinePlayer
+     * @return
+     * @see ItemBuilder#skullBuilder(URL) 
+     * @see ItemBuilder#skullBuilder(String) 
+     * @see ItemBuilder#skullBuilder(OfflinePlayer) 
+     */
     public ItemBuilder setOwingPlayer(OfflinePlayer offlinePlayer) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
         skullMeta.setOwningPlayer(offlinePlayer);

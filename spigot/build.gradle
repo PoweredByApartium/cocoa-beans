@@ -48,8 +48,6 @@ publishing {
 }
 
 dependencies {
-    shadow project(':spigot:spigot-1-8')
-    shadow project(':spigot:spigot-1-20')
     compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     compileOnly 'com.mojang:authlib:3.11.49'
     api project(":common")

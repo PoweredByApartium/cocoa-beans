@@ -10,51 +10,30 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.inventory.ItemStack;
+import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 @ApiStatus.Internal
-public class ItemFactory_1_8_R1 implements ItemFactory {
-    @Override
-    public ItemBuilder builder(ItemStack itemStack) {
-        return new ItemBuilder_1_8_R1(itemStack);
+/* package-private */ class ItemFactoryInstantiator {
+
+    /* package-private */ static ItemFactory create() {
+        MinecraftVersion minecraftVersion = ServerUtils.getVersion();
+        return switch (minecraftVersion.update()) {
+            case 8 -> constructImpl("ItemFactory_1_8_R1");
+            default -> constructImpl("ItemFactory_1_20_R1");
+        };
     }
 
-    @Override
-    public ItemBuilder builder(Material material) {
-        return new ItemBuilder_1_8_R1(new ItemStack(material));
-    }
-
-    @Override
-    public ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
-        ItemBuilder builder = builder(Material.SKULL_ITEM);
-        builder.setDurability((short) 3);
-        builder.setOwingPlayer(offlinePlayer);
-        return builder;
-    }
-
-    @Override
-    public ItemBuilder skullBuilder(URL url) {
-        ItemBuilder builder = builder(Material.SKULL_ITEM);
-        builder.setDurability((short) 3);
-        builder.setSkullTextureURL(url);
-        return builder;
-    }
-
-    @Override
-    public ItemBuilder skullBuilder(String base64) {
-        ItemBuilder builder = builder(Material.SKULL_ITEM);
-        builder.setDurability((short) 3);
+    private static ItemFactory constructImpl(String clazz) {
         try {
-            builder.setSkullTextureBase64(base64);
-        } catch (MalformedURLException e) {
+            Class<? extends ItemFactory> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.inventory.%s", clazz), true, ItemFactory.class.getClassLoader())
+                    .asSubclass(ItemFactory.class);
+            return cls.getConstructor().newInstance();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return builder;
     }
 }

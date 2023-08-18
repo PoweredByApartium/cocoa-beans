@@ -8,6 +8,8 @@ version = parent.version
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
     implementation project(':spigot')
+    implementation project(':spigot:spigot-1-8')
+    implementation project(':spigot:spigot-1-20')
 
 }
 
