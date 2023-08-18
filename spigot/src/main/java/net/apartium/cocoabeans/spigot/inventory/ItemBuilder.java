@@ -38,10 +38,47 @@ import java.util.List;
  *
  * @author Thebotgame, ofirtim
  */
-public class ItemBuilder {
+public abstract class ItemBuilder {
 
-    private ItemStack item;
-    private ItemMeta meta;
+    private static final ItemFactory factory = getFactory();
+
+    private static ItemFactory getFactory() {
+        int[] version = ServerUtils.getVersion();
+        if (version == null || version.length == 1) return null;
+        if (version[1] == 8) return new ItemFactory_1_8_R1();
+        return new ItemFactory_1_20_R1();
+    }
+
+
+    public static ItemBuilder builder(ItemStack itemStack) {
+        if (factory == null) throw new RuntimeException("No factory has been found");
+        return factory.builder(itemStack);
+    }
+
+    public static ItemBuilder builder(Material material) {
+        if (factory == null) throw new RuntimeException("No factory has been found");
+        return factory.builder(material);
+    }
+
+    public static ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
+        if (factory == null) throw new RuntimeException("No factory has been found");
+        return factory.skullBuilder(offlinePlayer);
+
+    }
+
+    public static ItemBuilder skullBuilder(URL url) {
+        if (factory == null) throw new RuntimeException("No factory has been found");
+        return factory.skullBuilder(url);
+    }
+
+    public static ItemBuilder skullBuilder(String base64) {
+        if (factory == null) throw new RuntimeException("No factory has been found");
+        return factory.skullBuilder(base64);
+    }
+
+
+    /* package-private */ ItemStack item;
+    /* package-private */ ItemMeta meta;
 
     /**
      * Construct a new ItemBuilder instance based on given item stack
@@ -125,12 +162,7 @@ public class ItemBuilder {
      * @param durability set durability to the item
      * @return current instance
      */
-    public ItemBuilder setDurability(short durability) {
-        if (!(meta instanceof Damageable damageable)) return this;
-        damageable.setDamage(durability);
-        return this;
-    }
-
+    public abstract ItemBuilder setDurability(short durability);
 
     /**
      * @param component set item name to component name
