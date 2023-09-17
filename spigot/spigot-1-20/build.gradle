@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group = parent.group
+version = parent.version
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT"
+    compileOnly project(":spigot")
+}
+
+publishing {
+    publications {
+        spigot(MavenPublication) {
+            groupId = 'net.apartium.cocoa-beans'
+            artifactId = 'spigot-1.20'
+
+            artifact jar
+
+        }
+    }
+}

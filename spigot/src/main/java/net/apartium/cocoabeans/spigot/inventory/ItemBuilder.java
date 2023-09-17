@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.collect.Multimap;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
+import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.Color;
@@ -37,37 +39,67 @@ import java.util.List;
  *
  * @author Thebotgame, ofirtim
  */
-public class ItemBuilder {
+public abstract class ItemBuilder {
 
-    private ItemStack item;
-    private ItemMeta meta;
+    private static final ItemFactory factory = ItemFactoryInstantiator.create();
+
+    /**
+     * Create a new item builder instance from given item stack.
+     * Clones given item stack to avoid problems.
+     * @param itemStack item stack to copy into new builder instance
+     * @return new builder instance
+     */
+    public static ItemBuilder builder(ItemStack itemStack) {
+        return factory.builder(itemStack);
+    }
+
+    /**
+     * Create a new item builder instance based on given material
+     * @param material material to use
+     * @return new builder instance
+     */
+    public static ItemBuilder builder(Material material) {
+        return factory.builder(material);
+    }
+
+    /**
+     * Create a new item builder instance constituting of given player's skull
+     * @param offlinePlayer offline player to make skull of
+     * @return new builder instance
+     */
+    public static ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
+        return factory.skullBuilder(offlinePlayer);
+
+    }
+
+    /**
+     * Create a new item builder instance constituting of skull from given url
+     * @param url skull url
+     * @return new builder instance
+     */
+    public static ItemBuilder skullBuilder(URL url) {
+        return factory.skullBuilder(url);
+    }
+
+    /**
+     * Create a new item builder instance constituting of skull by given base64 encoded string
+     * @param base64 head value
+     * @return new builder instance
+     */
+    public static ItemBuilder skullBuilder(String base64) {
+        return factory.skullBuilder(base64);
+    }
+
+    /* package-private */ ItemStack item;
+    /* package-private */ ItemMeta meta;
 
     /**
      * Construct a new ItemBuilder instance based on given item stack
      * @param item item stack to start from, given instance will be cloned and not modified
      */
-    public ItemBuilder(ItemStack item) {
+    @ApiStatus.Internal
+    /* package-private */ ItemBuilder(ItemStack item) {
         this.item = item.clone();
-        this.meta = item.getItemMeta();
-    }
-
-    /**
-     * Create player skull of given player
-     * @param player player
-     */
-    public ItemBuilder(OfflinePlayer player) {
-        this.item = new ItemStack(Material.PLAYER_HEAD);
-        this.meta = item.getItemMeta();
-
-        ((SkullMeta) meta).setOwningPlayer(player);
-    }
-
-    /**
-     * Construct a new item builder instance
-     * @param material type of item
-     */
-    public ItemBuilder(Material material) {
-        this.item = new ItemStack(material);
         this.meta = item.getItemMeta();
     }
 
@@ -75,15 +107,29 @@ public class ItemBuilder {
      * @param base64 set skull texture with base64
      * @return current instance
      */
-    public ItemBuilder setSkullTextureBase64(String base64) {
+    public ItemBuilder setSkullTextureBase64(String base64) throws MalformedURLException {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
         String decodeText = new String(Base64.getDecoder().decode(base64));
 
         int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
         if (start == -1 || end == -1) return this;
-        setSkullTextureURL(decodeText.substring(start, end));
+        setSkullTextureURL(new URL(decodeText.substring(start, end)));
 
+        return this;
+    }
+
+    /**
+     * Applicable for skulls.
+     * @param offlinePlayer
+     * @return
+     * @see ItemBuilder#skullBuilder(URL) 
+     * @see ItemBuilder#skullBuilder(String) 
+     * @see ItemBuilder#skullBuilder(OfflinePlayer) 
+     */
+    public ItemBuilder setOwingPlayer(OfflinePlayer offlinePlayer) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        skullMeta.setOwningPlayer(offlinePlayer);
         return this;
     }
 
@@ -91,15 +137,11 @@ public class ItemBuilder {
      * @param url set skull texture with url to the texture
      * @return current instance
      */
-    public ItemBuilder setSkullTextureURL(String url) {
+    public ItemBuilder setSkullTextureURL(URL url) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
 
         PlayerProfile playerProfile = Bukkit.getServer().createPlayerProfile(UUID.randomUUID(), null);
-        try {
-            playerProfile.getTextures().setSkin(new URL(url));
-        } catch (MalformedURLException e) {
-            return this;
-        }
+        playerProfile.getTextures().setSkin(url);
 
         skullMeta.setOwnerProfile(playerProfile);
 
@@ -142,12 +184,7 @@ public class ItemBuilder {
      * @param durability set durability to the item
      * @return current instance
      */
-    public ItemBuilder setDurability(short durability) {
-        if (!(meta instanceof Damageable damageable)) return this;
-        damageable.setDamage(durability);
-        return this;
-    }
-
+    public abstract ItemBuilder setDurability(short durability);
 
     /**
      * @param component set item name to component name

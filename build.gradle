@@ -38,16 +38,10 @@ allprojects {
     }
 
     repositories {
-        mavenCentral()
         maven {
-            name = 'spigotmc-repo'
-            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+            name = "ApartiumNexus"
+            url = "https://mvn.apartiumservices.com/repository/apartium"
         }
-        maven {
-            name = 'sonatype'
-            url = 'https://oss.sonatype.org/content/groups/public/'
-        }
-
     }
 
     dependencies {
