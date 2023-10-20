@@ -37,4 +37,10 @@ public class ItemBuilder_1_20_R1 extends ItemBuilder {
         return this;
     }
 
+    @Override
+    public ItemBuilder setUnbreakable(boolean value) {
+        meta.setUnbreakable(value);
+        return this;
+    }
+
 }

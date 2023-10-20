@@ -394,10 +394,7 @@ public abstract class ItemBuilder {
      * @return current instance
      * @see ItemMeta#setUnbreakable(boolean)
      */
-    public ItemBuilder setUnbreakable(boolean value) {
-        meta.setUnbreakable(value);
-        return this;
-    }
+    public abstract ItemBuilder setUnbreakable(boolean value);
 
     /**
      * Add item flags to the item.

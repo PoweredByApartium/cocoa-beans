@@ -27,4 +27,10 @@ public class ItemBuilder_1_8_R1 extends ItemBuilder {
         return this;
     }
 
+    @Override
+    public ItemBuilder setUnbreakable(boolean value) {
+        meta.spigot().setUnbreakable(value);
+        return this;
+    }
+
 }

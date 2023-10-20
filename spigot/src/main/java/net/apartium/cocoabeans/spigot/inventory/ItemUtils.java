@@ -25,7 +25,7 @@ public class ItemUtils {
      * @return true if armor piece, else false
      */
     public static boolean isArmor(ItemStack item) {
-        return ArmorSlot.getArmorSlotType(item) == null;
+        return ArmorSlot.getArmorSlotType(item) != null;
     }
 
     /**
