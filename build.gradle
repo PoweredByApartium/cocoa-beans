@@ -40,7 +40,7 @@ allprojects {
     repositories {
         maven {
             name = "ApartiumNexus"
-            url = "https://mvn.apartiumservices.com/repository/apartium"
+            url = "https://nexus.voigon.dev/repository/apartium"
         }
     }
 
