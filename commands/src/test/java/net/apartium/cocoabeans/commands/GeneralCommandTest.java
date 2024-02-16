@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,8 +19,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GeneralCommandTest {
 
+    CommandForTest commandForTest;
+
+    TestCommandManager testCommandManager;
+
+    TestSender sender;
+
+    @BeforeEach
+    void before() {
+        commandForTest = new CommandForTest();
+        testCommandManager = new TestCommandManager();
+
+        testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        testCommandManager.addCommand(commandForTest);
+
+        sender = new TestSender();
+
+    }
+
     @Test
-    void testNoParser() {
+    void errorHandlingWithNoParser() {
         CommandForTest commandForTest = new CommandForTest();
         TestCommandManager testCommandManager = new TestCommandManager();
         assertThrows(RuntimeException.class, () -> testCommandManager.addCommand(commandForTest));
@@ -27,28 +46,37 @@ public class GeneralCommandTest {
     }
 
     @Test
-    void sampleTest() {
-        TestSender sender = run("test", new String[]{"1"});
+    void sample() {
+        evaluate("test", "1");
         assertEquals(List.of("gotAnInt(Sender sender, int num) I got 1"), sender.getMessages());
 
     }
 
     @Test
-    void skipTest() {
-        TestSender sender = run("test", new String[]{"no"});
+    void skip() {
+        evaluate("test", "no");
         assertEquals(List.of("skipMe(Sender sender) no", "ok(Sender sender) ok"), sender.getMessages());
     }
 
-    TestSender run(String label, String[] args) {
-        CommandForTest commandForTest = new CommandForTest();
-        TestCommandManager testCommandManager = new TestCommandManager();
+    @Test
+    void noOne() {
+        evaluate("test", "no-one");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [no-one]"), sender.getMessages());
+    }
 
-        testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        testCommandManager.addCommand(commandForTest);
+    @Test
+    void archJoke() {
+        evaluate("test", "rm -rf /* true");
+        assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) Say GoodBye ah ah ah"), sender.getMessages());
+    }
 
-        TestSender sender = new TestSender();
-        testCommandManager.handle(sender, label, args);
+    @Test
+    void archJokeReverse() {
+        evaluate("test", "rm -rf /* false");
+        assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) You forgot sudo ),:"), sender.getMessages());
+    }
 
-        return sender;
+    void evaluate(String label, String args) {
+        testCommandManager.handle(sender, label, args.split("\\s+"));
     }
 }
