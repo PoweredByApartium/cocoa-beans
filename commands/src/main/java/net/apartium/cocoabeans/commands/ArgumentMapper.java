@@ -8,31 +8,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.List;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+/**
+ * Maps the command arguments into the parameters required by the sub command
+ * @see SimpleArgumentMapper
+ */
+public interface ArgumentMapper {
 
-    private CommandManager commandManager;
+    List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant);
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
-
-        commandManager.addCommand(new TestCommand());
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
 }

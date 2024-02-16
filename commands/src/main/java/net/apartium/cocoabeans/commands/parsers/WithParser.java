@@ -8,31 +8,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.lang.annotation.*;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+/**
+ * Registers a parser for a specific command
+ */
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Repeatable(WithParsers.class)
+public @interface WithParser {
+    /**
+     * Parser to register
+     */
+    Class<? extends ArgumentParser<?>> value();
 
-    private CommandManager commandManager;
-
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
-
-        commandManager.addCommand(new TestCommand());
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
+    /**
+     * Parser priority
+     */
+    int priority() default 0;
 }

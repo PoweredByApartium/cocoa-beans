@@ -8,31 +8,48 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+import java.util.List;
 
-    private CommandManager commandManager;
+@ApiStatus.Internal
+/* package-private */ class AbstractCommandProcessingContext implements CommandProcessingContext {
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
+    @NotNull
+    private final Sender sender;
 
-        commandManager.addCommand(new TestCommand());
+    private final List<String> args;
+
+    private final int index;
+
+    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String[] args, int index) {
+        this.sender = sender;
+        this.args = List.of(args);
+        this.index = index;
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public @NotNull Sender sender() {
+        return this.sender;
     }
+
+    @Override
+    public List<String> args() {
+        return this.args;
+    }
+
+    @Override
+    public int index() {
+        return this.index;
+    }
+
+    @Override
+    public boolean senderMeetsRequirement(Requirement requirement) {
+        return requirement.meetsRequirement(sender());
+    }
+
 }

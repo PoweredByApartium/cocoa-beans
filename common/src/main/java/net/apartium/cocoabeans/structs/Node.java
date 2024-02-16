@@ -8,31 +8,62 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.structs;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+import org.jetbrains.annotations.NotNull;
+import java.util.Iterator;
 
-    private CommandManager commandManager;
+public class Node<T> implements Iterable<T> {
 
+    private T value;
+    private Node<T> next;
+
+    public Node(T value) {
+        this.value = value;
+    }
+
+    public Node(T value, Node<T> next) {
+        this.value = value;
+        this.next = next;
+    }
+
+    @NotNull
     @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
 
-        commandManager.addCommand(new TestCommand());
+            private Node<T> current = next;
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public T next() {
+                T value = current.getValue();
+                current = current.getNext();
+                return value;
+            }
+
+        };
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public String toString() {
+        return value + " -> " + next;
     }
+
+    public T getValue() {
+        return value;
+    }
+
+    public Node<T> getNext() {
+        return next;
+    }
+
+    public void setNext(Node<T> next) {
+        this.next = next;
+    }
+
 }

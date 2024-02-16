@@ -8,31 +8,40 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+/**
+ * Represents the context of processing the command's arguments
+ */
+public interface CommandProcessingContext {
 
-    private CommandManager commandManager;
+    /**
+     * Sender instance
+     * @return sender instance
+     */
+    @NotNull Sender sender();
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
+    /**
+     * Returns an unmodifiable list representing all the args left to process
+     * @return unmodifiable list representing all the args left to process
+     */
+    List<String> args();
 
-        commandManager.addCommand(new TestCommand());
-    }
+    /**
+     * Returns the current index of processing
+     * @return current index of processing
+     */
+    int index();
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
+    /**
+     * Check if sender meets given requirement instance.
+     * @param requirement requirement to meet
+     * @return true if meets, else false
+     */
+    boolean senderMeetsRequirement(Requirement requirement);
+
 }

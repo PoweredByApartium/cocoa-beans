@@ -83,4 +83,38 @@ public class CollectionHelpers {
         return false;
     }
 
+    /**
+     * Checks for array content equality, regardless of order
+     * @param arr0 first array
+     * @param arr1 second array
+     * @return true if equals, else false
+     */
+    public static boolean equalsArray(Object[] arr0, Object[] arr1) {
+        if (arr0 == arr1)
+            return true; // quick check
+
+        if (arr0.length != arr1.length)
+            return false;
+
+        if (arr0.length == 0)
+            return true;
+
+        LinkedList<Integer> leftIndex = LinkedList.range(0, arr0.length, 1);
+
+        forLoop: for (Object object : arr0) {
+            Iterator<Integer> iterator = leftIndex.iterator();
+            while (iterator.hasNext()) {
+                int index = iterator.next();
+                if (object.equals(arr1[index])) {
+                    iterator.remove();
+                    continue forLoop;
+                }
+            }
+
+            return false;
+        }
+
+        return leftIndex.isEmpty();
+    }
+
 }

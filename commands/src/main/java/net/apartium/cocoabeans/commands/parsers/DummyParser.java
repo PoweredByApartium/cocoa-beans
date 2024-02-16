@@ -8,31 +8,46 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot;
+package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.apartium.cocoabeans.commands.CommandProcessingContext;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.Set;
 
-    private CommandManager commandManager;
+public class DummyParser extends ArgumentParser<Object> {
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
+    public DummyParser() {
+        this(-10);
+    }
 
-        commandManager.addCommand(new TestCommand());
+    public DummyParser(int priority) {
+        this("ignore", priority);
+    }
+
+    public DummyParser(String keyword, int priority) {
+        super(keyword, Object.class, priority);
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public Optional<ParseResult<Object>> parse(CommandProcessingContext processingContext) {
+        return Optional.of(new ParseResult<>(
+                null,
+                processingContext.index() + 1
+        ));
+    }
+
+    @Override
+    public OptionalInt tryParse(CommandProcessingContext processingContext) {
+        return OptionalInt.of(processingContext.index() + 1);
+    }
+
+    @Override
+    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
+        return Optional.of(new TabCompletionResult(
+                Set.of(),
+                processingContext.index() + 1
+        ));
     }
 }
