@@ -51,4 +51,20 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("ok(Sender sender) ok");
     }
 
+    @WallRequirement
+    @SubCommand("no-one")
+    public void noOne(Sender sender) {
+        sender.sendMessage("noOne(Sender sender) witch!!!");
+    }
+
+    @SubCommand("rm -rf /* <boolean>")
+    public void rmDashRfSpaceSlashSpaceAsterisk(Sender sender, boolean choice) {
+        sender.sendMessage("rm_rf_slash_asterisk(Sender sender, boolean choice) " + (choice ? "Say GoodBye ah ah ah" : "You forgot sudo ),:"));
+    }
+
+    @Override
+    public boolean fallbackHandle(Sender sender, String label, String[] args) {
+        sender.sendMessage("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [" + String.join(", ", args) + "]");
+        return true;
+    }
 }
