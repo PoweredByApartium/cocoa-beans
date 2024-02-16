@@ -7,5 +7,5 @@ include 'spigot:spigot-1-8'
 include 'spigot:spigot-1-12'
 include 'spigot:spigot-1-20'
 include 'commands'
-include 'commands:spigot-cmds'
+include 'commands:spigot-platform'
 
