@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -76,6 +77,25 @@ class CollectionHelpersTest {
         assertTrue(CollectionHelpers.containsStartsWith(list, "XX", null));
         assertTrue(CollectionHelpers.containsStartsWith(list, "XD", "X"));
         assertFalse(CollectionHelpers.containsStartsWith(list, "XD", "XX"));
+
+    }
+
+    @Test
+    void equalsArray() {
+        Object[] empty = new Object[0];
+        Assertions.assertTrue(CollectionHelpers.equalsArray(empty, empty));
+        Object[] arr0 = new Object[]{"1", "2", "3"};
+        Object[] arr1 = new Object[]{"1", "2", new String("3")};
+        Assertions.assertTrue(CollectionHelpers.equalsArray(arr0, arr1));
+        Assertions.assertFalse(CollectionHelpers.equalsArray(arr0, empty));
+
+        Integer[] intArr0 = new Integer[] {1,3,2};
+        Integer[] intArr1 = new Integer[] {1,2,3};
+        Assertions.assertTrue(CollectionHelpers.equalsArray(intArr0, intArr1));
+
+        String[] strArr0 = new String[] {"1", "2", "3"};
+        String[] strArr1 = new String[] {"3", "2", "1"};
+        Assertions.assertTrue(CollectionHelpers.equalsArray(strArr0, strArr1));
 
     }
 }

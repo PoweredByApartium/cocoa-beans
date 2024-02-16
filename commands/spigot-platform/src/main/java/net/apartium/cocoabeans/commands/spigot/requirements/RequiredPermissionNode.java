@@ -8,10 +8,28 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.commands;
+package net.apartium.cocoabeans.commands.spigot.requirements;
 
-public class Test {
-    public void test() {
-        System.out.println("Test");
-    }
+import net.apartium.cocoabeans.commands.requirements.CommandRequirementType;
+import net.apartium.cocoabeans.commands.spigot.requirements.factory.RequirePermissionFactory;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Requires sender to have a bukkit/bukkit-like permission node to run a command / sub command
+ */
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@CommandRequirementType(RequirePermissionFactory.class)
+public @interface RequiredPermissionNode {
+
+    /**
+     * MinecraftPermission will compute permission like that CommandSender#hasPermision
+     * @return permission
+     */
+    String value();
+
 }

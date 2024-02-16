@@ -8,15 +8,33 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.commands.spigot;
+package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.Test;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class TestSpigot {
+public class TestSender implements Sender {
 
-    public TestSpigot() {
-        System.out.println("AAA");
+    List<String> messages = new ArrayList<>();
+
+    @Override
+    public Object getSender() {
+        return this;
     }
-    Test test;
 
+    @Override
+    public void sendMessage(String text) {
+        messages.add(text);
+    }
+
+    @Override
+    public void sendMessage(String... args) {
+        messages.addAll(Arrays.asList(args));
+
+    }
+
+    public List<String> getMessages() {
+        return messages;
+    }
 }

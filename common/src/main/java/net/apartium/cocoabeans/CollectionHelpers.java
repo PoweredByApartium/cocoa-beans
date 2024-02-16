@@ -11,10 +11,9 @@
 package net.apartium.cocoabeans;
 
 import net.apartium.cocoabeans.collect.WeightSet;
+import net.apartium.cocoabeans.structs.LinkedList;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Helper class to aid working with java collections

@@ -46,8 +46,12 @@ jobs:
           mkdir javadocs
           mkdir javadocs/common
           mkdir javadocs/spigot
+          mkdir javadocs/commands
+          mkdir javadocs/commands-spigot
           cp -a common/build/docs/javadoc/* javadocs/common
           cp -a spigot/build/docs/javadoc/* javadocs/spigot
+          cp -a commands/build/docs/javadoc/* javadocs/commands
+          cp -a commands/spigot/build/docs/javadoc/* javadocs/commands-spigot
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
