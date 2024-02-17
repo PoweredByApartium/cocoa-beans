@@ -76,6 +76,12 @@ public class GeneralCommandTest {
         assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) You forgot sudo ),:"), sender.getMessages());
     }
 
+    @Test
+    void rangeTest() {
+        evaluate("test", "testing 9");
+        assertEquals(List.of("testRange(Sender sender, int num) You chosen 9"), sender.getMessages());
+    }
+
     void evaluate(String label, String args) {
         testCommandManager.handle(sender, label, args.split("\\s+"));
     }

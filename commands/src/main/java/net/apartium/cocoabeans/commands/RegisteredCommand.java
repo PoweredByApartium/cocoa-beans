@@ -11,7 +11,9 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
+import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 import net.apartium.cocoabeans.commands.requirements.CommandRequirementType;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
@@ -53,7 +55,7 @@ import java.util.*;
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>(commandManager.argumentTypeHandlerMap);
 
         // Add class parsers
-        argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(clazz.getAnnotationsByType(WithParser.class)));
+        argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(clazz.getAnnotations()));
 
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
 
@@ -80,7 +82,7 @@ import java.util.*;
 
 
         Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(argumentTypeHandlerMap);
-        methodArgumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(method.getAnnotationsByType(WithParser.class)));
+        methodArgumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(method.getAnnotations()));
 
         RequirementSet methodRequirements = new RequirementSet(createRequirementSet(method.getAnnotations()), requirementSet);
 
@@ -182,7 +184,8 @@ import java.util.*;
 
         for (Annotation annotation : annotations) {
             CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
-            if (commandRequirementType == null) continue;
+            if (commandRequirementType == null)
+                continue;
 
             RequirementFactory requirementFactory;
             try {
@@ -192,30 +195,53 @@ import java.util.*;
             }
 
             Requirement requirement = requirementFactory.getRequirement(annotation);
-            if (requirement == null) continue;
+            if (requirement == null)
+                continue;
             requirements.add(requirement);
         }
 
         return new RequirementSet(requirements);
     }
 
-    private static Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(WithParser[] withParsers) {
+    private static Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(Annotation[] annotations) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-        if (withParsers == null)
+        if (annotations == null || annotations.length == 0)
             return argumentTypeHandlerMap;
 
-        for (WithParser withParser : withParsers) {
-            ArgumentParser<?> argumentTypeHandler;
-            try {
-                Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
-                argumentTypeHandler = newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        for (Annotation annotation : annotations) {
+            WithParser withParser = annotation.annotationType().getAnnotation(WithParser.class);
+            if (withParser != null) {
+                ArgumentParser<?> argumentTypeHandler;
+                try {
+                    Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
+                    argumentTypeHandler = newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority());
+                } catch (InstantiationException |  IllegalAccessException | InvocationTargetException e) {
+                    continue;
+                }
+
+                argumentTypeHandlerMap.put(argumentTypeHandler.getKeyword(), argumentTypeHandler);
                 continue;
             }
 
-            argumentTypeHandlerMap.put(argumentTypeHandler.getKeyword(), argumentTypeHandler);
+            WithParserFactory withParserFactory = annotation.annotationType().getAnnotation(WithParserFactory.class);
+            if (withParserFactory == null)
+                continue;
+
+            ParserFactory parserFactory;
+            try {
+                parserFactory = withParserFactory.value().getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                continue;
+            }
+
+            ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(annotation);
+            if (argumentParser == null)
+                continue;
+
+            argumentTypeHandlerMap.put(argumentParser.getKeyword(), argumentParser);
         }
+
         return argumentTypeHandlerMap;
     }
 

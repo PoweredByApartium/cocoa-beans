@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
+
 @Command("test")
 public class CommandForTest implements CommandNode {
 
@@ -60,6 +62,12 @@ public class CommandForTest implements CommandNode {
     @SubCommand("rm -rf /* <boolean>")
     public void rmDashRfSpaceSlashSpaceAsterisk(Sender sender, boolean choice) {
         sender.sendMessage("rm_rf_slash_asterisk(Sender sender, boolean choice) " + (choice ? "Say GoodBye ah ah ah" : "You forgot sudo ),:"));
+    }
+
+    @IntRangeParser(to = 10)
+    @SubCommand("testing <range>")
+    public void testRange(Sender sender, int num) {
+        sender.sendMessage("testRange(Sender sender, int num) You chosen " + num);
     }
 
     @Override
