@@ -82,7 +82,34 @@ public class GeneralCommandTest {
         assertEquals(List.of("testRange(Sender sender, int num) You chosen 9"), sender.getMessages());
     }
 
+    @Test
+    void rangeTestFail() {
+        evaluate("test", "testing -2");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing, -2]"), sender.getMessages());
+
+        evaluate("test", "testing a1");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing, a1]"), sender.getMessages());
+
+        evaluate("test", "testing 11");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing, 11]"), sender.getMessages());
+    }
+
+    @Test
+    void range2Test() {
+        evaluate("test", "testing2 6");
+        assertEquals(List.of("test2Range(Sender sender, int num) You chosen 6"), sender.getMessages());
+    }
+
+
+    @Test
+    void range2TestFail() {
+        evaluate("test", "testing2 9");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing2, 9]"), sender.getMessages());
+    }
+
+
     void evaluate(String label, String args) {
+        sender.getMessages().clear();
         testCommandManager.handle(sender, label, args.split("\\s+"));
     }
 }

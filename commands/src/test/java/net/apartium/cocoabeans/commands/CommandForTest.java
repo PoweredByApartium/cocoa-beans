@@ -70,6 +70,12 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testRange(Sender sender, int num) You chosen " + num);
     }
 
+    @IntRangeParser(to = 10, step = 2)
+    @SubCommand("testing2 <range>")
+    public void test2Range(Sender sender, int num) {
+        sender.sendMessage("test2Range(Sender sender, int num) You chosen " + num);
+    }
+
     @Override
     public boolean fallbackHandle(Sender sender, String label, String[] args) {
         sender.sendMessage("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [" + String.join(", ", args) + "]");

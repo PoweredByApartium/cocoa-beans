@@ -31,6 +31,9 @@ public class IntRangeParserFactory implements ParserFactory {
         if (intRangeParser.step() <= 0)
             throw new RuntimeException("step must be larger than 0");
 
+        if ((intRangeParser.to() - intRangeParser.from()) <= intRangeParser.step())
+            throw new RuntimeException("step must be smaller than to - from");
+
         return new IntRangeParserImpl(intRangeParser.from(), intRangeParser.to(), intRangeParser.step(), intRangeParser.keyword(), intRangeParser.priority());
     }
 
@@ -57,11 +60,17 @@ public class IntRangeParserFactory implements ParserFactory {
                 return Optional.empty();
 
             int targetNum = optionalInt.getAsInt();
-            if ((targetNum - from) % step != 0)
+
+            if (targetNum < from)
                 return Optional.empty();
+
 
             if (targetNum >= to)
                 return Optional.empty();
+
+            if ((targetNum - from) % step != 0)
+                return Optional.empty();
+
 
             return Optional.of(new ParseResult<>(
                     targetNum,
