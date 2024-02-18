@@ -114,6 +114,10 @@ import java.util.*;
             }
 
             for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
+
+                if (!entry.value().haveAnyRequirementsMeet(sender))
+                    continue;
+
                 Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
                 if (tabCompletionResult.isEmpty())
                     continue;
