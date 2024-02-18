@@ -68,12 +68,15 @@ public class GeneralCommandTest {
     void archJoke() {
         evaluate("test", "rm -rf /* true");
         assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) Say GoodBye ah ah ah"), sender.getMessages());
+
+        evaluate("test", "rm -rf /* false");
+        assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) You forgot sudo ),:"), sender.getMessages());
     }
 
     @Test
-    void archJokeReverse() {
-        evaluate("test", "rm -rf /* false");
-        assertEquals(List.of("rm_rf_slash_asterisk(Sender sender, boolean choice) You forgot sudo ),:"), sender.getMessages());
+    void archJokeFail() {
+        evaluate("test", "rm -rf /* trua");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [rm, -rf, /*, trua]"), sender.getMessages());
     }
 
     @Test
