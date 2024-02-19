@@ -89,23 +89,40 @@ public class CollectionHelpers {
      * @param arr1 second array
      * @return true if equals, else false
      */
-    public static boolean equalsArray(Object[] arr0, Object[] arr1) {
-        if (arr0 == arr1)
+    public static boolean equalsList(Object[] arr0, Object[] arr1) {
+        return equalsList(
+                List.of(arr0),
+                List.of(arr1)
+        );
+    }
+
+    /**
+     * Checks for list content equality, regardless of order
+     * @param list0 first list
+     * @param list1 second list
+     * @return true if equals, else false
+     */
+    public static boolean equalsList(List<?> list0, List<?> list1) {
+        if (list0 == list1)
             return true; // quick check
 
-        if (arr0.length != arr1.length)
+        System.out.println(list0);
+        System.out.println(list1);
+        System.out.println();
+
+        if (list0.size() != list1.size())
             return false;
 
-        if (arr0.length == 0)
+        if (list0.isEmpty())
             return true;
 
-        LinkedList<Integer> leftIndex = LinkedList.range(0, arr0.length, 1);
+        LinkedList<Integer> leftIndex = LinkedList.range(0, list0.size(), 1);
 
-        forLoop: for (Object object : arr0) {
+        forLoop: for (Object object : list0) {
             Iterator<Integer> iterator = leftIndex.iterator();
             while (iterator.hasNext()) {
                 int index = iterator.next();
-                if (object.equals(arr1[index])) {
+                if (object.equals(list1.get(index))) {
                     iterator.remove();
                     continue forLoop;
                 }
@@ -116,5 +133,6 @@ public class CollectionHelpers {
 
         return leftIndex.isEmpty();
     }
+
 
 }

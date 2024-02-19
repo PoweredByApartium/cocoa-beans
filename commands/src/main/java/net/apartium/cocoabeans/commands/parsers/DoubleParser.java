@@ -75,7 +75,7 @@ public class DoubleParser extends ArgumentParser<Double> {
              i++
         ) result.add(args.get(startIndex) + i);
 
-        if (!hasDot) result.add(".");
+        if (!hasDot) result.add(args.get(startIndex) + ".");
 
         return Optional.of(new TabCompletionResult(
                 result,

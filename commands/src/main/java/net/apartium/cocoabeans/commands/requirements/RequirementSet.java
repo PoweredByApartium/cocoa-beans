@@ -165,7 +165,7 @@ public class RequirementSet implements Set<Requirement> {
             return true;
 
 
-        return CollectionHelpers.equalsArray(this.requirements, other.requirements);
+        return CollectionHelpers.equalsList(this.requirements, other.requirements);
     }
 
     @Override

@@ -10,10 +10,12 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.CollectionHelpers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -110,9 +112,67 @@ public class GeneralCommandTest {
         assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing2, 9]"), sender.getMessages());
     }
 
+    @Test
+    void setSpeedTest() {
+        float randomFloat = (float) Math.random();
+        evaluate("test", "set speed " + randomFloat);
+        assertEquals(List.of("setSpeed(Sender sender, float speed) speed has been set to " + randomFloat), sender.getMessages());
+    }
+
+    @Test
+    void setSpeedFailed() {
+        evaluate("test", "set speed 0.3a");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [set, speed, 0.3a]"), sender.getMessages());
+    }
+
+    @Test
+    void tabCompletionTest() {
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", ""),
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                    evaluateTabCompletion("test", "te"),
+                    List.of("testing", "testing2")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "asd"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed"),
+                        List.of("speed")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed 0"),
+                        Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                                .map(s -> 0 + s)
+                                .toList()
+                )
+        );
+    }
+
 
     void evaluate(String label, String args) {
         sender.getMessages().clear();
         testCommandManager.handle(sender, label, args.split("\\s+"));
     }
+
+    List<String> evaluateTabCompletion(String label, String args) {
+        return testCommandManager.handleTabComplete(sender, label, args.split("\\s+"));
+    }
+
 }
