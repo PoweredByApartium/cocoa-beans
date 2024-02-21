@@ -206,12 +206,14 @@ import java.util.*;
     private static Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(Annotation[] annotations) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-        if (annotations == null || annotations.length == 0)
-            return argumentTypeHandlerMap;
 
-        for (Annotation annotation : annotations) {
-            WithParser withParser = annotation.annotationType().getAnnotation(WithParser.class);
-            if (withParser != null) {
+        if (annotations == null || annotations.length == 0) {
+            System.out.println(annotations == null ? "null" : annotations.length);
+            return argumentTypeHandlerMap;
+        }
+
+        for (Annotation annotation : annotations) {;
+            if (annotation instanceof WithParser withParser) {
                 ArgumentParser<?> argumentTypeHandler;
                 try {
                     Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();

@@ -138,11 +138,18 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void tryTest() {
+        double randomDouble = Math.random();
+        evaluate("test", "try random-string " + randomDouble);
+        assertEquals(List.of("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is " + randomDouble), sender.getMessages());
+    }
+
+    @Test
     void tabCompletionTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set", "config")
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set", "config", "try")
                 )
         );
 
@@ -211,7 +218,26 @@ public class GeneralCommandTest {
                 )
         );
 
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"rm", "-rf", "/*", ""}),
+                        List.of("true", "false")
+                )
+        );
 
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed 0.253.1"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed ++0.52"),
+                        List.of()
+                )
+        );
     }
 
 

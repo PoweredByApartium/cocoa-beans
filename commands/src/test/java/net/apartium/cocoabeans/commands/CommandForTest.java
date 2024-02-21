@@ -10,7 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
+import net.apartium.cocoabeans.commands.parsers.WithParser;
 
 @Command("test")
 public class CommandForTest implements CommandNode {
@@ -84,6 +86,12 @@ public class CommandForTest implements CommandNode {
     @SubCommand("config get <string>")
     public void getConfigValue(Sender sender, String s) {
         sender.sendMessage("getConfigValue(Sender sender, String s) " + s + " = true");
+    }
+
+    @WithParser(DummyParser.class)
+    @SubCommand("try <ignore> <double>")
+    public void tryDouble(Sender sender, double num) {
+        sender.sendMessage("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is " + num);
     }
 
     @Override
