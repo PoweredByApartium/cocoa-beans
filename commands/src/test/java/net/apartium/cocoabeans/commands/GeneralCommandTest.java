@@ -192,6 +192,14 @@ public class GeneralCommandTest {
                 )
         );
 
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "testing a"),
+                        List.of()
+                )
+        );
+
+
     }
 
 
