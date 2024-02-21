@@ -208,7 +208,6 @@ import java.util.*;
 
 
         if (annotations == null || annotations.length == 0) {
-            System.out.println(annotations == null ? "null" : annotations.length);
             return argumentTypeHandlerMap;
         }
 

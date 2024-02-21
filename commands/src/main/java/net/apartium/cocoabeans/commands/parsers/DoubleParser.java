@@ -63,6 +63,7 @@ public class DoubleParser extends ArgumentParser<Double> {
 
             if (charArray[i] == '.' && !hasDot) {
                 hasDot = true;
+                onlyZero = false;
                 continue;
             }
 

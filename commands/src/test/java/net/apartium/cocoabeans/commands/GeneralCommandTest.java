@@ -238,6 +238,27 @@ public class GeneralCommandTest {
                         List.of()
                 )
         );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.253.1"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed ++0.52"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.3"),
+                        List.of("0.30", "0.31" ,"0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
+                )
+        );
     }
 
 

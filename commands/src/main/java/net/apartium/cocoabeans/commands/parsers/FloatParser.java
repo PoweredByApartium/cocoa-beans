@@ -64,6 +64,7 @@ public class FloatParser extends ArgumentParser<Float> {
 
             if (charArray[i] == '.' && !hasDot) {
                 hasDot = true;
+                onlyZero = false;
                 continue;
             }
 
