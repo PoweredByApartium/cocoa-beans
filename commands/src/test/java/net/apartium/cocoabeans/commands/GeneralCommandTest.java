@@ -48,6 +48,17 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void aliasTest() {
+        testCommandManager = new TestCommandManager();
+        testCommandManager.addCommand(new SecondCommandForTest());
+
+        evaluate("test", "");
+        assertEquals(List.of("§cYou don't have access to use this command!"), sender.getMessages());
+        evaluate("t", "");
+        assertEquals(List.of("§cYou don't have access to use this command!"), sender.getMessages());
+    }
+
+    @Test
     void sample() {
         evaluate("test", "1");
         assertEquals(List.of("gotAnInt(Sender sender, int num) I got 1"), sender.getMessages());
