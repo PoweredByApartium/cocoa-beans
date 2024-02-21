@@ -15,9 +15,8 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class IntRangeParserFactory implements ParserFactory {
 
@@ -104,7 +103,30 @@ public class IntRangeParserFactory implements ParserFactory {
 
         @Override
         public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-            return Optional.empty();
+            List<String> args = processingContext.args();
+            int index = processingContext.index();
+
+            OptionalInt optionalInt = args.get(index).isEmpty() ? OptionalInt.of(0) : StringHelpers.parseInteger(args.get(index));
+            if (optionalInt.isEmpty())
+                return Optional.empty();
+
+            int targetNum = optionalInt.getAsInt();
+
+            if (targetNum >= to)
+                return Optional.empty();
+
+            Set<String> allPossiblesOptions = new HashSet<>();
+            for (int i = Math.max(targetNum * 10, from); i < to; i += step) {
+                allPossiblesOptions.add(i + "");
+            }
+
+
+            return Optional.of(new TabCompletionResult(
+                    allPossiblesOptions.stream()
+                            .filter(s -> s.startsWith(args.get(index).isEmpty() ? "" : targetNum + ""))
+                            .collect(Collectors.toSet()),
+                    index + 1
+            ));
         }
 
     }

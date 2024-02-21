@@ -163,6 +163,35 @@ public class GeneralCommandTest {
                                 .toList()
                 )
         );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"testing2", ""}),
+                        List.of("0", "2", "4", "6", "8")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"testing", ""}),
+                        List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "testing 10"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "testing -4"),
+                        List.of()
+                )
+        );
+
     }
 
 
@@ -173,6 +202,10 @@ public class GeneralCommandTest {
 
     List<String> evaluateTabCompletion(String label, String args) {
         return testCommandManager.handleTabComplete(sender, label, args.split("\\s+"));
+    }
+
+    List<String> evaluateTabCompletion(String label, String[] args) {
+        return testCommandManager.handleTabComplete(sender, label, args);
     }
 
 }

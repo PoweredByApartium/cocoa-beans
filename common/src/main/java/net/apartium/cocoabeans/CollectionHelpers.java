@@ -106,10 +106,6 @@ public class CollectionHelpers {
         if (list0 == list1)
             return true; // quick check
 
-        System.out.println(list0);
-        System.out.println(list1);
-        System.out.println();
-
         if (list0.size() != list1.size())
             return false;
 

@@ -81,6 +81,7 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("setSpeed(Sender sender, float speed) speed has been set to " + speed);
     }
 
+
     @Override
     public boolean fallbackHandle(Sender sender, String label, String[] args) {
         sender.sendMessage("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [" + String.join(", ", args) + "]");
