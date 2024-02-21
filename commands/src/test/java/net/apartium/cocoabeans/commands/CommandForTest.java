@@ -81,6 +81,10 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("setSpeed(Sender sender, float speed) speed has been set to " + speed);
     }
 
+    @SubCommand("config get <string>")
+    public void getConfigValue(Sender sender, String s) {
+        sender.sendMessage("getConfigValue(Sender sender, String s) " + s + " = true");
+    }
 
     @Override
     public boolean fallbackHandle(Sender sender, String label, String[] args) {

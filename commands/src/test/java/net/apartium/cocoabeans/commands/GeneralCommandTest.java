@@ -105,6 +105,18 @@ public class GeneralCommandTest {
         assertEquals(List.of("test2Range(Sender sender, int num) You chosen 6"), sender.getMessages());
     }
 
+    @Test
+    void stringTest() {
+        evaluate("test", "config get test");
+        assertEquals(List.of("getConfigValue(Sender sender, String s) test = true"), sender.getMessages());
+
+        evaluate("test", "config get key");
+        assertEquals(List.of("getConfigValue(Sender sender, String s) key = true"), sender.getMessages());
+
+        evaluate("test", "config get lol");
+        assertEquals(List.of("getConfigValue(Sender sender, String s) lol = true"), sender.getMessages());
+    }
+
 
     @Test
     void range2TestFail() {
@@ -130,7 +142,7 @@ public class GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set")
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set", "config")
                 )
         );
 
