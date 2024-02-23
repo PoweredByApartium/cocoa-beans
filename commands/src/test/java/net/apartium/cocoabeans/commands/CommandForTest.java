@@ -83,6 +83,11 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("setSpeed(Sender sender, float speed) speed has been set to " + speed);
     }
 
+    @SubCommand("test <long>")
+    public void testLong(Sender sender, long num) {
+        sender.sendMessage("testLong(Sender sender, long num) got " + num);
+    }
+
     @SubCommand("config get <string>")
     public void getConfigValue(Sender sender, String s) {
         sender.sendMessage("getConfigValue(Sender sender, String s) " + s + " = true");
@@ -93,6 +98,12 @@ public class CommandForTest implements CommandNode {
     public void tryDouble(Sender sender, double num) {
         sender.sendMessage("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is " + num);
     }
+
+    @SubCommand("send <strings>")
+    public void sendMessageToSender(Sender sender, String message) {
+        sender.sendMessage("sendMessageToSender(Sender sender, String message) message have been sent: " + message);
+    }
+
 
     @Override
     public boolean fallbackHandle(Sender sender, String label, String[] args) {

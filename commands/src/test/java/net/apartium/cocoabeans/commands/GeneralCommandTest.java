@@ -53,9 +53,9 @@ public class GeneralCommandTest {
         testCommandManager.addCommand(new SecondCommandForTest());
 
         evaluate("test", "");
-        assertEquals(List.of("§cYou don't have access to use this command!"), sender.getMessages());
+        assertEquals(List.of("You don't have access to use this command!"), sender.getMessages());
         evaluate("t", "");
-        assertEquals(List.of("§cYou don't have access to use this command!"), sender.getMessages());
+        assertEquals(List.of("You don't have access to use this command!"), sender.getMessages());
     }
 
     @Test
@@ -90,6 +90,21 @@ public class GeneralCommandTest {
     void archJokeFail() {
         evaluate("test", "rm -rf /* trua");
         assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [rm, -rf, /*, trua]"), sender.getMessages());
+    }
+
+    @Test
+    void longTest() {
+        evaluate("test", "test 218");
+        assertEquals(List.of("testLong(Sender sender, long num) got 218"), sender.getMessages());
+
+        evaluate("test", "test 2185");
+        assertEquals(List.of("testLong(Sender sender, long num) got 2185"), sender.getMessages());
+    }
+
+    @Test
+    void longTestFail() {
+        evaluate("test", "test 564a");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [test, 564a]"), sender.getMessages());
     }
 
     @Test
@@ -156,18 +171,49 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void stringsTest() {
+        evaluate("test", "send hey");
+        assertEquals(List.of("sendMessageToSender(Sender sender, String message) message have been sent: hey"), sender.getMessages());
+
+        evaluate("test", "send broadcast a test message");
+        assertEquals(List.of("sendMessageToSender(Sender sender, String message) message have been sent: broadcast a test message"), sender.getMessages());
+    }
+
+    @Test
     void tabCompletionTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "testing", "testing2", "set", "config", "try")
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "test", "testing", "testing2", "set", "send", "config", "try")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"send", ""}),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "send test"),
+                        List.of()
+                )
+        );
+
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"send", "wow", ""}),
+                        List.of()
                 )
         );
 
         assertTrue(
                 CollectionHelpers.equalsList(
                     evaluateTabCompletion("test", "te"),
-                    List.of("testing", "testing2")
+                    List.of("test", "testing", "testing2")
                 )
         );
 
@@ -182,6 +228,27 @@ public class GeneralCommandTest {
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", "set speed"),
                         List.of("speed")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "config get testas"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"config", "get", ""}),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"config", "get", "test", ""}),
+                        List.of()
                 )
         );
 
@@ -266,8 +333,85 @@ public class GeneralCommandTest {
 
         assertTrue(
                 CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"test", ""}),
+                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"test", "21", ""}),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"test", "712"}),
+                        List.of("7120", "7121", "7122", "7123", "7124", "7125", "7126", "7127", "7128", "7129")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", "try speed 0.3"),
                         List.of("0.30", "0.31" ,"0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.3 a"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"testing2", "2", "a"}),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"testing", "7", "a"}),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "rm -rf /* true a"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "483 a"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "rm -rf /* bla bla"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try asd"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try test 0.3"),
+                        List.of("0.30", "0.31", "0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
                 )
         );
     }

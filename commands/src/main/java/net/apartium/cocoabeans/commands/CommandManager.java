@@ -83,7 +83,7 @@ public abstract class CommandManager {
             }
 
             if (isNotMeetsRequirement) {
-                sender.sendMessage("§cYou don't have access to use this command!");
+                sender.sendMessage("You don't have access to use this command!");
                 return true;
             }
 
