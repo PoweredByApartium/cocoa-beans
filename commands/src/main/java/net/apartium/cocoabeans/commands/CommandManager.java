@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.parsers.*;
+import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -90,9 +91,15 @@ public abstract class CommandManager {
             return false;
         }
 
-        for (RegisteredCommandVariant method : context.option().getMethods()) {
+        for (RegisteredCommandVariant method : context.option().getRegisteredCommandVariants()) {
             if (invoke(context, sender, method))
                 return true;
+        }
+
+        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+            if (listener.listener().fallbackHandle(sender, commandName, args))
+                return true;
+
         }
 
         return false;
@@ -100,6 +107,15 @@ public abstract class CommandManager {
 
     private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
         List<Object> parameters = argumentMapper.map(context, sender, registeredCommandVariant);
+
+        for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
+            Object obj = parameters.get(i + 1); // first element is class instance
+            for (ArgumentRequirement argumentRequirement : registeredCommandVariant.parameters()[i].argumentRequirements()) {
+                if (!argumentRequirement.meetsRequirement(sender, context, obj))
+                    return false;
+            }
+        }
+
         Object output;
         try {
             output = registeredCommandVariant.method().invokeWithArguments(parameters);

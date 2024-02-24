@@ -83,19 +83,19 @@ class CollectionHelpersTest {
     @Test
     void equalsArray() {
         Object[] empty = new Object[0];
-        Assertions.assertTrue(CollectionHelpers.equalsList(empty, empty));
+        Assertions.assertTrue(CollectionHelpers.equalsArray(empty, empty));
         Object[] arr0 = new Object[]{"1", "2", "3"};
         Object[] arr1 = new Object[]{"1", "2", new String("3")};
-        Assertions.assertTrue(CollectionHelpers.equalsList(arr0, arr1));
-        Assertions.assertFalse(CollectionHelpers.equalsList(arr0, empty));
+        Assertions.assertTrue(CollectionHelpers.equalsArray(arr0, arr1));
+        Assertions.assertFalse(CollectionHelpers.equalsArray(arr0, empty));
 
         Integer[] intArr0 = new Integer[] {1,3,2};
         Integer[] intArr1 = new Integer[] {1,2,3};
-        Assertions.assertTrue(CollectionHelpers.equalsList(intArr0, intArr1));
+        Assertions.assertTrue(CollectionHelpers.equalsArray(intArr0, intArr1));
 
         String[] strArr0 = new String[] {"1", "2", "3"};
         String[] strArr1 = new String[] {"3", "2", "1"};
-        Assertions.assertTrue(CollectionHelpers.equalsList(strArr0, strArr1));
+        Assertions.assertTrue(CollectionHelpers.equalsArray(strArr0, strArr1));
 
     }
 }

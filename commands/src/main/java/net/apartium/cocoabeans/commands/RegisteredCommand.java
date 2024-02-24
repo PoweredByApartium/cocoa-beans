@@ -14,10 +14,7 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
-import net.apartium.cocoabeans.commands.requirements.CommandRequirementType;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.lang.annotation.Annotation;
@@ -92,9 +89,9 @@ import java.util.*;
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor);
 
             try {
-                cmdOption.getMethods().add(new RegisteredCommandVariant(
+                cmdOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
                         publicLookup.unreflect(method),
-                        method.getParameterTypes(),
+                        serializeParameters(method.getParameters()),
                         node,
                         subCommand.priority()
                 ));
@@ -146,15 +143,53 @@ import java.util.*;
         }
 
         try {
-            currentCommandOption.getMethods().add(new RegisteredCommandVariant(
+            currentCommandOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
                     publicLookup.unreflect(method),
-                    method.getParameterTypes(),
+                    serializeParameters(method.getParameters()),
                     node,
                     subCommand.priority()
             ));
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error accessing method", e);
         }
+    }
+
+    private RegisteredCommandVariant.Parameter[] serializeParameters(Parameter[] parameters) {
+        RegisteredCommandVariant.Parameter[] result = new RegisteredCommandVariant.Parameter[parameters.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new RegisteredCommandVariant.Parameter(
+                    parameters[i].getType(),
+                    serializeArgumentRequirement(parameters[i].getAnnotations())
+            );
+        }
+        return result;
+    }
+
+    private ArgumentRequirement[] serializeArgumentRequirement(Annotation[] annotations) {
+        List<ArgumentRequirement> result = new ArrayList<>();
+
+        for (Annotation annotation : annotations) {
+            ArgumentRequirementType argumentRequirementType = annotation.annotationType().getAnnotation(ArgumentRequirementType.class);
+            if (argumentRequirementType == null)
+                continue;
+
+            ArgumentRequirementFactory factory;
+            try {
+                factory = argumentRequirementType.value().getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                continue;
+            }
+
+
+            ArgumentRequirement argumentRequirement = factory.getArgumentRequirement(annotation);
+            if (argumentRequirement == null)
+                continue;
+
+            result.add(argumentRequirement);
+        }
+
+        return result.toArray(new ArgumentRequirement[0]);
     }
 
     private CommandOption createCommandOption(RequirementSet requirements, CommandBranchProcessor commandBranchProcessor) {

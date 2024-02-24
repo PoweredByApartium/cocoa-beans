@@ -10,23 +10,11 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
+@Command("evil-brother")
+public class AnotherEvilCommandTest implements CommandNode {
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Parameter;
-
-public record RegisteredCommandVariant(
-        MethodHandle method,
-        Parameter[] parameters,
-        CommandNode commandNode,
-        int priority
-) {
-
-    public record Parameter(
-            Class<?> type,
-            ArgumentRequirement[] argumentRequirements
-    ) {
-
+    @SubCommand("private")
+    private void shhhItsPrivate(Sender sender) {
+        sender.sendMessage("Hello there :)");
     }
-
 }

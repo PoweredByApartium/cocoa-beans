@@ -18,7 +18,7 @@ import java.util.Map;
 public class SimpleArgumentMapper implements ArgumentMapper {
     @Override
     public List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        Class<?>[] parameters = registeredCommandVariant.parameters();
+        RegisteredCommandVariant.Parameter[] parameters = registeredCommandVariant.parameters();
         if (parameters.length == 0)
             return List.of();
 
@@ -29,7 +29,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         Map<Class<?>, List<Object>> mapOfObjects = context.parsedArgs();
 
         for (int i = 1; i < parameters.length + 1; i++) {
-            Class<?> type = parameters[i -1];
+            Class<?> type = parameters[i -1].type();
             int index = counterMap.computeIfAbsent(type, (k) -> 0);
 
             if (Sender.class.isAssignableFrom(type)) {

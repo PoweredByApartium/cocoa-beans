@@ -45,16 +45,16 @@ public class RequirementSet implements Set<Requirement> {
         }
     }
 
-    public RequirementSet(Requirement... permissions) {
-        for (int i = 0; i < permissions.length - 1; i++) {
-            for (int j = i + 1; j < permissions.length; j++) {
-                if (permissions[i].equals(permissions[j])) {
-                    throw new RuntimeException("There's duplicated permission in the set: " + permissions[i]);
+    public RequirementSet(Requirement... requirements) {
+        for (int i = 0; i < requirements.length - 1; i++) {
+            for (int j = i + 1; j < requirements.length; j++) {
+                if (requirements[i].equals(requirements[j])) {
+                    throw new RuntimeException("There's duplicated permission in the set: " + requirements[i]);
                 }
             }
         }
 
-        this.requirements = Arrays.copyOf(permissions, permissions.length);
+        this.requirements = Arrays.copyOf(requirements, requirements.length);
     }
 
     public RequirementSet() {
@@ -72,9 +72,9 @@ public class RequirementSet implements Set<Requirement> {
     }
 
     @Override
-    public boolean contains(Object o) {
-        for (Requirement permission : requirements) {
-            if (requirements.equals(o)) return true;
+    public boolean contains(Object obj) {
+        for (Requirement requirement : requirements) {
+            if (requirement.equals(obj)) return true;
         }
 
         return false;
@@ -103,7 +103,7 @@ public class RequirementSet implements Set<Requirement> {
         if (ts.length < this.requirements.length)
             return (T[]) Arrays.copyOf(this.requirements, this.requirements.length, ts.getClass());
 
-        System.arraycopy(this.requirements, 0, ts, 0, ts.length);
+        System.arraycopy(this.requirements, 0, ts, 0, requirements.length);
         if (ts.length > requirements.length)
             ts[requirements.length] = null;
 
@@ -165,7 +165,7 @@ public class RequirementSet implements Set<Requirement> {
             return true;
 
 
-        return CollectionHelpers.equalsList(this.requirements, other.requirements);
+        return CollectionHelpers.equalsArray(this.requirements, other.requirements);
     }
 
     @Override

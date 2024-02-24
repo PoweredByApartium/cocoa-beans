@@ -11,6 +11,9 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.argument.Range;
+import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +48,18 @@ public class GeneralCommandTest {
         TestCommandManager testCommandManager = new TestCommandManager();
         assertThrows(RuntimeException.class, () -> testCommandManager.addCommand(commandForTest));
 
+    }
+
+    @Test
+    void senderMeetsRequirementTest() {
+        CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, new String[0], 0);
+        assertTrue(processingContext.senderMeetsRequirement(sender -> true));
+        assertFalse(processingContext.senderMeetsRequirement(sender -> false));
+    }
+
+    @Test
+    void sharedSecretsTest() {
+        assertEquals(SharedSecrets.LOGGER.getName(), "cocoabeans-commands");
     }
 
     @Test
@@ -164,10 +179,64 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void testingArg() {
+        evaluate("test", "testing-arg wowwww");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, wowwww]"), sender.getMessages());
+    }
+
+    @Test
+    void throwAnError() {
+        assertThrows(NullPointerException.class, () -> evaluate("test", "evil"));
+    }
+
+    @Test
+    void rangeTestArg() {
+        evaluate("test", "testing-arg 6");
+        assertEquals(List.of("testRangeArg(Sender sender, @Range(to = 10) double num) 6.0"), sender.getMessages());
+
+        evaluate("test", "testing-arg 3");
+        assertEquals(List.of("testRangeArg(Sender sender, @Range(to = 10) double num) 3.0"), sender.getMessages());
+
+        evaluate("test", "testing-arg 1");
+        assertEquals(List.of("testRangeArg(Sender sender, @Range(to = 10) double num) 1.0"), sender.getMessages());
+
+        evaluate("test", "testing-arg 9");
+        assertEquals(List.of("testRangeArg(Sender sender, @Range(to = 10) double num) 9.0"), sender.getMessages());
+
+        // Fails
+
+        evaluate("test", "testing-arg 2.1");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, 2.1]"), sender.getMessages());
+
+        evaluate("test", "testing-arg -1");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, -1]"), sender.getMessages());
+
+        evaluate("test", "testing-arg 9.1");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, 9.1]"), sender.getMessages());
+
+        evaluate("test", "testing-arg 10");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, 10]"), sender.getMessages());
+
+        evaluate("test", "testing-arg 2a");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing-arg, 2a]"), sender.getMessages());
+    }
+
+    @Test
     void tryTest() {
         double randomDouble = Math.random();
         evaluate("test", "try random-string " + randomDouble);
         assertEquals(List.of("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is " + randomDouble), sender.getMessages());
+    }
+
+
+    @Test
+    void yesMeow() {
+        evaluate("test", "yes meow");
+        assertEquals(List.of("yesMeow(Sender sender) ok"), sender.getMessages());
+
+        // Fail
+        evaluate("test", "yes meOw");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [yes, meOw]"), sender.getMessages());
     }
 
     @Test
@@ -184,7 +253,14 @@ public class GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "test", "testing", "testing2", "set", "send", "config", "try")
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "set", "send", "config", "try", "evil")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "0002"),
+                        List.of("00020", "00021", "00022", "00023", "00024", "00025", "00026", "00027", "00028", "00029")
                 )
         );
 
@@ -213,7 +289,7 @@ public class GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                     evaluateTabCompletion("test", "te"),
-                    List.of("test", "testing", "testing2")
+                    List.of("test", "testing", "testing-arg", "testing2")
                 )
         );
 
@@ -414,6 +490,49 @@ public class GeneralCommandTest {
                         List.of("0.30", "0.31", "0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
                 )
         );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try test 0.3 test test test"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "yes me"),
+                        List.of("meow")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "yes mE"),
+                        List.of()
+                )
+        );
+
+    }
+
+    @Test
+    void evilCommand() {
+        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new EvilCommandTest()), "Couldn't resolve net.apartium.cocoabeans.commands.EvilCommandTest#evil parser: thebotgame");
+        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new NullCommandTest()), "Static method net.apartium.cocoabeans.commands.NullCommandTest#meow is not supported");
+        testCommandManager.addCommand(new AnotherEvilCommandTest());
+        evaluate("evil-brother", "private");
+        assertEquals(List.of(), sender.getMessages());
+    }
+
+
+    @Test
+    void rangeArgumentRequirementFactoryTest() {
+        RangeArgumentRequirementFactory rangeArgumentRequirementFactory = new RangeArgumentRequirementFactory();
+
+        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement(null));
+        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement("test"));
+
+        RangeArgumentRequirementFactory.RangeImpl range = new RangeArgumentRequirementFactory.RangeImpl(0, 10, 1);
+        assertFalse(range.meetsRequirement(sender, null, null));
     }
 
 

@@ -281,7 +281,7 @@ public class LinkedList<E> implements Collection<E> {
         if (size() != collection.size())
             return false;
 
-        return CollectionHelpers.equalsList(this.toArray(), collection.toArray());
+        return CollectionHelpers.equalsArray(this.toArray(), collection.toArray());
     }
 
     @Override

@@ -10,23 +10,12 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
+@Command("/dev/null")
+public class NullCommandTest implements CommandNode {
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Parameter;
-
-public record RegisteredCommandVariant(
-        MethodHandle method,
-        Parameter[] parameters,
-        CommandNode commandNode,
-        int priority
-) {
-
-    public record Parameter(
-            Class<?> type,
-            ArgumentRequirement[] argumentRequirements
-    ) {
-
+    @SubCommand
+    public static void meow(Sender sender) {
+        sender.sendMessage("Let's go");
     }
 
 }

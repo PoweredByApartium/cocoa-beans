@@ -11,20 +11,21 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.util.*;
 
 /* package-private */ class CommandOption {
 
-    private final PriorityQueue<RegisteredCommandVariant> methods = new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
+    private final PriorityQueue<RegisteredCommandVariant> registeredCommandVariants = new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
     private final PriorityQueue<Entry<ArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new PriorityQueue<>((a, b) ->  b.key().compareTo(a.key()));
 
     public CommandContext handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
-        if (args.length == 0 && index == 0 && !methods.isEmpty())
+        if (args.length == 0 && index == 0 && !registeredCommandVariants.isEmpty())
             return new CommandContext(
                     sender,
                     this,
@@ -164,6 +165,7 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
 
+
             List<String> strings = entry.value().handleTabCompletion(registeredCommand, args, sender, newIndex);
             if (strings.isEmpty())
                 continue;
@@ -174,8 +176,8 @@ import java.util.*;
         return List.of();
     }
 
-    public PriorityQueue<RegisteredCommandVariant> getMethods() {
-        return methods;
+    public PriorityQueue<RegisteredCommandVariant> getRegisteredCommandVariants() {
+        return registeredCommandVariants;
     }
 
     public PriorityQueue<Entry<ArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {

@@ -12,7 +12,9 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
+import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
+import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
 @Command("test")
 public class CommandForTest implements CommandNode {
@@ -55,6 +57,22 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("ok(Sender sender) ok");
     }
 
+    @SubCommand(value = "yes meow", ignoreCase = false)
+    public void yesMeow(Sender sender) {
+        sender.sendMessage("yesMeow(Sender sender) ok");
+    }
+
+    @WithParser(value = StringParser.class, priority = -1)
+    @SubCommand("testing-arg <string>")
+    public void testingFailedArg(Sender sender, @Range(to = 10) String s) {
+        sender.sendMessage("testingFailedArg(Sender sender, @Range(to = 10) String s) how?");
+    }
+
+    @SubCommand("evil")
+    public void evilMethod(CommandContext context, Sender sender, double num) {
+        sender.sendMessage("evilMethod(Sender sender, double num) " + num);
+    }
+
     @WallRequirement
     @SubCommand("no-one")
     public void noOne(Sender sender) {
@@ -70,6 +88,11 @@ public class CommandForTest implements CommandNode {
     @SubCommand("testing <range>")
     public void testRange(Sender sender, int num) {
         sender.sendMessage("testRange(Sender sender, int num) You chosen " + num);
+    }
+
+    @SubCommand("testing-arg <double>")
+    public void testRangeArg(Sender sender, @Range(to = 10) double num) {
+        sender.sendMessage("testRangeArg(Sender sender, @Range(to = 10) double num) " + num);
     }
 
     @IntRangeParser(to = 10, step = 2)

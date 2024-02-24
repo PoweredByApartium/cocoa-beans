@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /* package-private */ class CommandBranchProcessor {
     /* package-private */ final LinkedList<Entry<RequirementSet, CommandOption>> objectMap = new LinkedList<>();
@@ -32,7 +33,7 @@ import java.util.List;
                 continue;
 
             if (args.length == index && args.length != 0) {
-                if (entry.value().getMethods().isEmpty())
+                if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
                 return new CommandContext(
@@ -70,7 +71,6 @@ import java.util.List;
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
-
 
             if (!entry.key().meetsRequirements(sender))
                 continue;

@@ -10,23 +10,12 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
+@Command("evil")
+public class EvilCommandTest implements CommandNode {
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Parameter;
-
-public record RegisteredCommandVariant(
-        MethodHandle method,
-        Parameter[] parameters,
-        CommandNode commandNode,
-        int priority
-) {
-
-    public record Parameter(
-            Class<?> type,
-            ArgumentRequirement[] argumentRequirements
-    ) {
-
+    @SubCommand("<thebotgame>")
+    public <Thebotgame> void evil(Sender sender, Thebotgame thebotgame) {
+        sender.sendMessage("WTF " + thebotgame);
     }
 
 }

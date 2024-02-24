@@ -76,7 +76,7 @@ public class SenderTypeRequirementFactory implements RequirementFactory {
             if (this.senderTypes.isEmpty())
                 return true;
 
-            return CollectionHelpers.equalsList(this.senderTypes.toArray(new SenderType[0]), other.senderTypes.toArray(new SenderType[0]));
+            return CollectionHelpers.equalsArray(this.senderTypes.toArray(new SenderType[0]), other.senderTypes.toArray(new SenderType[0]));
         }
     }
 }

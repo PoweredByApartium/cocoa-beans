@@ -89,7 +89,7 @@ public class CollectionHelpers {
      * @param arr1 second array
      * @return true if equals, else false
      */
-    public static boolean equalsList(Object[] arr0, Object[] arr1) {
+    public static boolean equalsArray(Object[] arr0, Object[] arr1) {
         return equalsList(
                 List.of(arr0),
                 List.of(arr1)
