@@ -32,7 +32,7 @@ import java.util.Map;
             if (!entry.key().meetsRequirements(sender))
                 continue;
 
-            if (args.length == index && args.length != 0) {
+            if (args.length == index) {
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
@@ -44,7 +44,6 @@ import java.util.Map;
                         new HashMap<>()
                 );
             }
-
 
             CommandContext result = commandOption.handle(
                     commandWrapper,

@@ -43,6 +43,12 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void noArgs() {
+        evaluate("test", "");
+        assertEquals(List.of("no args :)"), sender.getMessages());
+    }
+
+    @Test
     void errorHandlingWithNoParser() {
         CommandForTest commandForTest = new CommandForTest();
         TestCommandManager testCommandManager = new TestCommandManager();
@@ -538,7 +544,7 @@ public class GeneralCommandTest {
 
     void evaluate(String label, String args) {
         sender.getMessages().clear();
-        testCommandManager.handle(sender, label, args.split("\\s+"));
+        testCommandManager.handle(sender, label, args.isEmpty() ? new String[0] : args.split("\\s+"));
     }
 
     List<String> evaluateTabCompletion(String label, String args) {
