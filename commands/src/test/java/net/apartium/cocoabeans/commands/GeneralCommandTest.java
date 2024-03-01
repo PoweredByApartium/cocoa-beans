@@ -22,7 +22,9 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GeneralCommandTest {
+public class
+
+GeneralCommandTest {
 
     CommandForTest commandForTest;
 
@@ -54,6 +56,12 @@ public class GeneralCommandTest {
         TestCommandManager testCommandManager = new TestCommandManager();
         assertThrows(RuntimeException.class, () -> testCommandManager.addCommand(commandForTest));
 
+    }
+
+    @Test
+    void testingExample() {
+        evaluate("test", "testing example kfir 23");
+        assertEquals(List.of("testingExample(Sender sender, ExampleParser.PersonInfo personInfo) name: kfir, age: 23"), sender.getMessages());
     }
 
     @Test
@@ -255,6 +263,14 @@ public class GeneralCommandTest {
     }
 
     @Test
+    void test() {
+        assertEquals(
+                evaluateTabCompletion("test", "testing example kfir 2").stream().sorted().toList(),
+                List.of("20", "21", "22", "23", "24", "25", "26", "27", "28", "29")
+        );
+    }
+
+    @Test
     void tabCompletionTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
@@ -353,7 +369,7 @@ public class GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"testing", ""}),
-                        List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                        List.of("example", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
                 )
         );
 

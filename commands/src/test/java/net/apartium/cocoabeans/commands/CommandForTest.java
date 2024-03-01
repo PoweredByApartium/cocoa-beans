@@ -52,6 +52,12 @@ public class CommandForTest implements CommandNode {
         return false;
     }
 
+    @WithParser(ExampleParser.class)
+    @SubCommand("testing example <example>")
+    public void testingExample(Sender sender, ExampleParser.PersonInfo personInfo) {
+        sender.sendMessage("testingExample(Sender sender, ExampleParser.PersonInfo personInfo) name: " + personInfo.name() + ", age: " + personInfo.age());
+    }
+
     @SubCommand("no")
     public void ok(Sender sender) {
         sender.sendMessage("ok(Sender sender) ok");

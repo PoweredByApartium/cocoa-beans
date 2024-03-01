@@ -115,7 +115,6 @@ import java.util.*;
             }
 
             for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
-
                 if (!entry.value().haveAnyRequirementsMeet(sender))
                     continue;
 
@@ -157,14 +156,34 @@ import java.util.*;
         for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
             OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, args, index));
-            if (parse.isEmpty())
-                continue;
+            if (parse.isEmpty()) {
+                if (!entry.value().haveAnyRequirementsMeet(sender))
+                    continue;
+
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
+                if (tabCompletionResult.isEmpty())
+                    continue;
+
+                if (tabCompletionResult.get().newIndex() < args.length)
+                    continue;
+
+                return tabCompletionResult.get().result().stream().toList();
+            }
+
+            if (parse.getAsInt() <= args.length) {
+                if (entry.value().haveAnyRequirementsMeet(sender)) {
+                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
+                    if (tabCompletionResult.isPresent()) {
+                        if (tabCompletionResult.get().newIndex() >= args.length)
+                            return tabCompletionResult.get().result().stream().toList();
+                    }
+                }
+            }
 
             int newIndex = parse.getAsInt();
 
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
-
 
             List<String> strings = entry.value().handleTabCompletion(registeredCommand, args, sender, newIndex);
             if (strings.isEmpty())
