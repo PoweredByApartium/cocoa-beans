@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans;
 
 import net.apartium.cocoabeans.collect.WeightSet;
-import net.apartium.cocoabeans.structs.LinkedList;
 
 import java.util.*;
 
@@ -112,7 +111,7 @@ public class CollectionHelpers {
         if (list0.isEmpty())
             return true;
 
-        LinkedList<Integer> leftIndex = LinkedList.range(0, list0.size(), 1);
+        List<Integer> leftIndex = range(0, list0.size(), 1);
 
         forLoop: for (Object object : list0) {
             Iterator<Integer> iterator = leftIndex.iterator();
@@ -129,6 +128,29 @@ public class CollectionHelpers {
 
         return leftIndex.isEmpty();
     }
+
+    /**
+     * Construct a new instance with values consisting of specified range
+     * @param start range start
+     * @param end range end
+     * @param step amount to step each time
+     * @return a new linked list instance
+     */
+    public static List<Integer> range(int start, int end, int step) {
+        if (step == 0) throw new IllegalArgumentException("Step cannot be zero");
+        if (step < 0) throw new IllegalArgumentException("Step must be positive");
+
+        boolean startBigger = start > end;
+        if (startBigger) step = -step;
+
+        List<Integer> result = new ArrayList<>(Math.abs(end - start) / step);
+        for (int i = start; (startBigger ? i > end : i < end); i += step) {
+            result.add(i);
+        }
+
+        return result;
+    }
+
 
 
 }

@@ -12,16 +12,14 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
-import net.apartium.cocoabeans.structs.LinkedList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /* package-private */ class CommandBranchProcessor {
-    /* package-private */ final LinkedList<Entry<RequirementSet, CommandOption>> objectMap = new LinkedList<>();
+    /* package-private */ final List<Entry<RequirementSet, CommandOption>> objectMap = new ArrayList<>();
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
