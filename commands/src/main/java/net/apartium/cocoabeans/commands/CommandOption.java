@@ -79,7 +79,7 @@ import java.util.*;
 
             result.parsedArgs()
                     .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
-                    .add(parse.get().result());
+                    .add(0, parse.get().result());
 
             return result;
         }
@@ -128,6 +128,7 @@ import java.util.*;
             return result;
         }
 
+        List<String> result = new ArrayList<>();
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor != null) {
             List<String> strings = commandBranchProcessor.handleTabCompletion(
@@ -137,7 +138,7 @@ import java.util.*;
                     index + 1
             );
             if (!strings.isEmpty())
-                return strings;
+                result.addAll(strings);
         }
 
         commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
@@ -150,7 +151,7 @@ import java.util.*;
             );
 
             if (!strings.isEmpty())
-                return strings;
+                result.addAll(strings);
         }
 
         for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
@@ -167,15 +168,18 @@ import java.util.*;
                 if (tabCompletionResult.get().newIndex() < args.length)
                     continue;
 
-                return tabCompletionResult.get().result().stream().toList();
+                result.addAll(tabCompletionResult.get().result());
+                continue;
             }
 
             if (parse.getAsInt() <= args.length) {
                 if (entry.value().haveAnyRequirementsMeet(sender)) {
                     Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
                     if (tabCompletionResult.isPresent()) {
-                        if (tabCompletionResult.get().newIndex() >= args.length)
-                            return tabCompletionResult.get().result().stream().toList();
+                        if (tabCompletionResult.get().newIndex() >= args.length) {
+                            result.addAll(tabCompletionResult.get().result().stream().toList());
+                            continue;
+                        }
                     }
                 }
             }
@@ -189,10 +193,10 @@ import java.util.*;
             if (strings.isEmpty())
                 continue;
 
-            return strings;
+            result.addAll(strings);
         }
 
-        return List.of();
+        return result;
     }
 
     public PriorityQueue<RegisteredCommandVariant> getRegisteredCommandVariants() {

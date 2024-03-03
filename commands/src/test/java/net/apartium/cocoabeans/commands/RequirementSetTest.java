@@ -66,6 +66,14 @@ public class RequirementSetTest {
     }
 
     @Test
+    public void isEmptyTest() {
+        RequirementSet requirements = new RequirementSet();
+        assertTrue(requirements.isEmpty());
+        requirements = new RequirementSet(new AnotherRequirement());
+        assertFalse(requirements.isEmpty());
+    }
+
+    @Test
     public void addTest() {
         RequirementSet requirements = new RequirementSet();
         assertFalse(requirements.add(new AnotherRequirement()));

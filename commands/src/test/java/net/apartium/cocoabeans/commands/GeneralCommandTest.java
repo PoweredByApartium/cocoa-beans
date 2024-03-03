@@ -161,6 +161,12 @@ GeneralCommandTest {
     }
 
     @Test
+    void testing3() {
+        evaluate("test", "testing3");
+        assertEquals(List.of("testing3(TestSender sender) cool"), sender.getMessages());
+    }
+
+    @Test
     void stringTest() {
         evaluate("test", "config get test");
         assertEquals(List.of("getConfigValue(Sender sender, String s) test = true"), sender.getMessages());
@@ -177,6 +183,14 @@ GeneralCommandTest {
     void range2TestFail() {
         evaluate("test", "testing2 9");
         assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing2, 9]"), sender.getMessages());
+    }
+
+    @Test
+    void setWalkSpeedAndFlightSpeed() {
+        float randomWalkSpeed = (float) Math.random();
+        float randomFlightSpeed = (float) Math.random();
+        evaluate("test", "set speed " + randomWalkSpeed + " and flyspeed " + randomFlightSpeed);
+        assertEquals(List.of("setSpeedAndFlySpeed(Sender sender, float walkingSpeed, float flyingSpeed) walk speed has been set to " + randomWalkSpeed + " while flying speed has been set to " + randomFlightSpeed), sender.getMessages());
     }
 
     @Test
@@ -275,7 +289,7 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "set", "send", "config", "try", "evil")
+                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil")
                 )
         );
 
@@ -311,7 +325,14 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                     evaluateTabCompletion("test", "te"),
-                    List.of("test", "testing", "testing-arg", "testing2")
+                    List.of("test", "testing", "testing-arg", "testing2", "testing3")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"testing3", ""}),
+                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
                 )
         );
 

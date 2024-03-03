@@ -35,6 +35,17 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testDiffArg(Sender sender) diff arg has been accepted");
     }
 
+
+    @SubCommand("testing3 <int>")
+    public void testingInteger(Sender sender, int num) {
+        sender.sendMessage("testingInteger(Sender sender, int num) " + num);
+    }
+
+    @SubCommand("testing3 <boolean>")
+    public void testingBoolean(Sender sender, boolean b) {
+        sender.sendMessage("testingBoolean(Sender sender, boolean b) " + b);
+    }
+
     @SubCommand("one two")
     public void twoArg(Sender sender) {
         sender.sendMessage("twoArg(Sender sender) two args has been accepted");
@@ -107,9 +118,19 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("test2Range(Sender sender, int num) You chosen " + num);
     }
 
+    @SubCommand("testing3")
+    public void testing3(TestSender sender) {
+        sender.sendMessage("testing3(TestSender sender) cool");
+    }
+
     @SubCommand("set speed <float>")
     public void setSpeed(Sender sender, float speed) {
         sender.sendMessage("setSpeed(Sender sender, float speed) speed has been set to " + speed);
+    }
+
+    @SubCommand("set speed <float> and flyspeed <float>")
+    public void setSpeedAndFlySpeed(Sender sender, float walkingSpeed, float flyingSpeed) {
+        sender.sendMessage("setSpeedAndFlySpeed(Sender sender, float walkingSpeed, float flyingSpeed) walk speed has been set to " + walkingSpeed + " while flying speed has been set to " + flyingSpeed);
     }
 
     @SubCommand("test <long>")
