@@ -47,24 +47,37 @@ public class LongParser extends ArgumentParser<Long> {
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
-        int startIndex = processingContext.index();
+        int index = processingContext.index();
 
-        boolean onlyZero = true;
-        char[] charArray = args.get(startIndex).toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
-            if (i == 0 && (charArray[0] == '-' || charArray[0] == '+')) continue;
-            if (charArray[i] >= '0' && charArray[i] <= '9') {
-                if (charArray[i] != '0') onlyZero = false;
-                continue;
-            }
+        if (args.get(index).isEmpty())
+            return Optional.of(new TabCompletionResult(
+                    Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "-"),
+                    index + 1
+            ));
+
+        OptionalLong optionalLong = StringHelpers.parseLong(args.get(index));
+        if (optionalLong.isEmpty())
             return Optional.empty();
-        }
+
+        long asLong = optionalLong.getAsLong();
+        long asLongByTen = asLong * 10;
+
+        boolean isPositive = asLong >= 0;
+
+        if (isPositive ? (asLong > asLongByTen) : (asLong < asLongByTen))
+            return Optional.empty();
 
         Set<String> result = new HashSet<>();
-        for (int i = args.get(startIndex).isEmpty() || onlyZero ? 1 : 0; i < 10; i++) result.add(args.get(startIndex) + i);
+        for (int i = asLong == 0 ? 1 : 0; i < 10; i++) {
+            long num = (asLongByTen + i);
+            if (isPositive ? (asLong > num) : (asLong < num))
+                break;
+            result.add(args.get(index) + i);
+        }
+
         return Optional.of(new TabCompletionResult(
                 result,
-                startIndex + 1
+                index + 1
         ));
     }
 }

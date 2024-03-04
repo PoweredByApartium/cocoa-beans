@@ -289,7 +289,7 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil")
+                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil")
                 )
         );
 
@@ -332,7 +332,7 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"testing3", ""}),
-                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
+                        List.of("-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
                 )
         );
 
@@ -453,7 +453,7 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"test", ""}),
-                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9")
+                        List.of("-", "1", "2", "3", "4", "5", "6", "7", "8", "9")
                 )
         );
 
