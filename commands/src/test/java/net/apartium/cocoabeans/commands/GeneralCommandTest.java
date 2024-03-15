@@ -571,8 +571,8 @@ GeneralCommandTest {
     void rangeArgumentRequirementFactoryTest() {
         RangeArgumentRequirementFactory rangeArgumentRequirementFactory = new RangeArgumentRequirementFactory();
 
-        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement(null));
-        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement("test"));
+        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement(null, null));
+        assertNull(rangeArgumentRequirementFactory.getArgumentRequirement(null, "test"));
 
         RangeArgumentRequirementFactory.RangeImpl range = new RangeArgumentRequirementFactory.RangeImpl(0, 10, 1);
         assertFalse(range.meetsRequirement(sender, null, null));

@@ -40,6 +40,7 @@ public abstract class CommandManager {
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
+
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     public CommandManager(ArgumentMapper argumentMapper) {

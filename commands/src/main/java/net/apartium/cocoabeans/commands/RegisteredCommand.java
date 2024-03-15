@@ -38,11 +38,10 @@ import java.util.*;
         commandBranchProcessor = new CommandBranchProcessor(commandManager);
     }
 
-
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
-        RequirementSet requirementSet = createRequirementSet(clazz.getAnnotations());
+        RequirementSet requirementSet = createRequirementSet(node, clazz.getAnnotations());
 
         Method fallbackHandle;
         try {
@@ -55,13 +54,13 @@ import java.util.*;
                 node,
                 new RequirementSet(
                         requirementSet,
-                        createRequirementSet(fallbackHandle.getAnnotations())
+                        createRequirementSet(node, fallbackHandle.getAnnotations())
                 ))
         );
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>(commandManager.argumentTypeHandlerMap);
 
         // Add class parsers
-        argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(clazz.getAnnotations()));
+        argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, clazz.getAnnotations()));
 
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
 
@@ -88,9 +87,9 @@ import java.util.*;
 
 
         Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(argumentTypeHandlerMap);
-        methodArgumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(method.getAnnotations()));
+        methodArgumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, method.getAnnotations()));
 
-        RequirementSet methodRequirements = new RequirementSet(createRequirementSet(method.getAnnotations()), requirementSet);
+        RequirementSet methodRequirements = new RequirementSet(createRequirementSet(node, method.getAnnotations()), requirementSet);
 
 
         String[] split = subCommand.value().split("\\s+");
@@ -100,7 +99,7 @@ import java.util.*;
             try {
                 cmdOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
                         publicLookup.unreflect(method),
-                        serializeParameters(method.getParameters()),
+                        serializeParameters(node, method.getParameters()),
                         node,
                         subCommand.priority()
                 ));
@@ -154,7 +153,7 @@ import java.util.*;
         try {
             currentCommandOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
                     publicLookup.unreflect(method),
-                    serializeParameters(method.getParameters()),
+                    serializeParameters(node, method.getParameters()),
                     node,
                     subCommand.priority()
             ));
@@ -163,18 +162,18 @@ import java.util.*;
         }
     }
 
-    private RegisteredCommandVariant.Parameter[] serializeParameters(Parameter[] parameters) {
+    private RegisteredCommandVariant.Parameter[] serializeParameters(CommandNode commandNode, Parameter[] parameters) {
         RegisteredCommandVariant.Parameter[] result = new RegisteredCommandVariant.Parameter[parameters.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = new RegisteredCommandVariant.Parameter(
                     parameters[i].getType(),
-                    serializeArgumentRequirement(parameters[i].getAnnotations())
+                    serializeArgumentRequirement(commandNode, parameters[i].getAnnotations())
             );
         }
         return result;
     }
 
-    private ArgumentRequirement[] serializeArgumentRequirement(Annotation[] annotations) {
+    private ArgumentRequirement[] serializeArgumentRequirement(CommandNode commandNode, Annotation[] annotations) {
         List<ArgumentRequirement> result = new ArrayList<>();
 
         for (Annotation annotation : annotations) {
@@ -193,7 +192,7 @@ import java.util.*;
             if (factory == null)
                 continue;
 
-            ArgumentRequirement argumentRequirement = factory.getArgumentRequirement(annotation);
+            ArgumentRequirement argumentRequirement = factory.getArgumentRequirement(commandNode, annotation);
             if (argumentRequirement == null)
                 continue;
 
@@ -222,7 +221,7 @@ import java.util.*;
     }
 
 
-    private RequirementSet createRequirementSet(Annotation[] annotations) {
+    private RequirementSet createRequirementSet(CommandNode commandNode, Annotation[] annotations) {
         Set<Requirement> requirements = new HashSet<>();
 
         for (Annotation annotation : annotations) {
@@ -241,7 +240,7 @@ import java.util.*;
             if (requirementFactory == null)
                 continue;
 
-            Requirement requirement = requirementFactory.getRequirement(annotation);
+            Requirement requirement = requirementFactory.getRequirement(commandNode, annotation);
             if (requirement == null)
                 continue;
             requirements.add(requirement);
@@ -250,7 +249,7 @@ import java.util.*;
         return new RequirementSet(requirements);
     }
 
-    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(Annotation[] annotations) {
+    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
 
@@ -288,7 +287,7 @@ import java.util.*;
                 continue;
 
 
-            ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(annotation);
+            ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(commandNode, annotation);
             if (argumentParser == null)
                 continue;
 

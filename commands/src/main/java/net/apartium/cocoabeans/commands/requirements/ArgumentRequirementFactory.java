@@ -10,11 +10,12 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.Nullable;
 
 public interface ArgumentRequirementFactory {
 
     @Nullable
-    ArgumentRequirement getArgumentRequirement(Object obj);
+    ArgumentRequirement getArgumentRequirement(CommandNode commandNode, Object obj);
 
 }

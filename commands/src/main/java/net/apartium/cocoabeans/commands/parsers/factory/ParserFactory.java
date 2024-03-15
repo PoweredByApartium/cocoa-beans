@@ -10,12 +10,13 @@
 
 package net.apartium.cocoabeans.commands.parsers.factory;
 
+import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.Nullable;
 
 public interface ParserFactory {
 
     @Nullable
-    ArgumentParser<?> getArgumentParser(Object obj);
+    ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object obj);
 
 }
