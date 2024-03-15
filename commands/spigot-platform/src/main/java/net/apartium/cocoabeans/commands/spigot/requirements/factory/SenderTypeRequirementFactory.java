@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.Command;
+import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
@@ -28,7 +30,7 @@ public class SenderTypeRequirementFactory implements RequirementFactory {
 
     @Nullable
     @Override
-    public Requirement getRequirement(Object obj) {
+    public Requirement getRequirement(CommandNode node, Object obj) {
         if (!(obj instanceof SenderTypeRequirement senderTypePermission))
             return null;
 
