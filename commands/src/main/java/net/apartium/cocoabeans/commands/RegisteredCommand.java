@@ -24,13 +24,22 @@ import java.util.*;
 
 /*package-private*/ class RegisteredCommand {
 
-
     public record RegisteredCommandNode(CommandNode listener, RequirementSet requirements) {}
 
-    private final List<RegisteredCommandNode> commands = new ArrayList<>();
-    private final CommandBranchProcessor commandBranchProcessor = new CommandBranchProcessor();
+    private final CommandManager commandManager;
 
-    public void addNode(CommandManager commandManager, CommandNode node) {
+    private final List<RegisteredCommandNode> commands = new ArrayList<>();
+    private final CommandBranchProcessor commandBranchProcessor;
+
+
+    RegisteredCommand(CommandManager commandManager) {
+        this.commandManager = commandManager;
+
+        commandBranchProcessor = new CommandBranchProcessor(commandManager);
+    }
+
+
+    public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
         RequirementSet requirementSet = createRequirementSet(clazz.getAnnotations());
@@ -46,7 +55,7 @@ import java.util.*;
                 node,
                 new RequirementSet(
                         requirementSet,
-                        createRequirementSet(fallbackHandle)
+                        createRequirementSet(fallbackHandle.getAnnotations())
                 ))
         );
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>(commandManager.argumentTypeHandlerMap);
@@ -120,7 +129,7 @@ import java.util.*;
                             .orElse(null);
 
                     if (commandBranchProcessor == null) {
-                        commandBranchProcessor = new CommandBranchProcessor();
+                        commandBranchProcessor = new CommandBranchProcessor(commandManager);
                         currentCommandOption.getArgumentTypeHandlerMap().add(new Entry<>(
                                 typeParser,
                                 commandBranchProcessor
@@ -138,7 +147,7 @@ import java.util.*;
                     ? currentCommandOption.getKeywordIgnoreCaseMap()
                     : currentCommandOption.getKeywordMap();
 
-            CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(subCommand.ignoreCase() ? cmd.toLowerCase() : cmd, key -> new CommandBranchProcessor());
+            CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(subCommand.ignoreCase() ? cmd.toLowerCase() : cmd, key -> new CommandBranchProcessor(commandManager));
             currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
         }
 
@@ -173,14 +182,16 @@ import java.util.*;
             if (argumentRequirementType == null)
                 continue;
 
-            ArgumentRequirementFactory factory;
-            try {
-                factory = argumentRequirementType.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                continue;
-            }
+            ArgumentRequirementFactory factory = commandManager.argumentRequirementFactories.computeIfAbsent(argumentRequirementType.value(), (clazz) -> {
+                try {
+                    return argumentRequirementType.value().getConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    return null;
+                }
+            });
 
+            if (factory == null)
+                continue;
 
             ArgumentRequirement argumentRequirement = factory.getArgumentRequirement(annotation);
             if (argumentRequirement == null)
@@ -200,7 +211,7 @@ import java.util.*;
                 .orElse(null);
 
         if (cmdOption == null) {
-            cmdOption = new CommandOption();
+            cmdOption = new CommandOption(commandManager);
             commandBranchProcessor.objectMap.add(new Entry<>(
                     requirements,
                     cmdOption
@@ -210,11 +221,8 @@ import java.util.*;
         return cmdOption;
     }
 
-    private static RequirementSet createRequirementSet(AccessibleObject accessibleObject) {
-        return createRequirementSet(accessibleObject.getAnnotations());
-    }
 
-    private static RequirementSet createRequirementSet(Annotation[] annotations) {
+    private RequirementSet createRequirementSet(Annotation[] annotations) {
         Set<Requirement> requirements = new HashSet<>();
 
         for (Annotation annotation : annotations) {
@@ -222,12 +230,16 @@ import java.util.*;
             if (commandRequirementType == null)
                 continue;
 
-            RequirementFactory requirementFactory;
-            try {
-                requirementFactory = commandRequirementType.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
+                try {
+                    return commandRequirementType.value().getConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    return null;
+                }
+            });
+
+            if (requirementFactory == null)
                 continue;
-            }
 
             Requirement requirement = requirementFactory.getRequirement(annotation);
             if (requirement == null)
@@ -238,7 +250,7 @@ import java.util.*;
         return new RequirementSet(requirements);
     }
 
-    private static Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(Annotation[] annotations) {
+    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(Annotation[] annotations) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
 
@@ -264,12 +276,17 @@ import java.util.*;
             if (withParserFactory == null)
                 continue;
 
-            ParserFactory parserFactory;
-            try {
-                parserFactory = withParserFactory.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(withParserFactory.value(), (clazz) -> {
+                try {
+                    return withParserFactory.value().getConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    return null;
+                }
+            });
+
+            if (parserFactory == null)
                 continue;
-            }
+
 
             ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(annotation);
             if (argumentParser == null)

@@ -12,7 +12,10 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.parsers.*;
+import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
+import net.apartium.cocoabeans.commands.requirements.ArgumentRequirementFactory;
+import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -33,6 +36,10 @@ public abstract class CommandManager {
 
     private final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
+
+    /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
+    /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
+    /* package-private */ final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     public CommandManager(ArgumentMapper argumentMapper) {
@@ -140,12 +147,12 @@ public abstract class CommandManager {
         if (handler == null)  return;
 
 
-        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand());
-        registeredCommand.addNode(this, commandNode);
+        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
+        registeredCommand.addNode(commandNode);
 
         for (String alias : handler.aliases()) {
-            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand())
-                    .addNode(this, commandNode);
+            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
+                    .addNode(commandNode);
         }
 
         addCommand(commandNode, handler);

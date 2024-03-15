@@ -18,11 +18,17 @@ import java.util.*;
 
 /* package-private */ class CommandOption {
 
+    private final CommandManager commandManager;
+
     private final PriorityQueue<RegisteredCommandVariant> registeredCommandVariants = new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
     private final PriorityQueue<Entry<ArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new PriorityQueue<>((a, b) ->  b.key().compareTo(a.key()));
+
+    CommandOption(CommandManager commandManager) {
+        this.commandManager = commandManager;
+    }
 
     public CommandContext handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length == 0 && index == 0 && !registeredCommandVariants.isEmpty())

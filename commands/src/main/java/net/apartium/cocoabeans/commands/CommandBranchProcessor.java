@@ -19,7 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 
 /* package-private */ class CommandBranchProcessor {
+
+    private final CommandManager commandManager;
+
     /* package-private */ final List<Entry<RequirementSet, CommandOption>> objectMap = new ArrayList<>();
+
+    CommandBranchProcessor(CommandManager commandManager) {
+        this.commandManager = commandManager;
+    }
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
