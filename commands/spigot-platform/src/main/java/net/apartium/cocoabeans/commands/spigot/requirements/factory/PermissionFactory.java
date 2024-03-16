@@ -15,21 +15,21 @@ import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
 import net.apartium.cocoabeans.commands.spigot.SpigotSender;
-import net.apartium.cocoabeans.commands.spigot.requirements.RequiredPermissionNode;
+import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.jetbrains.annotations.Nullable;
 
-public class RequirePermissionFactory implements RequirementFactory {
+public class PermissionFactory implements RequirementFactory {
 
     @Nullable
     @Override
     public Requirement getRequirement(CommandNode node, Object obj) {
-        if (!(obj instanceof RequiredPermissionNode requiredPermissionNode))
+        if (!(obj instanceof Permission permission))
             return null;
 
-        return new RequirePermissionImpl(requiredPermissionNode.value());
+        return new PermissionImpl(permission.value());
     }
 
-    private record RequirePermissionImpl(String permission) implements Requirement {
+    private record PermissionImpl(String permission) implements Requirement {
 
         @Override
         public boolean meetsRequirement(Sender sender) {

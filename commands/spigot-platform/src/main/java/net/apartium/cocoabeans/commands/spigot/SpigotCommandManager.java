@@ -18,12 +18,14 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.MaterialParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.OfflinePlayerParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.PlayerParser;
+import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class SpigotCommandManager extends CommandManager {
@@ -70,7 +72,8 @@ public class SpigotCommandManager extends CommandManager {
             }
         };
 
-        // TODO add basic permission check so command will not show
+        Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class))
+                .map(Permission::value).ifPresent(cmd::setPermission);
 
         Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
     }

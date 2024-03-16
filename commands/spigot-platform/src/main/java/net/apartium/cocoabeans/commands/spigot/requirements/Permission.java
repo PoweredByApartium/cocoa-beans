@@ -11,7 +11,7 @@
 package net.apartium.cocoabeans.commands.spigot.requirements;
 
 import net.apartium.cocoabeans.commands.requirements.CommandRequirementType;
-import net.apartium.cocoabeans.commands.spigot.requirements.factory.RequirePermissionFactory;
+import net.apartium.cocoabeans.commands.spigot.requirements.factory.PermissionFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@CommandRequirementType(RequirePermissionFactory.class)
-public @interface RequiredPermissionNode {
+@CommandRequirementType(PermissionFactory.class)
+public @interface Permission {
 
     /**
      * MinecraftPermission will compute permission like that CommandSender#hasPermision
