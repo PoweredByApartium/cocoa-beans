@@ -16,7 +16,7 @@ import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
-import net.apartium.cocoabeans.commands.spigot.requirements.SenderTypeRequirement;
+import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,36 +24,36 @@ import org.bukkit.entity.Player;
 public class TestCommand implements CommandNode {
 
     @SubCommand
-    @SenderTypeRequirement(SenderType.PLAYER)
+    @SenderLimit(SenderType.PLAYER)
     public void sayHeyToPlayer(CommandSender sender) {
         sender.sendMessage("Hey player");
     }
 
     @SubCommand
-    @SenderTypeRequirement(SenderType.CONSOLE)
+    @SenderLimit(SenderType.CONSOLE)
     public void sayHeyToConsole(CommandSender sender) {
         sender.sendMessage("Hey Console");
     }
 
     @SubCommand
-    @SenderTypeRequirement(SenderType.BLOCK)
+    @SenderLimit(SenderType.BLOCK)
     public void sayHeyToBlock(CommandSender sender) {
         sender.sendMessage("Hey Block");
     }
 
-    @SenderTypeRequirement(SenderType.PLAYER)
+    @SenderLimit(SenderType.PLAYER)
     @SubCommand(value = "0")
     public void sayZeroToPlayer(CommandSender sender) {
         sender.sendMessage("player go back to 0 when leave");
     }
 
-    @SenderTypeRequirement(value = SenderType.PLAYER, invert = true)
+    @SenderLimit(value = SenderType.PLAYER, invert = true)
     @SubCommand(value = "0")
     public void sayZeroGlobal(CommandSender sender) {
         sender.sendMessage("that is 0");
     }
 
-    @SenderTypeRequirement(SenderType.PLAYER)
+    @SenderLimit(SenderType.PLAYER)
     @SubCommand(value = "ping")
     @SubCommand(value = "ping <ignore> <strings>")
     public void selfPingCheck(Player player) {

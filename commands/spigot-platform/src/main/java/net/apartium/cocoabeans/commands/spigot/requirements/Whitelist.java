@@ -10,9 +10,9 @@
 
 package net.apartium.cocoabeans.commands.spigot.requirements;
 
+
 import net.apartium.cocoabeans.commands.requirements.CommandRequirementType;
-import net.apartium.cocoabeans.commands.spigot.SenderType;
-import net.apartium.cocoabeans.commands.spigot.requirements.factory.SenderTypeRequirementFactory;
+import net.apartium.cocoabeans.commands.spigot.requirements.factory.WhitelistRequirementFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,10 +21,11 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@CommandRequirementType(SenderTypeRequirementFactory.class)
-public @interface SenderTypeRequirement {
+@CommandRequirementType(WhitelistRequirementFactory.class)
+public @interface Whitelist {
 
-    SenderType[] value();
+    String[] value();
+    boolean consoleBypass() default true;
     boolean invert() default false;
 
 }

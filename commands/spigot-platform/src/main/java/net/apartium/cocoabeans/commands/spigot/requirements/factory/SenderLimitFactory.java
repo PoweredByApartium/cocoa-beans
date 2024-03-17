@@ -11,13 +11,12 @@
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
-import net.apartium.cocoabeans.commands.spigot.requirements.SenderTypeRequirement;
+import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -26,23 +25,23 @@ import java.util.EnumSet;
 /**
  * Requires senders running a command / sub command to be of a certain type, for example players / console only
  */
-public class SenderTypeRequirementFactory implements RequirementFactory {
+public class SenderLimitFactory implements RequirementFactory {
 
     @Nullable
     @Override
     public Requirement getRequirement(CommandNode node, Object obj) {
-        if (!(obj instanceof SenderTypeRequirement senderTypePermission))
+        if (!(obj instanceof SenderLimit senderLimit))
             return null;
 
-        return new SenderTypeRequirementImpl(senderTypePermission.value(), senderTypePermission.invert());
+        return new SenderLimitImpl(senderLimit.value(), senderLimit.invert());
     }
 
-    private static class SenderTypeRequirementImpl implements Requirement {
+    private static class SenderLimitImpl implements Requirement {
 
         private final EnumSet<SenderType> senderTypes;
         private final boolean invert;
 
-        public SenderTypeRequirementImpl(SenderType[] senderTypes, boolean invert) {
+        public SenderLimitImpl(SenderType[] senderTypes, boolean invert) {
             this.senderTypes = EnumSet.copyOf(Arrays.asList(senderTypes));
             this.invert = invert;
         }
@@ -55,7 +54,7 @@ public class SenderTypeRequirementFactory implements RequirementFactory {
 
         @Override
         public String toString() {
-            return "SenderTypeReq: [" + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "]";
+            return "SenderLimit: [" + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "]";
         }
 
         @Override
@@ -66,7 +65,7 @@ public class SenderTypeRequirementFactory implements RequirementFactory {
             if (obj == this)
                 return true;
 
-            if (!(obj instanceof SenderTypeRequirementImpl other))
+            if (!(obj instanceof SenderLimitImpl other))
                 return false;
 
             if (this.senderTypes.size() != other.senderTypes.size())

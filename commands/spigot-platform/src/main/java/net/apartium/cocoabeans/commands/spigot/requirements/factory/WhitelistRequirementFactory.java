@@ -14,7 +14,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
-import net.apartium.cocoabeans.commands.spigot.requirements.WhitelistedSenders;
+import net.apartium.cocoabeans.commands.spigot.requirements.Whitelist;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -32,14 +32,15 @@ public class WhitelistRequirementFactory implements RequirementFactory {
     @Nullable
     @Override
     public Requirement getRequirement(CommandNode node, Object obj) {
-        if (!(obj instanceof WhitelistedSenders whitelist))
+        if (!(obj instanceof Whitelist whitelist))
             return null;
 
         return new WhitelistRequirementImpl(
                 Arrays.stream(whitelist.value())
                         .map(UUID::fromString)
                         .collect(Collectors.toSet()),
-                whitelist.consoleBypass()
+                whitelist.consoleBypass(),
+                whitelist.invert()
         );
     }
 
@@ -47,22 +48,24 @@ public class WhitelistRequirementFactory implements RequirementFactory {
 
         private final Set<UUID> uuids;
         private final boolean consoleBypass;
+        private final boolean invert;
 
-        public WhitelistRequirementImpl(Set<UUID> uuids, boolean consoleBypass) {
+        public WhitelistRequirementImpl(Set<UUID> uuids, boolean consoleBypass, boolean invert) {
             this.uuids = uuids;
             this.consoleBypass = consoleBypass;
+            this.invert = invert;
         }
 
         @Override
         public boolean meetsRequirement(Sender sender) {
             Object senderObj = sender.getSender();
             if (senderObj == null)
-                return false;
+                return invert;
 
             if (!(senderObj instanceof Player player))
-                return consoleBypass && senderObj instanceof ConsoleCommandSender;
+                return (consoleBypass && senderObj instanceof ConsoleCommandSender) != invert;
 
-            return uuids.contains(player.getUniqueId());
+            return uuids.contains(player.getUniqueId()) != invert;
         }
     }
 }
