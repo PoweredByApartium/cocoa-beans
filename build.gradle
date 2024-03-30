@@ -25,7 +25,7 @@ allprojects {
             if (project.findProperty("apartium.nexus.username") != null) {
                 maven {
                     name = "ApartiumMaven"
-                    url = "https://mvn.apartiumservices.com/repository/apartium-releases"
+                    url = "https://nexus.voigon.dev/repository/apartium-releases"
                     credentials {
                         username = project.findProperty("apartium.nexus.username")
                         password = project.findProperty("apartium.nexus.password")
