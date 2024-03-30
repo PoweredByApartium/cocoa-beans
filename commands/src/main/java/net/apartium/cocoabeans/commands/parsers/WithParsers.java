@@ -24,6 +24,7 @@ public @interface WithParsers {
 
     /**
      * @see WithParser#value()
+     * @return the parsers to register
      */
     WithParser[] value();
 
