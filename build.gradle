@@ -4,6 +4,7 @@ plugins {
 }
 
 def snapshot = Boolean.getBoolean("apartium.snapshot")
+def isCi = System.getenv("GITHUB_ACTOR") != null
 
 group 'net.apartium.cocoa-beans'
 version '0.0.16' + (snapshot ? "-SNAPSHOT" : "")
@@ -15,7 +16,7 @@ allprojects {
 
     publishing {
         repositories {
-            if (System.getenv("GITHUB_ACTOR") != null) {
+            if (isCi) {
                 maven {
                     name = "GitHubPackages"
                     url = "https://maven.pkg.github.com/poweredbyapartium/cocoa-beans"
@@ -25,7 +26,7 @@ allprojects {
                     }
                 }
             }
-            if (project.findProperty("apartium.nexus.username") != null) {
+            if (isCi || project.findProperty("apartium.nexus.username") != null) {
                 maven {
                     name = "ApartiumMaven"
                     url = "https://nexus.voigon.dev/repository/apartium-releases"
