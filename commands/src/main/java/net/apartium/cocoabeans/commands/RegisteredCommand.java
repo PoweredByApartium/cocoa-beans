@@ -10,14 +10,14 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
-import net.apartium.cocoabeans.commands.parsers.WithParser;
 import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
@@ -62,9 +62,23 @@ import java.util.*;
         // Add class parsers
         argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, clazz.getAnnotations()));
 
+        MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
+
+        // Add source parsers
+        for (Method method : clazz.getMethods()) {
+            SourceParser sourceParser = method.getAnnotation(SourceParser.class);
+            if (sourceParser == null)
+                continue;
+
+            try {
+                argumentTypeHandlerMap.put(sourceParser.keyword(), new SourceParserImpl<>(node, sourceParser.keyword(), sourceParser.clazz(), sourceParser.priority(), publicLookup.unreflect(method), sourceParser.resultMaxAgeInMills()));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
 
-        MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
         for (Method method : clazz.getMethods()) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
             for (SubCommand subCommand : subCommands) {
