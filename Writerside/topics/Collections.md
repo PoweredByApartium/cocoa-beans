@@ -34,11 +34,10 @@ ImmutableByteArrayList.makeBetter(list);
 ## Weight Set
 A set implementation that allows for weighted elements to be picked at random, according to their weight.
 
-<code-block lang="java">
+```java
 WeightSet<String> set = new WeightSet<>();
 set.add("apple", 1);
 set.add("orange", 2);
 // the chance of getting an orange (2/3) is twice as high as getting an apple (1/3)
 set.pickOne();
-</code-block>
-
+```
