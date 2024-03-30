@@ -3,8 +3,11 @@ plugins {
     id 'maven-publish'
 }
 
+def snapshot = Boolean.getBoolean("apartium.snapshot")
+
 group 'net.apartium.cocoa-beans'
-version '0.0.16'
+version '0.0.16' + (snapshot ? "-SNAPSHOT" : "")
+
 
 allprojects {
     apply plugin: 'java-library'
@@ -27,8 +30,8 @@ allprojects {
                     name = "ApartiumMaven"
                     url = "https://nexus.voigon.dev/repository/apartium-releases"
                     credentials {
-                        username = project.findProperty("apartium.nexus.username")
-                        password = project.findProperty("apartium.nexus.password")
+                        username = System.getenv("APARTIUM_NEXUS_USERNAME") ?: project.findProperty("apartium.nexus.username")
+                        password = System.getenv("APARTIUM_NEXUS_PASSWORD") ?: project.findProperty("apartium.nexus.password")
                     }
                 }
             }

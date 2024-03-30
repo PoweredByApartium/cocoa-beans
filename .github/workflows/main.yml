@@ -45,10 +45,10 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-      - name: Build javadocs
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: javadoc commands:javadoc
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Publish to maven repository
+        run: ./gradlew publish -Dapartium.snapshot=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create temp directory
