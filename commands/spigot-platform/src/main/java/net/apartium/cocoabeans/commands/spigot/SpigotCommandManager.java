@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * A command manager implementation for Spigot and Spigot-based platforms.
+ */
 public class SpigotCommandManager extends CommandManager {
 
     public static final Set<ArgumentParser<?>> SPIGOT_PARSERS = Set.of(
@@ -38,6 +41,19 @@ public class SpigotCommandManager extends CommandManager {
 
     private final JavaPlugin plugin;
 
+    /**
+     * Create a new command manager instance for specified plugin
+     * @param plugin plugin to own this command manager
+     */
+    public SpigotCommandManager(JavaPlugin plugin) {
+        this(plugin, new SpigotArgumentMapper());
+    }
+
+    /**
+     * Create a new command manager instance for specified plugin
+     * @param plugin plugin to own this command manager
+     * @param argumentMapper argument mapper instance
+     */
     public SpigotCommandManager(JavaPlugin plugin, ArgumentMapper argumentMapper) {
         super(argumentMapper);
         this.plugin = plugin;

@@ -10,60 +10,22 @@
 
 package net.apartium.cocoabeans.structs;
 
+import org.junit.jupiter.api.Test;
 
-import org.jetbrains.annotations.NotNull;
-import java.util.Iterator;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class Node<T> implements Iterable<T> {
+class MinecraftVersionTest {
 
-    private T value;
-    private Node<T> next;
-
-    public Node(T value) {
-        this.value = value;
+    @Test
+    void updateEq() {
+        MinecraftVersion version = new MinecraftVersion(1, 9, 0);
+        assertTrue(version.updateEq(1, 9));
+        assertFalse(version.updateEq(1, 10));
     }
 
-    public Node(T value, Node<T> next) {
-        this.value = value;
-        this.next = next;
+    @Test
+    void isUnknown() {
+        MinecraftVersion version = new MinecraftVersion(1, 9, 0);
+        assertNotEquals(version, MinecraftVersion.UNKNOWN);
     }
-
-    @NotNull
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-
-            private Node<T> current = next;
-            @Override
-            public boolean hasNext() {
-                return current != null;
-            }
-
-            @Override
-            public T next() {
-                T value = current.getValue();
-                current = current.getNext();
-                return value;
-            }
-
-        };
-    }
-
-    @Override
-    public String toString() {
-        return value + " -> " + next;
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public Node<T> getNext() {
-        return next;
-    }
-
-    public void setNext(Node<T> next) {
-        this.next = next;
-    }
-
 }
