@@ -27,6 +27,8 @@ jobs:
         run: ./gradlew publish -Dapartium.snapshot=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:

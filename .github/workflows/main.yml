@@ -54,6 +54,8 @@ jobs:
         run: ./gradlew publish -Dapartium.snapshot=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: Create temp directory
         shell: sh
         run: |
