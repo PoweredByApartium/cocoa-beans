@@ -7,7 +7,6 @@
                  start-page="Home.md">
 
     <toc-element topic="Home.md"/>
-    <toc-element topic="Reference.topic"/>
     <toc-element topic="Commands.md"/>
     <toc-element topic="Collections.md"/>
 
