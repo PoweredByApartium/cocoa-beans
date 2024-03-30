@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'net.apartium.cocoa-beans'
-version '0.0.15'
+version '0.0.16'
 
 allprojects {
     apply plugin: 'java-library'
@@ -25,7 +25,7 @@ allprojects {
             if (project.findProperty("apartium.nexus.username") != null) {
                 maven {
                     name = "ApartiumMaven"
-                    url = "https://mvn.apartiumservices.com/repository/apartium-releases"
+                    url = "https://nexus.voigon.dev/repository/apartium-releases"
                     credentials {
                         username = project.findProperty("apartium.nexus.username")
                         password = project.findProperty("apartium.nexus.password")
@@ -40,7 +40,7 @@ allprojects {
     repositories {
         maven {
             name = "ApartiumNexus"
-            url = "https://mvn.apartiumservices.com/repository/apartium"
+            url = "https://nexus.voigon.dev/repository/apartium"
         }
     }
 

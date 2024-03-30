@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Apartium
+ * Copyright 2024 Apartium
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -12,9 +12,7 @@ package net.apartium.cocoabeans;
 
 import net.apartium.cocoabeans.collect.WeightSet;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Helper class to aid working with java collections
@@ -83,5 +81,76 @@ public class CollectionHelpers {
 
         return false;
     }
+
+    /**
+     * Checks for array content equality, regardless of order
+     * @param arr0 first array
+     * @param arr1 second array
+     * @return true if equals, else false
+     */
+    public static boolean equalsArray(Object[] arr0, Object[] arr1) {
+        return equalsList(
+                List.of(arr0),
+                List.of(arr1)
+        );
+    }
+
+    /**
+     * Checks for list content equality, regardless of order
+     * @param list0 first list
+     * @param list1 second list
+     * @return true if equals, else false
+     */
+    public static boolean equalsList(List<?> list0, List<?> list1) {
+        if (list0 == list1)
+            return true; // quick check
+
+        if (list0.size() != list1.size())
+            return false;
+
+        if (list0.isEmpty())
+            return true;
+
+        List<Integer> leftIndex = range(0, list0.size(), 1);
+
+        forLoop: for (Object object : list0) {
+            Iterator<Integer> iterator = leftIndex.iterator();
+            while (iterator.hasNext()) {
+                int index = iterator.next();
+                if (object.equals(list1.get(index))) {
+                    iterator.remove();
+                    continue forLoop;
+                }
+            }
+
+            return false;
+        }
+
+        return leftIndex.isEmpty();
+    }
+
+    /**
+     * Construct a new instance with values consisting of specified range
+     * @param start range start
+     * @param end range end
+     * @param step amount to step each time
+     * @return a new linked list instance
+     */
+    public static List<Integer> range(int start, int end, int step) {
+        if (step == 0) throw new IllegalArgumentException("Step cannot be zero");
+        if (step < 0) throw new IllegalArgumentException("Step must be positive");
+
+        boolean startBigger = start > end;
+        if (startBigger) step = -step;
+
+        List<Integer> result = new ArrayList<>(Math.abs(end - start) / step);
+        for (int i = start; (startBigger ? i > end : i < end); i += step) {
+            result.add(i);
+        }
+
+        return result;
+    }
+
+
 
 }

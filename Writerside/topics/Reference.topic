@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Reference" id="Reference">
+
+    <p>
+        A reference article is information-oriented.
+        It provides a structured description of a product:
+        its APIs, classes, functions, configuration options, actions, and so on.
+        Start with a summary of what this reference article is about, and what the items you are describing are used for.
+    </p>
+
+    <chapter title="Command" id="command">
+        <p>Syntax:</p>
+
+        <code-block lang="shell">
+            cmd [OPTIONS]
+        </code-block>
+    </chapter>
+
+    <chapter title="Options" id="options">
+        <p>Describe what each option is used for:</p>
+
+        <deflist type="medium">
+            <def title="-o, --open">
+                Opens a file.
+            </def>
+            <def title="-c, --close">
+                Closes a file.
+            </def>
+            <def title="-v --version">
+                Displays version information.
+            </def>
+            <def title="-h, --help">
+                Displays help.
+            </def>
+        </deflist>
+    </chapter>
+
+    <seealso>
+        <!--Provide links to related how-to guides, overviews, and tutorials.-->
+    </seealso>
+</topic>

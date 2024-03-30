@@ -21,7 +21,7 @@ and a common java module, with more modules planned for the future.\
 <repositories>
     <repository>
         <id>apartium-releases</id>
-        <url>https://mvn.apartiumservices.com/repository/apartium-releases</url>
+        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
     </repository>
 </repositories>
 ```
@@ -41,7 +41,7 @@ and a common java module, with more modules planned for the future.\
 repositories {
     maven {
         name 'apartium-releases'
-        url 'https://mvn.apartiumservices.com/repository/apartium-releases'
+        url 'https://nexus.voigon.dev/repository/apartium-releases'
     }
 }
 

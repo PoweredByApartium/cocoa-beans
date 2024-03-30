@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Apartium
+ * Copyright 2024 Apartium
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.collect;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,11 @@ class DummiesTest {
         assertTrue(set.isEmpty());
         assertFalse(set.contains("X"));
         assertFalse(set.containsAll(Set.of("X", "Z")));
-
+        assertFalse(set.iterator().hasNext());
+        assertEquals(new Object[0], set.toArray());
+        assertEquals(new Object[0], set.toArray(new Object[0]));
+        assertFalse(set.addAll(Arrays.asList("x", "y")));
+        assertFalse(set.retainAll(Arrays.asList("x", "y")));
+        assertFalse(set.removeAll(Arrays.asList("x", "y")));
     }
 }

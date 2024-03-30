@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="cb"
+                 name="Cocoa Beans"
+                 start-page="Home.md">
+
+    <toc-element topic="Home.md"/>
+    <toc-element topic="Reference.topic"/>
+    <toc-element topic="Commands.md"/>
+    <toc-element topic="Collections.md"/>
+
+</instance-profile>

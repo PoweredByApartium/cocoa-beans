@@ -34,6 +34,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      - name: Build docs using Writerside Docker builder
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: 'cb'
+          artifact: 'cocoa-beans'
+          docker-version: ${{ env.DOCKER_VERSION }}
       - name: Build javadocs
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
@@ -43,18 +49,23 @@ jobs:
       - name: Create temp directory
         shell: sh
         run: |
-          mkdir javadocs
-          mkdir javadocs/common
-          mkdir javadocs/spigot
-          cp -a common/build/docs/javadoc/* javadocs/common
-          cp -a spigot/build/docs/javadoc/* javadocs/spigot
+          mkdir docs
+          mkdir docs/common
+          mkdir docs/spigot
+          mkdir docs/commands
+          mkdir docs/commands-spigot
+          cp -a artifacts/cocoa-beans/* docs/
+          cp -a common/build/docs/javadoc/* docs/common
+          cp -a spigot/build/docs/javadoc/* docs/spigot
+          cp -a commands/build/docs/javadoc/* docs/commands
+          cp -a commands/spigot/build/docs/docs/* docs/commands-spigot
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload our temp directory
-          path: 'javadocs'
+          path: 'docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
