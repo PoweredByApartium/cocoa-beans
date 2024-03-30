@@ -1,6 +1,8 @@
-# Collections
+# 📚 Collections
 
+<tip>
 Cocoa beans provides a small addition to the Java collections framework.
+</tip>
 
 ## Dummies
 Dummy collections are collection implementations which silently discard any write operations done on them. 
