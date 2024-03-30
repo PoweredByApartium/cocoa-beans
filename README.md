@@ -1,6 +1,4 @@
 ![GitHub](https://img.shields.io/github/license/PoweredByApartium/cocoa-beans)
-[![GitHub branch checks state](https://github.com/PoweredByApartium/cocoa-beans/actions/workflows/gh-publish.yml/badge.svg)](https://github.com/PoweredByApartium/cocoa-beans/actions/workflows/gh-publish.yml)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/PoweredByApartium/cocoa-beans?style=plastic)
 
 ## Welcome to Cocoa beans!
 This library aims to be a very well-made and thought-out toolkit for developers to save the hassle
@@ -54,10 +52,16 @@ dependencies {
 ```
 
 ## Contributors
-Shout out to our contributors:
-* [ikfir](https://github.com/ikfir/)
-* [OfirTIM](https://github.com/ofirtim/)
-* [Voigon](https://github.com/liorsl/)
+Shout out to our contributors:<br>
+<a href="https://github.com/PoweredByApartium/cocoa-beans/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=PoweredByApartium/cocoa-beans" />
+</a>
+
+| contributor | Profile     | 
+| :-------- | :------- |
+| `Liorsl` | https://github.com/liorsl |
+| `Ikfir` | https://github.com/ikfir |
+| `OfirTim` | https://github.com/ofirtim|
 
 ## Contributing
 This project is at a very early stage right now, with a very minimal set of features included.
