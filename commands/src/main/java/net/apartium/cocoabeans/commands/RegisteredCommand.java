@@ -64,14 +64,26 @@ import java.util.*;
 
         MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
 
+        Method[] methods = clazz.getMethods();
+
         // Add source parsers
-        for (Method method : clazz.getMethods()) {
+        for (Method method : methods) {
             SourceParser sourceParser = method.getAnnotation(SourceParser.class);
             if (sourceParser == null)
                 continue;
 
+            if (!method.getReturnType().equals(Map.class))
+                throw new RuntimeException("Wrong return type: " + method.getReturnType());
+
             try {
-                argumentTypeHandlerMap.put(sourceParser.keyword(), new SourceParserImpl<>(node, sourceParser.keyword(), sourceParser.clazz(), sourceParser.priority(), publicLookup.unreflect(method), sourceParser.resultMaxAgeInMills()));
+                argumentTypeHandlerMap.put(sourceParser.keyword(), new SourceParserImpl<>(
+                        node,
+                        sourceParser.keyword(),
+                        sourceParser.clazz(),
+                        sourceParser.priority(),
+                        publicLookup.unreflect(method),
+                        sourceParser.resultMaxAgeInMills()
+                ));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -79,7 +91,7 @@ import java.util.*;
 
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
 
-        for (Method method : clazz.getMethods()) {
+        for (Method method : methods) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
             for (SubCommand subCommand : subCommands) {
                 parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);

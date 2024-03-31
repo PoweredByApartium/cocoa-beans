@@ -58,9 +58,8 @@ GeneralCommandTest {
 
     @Test
     void throwIt() {
-        testCommandManager.addCommand(new ThrowItCommand());
-        assertThrows(Throwable.class, () -> {
-            evaluate("throw-it", "MEOW");
+        assertThrows(RuntimeException.class, () -> {
+            testCommandManager.addCommand(new ThrowItCommand());
         });
     }
 
