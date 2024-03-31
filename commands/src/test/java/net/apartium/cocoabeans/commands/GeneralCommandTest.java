@@ -57,7 +57,15 @@ GeneralCommandTest {
     }
 
     @Test
-    void testSource() {
+    void throwIt() {
+        testCommandManager.addCommand(new ThrowItCommand());
+        assertThrows(Throwable.class, () -> {
+            evaluate("throw-it", "MEOW");
+        });
+    }
+
+    @Test
+    void testSource() throws InterruptedException {
         testCommandManager.addCommand(new TestSourceCommand());
 
         evaluate("test-source", "1");
@@ -72,11 +80,17 @@ GeneralCommandTest {
         evaluate("test-source", "asd asd");
         assertEquals(List.of(), sender.getMessages());
 
-        assertEquals(List.of("0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
+        assertEquals(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
         assertEquals(List.of(), evaluateTabCompletion("test-source", "ta"));
 
         assertEquals(List.of("wow"), evaluateTabCompletion("test-source", "two w"));
+
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test2 t"));
+        assertEquals(List.of("0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{"second", "test2", ""}));
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
+        Thread.sleep(10000);
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
     }
 
     @Test

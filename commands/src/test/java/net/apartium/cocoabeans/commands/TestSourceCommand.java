@@ -28,11 +28,28 @@ public class TestSourceCommand implements CommandNode {
 
     }
 
+    @SourceParser(keyword = "test2", clazz = Test.class, resultMaxAgeInMills = 1000)
+    public Map<String, Test> toTest2() {
+        return Arrays.stream(Test.values()).
+                flatMap(value -> Arrays.stream(new Map.Entry[]{
+                        Map.entry(value.num + "", value),
+                        Map.entry(value.name().toLowerCase(), value)
+                }))
+                .collect(Collectors.toMap(entry -> (String) entry.getKey(), entry -> (Test) entry.getValue()));
+    }
+
+    @SourceParser(keyword = "test3", clazz = Test.class)
+    public Map<String, Test> toTest3() {
+        return toTest2();
+    }
+
     @SubCommand("<test> wow")
     public void testWow(Sender sender, Test test) {
         sender.sendMessage("testWow(Sender sender, Test test) got " + test.num);
     }
 
+    @SubCommand("second test2 <test3>")
+    @SubCommand("second test <test2>")
     @SubCommand("<test>")
     public void test(Sender sender, Test test) {
         sender.sendMessage("test(Sender sender, Test test) got " + test.num);
