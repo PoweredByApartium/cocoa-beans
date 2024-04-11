@@ -20,9 +20,11 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
 
         Map<String, T> map = getMap();
         String s = "";
+
         for (int i = index; i < args.size(); i++) {
             if (i != index)
                 s += " ";
+
             s += args.get(index);
 
             T value = map.get(s);

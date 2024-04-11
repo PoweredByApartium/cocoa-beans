@@ -59,7 +59,7 @@ GeneralCommandTest {
     @Test
     void throwIt() {
         assertThrows(RuntimeException.class, () -> {
-            testCommandManager.addCommand(new ThrowItCommand());
+            testCommandManager.addCommand(new CommandWithInvalidSourceParser());
         });
     }
 
