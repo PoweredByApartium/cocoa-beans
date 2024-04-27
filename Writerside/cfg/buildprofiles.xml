@@ -5,19 +5,9 @@
     <variables></variables>
     <build-profile instance="cb">
         <variables>
-            <header-logo>
-                ./beans.png
-            </header-logo>
             <noindex-content>false</noindex-content>
             <offline-docs>false</offline-docs>
         </variables>
-        <footer>
-            <copyright>Apartium 2024</copyright>
-            <link href="https://github.com/PoweredByApartium/cocoa-beans/blob/main/SECURITY.md">Security</link>
-            <link href="https://github.com/PoweredByApartium/cocoa-beans/blob/main/LICENSE.md">License</link>
-            <link href="https://github.com/PoweredByApartium/cocoa-beans/issues">Report an Issue</link>
-            <social type="email" href="support@apartium.net"/>
-        </footer>
     </build-profile>
 
 </buildprofiles>
