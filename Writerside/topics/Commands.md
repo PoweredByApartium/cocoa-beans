@@ -20,7 +20,7 @@ This is how a relatively simple command looks like:
 
 <code-block lang="java">
 @Permission("example.admin.reboot") // this is the permission for the root command
-@Command("reboot") // this is the label of the command, in minecraft &ltlabel&gt
+@Command("reboot") // this is the label of the command, in minecraft <label>
 public class RebootCommand implements CommandNode {
 
     private final RebootManager rebootManager;

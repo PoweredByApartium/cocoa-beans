@@ -15,7 +15,6 @@ import net.apartium.cocoabeans.commands.Sender;
 /**
  * Represents a requirement to run a command or a sub command, eg a permission, sender type (player / console etc)
  * @see RequirementFactory
- * @see com.kfir.botnik.iptov.commands.permission.factory.MinecraftPermissionFactory
  */
 public interface Requirement {
 

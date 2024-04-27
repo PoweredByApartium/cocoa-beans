@@ -21,6 +21,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface WithParsers {
+
+    /**
+     * @see WithParser#value()
+     * @return the parsers to register
+     */
     WithParser[] value();
+
 }
 

@@ -11,8 +11,6 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.argument.Range;
 import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +54,42 @@ GeneralCommandTest {
         TestCommandManager testCommandManager = new TestCommandManager();
         assertThrows(RuntimeException.class, () -> testCommandManager.addCommand(commandForTest));
 
+    }
+
+    @Test
+    void throwIt() {
+        assertThrows(RuntimeException.class, () -> {
+            testCommandManager.addCommand(new CommandWithInvalidSourceParser());
+        });
+    }
+
+    @Test
+    void testSource() throws InterruptedException {
+        testCommandManager.addCommand(new TestSourceCommand());
+
+        evaluate("test-source", "1");
+        assertEquals(List.of("test(Sender sender, Test test) got 1"), sender.getMessages());
+
+        evaluate("test-source", "two");
+        assertEquals(List.of("test(Sender sender, Test test) got 2"), sender.getMessages());
+
+        evaluate("test-source", "thr");
+        assertEquals(List.of("testNotFound(Sender sender) didn't get test"), sender.getMessages());
+
+        evaluate("test-source", "asd asd");
+        assertEquals(List.of(), sender.getMessages());
+
+        assertEquals(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
+        assertEquals(List.of(), evaluateTabCompletion("test-source", "ta"));
+
+        assertEquals(List.of("wow"), evaluateTabCompletion("test-source", "two w"));
+
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test2 t"));
+        assertEquals(List.of("0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{"second", "test2", ""}));
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
+        Thread.sleep(10000);
+        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
     }
 
     @Test

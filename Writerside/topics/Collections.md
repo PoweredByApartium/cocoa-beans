@@ -29,7 +29,7 @@ ImmutableByteArrayList.empty();
 ImmutableByteArrayList.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 // transform a byte collection into an immutable byte array list
-List&ltByte&gt list = new ArrayList<>();
+List<Byte> list = new ArrayList<>();
 ImmutableByteArrayList.makeBetter(list);
 </code-block>
 
@@ -37,7 +37,7 @@ ImmutableByteArrayList.makeBetter(list);
 A set implementation that allows for weighted elements to be picked at random, according to their weight.
 
 <code-block lang="java">
-WeightSet&ltString&gt set = new WeightSet<>();
+WeightSet<String> set = new WeightSet<>();
 set.add("apple", 1);
 set.add("orange", 2);
 // the chance of getting an orange (2/3) is twice as high as getting an apple (1/3)
