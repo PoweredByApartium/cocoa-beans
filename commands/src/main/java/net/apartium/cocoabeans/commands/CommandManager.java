@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.Dispensers;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandException;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
@@ -34,7 +35,7 @@ public abstract class CommandManager {
     );
 
 
-    private final Map<String, RegisteredCommand> commandMap = new HashMap<>();
+    protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
@@ -67,7 +68,8 @@ public abstract class CommandManager {
 
     public boolean handle(Sender sender, String commandName, String[] args) {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
-        if (registeredCommand == null) return false;
+        if (registeredCommand == null)
+            throw new UnknownCommandException(commandName);
 
         CommandContext context = registeredCommand.getCommandBranchProcessor().handle(
                 registeredCommand,
