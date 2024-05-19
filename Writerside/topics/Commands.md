@@ -4,7 +4,7 @@ Cocoa beans includes its own Minecraft-compatible command system, to improve dev
 on boilerplate code.
 
 ## Registering commands
-<code-block lang="java">
+```java
 SpigotCommandManager commandManager = new SpigotCommandManager(this);
 
 // no parsers are included by default, so we need to add some of our own
@@ -12,13 +12,12 @@ commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
 commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
 
 commandManager.addCommand(new RebootCommand(rebootManager));
-</code-block>
-
+```
 ## A simple command
 
 This is how a relatively simple command looks like:
 
-<code-block lang="java">
+```java
 @Permission("example.admin.reboot") // this is the permission for the root command
 @Command("reboot") // this is the label of the command, in minecraft <label>
 public class RebootCommand implements CommandNode {
@@ -53,7 +52,7 @@ public class RebootCommand implements CommandNode {
     }
 
 }
-</code-block>
+```
 
 This command defines 3 sub commands:
 - arg-less command, to reboot in 30 seconds
