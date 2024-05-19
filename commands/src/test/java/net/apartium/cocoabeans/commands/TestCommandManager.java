@@ -10,6 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.CommandException;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandException;
+
 public class TestCommandManager extends CommandManager {
 
     public TestCommandManager() {
@@ -20,5 +23,18 @@ public class TestCommandManager extends CommandManager {
     @Override
     protected void addCommand(CommandNode commandNode, Command command) {
 
+    }
+
+    @Override
+    public boolean handle(Sender sender, String commandName, String[] args) {
+        try {
+            return super.handle(sender, commandName, args);
+        } catch (UnknownCommandException e) {
+            sender.sendMessage("Unknown command: " + e.getCommandName());
+            return false;
+        } catch (CommandException e) {
+            sender.sendMessage(e.getMessage());
+            return false;
+        }
     }
 }

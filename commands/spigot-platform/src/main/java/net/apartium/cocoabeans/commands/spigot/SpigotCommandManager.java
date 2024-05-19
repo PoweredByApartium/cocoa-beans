@@ -10,10 +10,9 @@
 
 package net.apartium.cocoabeans.commands.spigot;
 
-import net.apartium.cocoabeans.commands.Command;
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.CommandNode;
-import net.apartium.cocoabeans.commands.ArgumentMapper;
+import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.exception.CommandException;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandException;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.MaterialParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.OfflinePlayerParser;
@@ -92,5 +91,22 @@ public class SpigotCommandManager extends CommandManager {
                 .map(Permission::value).ifPresent(cmd::setPermission);
 
         Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
+    }
+
+    @Override
+    public boolean handle(Sender sender, String commandName, String[] args) {
+        try {
+            return super.handle(sender, commandName, args);
+        } catch (UnknownCommandException e) {
+            sender.sendMessage("Unknown command: " + commandName);
+            return false;
+        } catch (CommandException e) {
+            sender.sendMessage(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            sender.sendMessage("§cAn error occurred while handling command: " + commandName);
+            e.printStackTrace();
+            return false;
+        }
     }
 }
