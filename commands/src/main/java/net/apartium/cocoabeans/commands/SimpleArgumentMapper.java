@@ -42,7 +42,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 if (index == 1) throw new RuntimeException("Shouldn't have two command context");
                 result.add(context);
             } else {
-                result.add(context.parsedArgs().get(type).get(index));
+                List<Object> objects = context.parsedArgs().get(type);
+                if (objects == null || objects.isEmpty() || objects.size() <= index)
+                    throw new RuntimeException("No argument found for type " + type);
+                result.add(objects.get(index));
             }
 
             counterMap.put(type, index + 1);

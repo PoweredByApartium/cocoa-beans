@@ -64,6 +64,12 @@ GeneralCommandTest {
     }
 
     @Test
+    void unknownCommand() {
+        evaluate("command-not-found", "");
+        assertEquals(List.of("Unknown command: command-not-found"), sender.getMessages());
+    }
+
+    @Test
     void testSource() throws InterruptedException {
         testCommandManager.addCommand(new TestSourceCommand());
 
@@ -248,7 +254,7 @@ GeneralCommandTest {
 
     @Test
     void throwAnError() {
-        assertThrows(NullPointerException.class, () -> evaluate("test", "evil"));
+        assertThrows(RuntimeException.class, () -> evaluate("test", "evil"));
     }
 
     @Test
