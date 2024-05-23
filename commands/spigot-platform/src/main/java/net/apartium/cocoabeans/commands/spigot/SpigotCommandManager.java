@@ -95,18 +95,6 @@ public class SpigotCommandManager extends CommandManager {
 
     @Override
     public boolean handle(Sender sender, String commandName, String[] args) {
-        try {
-            return super.handle(sender, commandName, args);
-        } catch (UnknownCommandException e) {
-            sender.sendMessage("Unknown command: " + commandName);
-            return false;
-        } catch (CommandException e) {
-            sender.sendMessage(e.getMessage());
-            return false;
-        } catch (Exception e) {
-            sender.sendMessage("§cAn error occurred while handling command: " + commandName);
-            e.printStackTrace();
-            return false;
-        }
+        return super.handle(sender, commandName, args);
     }
 }
