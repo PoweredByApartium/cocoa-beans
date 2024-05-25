@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 
@@ -31,6 +32,7 @@ public class ItemBuilder_1_20_R1 extends ItemBuilder {
         super(item);
     }
 
+    @Override
     public ItemBuilder setDurability(short durability) {
         if (!(meta instanceof Damageable damageable)) return this;
         damageable.setDamage(durability);
@@ -40,6 +42,13 @@ public class ItemBuilder_1_20_R1 extends ItemBuilder {
     @Override
     public ItemBuilder setUnbreakable(boolean value) {
         meta.setUnbreakable(value);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder setOwningPlayer(OfflinePlayer offlinePlayer) {
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        skullMeta.setOwningPlayer(offlinePlayer);
         return this;
     }
 
