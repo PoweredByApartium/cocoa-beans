@@ -145,27 +145,49 @@ import java.util.*;
 
             if (cmd.startsWith("<") && cmd.endsWith(">")) {
                 // TODO may need to check that can be parser before doing all calculation
-                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1, cmd.length() - 1));
-                if (typeParser != null) {
-                    CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                            .filter(entry -> entry.key().equals(typeParser))
+                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1 + (cmd.startsWith("<??") ? 2 : cmd.startsWith("<?") ? 1 : 0), cmd.length() - 1));
+                if (cmd.startsWith("<??"))
+                    typeParser = new OptionalArgumentParser<>(typeParser, true);
+                else if(cmd.startsWith("<?"))
+                    typeParser = new OptionalArgumentParser<>(typeParser, false);
+
+                if (typeParser == null)
+                    throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
+
+                ArgumentParser<?> finalTypeParser = typeParser;
+                CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
+                        .filter(entry -> entry.key().equals(finalTypeParser))
+                        .findAny()
+                        .map(Entry::value)
+                        .orElse(null);
+
+                if (commandBranchProcessor == null) {
+                    commandBranchProcessor = new CommandBranchProcessor(commandManager);
+                    currentCommandOption.getArgumentTypeHandlerMap().add(new Entry<>(
+                            typeParser,
+                            commandBranchProcessor
+                    ));
+                }
+
+                if (finalTypeParser instanceof OptionalArgumentParser) {
+                    CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
+                            .filter(entry -> entry.key().equals(finalTypeParser))
                             .findAny()
                             .map(Entry::value)
                             .orElse(null);
 
-                    if (commandBranchProcessor == null) {
-                        commandBranchProcessor = new CommandBranchProcessor(commandManager);
-                        currentCommandOption.getArgumentTypeHandlerMap().add(new Entry<>(
-                                typeParser,
-                                commandBranchProcessor
+                    if (branchProcessor == null) {
+                        branchProcessor = commandBranchProcessor;
+                        currentCommandOption.getOptionalArgumentTypeHandlerMap().add(new Entry<>(
+                                (OptionalArgumentParser<?>) finalTypeParser,
+                                branchProcessor
                         ));
                     }
-
-                    currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
-                    continue;
                 }
 
-                throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
+                currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
+                continue;
+
             }
 
             Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
@@ -193,6 +215,7 @@ import java.util.*;
         for (int i = 0; i < result.length; i++) {
             result[i] = new RegisteredCommandVariant.Parameter(
                     parameters[i].getType(),
+                    parameters[i].getParameterizedType(),
                     serializeArgumentRequirement(commandNode, parameters[i].getAnnotations())
             );
         }

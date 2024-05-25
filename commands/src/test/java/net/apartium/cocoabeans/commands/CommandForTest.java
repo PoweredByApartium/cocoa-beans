@@ -16,6 +16,9 @@ import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
+import java.util.Optional;
+import java.util.OptionalLong;
+
 @Command("test")
 public class CommandForTest implements CommandNode {
 
@@ -136,6 +139,26 @@ public class CommandForTest implements CommandNode {
     @SubCommand("test <long>")
     public void testLong(Sender sender, long num) {
         sender.sendMessage("testLong(Sender sender, long num) got " + num);
+    }
+
+    @SubCommand("optional <?long>")
+    public void testOptionalLong(Sender sender, OptionalLong optLong) {
+        sender.sendMessage("testOptionalLong(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.getAsLong() : "null"));
+    }
+
+    @SubCommand("optional meow <??long>")
+    public void testOptionalLongMeow(Sender sender, Optional<Long> optLong) {
+        sender.sendMessage("testOptionalLongMeow(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
+    }
+
+    @SubCommand("optional meow <??long> wow")
+    public void testOptionalLongMeow1(Sender sender, Optional<Long> optLong) {
+        sender.sendMessage("testOptionalLongMeow1(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
+    }
+
+    @SubCommand("optional yoo <?string>")
+    public void testOptionalStringMeow(Sender sender, Optional<String> optString) {
+        sender.sendMessage("testOptionalStringMeow(Sender sender, Optional<String> optString) got " + (optString.orElse("null")));
     }
 
     @SubCommand("config get <string>")

@@ -71,6 +71,14 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
         return clazz;
     }
 
+    /**
+     * Get priority
+     * @return
+     */
+    public int getPriority() {
+        return priority;
+    }
+
     public record ParseResult<T>(
             T result,
             int newIndex
