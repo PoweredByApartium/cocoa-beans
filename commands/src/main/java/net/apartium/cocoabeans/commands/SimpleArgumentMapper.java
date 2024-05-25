@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class SimpleArgumentMapper implements ArgumentMapper {
 
-    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_MAP = Map.ofEntries(
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_MAP = Map.ofEntries(
             Map.entry(Byte.class, byte.class),
             Map.entry(Character.class, char.class),
             Map.entry(Short.class, short.class),
