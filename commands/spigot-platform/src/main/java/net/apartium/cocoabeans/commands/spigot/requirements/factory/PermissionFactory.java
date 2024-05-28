@@ -26,17 +26,17 @@ public class PermissionFactory implements RequirementFactory {
         if (!(obj instanceof Permission permission))
             return null;
 
-        return new PermissionImpl(permission.value());
+        return new PermissionImpl(permission.value(), permission.invert());
     }
 
-    private record PermissionImpl(String permission) implements Requirement {
+    private record PermissionImpl(String permission, boolean invert) implements Requirement {
 
         @Override
         public boolean meetsRequirement(Sender sender) {
             if (!(sender instanceof SpigotSender<?> spigotSender))
                 return false;
 
-            return spigotSender.getSender().hasPermission(permission);
+            return spigotSender.getSender().hasPermission(permission) != invert;
         }
     }
 }
