@@ -317,6 +317,39 @@ GeneralCommandTest {
     }
 
     @Test
+    void optionalLongTest() {
+        evaluate("test", "optional");
+        assertEquals(List.of("testOptionalLong(Sender sender, Optional<Long> num) got null"), sender.getMessages());
+
+        evaluate("test", "optional 512");
+        assertEquals(List.of("testOptionalLong(Sender sender, Optional<Long> num) got 512"), sender.getMessages());
+
+        evaluate("test", "optional meow");
+        assertEquals(List.of("testOptionalLongMeow(Sender sender, Optional<Long> num) got null"), sender.getMessages());
+
+        evaluate("test", "optional meow 21");
+        assertEquals(List.of("testOptionalLongMeow(Sender sender, Optional<Long> num) got 21"), sender.getMessages());
+
+        evaluate("test", "optional meow 21a");
+        assertEquals(List.of("testOptionalLongMeow(Sender sender, Optional<Long> num) got null"), sender.getMessages());
+
+        evaluate("test", "optional meow 21 wow");
+        assertEquals(List.of("testOptionalLongMeow1(Sender sender, Optional<Long> num) got 21"), sender.getMessages());
+
+        evaluate("test", "optional meow 21a wow");
+        assertEquals(List.of("testOptionalLongMeow1(Sender sender, Optional<Long> num) got null"), sender.getMessages());
+
+        evaluate("test", "optional yoo meow");
+        assertEquals(List.of("testOptionalStringMeow(Sender sender, Optional<String> optString) got meow"), sender.getMessages());
+
+        evaluate("test", "optional yoo");
+        assertEquals(List.of("testOptionalStringMeow(Sender sender, Optional<String> optString) got null"), sender.getMessages());
+
+        evaluate("test", "optional yoo wow asd");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [optional, yoo, wow, asd]"), sender.getMessages());
+    }
+
+    @Test
     void test() {
         assertEquals(
                 evaluateTabCompletion("test", "testing example kfir 2").stream().sorted().toList(),
@@ -329,7 +362,7 @@ GeneralCommandTest {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil")
+                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil", "optional")
                 )
         );
 
@@ -592,6 +625,20 @@ GeneralCommandTest {
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", "yes mE"),
                         List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"optional", "meow", ""}),
+                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "-")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"optional", "meow", "21", ""}),
+                        List.of("wow")
                 )
         );
 

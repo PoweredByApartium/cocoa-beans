@@ -10,12 +10,86 @@
 
 package net.apartium.cocoabeans.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import net.apartium.cocoabeans.utils.OptionalFloat;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.function.Function;
 
 public class SimpleArgumentMapper implements ArgumentMapper {
+
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_MAP = Map.ofEntries(
+            Map.entry(Byte.class, byte.class),
+            Map.entry(Character.class, char.class),
+            Map.entry(Short.class, short.class),
+            Map.entry(Integer.class, int.class),
+            Map.entry(Long.class, long.class),
+            Map.entry(Float.class, float.class),
+            Map.entry(Double.class, double.class),
+            Map.entry(byte.class, Byte.class),
+            Map.entry(char.class, Character.class),
+            Map.entry(short.class, Short.class),
+            Map.entry(int.class, Integer.class),
+            Map.entry(long.class, Long.class),
+            Map.entry(float.class, Float.class),
+            Map.entry(double.class, Double.class)
+    );
+
+    private static final Map<Class<?>, Class<?>> OPTIONAL_TO_PRIMITIVE_MAP = Map.of(
+            OptionalInt.class, int.class,
+            OptionalLong.class, long.class,
+            OptionalDouble.class, double.class,
+            OptionalFloat.class, float.class
+    );
+
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_OPTIMAL = Map.of(
+            int.class, OptionalInt.class,
+            long.class, OptionalLong.class,
+            double.class, OptionalDouble.class,
+            float.class, OptionalFloat.class,
+            Integer.class, OptionalInt.class,
+            Long.class, OptionalLong.class,
+            Double.class, OptionalDouble.class,
+            Float.class, OptionalFloat.class
+    );
+
+    private static final Map<Class<?>, Object> EMPTY_OPTIONAL = Map.of(
+            int.class, OptionalInt.empty(),
+            Integer.class, OptionalInt.empty(),
+            long.class, OptionalLong.empty(),
+            Long.class, OptionalLong.empty(),
+            double.class, OptionalDouble.empty(),
+            Double.class, OptionalDouble.empty(),
+            float.class, OptionalFloat.empty(),
+            Float.class, OptionalFloat.empty()
+    );
+
+    private static final Map<Class<?>, Function<Object, Object>> OF_OPTIONAL = Map.of(
+            Optional.class, Optional::of,
+            OptionalInt.class, (obj) -> {
+                if (obj == null)
+                    return OptionalInt.empty();
+                return OptionalInt.of((Integer) obj);
+            },
+            OptionalLong.class, (obj) -> {
+                if (obj == null)
+                    return OptionalLong.empty();
+                return OptionalLong.of((Long) obj);
+            },
+            OptionalDouble.class, (obj) -> {
+                if (obj == null)
+                    return OptionalDouble.empty();
+                return OptionalDouble.of((Double) obj);
+            },
+            OptionalFloat.class, (obj) -> {
+                if (obj == null)
+                    return OptionalFloat.empty();
+                return OptionalFloat.of((Float) obj);
+            }
+    );
+
+
     @Override
     public List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
         RegisteredCommandVariant.Parameter[] parameters = registeredCommandVariant.parameters();
@@ -29,7 +103,20 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         Map<Class<?>, List<Object>> mapOfObjects = context.parsedArgs();
 
         for (int i = 1; i < parameters.length + 1; i++) {
-            Class<?> type = parameters[i -1].type();
+            Class<?> type = parameters[i - 1].type();
+            boolean optional = false;
+            boolean optionalPrimitive = false;
+
+            if (type == Optional.class) {
+                optional = true;
+                Type parameterizedType = parameters[i - 1].parameterizedType();
+                Type[] actualTypeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
+                type = (Class<?>) actualTypeArguments[0];
+            } else if (OPTIONAL_TO_PRIMITIVE_MAP.containsKey(type)) {
+                type = OPTIONAL_TO_PRIMITIVE_MAP.get(type);
+                optionalPrimitive = true;
+            }
+
             int index = counterMap.computeIfAbsent(type, (k) -> 0);
 
             if (Sender.class.isAssignableFrom(type)) {
@@ -43,9 +130,29 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 result.add(context);
             } else {
                 List<Object> objects = context.parsedArgs().get(type);
+
+                if (objects == null || objects.isEmpty() || objects.size() <= index)
+                    objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+
                 if (objects == null || objects.isEmpty() || objects.size() <= index)
                     throw new RuntimeException("No argument found for type " + type);
-                result.add(objects.get(index));
+
+                Object obj = objects.get(index);
+                if (optional) {
+                    if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()))
+                        obj = Optional.empty();
+                    else
+                        obj = Optional.of(obj);
+                }
+
+                if (optionalPrimitive) {
+                    if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()))
+                        obj = EMPTY_OPTIONAL.get(type);
+                    else
+                        obj = OF_OPTIONAL.get(PRIMITIVE_TO_OPTIMAL.get(type)).apply(obj);
+                }
+
+                result.add(obj);
             }
 
             counterMap.put(type, index + 1);
@@ -53,4 +160,5 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
         return result;
     }
+
 }

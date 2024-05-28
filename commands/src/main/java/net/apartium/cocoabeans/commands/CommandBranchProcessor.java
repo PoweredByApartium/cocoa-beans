@@ -37,7 +37,13 @@ import java.util.List;
             if (!entry.key().meetsRequirements(sender))
                 continue;
 
-            if (args.length == index) {
+            if (args.length <= index) {
+                if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
+                    CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
+                    if (commandContext != null)
+                        return commandContext;
+                }
+
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
