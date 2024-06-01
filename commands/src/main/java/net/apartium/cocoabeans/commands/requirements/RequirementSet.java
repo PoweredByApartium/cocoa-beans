@@ -173,9 +173,15 @@ public class RequirementSet implements Set<Requirement> {
         return Arrays.hashCode(requirements);
     }
 
-    public boolean meetsRequirements(Sender sender) {
-        for (Requirement permission : requirements) {
-            if (!permission.meetsRequirement(sender)) return false;
+    public boolean meetsRequirements(Sender sender, String commandName, String[] args, int depth) {
+        for (Requirement requirement : requirements) {
+            if (!requirement.meetsRequirement(sender)) {
+                RequirementException exception = requirement.getException(commandName, args, depth);
+                if (exception != null)
+                    throw exception;
+
+                return false;
+            }
         }
 
         return true;

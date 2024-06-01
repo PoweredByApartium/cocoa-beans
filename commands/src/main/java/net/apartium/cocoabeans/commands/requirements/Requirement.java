@@ -18,11 +18,15 @@ import net.apartium.cocoabeans.commands.Sender;
  */
 public interface Requirement {
 
+
     /**
      * Check if given sender meets this requirement.
      * @param sender sender object
      * @return true if meets req, else false
      */
     boolean meetsRequirement(Sender sender);
+    default RequirementException getException(String commandName, String[] args, int depth) {
+        return new RequirementException(this, commandName, args, depth, "Requirement not met");
+    };
 
 }

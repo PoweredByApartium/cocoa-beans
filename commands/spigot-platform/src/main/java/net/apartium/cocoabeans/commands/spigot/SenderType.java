@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.RequirementException;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
@@ -27,6 +28,11 @@ public enum SenderType implements Requirement {
         public boolean meetsRequirement(Sender sender) {
             return sender.getSender() != null && sender.getSender() instanceof Player;
         }
+
+        @Override
+        public RequirementException getException(String commandName, String[] args, int depth) {
+            return new RequirementException(this, commandName, args, depth, "This command can only be used by players");
+        }
     },
 
     /**
@@ -36,6 +42,11 @@ public enum SenderType implements Requirement {
         @Override
         public boolean meetsRequirement(Sender sender) {
             return sender.getSender() != null && sender.getSender() instanceof BlockCommandSender;
+        }
+
+        @Override
+        public RequirementException getException(String commandName, String[] args, int depth) {
+            return new RequirementException(this, commandName, args, depth, "This command can only be used by command block");
         }
     },
 
@@ -47,6 +58,11 @@ public enum SenderType implements Requirement {
         public boolean meetsRequirement(Sender sender) {
             return sender.getSender() != null && sender.getSender() instanceof ConsoleCommandSender;
         }
+
+        @Override
+        public RequirementException getException(String commandName, String[] args, int depth) {
+            return new RequirementException(this, commandName, args, depth, "This command can only be used by console");
+        }
     },
 
     /**
@@ -57,6 +73,11 @@ public enum SenderType implements Requirement {
         @Override
         public boolean meetsRequirement(Sender sender) {
             return sender.getSender() != null && sender.getSender() instanceof Entity;
+        }
+
+        @Override
+        public RequirementException getException(String commandName, String[] args, int depth) {
+            return new RequirementException(this, commandName, args, depth, "This command can only be used by entities");
         }
     }
 

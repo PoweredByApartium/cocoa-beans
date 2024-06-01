@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -29,17 +30,38 @@ import java.util.List;
     }
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
+
+        CommandException commandException = null;
+
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender))
+            try {
+                if (!entry.key().meetsRequirements(sender, commandName, args, index))
+                    continue;
+            } catch (CommandException e) {
+                if (commandException == null || commandException.getDepth() < e.getDepth())
+                    commandException = e;
+
                 continue;
+            }
+
 
             if (args.length <= index) {
                 if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
-                    CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
+                    CommandContext commandContext = null;
+                    try {
+                        commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
+                    } catch (Throwable e) {
+                        if (!(e instanceof CommandException))
+                            e = new CommandException(commandName, args, index, e.getMessage(), e);
+
+                        if (commandException == null || commandException.getDepth() < ((CommandException) e).getDepth())
+                            commandException = (CommandException) e;
+                    }
+
                     if (commandContext != null)
                         return commandContext;
                 }
@@ -56,13 +78,24 @@ import java.util.List;
                 );
             }
 
-            CommandContext result = commandOption.handle(
-                    commandWrapper,
-                    commandName,
-                    args,
-                    sender,
-                    index
-            );
+            CommandContext result = null;
+            try {
+                 result = commandOption.handle(
+                        commandWrapper,
+                        commandName,
+                        args,
+                        sender,
+                        index
+                );
+            } catch (Throwable e) {
+                if (!(e instanceof CommandException))
+                    e = new CommandException(commandName, args, index, e.getMessage(), e);
+
+                CommandException cmdException = (CommandException) e;
+
+                if (commandException == null || commandException.getDepth() < cmdException.getDepth())
+                    commandException = cmdException;
+            }
 
             if (result == null)
                 continue;
@@ -70,10 +103,13 @@ import java.util.List;
             return result;
         }
 
+        if (commandException != null)
+            throw commandException;
+
         return null;
     }
 
-    /* package-private */ List<String> handleTabCompletion(RegisteredCommand commandWrapper, String[] args, Sender sender, int index) {
+    /* package-private */ List<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index) return List.of();
 
         List<String> result = new ArrayList<>();
@@ -82,23 +118,27 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender))
+            if (!entry.key().meetsRequirements(sender, commandName, args, index))
                 continue;
 
-            result.addAll(commandOption.handleTabCompletion(commandWrapper, args, sender, index));
+            result.addAll(commandOption.handleTabCompletion(commandWrapper, commandName, args, sender, index));
         }
 
         return result;
     }
 
-    /* package-private */ boolean haveAnyRequirementsMeet(Sender sender) {
+    /* package-private */ boolean haveAnyRequirementsMeet(Sender sender, String commandName, String[] args, int depth) {
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
 
-            if (entry.key().meetsRequirements(sender))
-                return true;
+            try {
+                if (entry.key().meetsRequirements(sender, commandName, args, depth))
+                    return true;
+            } catch (CommandException e) {
+                continue;
+            }
 
         }
 

@@ -83,7 +83,7 @@ GeneralCommandTest {
         assertEquals(List.of("testNotFound(Sender sender) didn't get test"), sender.getMessages());
 
         evaluate("test-source", "asd asd");
-        assertEquals(List.of(), sender.getMessages());
+        assertEquals(List.of("null"), sender.getMessages());
 
         assertEquals(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
@@ -94,7 +94,7 @@ GeneralCommandTest {
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test2 t"));
         assertEquals(List.of("0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{"second", "test2", ""}));
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
-        Thread.sleep(10000);
+        Thread.sleep(20);
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
     }
 
@@ -122,9 +122,9 @@ GeneralCommandTest {
         testCommandManager.addCommand(new SecondCommandForTest());
 
         evaluate("test", "");
-        assertEquals(List.of("You don't have access to use this command!"), sender.getMessages());
+        assertEquals(List.of("Requirement not met"), sender.getMessages());
         evaluate("t", "");
-        assertEquals(List.of("You don't have access to use this command!"), sender.getMessages());
+        assertEquals(List.of("Requirement not met"), sender.getMessages());
     }
 
     @Test
@@ -143,7 +143,7 @@ GeneralCommandTest {
     @Test
     void noOne() {
         evaluate("test", "no-one");
-        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [no-one]"), sender.getMessages());
+        assertEquals(List.of("You don't have permission to execute this command!"), sender.getMessages());
     }
 
     @Test
@@ -253,8 +253,9 @@ GeneralCommandTest {
     }
 
     @Test
-    void throwAnError() {
-        assertThrows(RuntimeException.class, () -> evaluate("test", "evil"));
+    void missingParameter() {
+        evaluate("test", "evil");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [evil]"), sender.getMessages());
     }
 
     @Test
@@ -366,6 +367,7 @@ GeneralCommandTest {
                 )
         );
 
+
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", "0002"),
@@ -408,6 +410,7 @@ GeneralCommandTest {
                         List.of("-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
                 )
         );
+
 
         assertTrue(
                 CollectionHelpers.equalsList(
@@ -650,7 +653,7 @@ GeneralCommandTest {
         assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new NullCommandTest()), "Static method net.apartium.cocoabeans.commands.NullCommandTest#meow is not supported");
         testCommandManager.addCommand(new AnotherEvilCommandTest());
         evaluate("evil-brother", "private");
-        assertEquals(List.of(), sender.getMessages());
+        assertEquals(List.of("Invalid usage"), sender.getMessages());
     }
 
 

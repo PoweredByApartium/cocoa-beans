@@ -94,7 +94,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     public List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
         RegisteredCommandVariant.Parameter[] parameters = registeredCommandVariant.parameters();
         if (parameters.length == 0)
-            return List.of();
+            return List.of(registeredCommandVariant.commandNode());
 
         List<Object> result = new ArrayList<>(parameters.length + 1);
         result.add(registeredCommandVariant.commandNode());
