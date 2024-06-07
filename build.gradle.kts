@@ -1,5 +1,3 @@
-import io.papermc.hangarpublishplugin.model.Platforms;
-
 plugins {
     id("java-library")
     id("maven-publish")
@@ -35,8 +33,10 @@ allprojects {
                     name = "ApartiumMaven"
                     url = uri("https://nexus.voigon.dev/repository/apartium-releases")
                     credentials {
-                        username = (System.getenv("APARTIUM_NEXUS_USERNAME") ?: project.findProperty("apartium.nexus.username")).toString()
-                        password = (System.getenv("APARTIUM_NEXUS_PASSWORD") ?: project.findProperty("apartium.nexus.password")).toString()
+                        username = (System.getenv("APARTIUM_NEXUS_USERNAME")
+                            ?: project.findProperty("apartium.nexus.username")).toString()
+                        password = (System.getenv("APARTIUM_NEXUS_PASSWORD")
+                            ?: project.findProperty("apartium.nexus.password")).toString()
                     }
                 }
             }
@@ -62,51 +62,5 @@ allprojects {
             useJUnitPlatform()
         }
     }
-
 }
 
-
-hangarPublish {
-    publications.register("plugin") {
-        version.set(project.version as String)
-        if (snapshot) {
-            channel.set("Snapshot")
-        } else {
-            channel.set("Release")
-        }
-        // TODO: Edit the project name to match your Hangar project
-        id.set("Apartium/CocoaBeans")
-        apiKey.set("152b7590-e7c8-42fa-9c35-0e6f917a9f23.b786b1a5-7e3a-4e3b-adf9-703641b3cff1"); //System.getenv("HANGAR_TOKEN"))
-        platforms {
-            // TODO: Use the correct platform(s) for your plugin
-            register(Platforms.PAPER) {
-                // TODO: If you're using ShadowJar, replace the jar lines with the appropriate task:
-                //   jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                // Set the jar file to upload
-                jar.set(tasks.jar.flatMap { it.archiveFile })
-
-                jar.set(project(":plugin").tasks.getByName("shadowJar", ShadowJar).flatMap { it.archiveFile })                //jar.set(project(":spigot").tasks.shadowJar.flatMap { it.archiveFile })
-                platformVersions.set(listOf("1.17", "1.19", "1.20"))
-
-            }
-        }
-    }
-}
-
-
-/*import io.papermc.hangarpublishplugin.model.HangarPublication
-
-hangarPublish {
-    publications {
-        plugin {
-            apiKey = "152b7590-e7c8-42fa-9c35-0e6f917a9f23.b786b1a5-7e3a-4e3b-adf9-703641b3cff1" // System.getenv("HANGAR_TOKEN")
-            platforms {
-                paper {
-                    jar = project.project(":spigot").tasks.jar.archiveFile
-                    //jar.set(project(":spigot").tasks.shadowJar.flatMap { it.archiveFile })
-                    platformVersions = List.of("1.17", "1.19", "1.20")
-                }
-            }
-        }
-    }
-}*/
