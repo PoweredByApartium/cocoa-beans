@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("maven-publish")
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
@@ -62,5 +63,32 @@ allprojects {
             useJUnitPlatform()
         }
     }
+
 }
 
+hangarPublish {
+    publications.register("plugin") {
+        version = project.version as String
+        id = System.getenv("HANGAR_ID") ?: project.findProperty("hangar.id").toString()
+        if (snapshot) {
+            channel.set("Snapshot")
+        } else {
+            channel.set("Release")
+        }
+
+        apiKey = System.getenv("HANGAR_API_KEY") ?: project.findProperty("hangar.api.key").toString()
+
+        platforms {
+            paper {
+                jar.set(tasks.jar.flatMap { it.archiveFile })
+                jar.set(project(":spigot").tasks.shadowJar.flatMap { it.archiveFile })
+                platformVersions = listOf("1.17", "1.19", "1.20")
+                dependencies {
+                    hangar(System.getenv("HANGAR_PROJECT") ?: project.findProperty("hangar.project").toString()) {
+                        required = false
+                    }
+                }
+            }
+        }
+    }
+}
