@@ -10,7 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandException;
+import net.apartium.cocoabeans.commands.exception.CommandError;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -31,39 +31,41 @@ import java.util.List;
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
 
-        CommandException commandException = null;
+        CommandError commandError = null;
 
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
 
-            try {
-                if (!entry.key().meetsRequirements(sender, commandName, args, index))
-                    continue;
-            } catch (CommandException e) {
-                if (commandException == null || commandException.getDepth() < e.getDepth())
-                    commandException = e;
+            RequirementSet.MeetRequirementResult meetRequirementResult = entry.key().meetsRequirements(sender, commandName, args, index);
 
+            if (meetRequirementResult.hasError()) {
+                if (commandError == null || commandError.getDepth() < meetRequirementResult.getError().getDepth())
+                    commandError = meetRequirementResult.getError();
                 continue;
             }
+
+            if (!meetRequirementResult.meetRequirement())
+                continue;
+
 
 
             if (args.length <= index) {
                 if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
-                    CommandContext commandContext = null;
-                    try {
-                        commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
-                    } catch (Throwable e) {
-                        if (!(e instanceof CommandException))
-                            e = new CommandException(commandName, args, index, e.getMessage(), e);
+                    CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
 
-                        if (commandException == null || commandException.getDepth() < ((CommandException) e).getDepth())
-                            commandException = (CommandException) e;
+                    if (commandContext == null)
+                        continue;
+
+                    if (commandContext.hasError()) {
+                        if (commandError == null || commandError.getDepth() < commandContext.error().getDepth())
+                            commandError = commandContext.error();
+
+                        continue;
                     }
 
-                    if (commandContext != null)
-                        return commandContext;
+                    return commandContext;
                 }
 
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
@@ -72,39 +74,35 @@ import java.util.List;
                 return new CommandContext(
                         sender,
                         entry.value(),
+                        null,
                         args,
                         commandName,
                         new HashMap<>()
                 );
             }
 
-            CommandContext result = null;
-            try {
-                 result = commandOption.handle(
+            CommandContext result = commandOption.handle(
                         commandWrapper,
                         commandName,
                         args,
                         sender,
                         index
                 );
-            } catch (Throwable e) {
-                if (!(e instanceof CommandException))
-                    e = new CommandException(commandName, args, index, e.getMessage(), e);
-
-                CommandException cmdException = (CommandException) e;
-
-                if (commandException == null || commandException.getDepth() < cmdException.getDepth())
-                    commandException = cmdException;
-            }
 
             if (result == null)
                 continue;
 
+            if (result.hasError()) {
+                if (commandError == null || commandError.getDepth() < result.error().getDepth())
+                    commandError = result.error();
+                continue;
+            }
+
             return result;
         }
 
-        if (commandException != null)
-            throw commandException;
+        if (commandError != null)
+            return new CommandContext(sender, null, commandError, args, commandName, new HashMap<>());
 
         return null;
     }
@@ -118,7 +116,7 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender, commandName, args, index))
+            if (!entry.key().meetsRequirements(sender, commandName, args, index).meetRequirement())
                 continue;
 
             result.addAll(commandOption.handleTabCompletion(commandWrapper, commandName, args, sender, index));
@@ -133,12 +131,8 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            try {
-                if (entry.key().meetsRequirements(sender, commandName, args, depth))
+            if (entry.key().meetsRequirements(sender, commandName, args, depth).meetRequirement())
                     return true;
-            } catch (CommandException e) {
-                continue;
-            }
 
         }
 

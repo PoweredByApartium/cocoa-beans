@@ -11,9 +11,7 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.*;
-import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
-import net.apartium.cocoabeans.commands.exception.UnknownCommandException;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.exception.SpigotExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.spigot.parsers.MaterialParser;
@@ -75,7 +73,11 @@ public class SpigotCommandManager extends CommandManager {
                     invoke = split[1 % split.length];
                 }
 
-                return handle(new SpigotSender<>(sender), invoke, args);
+                try {
+                    return handle(new SpigotSender<>(sender), invoke, args);
+                } catch (Throwable e) {
+                    return false;
+                }
             }
 
             @Override
@@ -96,7 +98,7 @@ public class SpigotCommandManager extends CommandManager {
     }
 
     @Override
-    public boolean handle(Sender sender, String commandName, String[] args) {
+    public boolean handle(Sender sender, String commandName, String[] args) throws Throwable {
         return super.handle(sender, commandName, args);
     }
 }

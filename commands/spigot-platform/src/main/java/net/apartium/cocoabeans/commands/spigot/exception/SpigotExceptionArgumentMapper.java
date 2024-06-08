@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.commands.spigot.exception;
 
 import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import org.bukkit.command.CommandSender;
@@ -43,6 +45,15 @@ public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
             if (type.isAssignableFrom(throwable.getClass())) {
                 result.add(throwable);
                 continue;
+            }
+
+            if (CommandError.class.isAssignableFrom(type) && throwable instanceof CommandException) {
+                CommandError commandError = ((CommandException) throwable).getCommandError();
+                if (commandError.getClass().isAssignableFrom(type)) {
+                    result.add(commandError);
+                    continue;
+                }
+
             }
 
             throw new IllegalArgumentException("Unsupported argument type: " + type.getName());

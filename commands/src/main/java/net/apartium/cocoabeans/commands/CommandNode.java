@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandException;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

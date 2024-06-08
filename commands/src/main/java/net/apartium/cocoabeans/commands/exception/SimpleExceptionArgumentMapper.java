@@ -37,6 +37,15 @@ public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
                 continue;
             }
 
+            if (CommandError.class.isAssignableFrom(type) && throwable instanceof CommandException) {
+                CommandError commandError = ((CommandException) throwable).getCommandError();
+                if (commandError.getClass().isAssignableFrom(type)) {
+                    result.add(commandError);
+                    continue;
+                }
+
+            }
+
             return null;
         }
 

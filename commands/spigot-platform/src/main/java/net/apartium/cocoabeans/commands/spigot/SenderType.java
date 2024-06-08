@@ -12,7 +12,7 @@ package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementException;
+import net.apartium.cocoabeans.commands.requirements.RequirementError;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
@@ -30,8 +30,8 @@ public enum SenderType implements Requirement {
         }
 
         @Override
-        public RequirementException getException(String commandName, String[] args, int depth) {
-            return new RequirementException(this, commandName, args, depth, "This command can only be used by players");
+        public RequirementError getError(String commandName, String[] args, int depth) {
+            return new RequirementError(this, commandName, args, depth, "This command can only be used by players");
         }
     },
 
@@ -45,8 +45,8 @@ public enum SenderType implements Requirement {
         }
 
         @Override
-        public RequirementException getException(String commandName, String[] args, int depth) {
-            return new RequirementException(this, commandName, args, depth, "This command can only be used by command block");
+        public RequirementError getError(String commandName, String[] args, int depth) {
+            return new RequirementError(this, commandName, args, depth, "This command can only be used by command block");
         }
     },
 
@@ -60,8 +60,8 @@ public enum SenderType implements Requirement {
         }
 
         @Override
-        public RequirementException getException(String commandName, String[] args, int depth) {
-            return new RequirementException(this, commandName, args, depth, "This command can only be used by console");
+        public RequirementError getError(String commandName, String[] args, int depth) {
+            return new RequirementError(this, commandName, args, depth, "This command can only be used by console");
         }
     },
 
@@ -76,8 +76,8 @@ public enum SenderType implements Requirement {
         }
 
         @Override
-        public RequirementException getException(String commandName, String[] args, int depth) {
-            return new RequirementException(this, commandName, args, depth, "This command can only be used by entities");
+        public RequirementError getError(String commandName, String[] args, int depth) {
+            return new RequirementError(this, commandName, args, depth, "This command can only be used by entities");
         }
     }
 

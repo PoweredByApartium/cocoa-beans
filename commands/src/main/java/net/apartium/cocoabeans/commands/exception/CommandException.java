@@ -2,44 +2,29 @@ package net.apartium.cocoabeans.commands.exception;
 
 public class CommandException extends RuntimeException {
 
-    protected final String commandName;
-    protected final String[] args;
-    protected final int depth;
+    private final CommandError commandError;
 
-    public CommandException() {
-        this(null, null, 0);
+    public CommandException(CommandError commandError) {
+        this.commandError = commandError;
     }
 
-    public CommandException(String commandName, String[] args, int depth) {
-        this.commandName = commandName;
-        this.args = args;
-        this.depth = depth;
-    }
-
-    public CommandException(String commandName, String[] args, int depth, String message) {
-        super(message);
-        this.commandName = commandName;
-        this.args = args;
-        this.depth = depth;
-    }
-
-    public CommandException(String commandName, String[] args, int depth, String message, Throwable cause) {
-        super(message, cause);
-        this.commandName = commandName;
-        this.args = args;
-        this.depth = depth;
-    }
-
-    public int getDepth() {
-        return depth;
+    public CommandError getCommandError() {
+        return commandError;
     }
 
     public String getCommandName() {
-        return commandName;
+        return commandError.getCommandName();
     }
 
     public String[] getArgs() {
-        return args;
+        return commandError.getArgs();
     }
 
+    public String getMessage() {
+        return commandError.getMessage();
+    }
+
+    public int getDepth() {
+        return commandError.getDepth();
+    }
 }

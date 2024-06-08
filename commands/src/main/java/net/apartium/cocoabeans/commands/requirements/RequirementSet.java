@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.commands.exception.CommandError;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -173,17 +174,49 @@ public class RequirementSet implements Set<Requirement> {
         return Arrays.hashCode(requirements);
     }
 
-    public boolean meetsRequirements(Sender sender, String commandName, String[] args, int depth) {
+    public MeetRequirementResult meetsRequirements(Sender sender, String commandName, String[] args, int depth) {
         for (Requirement requirement : requirements) {
             if (!requirement.meetsRequirement(sender)) {
-                RequirementException exception = requirement.getException(commandName, args, depth);
-                if (exception != null)
-                    throw exception;
+                RequirementError error = requirement.getError(commandName, args, depth);
+                if (error != null)
+                    return MeetRequirementResult.ofError(error);
 
-                return false;
+                return MeetRequirementResult.of(false);
             }
         }
 
-        return true;
+        return MeetRequirementResult.of(true);
+    }
+
+    public static class MeetRequirementResult {
+
+        private final CommandError error;
+        private final boolean meetRequirement;
+
+        private MeetRequirementResult(CommandError error, boolean meetRequirement) {
+            this.error = error;
+            this.meetRequirement = meetRequirement;
+        }
+
+        public CommandError getError() {
+            return error;
+        }
+
+        public boolean hasError() {
+            return error != null;
+        }
+
+        public boolean meetRequirement() {
+            return meetRequirement;
+        }
+
+        public static MeetRequirementResult ofError(CommandError error) {
+            return new MeetRequirementResult(error, false);
+        }
+
+        public static MeetRequirementResult of(boolean meetRequirement) {
+            return new MeetRequirementResult(null, meetRequirement);
+        }
+
     }
 }

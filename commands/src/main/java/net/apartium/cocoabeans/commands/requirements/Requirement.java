@@ -25,8 +25,8 @@ public interface Requirement {
      * @return true if meets req, else false
      */
     boolean meetsRequirement(Sender sender);
-    default RequirementException getException(String commandName, String[] args, int depth) {
-        return new RequirementException(this, commandName, args, depth, "Requirement not met");
+    default RequirementError getError(String commandName, String[] args, int depth) {
+        return new RequirementError(this, commandName, args, depth, "Requirement not met");
     };
 
 }

@@ -10,8 +10,8 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandException;
-import net.apartium.cocoabeans.commands.exception.InvalidUsageException;
+import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageError;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -39,51 +39,39 @@ import java.util.*;
                 return new CommandContext(
                     sender,
                     this,
+                    null,
                     args,
                     commandName,
                     new HashMap<>()
                 );
 
-            try {
-                return handleOptional(registeredCommand, commandName, args, sender, index);
-            } catch (Throwable throwable) {
-                throw throwable;
-            }
+            return handleOptional(registeredCommand, commandName, args, sender, index);
         }
 
 
-        if (args.length <= index) {
-            try {
-                return handleOptional(registeredCommand, commandName, args, sender, index);
-            } catch (Throwable throwable) {
-                throw throwable;
-            }
-        }
+        if (args.length <= index)
+            return handleOptional(registeredCommand, commandName, args, sender, index);
 
-        CommandException commandException = null;
+
+        CommandContext commandError = null;
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor == null)
             commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
 
         if (commandBranchProcessor != null) {
-            CommandContext result = null;
-            try {
-                 result = commandBranchProcessor.handle(
-                        registeredCommand,
-                        commandName,
-                        args,
-                        sender,
-                        index + 1
-                );
-            } catch (Throwable throwable) {
-                if (!(throwable instanceof CommandException))
-                    throwable = new CommandException(commandName, args, index, throwable.getMessage(), throwable);
+            CommandContext result;
+            result = commandBranchProcessor.handle(
+                    registeredCommand,
+                    commandName,
+                    args,
+                    sender,
+                    index + 1
+            );
 
-                commandException = (CommandException) throwable;
-            }
-
-            if (result != null)
+            if (result != null && !result.hasError())
                 return result;
+
+            commandError = result;
         }
 
         for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
@@ -97,24 +85,23 @@ import java.util.*;
 
                     CommandContext result = null;
 
-                    try {
-                        result = entry.value().handle(
-                                registeredCommand,
-                                commandName,
-                                args,
-                                sender,
-                                index + 1
-                        );
-                    } catch (Throwable throwable) {
-                        if (!(throwable instanceof CommandException))
-                            throwable = new CommandException(commandName, args, index, throwable.getMessage(), throwable);
-
-                        if (commandException == null || commandException.getDepth() < ((CommandException) throwable).getDepth())
-                            commandException = (CommandException) throwable;
-                    }
+                    result = entry.value().handle(
+                            registeredCommand,
+                            commandName,
+                            args,
+                            sender,
+                            index + 1
+                    );
 
                     if (result == null)
                         continue;
+
+                    if (result.hasError()) {
+                        if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                            commandError = result;
+
+                        continue;
+                    }
 
                     result.parsedArgs()
                             .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
@@ -130,26 +117,23 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger than current index");
 
-            CommandContext result = null;
-
-            try {
-                result = entry.value().handle(
-                        registeredCommand,
-                        commandName,
-                        args,
-                        sender,
-                        newIndex
-                );
-            } catch (Throwable throwable) {
-                if (!(throwable instanceof CommandException))
-                    throwable = new CommandException(commandName, args, index, throwable.getMessage(), throwable);
-
-                if (commandException == null || commandException.getDepth() < ((CommandException) throwable).getDepth())
-                    commandException = (CommandException) throwable;
-            }
+            CommandContext result = entry.value().handle(
+                    registeredCommand,
+                    commandName,
+                    args,
+                    sender,
+                    newIndex
+            );
 
             if (result == null)
                 continue;
+
+            if (result.hasError()) {
+                if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                    commandError = result;
+
+                continue;
+            }
 
             result.parsedArgs()
                     .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
@@ -158,14 +142,24 @@ import java.util.*;
             return result;
         }
 
-        if (commandException != null)
-            throw commandException;
+        if (commandError != null)
+            return commandError;
 
-        throw new InvalidUsageException(commandName, args, index);
+        // return invalid usage
+        return new CommandContext(
+                sender,
+                null,
+                new InvalidUsageError(commandName, args, index),
+                args,
+                commandName,
+                Map.of()
+        );
     }
 
     @Nullable
     /* package-private */ CommandContext handleOptional(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+        CommandContext error = null;
+
         for (var entry : argumentTypeOptionalHandlerMap) {
             CommandContext result = entry.value().handle(
                     registeredCommand,
@@ -181,6 +175,7 @@ import java.util.*;
                     return new CommandContext(
                             sender,
                             this,
+                            null,
                             args,
                             commandName,
                             new HashMap<>()
@@ -188,6 +183,14 @@ import java.util.*;
 
                 continue;
             }
+
+            if (result.hasError()) {
+                if (error == null || error.error().getDepth() < result.error().getDepth())
+                    error = result;
+
+                continue;
+            }
+
 
             result.parsedArgs()
                     .computeIfAbsent(entry.key().parser().getArgumentType(), (clazz) -> new ArrayList<>())
