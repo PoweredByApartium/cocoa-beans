@@ -12,6 +12,11 @@ public class RequirementError extends CommandError {
         this.requirement = requirement;
     }
 
+    @Override
+    public Throwable getError() {
+        return new RequirementException();
+    }
+
     public class RequirementException extends CommandException {
 
         public RequirementException() {
