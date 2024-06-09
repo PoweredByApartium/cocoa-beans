@@ -10,8 +10,6 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.Sender;
-
 /**
  * Represents a requirement to run a command or a sub command, eg a permission, sender type (player / console etc)
  * @see RequirementFactory

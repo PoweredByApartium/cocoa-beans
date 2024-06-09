@@ -36,18 +36,14 @@ public class PermissionFactory implements RequirementFactory {
             if (sender == null || !(sender.getSender() instanceof SpigotSender<?> spigotSender))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         "You don't have permission to execute this command"
                 ));
 
             if (!spigotSender.getSender().hasPermission(permission))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         "You don't have permission to execute this command"
                 ));
 

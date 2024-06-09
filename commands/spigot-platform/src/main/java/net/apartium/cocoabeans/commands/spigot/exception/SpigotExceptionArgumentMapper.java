@@ -6,10 +6,12 @@ import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiStatus.AvailableSince("0.0.22")
 public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
 
     @Override

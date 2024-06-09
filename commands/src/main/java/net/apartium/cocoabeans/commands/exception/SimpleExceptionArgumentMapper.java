@@ -1,10 +1,12 @@
 package net.apartium.cocoabeans.commands.exception;
 
 import net.apartium.cocoabeans.commands.Sender;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiStatus.AvailableSince("0.0.22")
 public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
 
     @Override

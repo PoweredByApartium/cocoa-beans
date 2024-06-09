@@ -62,9 +62,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                 return invert ? RequirementResult.meet() : RequirementResult.error(
                         new RequirementError(
                                 this,
-                                context.commandName(),
-                                context.args(),
-                                context.depth(),
+                                context,
                                 "Sender is null"
                         )
                 );
@@ -75,9 +73,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                         : RequirementResult.error(
                         new RequirementError(
                                 this,
-                                context.commandName(),
-                                context.args(),
-                                context.depth(),
+                                context,
                                 "Sender is not a player"
                         )
                 );
@@ -87,9 +83,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                     : RequirementResult.error(
                     new RequirementError(
                             this,
-                            context.commandName(),
-                            context.args(),
-                            context.depth(),
+                            context,
                             "Sender is not whitelisted"
                     ));
         }

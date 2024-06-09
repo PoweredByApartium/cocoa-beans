@@ -35,9 +35,7 @@ public enum SenderType implements Requirement {
             if (sender == null || !(sender.getSender() instanceof Player))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         ERROR_MESSAGE
                 ));
 
@@ -59,9 +57,7 @@ public enum SenderType implements Requirement {
             if (sender == null || !(sender.getSender() instanceof BlockCommandSender))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         ERROR_MESSAGE
                 ));
 
@@ -82,9 +78,7 @@ public enum SenderType implements Requirement {
             if (sender == null || !(sender.getSender() instanceof ConsoleCommandSender))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         ERROR_MESSAGE
                 ));
 
@@ -106,9 +100,7 @@ public enum SenderType implements Requirement {
             if (sender == null || !(sender.getSender() instanceof Entity))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         ERROR_MESSAGE
                 ));
 

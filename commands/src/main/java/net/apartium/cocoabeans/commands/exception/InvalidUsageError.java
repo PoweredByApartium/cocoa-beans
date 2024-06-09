@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.commands.exception;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.22")
 public class InvalidUsageError extends CommandError {
 
     public InvalidUsageError() {

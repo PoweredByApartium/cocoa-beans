@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.commands.exception;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.22")
 public class UnknownCommandError extends CommandError {
 
     private final String commandName;
@@ -22,5 +25,6 @@ public class UnknownCommandError extends CommandError {
         public UnknownCommandException() {
             super(UnknownCommandError.this);
         }
+
     }
 }

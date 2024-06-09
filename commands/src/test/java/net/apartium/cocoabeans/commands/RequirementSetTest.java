@@ -128,9 +128,7 @@ public class RequirementSetTest {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             return RequirementResult.error(new RequirementError(
                     this,
-                    context.commandName(),
-                    context.args(),
-                    context.depth(),
+                    context,
                     ""
             ));
         }
@@ -155,9 +153,7 @@ public class RequirementSetTest {
             if (!senders.contains(context.sender()))
                 return RequirementResult.error(new RequirementError(
                         this,
-                        context.commandName(),
-                        context.args(),
-                        context.depth(),
+                        context,
                         ""
                 ));
 
@@ -185,9 +181,7 @@ public class RequirementSetTest {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             return RequirementResult.error(new RequirementError(
                     this,
-                    context.commandName(),
-                    context.args(),
-                    context.depth(),
+                    context,
                     ""
             ));
         }
@@ -200,9 +194,7 @@ public class RequirementSetTest {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             return RequirementResult.error(new RequirementError(
                     this,
-                    context.commandName(),
-                    context.args(),
-                    context.depth(),
+                    context,
                     ""
             ));
         }
