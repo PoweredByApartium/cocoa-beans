@@ -1,10 +1,13 @@
-package net.apartium.cocoabeans.structs;
+package net.apartium.cocoabeans.space;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.22")
 public class BoxRegion implements Region {
 
-    public double x0, x1;
-    public double y0, y1;
-    public double z0, z1;
+    private double x0, x1;
+    private double y0, y1;
+    private double z0, z1;
 
     public BoxRegion(double x0, double x1, double y0, double y1, double z0, double z1) {
         this.x0 = Math.min(x0, x1);

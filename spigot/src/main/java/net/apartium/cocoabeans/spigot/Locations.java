@@ -11,10 +11,10 @@
 package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.Ensures;
-import net.apartium.cocoabeans.structs.ImmutablePosition;
-import net.apartium.cocoabeans.structs.Position;
+import net.apartium.cocoabeans.space.Position;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -87,10 +87,23 @@ public class Locations {
         return set;
     }
 
+    /**
+     * Convert a location to a position
+     * @param location the location
+     * @return the position
+     */
+    @ApiStatus.AvailableSince("0.0.22")
     public static Position toPosition(Location location) {
         return new Position(location.getX(), location.getY(), location.getZ());
     }
 
+    /**
+     * Convert a position to a location
+     * @param world bukkit world
+     * @param position cocoa beans position
+     * @return the location
+     */
+    @ApiStatus.AvailableSince("0.0.22")
     public static Location toLocation(World world, Position position) {
         return new Location(world, position.getX(), position.getY(), position.getZ());
     }

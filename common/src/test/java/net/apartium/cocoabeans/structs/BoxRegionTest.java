@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.structs;
 
+import net.apartium.cocoabeans.space.BoxRegion;
+import net.apartium.cocoabeans.space.Position;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

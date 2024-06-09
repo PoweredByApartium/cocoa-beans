@@ -1,5 +1,11 @@
-package net.apartium.cocoabeans.structs;
+package net.apartium.cocoabeans.space;
 
+import org.jetbrains.annotations.ApiStatus;
+
+/**
+ * Represents a sphere region.
+ */
+@ApiStatus.AvailableSince("0.0.22")
 public class SphereRegion implements Region {
 
     private Position center;

@@ -1,11 +1,15 @@
-package net.apartium.cocoabeans.structs;
+package net.apartium.cocoabeans.space;
+
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Immutable version of Position
  * When the position is modified, a new Position is created
  * and the original one is left unchanged
+ * @see Position
  */
-public class ImmutablePosition extends Position{
+@ApiStatus.AvailableSince("0.0.22")
+public class ImmutablePosition extends Position {
 
     public ImmutablePosition(double x, double y, double z) {
         super(x, y, z);
@@ -84,5 +88,10 @@ public class ImmutablePosition extends Position{
     @Override
     public Position normalize() {
         throw new UnsupportedOperationException("ImmutablePosition cannot be modified.");
+    }
+
+    @Override
+    public Position immutable() {
+        return this;
     }
 }

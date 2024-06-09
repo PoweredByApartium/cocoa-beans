@@ -1,7 +1,13 @@
-package net.apartium.cocoabeans.structs;
+package net.apartium.cocoabeans.space;
+
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
 
+/**
+ * Position in 3D space
+ */
+@ApiStatus.AvailableSince("0.0.22")
 public class Position {
 
     public static final Position ZERO = new ImmutablePosition(0, 0, 0);
@@ -319,6 +325,14 @@ public class Position {
      */
     public boolean isZero() {
         return x == 0 && y == 0 && z == 0;
+    }
+
+    /**
+     * Create a new immutable position
+     * @return immutable position
+     */
+    public Position immutable() {
+        return new ImmutablePosition(this);
     }
 
     @Override
