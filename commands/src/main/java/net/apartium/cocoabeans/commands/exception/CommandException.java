@@ -5,13 +5,13 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.22")
 public class CommandException extends RuntimeException {
 
-    private final CommandError commandError;
+    private final BadCommandResponse commandError;
 
-    public CommandException(CommandError commandError) {
+    public CommandException(BadCommandResponse commandError) {
         this.commandError = commandError;
     }
 
-    public CommandError getCommandError() {
+    public BadCommandResponse getCommandError() {
         return commandError;
     }
 

@@ -11,7 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
-import net.apartium.cocoabeans.commands.exception.InvalidUsageError;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 
 @Command("evil-brother")
 public class AnotherEvilCommandTest implements CommandNode {
@@ -21,8 +21,8 @@ public class AnotherEvilCommandTest implements CommandNode {
         sender.sendMessage("Hello there :)");
     }
 
-    @ExceptionHandle(InvalidUsageError.InvalidUsageException.class)
-    public boolean meow(InvalidUsageError exception, Sender sender) {
+    @ExceptionHandle(InvalidUsageResponse.InvalidUsageException.class)
+    public boolean meow(InvalidUsageResponse exception, Sender sender) {
         sender.sendMessage("Invalid usage");
         return true;
     }

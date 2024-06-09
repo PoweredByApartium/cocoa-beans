@@ -22,7 +22,7 @@ public class WallRequirementFactory implements RequirementFactory {
     private static class WallRequirementImpl implements Requirement {
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            return RequirementResult.error(new RequirementError(this, context, "This command can't be used"));
+            return RequirementResult.error(new UnmetRequirementResponse(this, context, "This command can't be used"));
         }
     }
 }

@@ -3,11 +3,11 @@ package net.apartium.cocoabeans.commands.exception;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
-public class UnknownCommandError extends CommandError {
+public class UnknownCommandResponse extends BadCommandResponse {
 
     private final String commandName;
 
-    public UnknownCommandError(String commandName) {
+    public UnknownCommandResponse(String commandName) {
         this.commandName = commandName;
     }
 
@@ -16,14 +16,14 @@ public class UnknownCommandError extends CommandError {
     }
 
     @Override
-    public Throwable getError() {
+    public Exception getError() {
         return new UnknownCommandException();
     }
 
     public class UnknownCommandException extends CommandException {
 
         public UnknownCommandException() {
-            super(UnknownCommandError.this);
+            super(UnknownCommandResponse.this);
         }
 
     }

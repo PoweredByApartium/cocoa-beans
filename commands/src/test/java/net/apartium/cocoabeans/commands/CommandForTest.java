@@ -15,7 +15,7 @@ import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
-import net.apartium.cocoabeans.commands.requirements.RequirementError;
+import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
 import java.util.Optional;
@@ -186,8 +186,8 @@ public class CommandForTest implements CommandNode {
         return true;
     }
 
-    @ExceptionHandle(RequirementError.RequirementException.class)
-    public boolean meow(RequirementError exception, Sender sender) {
+    @ExceptionHandle(UnmetRequirementResponse.RequirementException.class)
+    public boolean meow(UnmetRequirementResponse exception, Sender sender) {
         sender.sendMessage("You don't have permission to execute this command!");
         return true;
     }

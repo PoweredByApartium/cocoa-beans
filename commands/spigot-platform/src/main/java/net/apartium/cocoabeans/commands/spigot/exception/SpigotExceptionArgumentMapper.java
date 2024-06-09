@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.commands.spigot.exception;
 
 import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
@@ -49,8 +49,8 @@ public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
                 continue;
             }
 
-            if (CommandError.class.isAssignableFrom(type) && throwable instanceof CommandException) {
-                CommandError commandError = ((CommandException) throwable).getCommandError();
+            if (BadCommandResponse.class.isAssignableFrom(type) && throwable instanceof CommandException) {
+                BadCommandResponse commandError = ((CommandException) throwable).getCommandError();
                 if (commandError.getClass().isAssignableFrom(type)) {
                     result.add(commandError);
                     continue;

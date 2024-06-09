@@ -1,18 +1,18 @@
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 
 public class RequirementResult {
 
-    private final CommandError error;
+    private final BadCommandResponse error;
     private final boolean meetRequirement;
 
-    private RequirementResult(CommandError error, boolean meetRequirement) {
+    private RequirementResult(BadCommandResponse error, boolean meetRequirement) {
         this.error = error;
         this.meetRequirement = meetRequirement;
     }
 
-    public CommandError getError() {
+    public BadCommandResponse getError() {
         return error;
     }
 
@@ -24,7 +24,7 @@ public class RequirementResult {
         return meetRequirement;
     }
 
-    public static RequirementResult error(CommandError error) {
+    public static RequirementResult error(BadCommandResponse error) {
         return new RequirementResult(error, false);
     }
 

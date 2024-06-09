@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.commands.exception;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
-public class CommandError {
+public class BadCommandResponse {
 
     protected final String commandName;
     protected final String[] args;
@@ -11,17 +11,17 @@ public class CommandError {
 
     protected String message;
 
-    public CommandError() {
+    public BadCommandResponse() {
         this(null, null, 0);
     }
 
-    public CommandError(String commandName, String[] args, int depth) {
+    public BadCommandResponse(String commandName, String[] args, int depth) {
         this.commandName = commandName;
         this.args = args;
         this.depth = depth;
     }
 
-    public CommandError(String commandName, String[] args, int depth, String message) {
+    public BadCommandResponse(String commandName, String[] args, int depth, String message) {
         this.commandName = commandName;
         this.args = args;
         this.depth = depth;
@@ -45,11 +45,11 @@ public class CommandError {
         return message;
     }
 
-    public Throwable getError() {
+    public Exception getError() {
         return new CommandException(this);
     }
 
-    public void throwError() throws Throwable {
+    public void throwError() throws Exception {
         throw getError();
     }
 }
