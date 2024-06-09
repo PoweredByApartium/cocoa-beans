@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.Ensures;
+import net.apartium.cocoabeans.structs.ImmutablePosition;
+import net.apartium.cocoabeans.structs.Position;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -85,4 +87,11 @@ public class Locations {
         return set;
     }
 
+    public static Position toPosition(Location location) {
+        return new Position(location.getX(), location.getY(), location.getZ());
+    }
+
+    public static Location toLocation(World world, Position position) {
+        return new Location(world, position.getX(), position.getY(), position.getZ());
+    }
 }
