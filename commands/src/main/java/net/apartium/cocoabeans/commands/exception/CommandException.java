@@ -1,21 +1,33 @@
 package net.apartium.cocoabeans.commands.exception;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.22")
 public class CommandException extends RuntimeException {
 
-    public CommandException() {
+    private final CommandError commandError;
+
+    public CommandException(CommandError commandError) {
+        this.commandError = commandError;
     }
 
-    public CommandException(String message) {
-        super(message);
+    public CommandError getCommandError() {
+        return commandError;
     }
 
-    public CommandException(String message, Throwable cause) {
-        super(message, cause);
+    public String getCommandName() {
+        return commandError.getCommandName();
     }
 
-    public CommandException(Throwable cause) {
-        super(cause);
+    public String[] getArgs() {
+        return commandError.getArgs();
     }
 
+    public String getMessage() {
+        return commandError.getMessage();
+    }
 
+    public int getDepth() {
+        return commandError.getDepth();
+    }
 }

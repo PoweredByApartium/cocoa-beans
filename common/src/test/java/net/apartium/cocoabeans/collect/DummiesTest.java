@@ -46,8 +46,8 @@ class DummiesTest {
         assertFalse(set.contains("X"));
         assertFalse(set.containsAll(Set.of("X", "Z")));
         assertFalse(set.iterator().hasNext());
-        assertEquals(new Object[0].length, set.toArray().length);
-        assertEquals(new Object[0].length, set.toArray(new Object[0]).length );
+        assertEquals(0, set.toArray().length);
+        assertEquals(0, set.toArray(new Object[0]).length);
         assertFalse(set.addAll(Arrays.asList("x", "y")));
         assertFalse(set.retainAll(Arrays.asList("x", "y")));
         assertFalse(set.removeAll(Arrays.asList("x", "y")));

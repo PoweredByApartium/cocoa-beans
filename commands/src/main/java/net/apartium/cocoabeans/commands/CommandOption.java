@@ -10,8 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageError;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,12 +22,12 @@ import java.util.*;
 
     private final CommandManager commandManager;
 
-    private final PriorityQueue<RegisteredCommandVariant> registeredCommandVariants = new PriorityQueue<>((a, b) -> Integer.compare(b.priority(), a.priority()));
+    private final List<RegisteredCommandVariant> registeredCommandVariants = new ArrayList<>();
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
-    private final PriorityQueue<Entry<ArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new PriorityQueue<>((a, b) ->  b.key().compareTo(a.key()));
-    private final PriorityQueue<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> argumentTypeOptionalHandlerMap = new PriorityQueue<>((a, b) ->  b.key().compareTo(a.key()));
+    private final List<Entry<ArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new ArrayList<>();
+    private final List<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> argumentTypeOptionalHandlerMap = new ArrayList<>();
 
     CommandOption(CommandManager commandManager) {
         this.commandManager = commandManager;
@@ -38,6 +39,7 @@ import java.util.*;
                 return new CommandContext(
                     sender,
                     this,
+                    null,
                     args,
                     commandName,
                     new HashMap<>()
@@ -51,32 +53,39 @@ import java.util.*;
             return handleOptional(registeredCommand, commandName, args, sender, index);
 
 
+        CommandContext commandError = null;
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor == null)
             commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
 
         if (commandBranchProcessor != null) {
-            CommandContext result = commandBranchProcessor.handle(
+            CommandContext result;
+            result = commandBranchProcessor.handle(
                     registeredCommand,
                     commandName,
                     args,
                     sender,
                     index + 1
             );
-            if (result != null)
+
+            if (result != null && !result.hasError())
                 return result;
+
+            commandError = result;
         }
 
         for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
-            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(new AbstractCommandProcessingContext(sender, args, index));
+            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(new AbstractCommandProcessingContext(sender, commandName, args, index));
 
             if (parse.isEmpty()) {
                 if (typeParser instanceof OptionalArgumentParser<?> optionalArgumentParser) {
                     if (!optionalArgumentParser.optionalNotMatch())
                         return null;
 
-                    CommandContext result = entry.value().handle(
+                    CommandContext result = null;
+
+                    result = entry.value().handle(
                             registeredCommand,
                             commandName,
                             args,
@@ -86,6 +95,13 @@ import java.util.*;
 
                     if (result == null)
                         continue;
+
+                    if (result.hasError()) {
+                        if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                            commandError = result;
+
+                        continue;
+                    }
 
                     result.parsedArgs()
                             .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
@@ -112,6 +128,13 @@ import java.util.*;
             if (result == null)
                 continue;
 
+            if (result.hasError()) {
+                if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                    commandError = result;
+
+                continue;
+            }
+
             result.parsedArgs()
                     .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
                     .add(0, parse.get().result());
@@ -119,11 +142,24 @@ import java.util.*;
             return result;
         }
 
-        return null;
+        if (commandError != null)
+            return commandError;
+
+        // return invalid usage
+        return new CommandContext(
+                sender,
+                null,
+                new InvalidUsageError(commandName, args, index),
+                args,
+                commandName,
+                Map.of()
+        );
     }
 
     @Nullable
     /* package-private */ CommandContext handleOptional(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+        CommandContext error = null;
+
         for (var entry : argumentTypeOptionalHandlerMap) {
             CommandContext result = entry.value().handle(
                     registeredCommand,
@@ -139,6 +175,7 @@ import java.util.*;
                     return new CommandContext(
                             sender,
                             this,
+                            null,
                             args,
                             commandName,
                             new HashMap<>()
@@ -146,6 +183,14 @@ import java.util.*;
 
                 continue;
             }
+
+            if (result.hasError()) {
+                if (error == null || error.error().getDepth() < result.error().getDepth())
+                    error = result;
+
+                continue;
+            }
+
 
             result.parsedArgs()
                     .computeIfAbsent(entry.key().parser().getArgumentType(), (clazz) -> new ArrayList<>())
@@ -157,7 +202,7 @@ import java.util.*;
         return null;
     }
 
-    public List<String> handleTabCompletion(RegisteredCommand registeredCommand, String[] args, Sender sender, int index) {
+    public List<String> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index)
             return List.of();
 
@@ -168,7 +213,7 @@ import java.util.*;
                 if (!entry.getKey().startsWith(args[index]))
                     continue;
 
-                if (!entry.getValue().haveAnyRequirementsMeet(sender))
+                if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
                 result.add(entry.getKey());
@@ -178,23 +223,23 @@ import java.util.*;
                 if (!entry.getKey().startsWith(args[index].toLowerCase()))
                     continue;
 
-                if (!entry.getValue().haveAnyRequirementsMeet(sender))
+                if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
                 result.add(entry.getKey());
             }
 
             for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
-                if (!entry.value().haveAnyRequirementsMeet(sender))
+                if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key() instanceof OptionalArgumentParser<?> optionalArgumentParser) {
                         if (!optionalArgumentParser.optionalNotMatch())
                             continue;
 
-                        result.addAll(entry.value().handleTabCompletion(registeredCommand, args, sender, index + 1));
+                        result.addAll(entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, index + 1));
                     }
 
                     continue;
@@ -211,6 +256,7 @@ import java.util.*;
         if (commandBranchProcessor != null) {
             List<String> strings = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
+                    commandName,
                     args,
                     sender,
                     index + 1
@@ -223,6 +269,7 @@ import java.util.*;
         if (commandBranchProcessor != null) {
             List<String> strings = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
+                    commandName,
                     args,
                     sender,
                     index + 1
@@ -234,18 +281,18 @@ import java.util.*;
 
         for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
-            OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, args, index));
+            OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, commandName, args, index));
             if (parse.isEmpty()) {
-                if (!entry.value().haveAnyRequirementsMeet(sender))
+                if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key() instanceof OptionalArgumentParser<?> optionalArgumentParser) {
                         if (!optionalArgumentParser.optionalNotMatch())
                             continue;
 
-                        result.addAll(entry.value().handleTabCompletion(registeredCommand, args, sender, index + 1));
+                        result.addAll(entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, index + 1));
                     }
 
                     continue;
@@ -259,8 +306,8 @@ import java.util.*;
             }
 
             if (parse.getAsInt() <= args.length) {
-                if (entry.value().haveAnyRequirementsMeet(sender)) {
-                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, args, index));
+                if (entry.value().haveAnyRequirementsMeet(sender, commandName, args, index)) {
+                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
                     if (tabCompletionResult.isPresent()) {
                         if (tabCompletionResult.get().newIndex() >= args.length) {
                             result.addAll(tabCompletionResult.get().result().stream().toList());
@@ -275,7 +322,7 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
 
-            List<String> strings = entry.value().handleTabCompletion(registeredCommand, args, sender, newIndex);
+            List<String> strings = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
             if (strings.isEmpty())
                 continue;
 
@@ -285,15 +332,15 @@ import java.util.*;
         return result;
     }
 
-    public PriorityQueue<RegisteredCommandVariant> getRegisteredCommandVariants() {
+    public List<RegisteredCommandVariant> getRegisteredCommandVariants() {
         return registeredCommandVariants;
     }
 
-    public PriorityQueue<Entry<ArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {
+    public List<Entry<ArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {
         return argumentTypeHandlerMap;
     }
 
-    public PriorityQueue<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> getOptionalArgumentTypeHandlerMap() {
+    public List<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> getOptionalArgumentTypeHandlerMap() {
         return argumentTypeOptionalHandlerMap;
     }
 

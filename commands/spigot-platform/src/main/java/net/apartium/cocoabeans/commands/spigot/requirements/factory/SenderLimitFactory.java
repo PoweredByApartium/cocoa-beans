@@ -13,8 +13,7 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
+import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.jetbrains.annotations.Nullable;
@@ -47,9 +46,15 @@ public class SenderLimitFactory implements RequirementFactory {
         }
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            return senderTypes.stream()
-                    .anyMatch(senderType -> senderType.meetsRequirement(sender)) != invert;
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            if (senderTypes.stream().anyMatch(senderType -> senderType.meetsRequirement(context).meetRequirement()) != invert)
+                return RequirementResult.meet();
+
+            return RequirementResult.error(new RequirementError(
+                    this,
+                    context,
+                    "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+            ));
         }
 
         @Override

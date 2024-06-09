@@ -10,10 +10,12 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
+import net.apartium.cocoabeans.commands.requirements.RequirementError;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
 import java.util.Optional;
@@ -183,4 +185,11 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [" + String.join(", ", args) + "]");
         return true;
     }
+
+    @ExceptionHandle(RequirementError.RequirementException.class)
+    public boolean meow(RequirementError exception, Sender sender) {
+        sender.sendMessage("You don't have permission to execute this command!");
+        return true;
+    }
+
 }

@@ -12,8 +12,7 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
+import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.SpigotSender;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.jetbrains.annotations.Nullable;
@@ -32,11 +31,24 @@ public class PermissionFactory implements RequirementFactory {
     private record PermissionImpl(String permission, boolean invert) implements Requirement {
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            if (!(sender instanceof SpigotSender<?> spigotSender))
-                return false;
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+            if (sender == null || !(sender.getSender() instanceof SpigotSender<?> spigotSender))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context,
+                        "You don't have permission to execute this command"
+                ));
 
-            return spigotSender.getSender().hasPermission(permission) != invert;
+            if (!spigotSender.getSender().hasPermission(permission))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context,
+                        "You don't have permission to execute this command"
+                ));
+
+            return RequirementResult.meet();
         }
+
     }
 }

@@ -11,12 +11,13 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandException;
-import net.apartium.cocoabeans.commands.exception.UnknownCommandException;
+import net.apartium.cocoabeans.commands.exception.SimpleExceptionArgumentMapper;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandError;
 
 public class TestCommandManager extends CommandManager {
 
     public TestCommandManager() {
-        super(new SimpleArgumentMapper());
+        super(new SimpleArgumentMapper(), new SimpleExceptionArgumentMapper());
 
     }
 
@@ -29,11 +30,15 @@ public class TestCommandManager extends CommandManager {
     public boolean handle(Sender sender, String commandName, String[] args) {
         try {
             return super.handle(sender, commandName, args);
-        } catch (UnknownCommandException e) {
+        } catch (UnknownCommandError.UnknownCommandException e) {
             sender.sendMessage("Unknown command: " + e.getCommandName());
             return false;
         } catch (CommandException e) {
-            sender.sendMessage(e.getMessage());
+            sender.sendMessage(e.getMessage() == null ? "null" : e.getMessage());
+            return false;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            sender.sendMessage("oh no");
             return false;
         }
     }
