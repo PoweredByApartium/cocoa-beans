@@ -12,7 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.SimpleExceptionArgumentMapper;
-import net.apartium.cocoabeans.commands.exception.UnknownCommandError;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
 
 public class TestCommandManager extends CommandManager {
 
@@ -30,7 +30,7 @@ public class TestCommandManager extends CommandManager {
     public boolean handle(Sender sender, String commandName, String[] args) {
         try {
             return super.handle(sender, commandName, args);
-        } catch (UnknownCommandError.UnknownCommandException e) {
+        } catch (UnknownCommandResponse.UnknownCommandException e) {
             sender.sendMessage("Unknown command: " + e.getCommandName());
             return false;
         } catch (CommandException e) {

@@ -126,7 +126,7 @@ public class RequirementSetTest {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            return RequirementResult.error(new RequirementError(
+            return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
                     ""
@@ -151,7 +151,7 @@ public class RequirementSetTest {
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             if (!senders.contains(context.sender()))
-                return RequirementResult.error(new RequirementError(
+                return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         ""
@@ -179,7 +179,7 @@ public class RequirementSetTest {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            return RequirementResult.error(new RequirementError(
+            return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
                     ""
@@ -192,7 +192,7 @@ public class RequirementSetTest {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            return RequirementResult.error(new RequirementError(
+            return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
                     ""

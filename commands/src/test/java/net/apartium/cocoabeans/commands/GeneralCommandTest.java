@@ -11,7 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.requirements.RequirementError;
+import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,7 +110,7 @@ GeneralCommandTest {
     void senderMeetsRequirementTest() {
         CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, "test", new String[0], 0);
         assertTrue(processingContext.senderMeetsRequirement(sender -> RequirementResult.meet()).meetRequirement());
-        assertFalse(processingContext.senderMeetsRequirement(sender -> RequirementResult.error(new RequirementError(null, null, null, 0, "no"))).meetRequirement());
+        assertFalse(processingContext.senderMeetsRequirement(sender -> RequirementResult.error(new UnmetRequirementResponse(null, null, null, 0, "no"))).meetRequirement());
     }
 
     @Test

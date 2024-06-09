@@ -10,7 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
@@ -33,7 +33,7 @@ import java.util.List;
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
 
-        CommandError commandError = null;
+        BadCommandResponse commandError = null;
 
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();

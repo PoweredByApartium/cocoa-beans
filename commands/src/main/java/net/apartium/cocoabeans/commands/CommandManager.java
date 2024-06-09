@@ -11,10 +11,10 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.Dispensers;
-import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
-import net.apartium.cocoabeans.commands.exception.UnknownCommandError;
+import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
@@ -72,7 +72,7 @@ public abstract class CommandManager {
     public boolean handle(Sender sender, String commandName, String[] args) throws Throwable {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null)
-            throw new UnknownCommandError(commandName).getError();
+            throw new UnknownCommandResponse(commandName).getError();
 
         CommandContext context = registeredCommand.getCommandBranchProcessor().handle(
                 registeredCommand,
@@ -83,12 +83,12 @@ public abstract class CommandManager {
         );
 
         if (context == null) {
-            CommandError commandException = null;
+            BadCommandResponse badCommandResponse = null;
             for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
 
                 RequirementResult requirementResult = listener.requirements().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, 0));
                 if (requirementResult.hasError()) {
-                    commandException = requirementResult.getError();
+                    badCommandResponse = requirementResult.getError();
                     break;
                 }
             }
@@ -101,48 +101,32 @@ public abstract class CommandManager {
 
             }
 
-            if (commandException != null) {
-                for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
-                    if (invokeException(handleExceptionVariant, sender, commandName, args, commandException.getError()))
-                        return true;
-                }
+            if (badCommandResponse != null) {
+                if (handleError(sender, commandName, args, registeredCommand, context.error().getError()))
+                    return true;
 
-                commandException.throwError();
+                context.error().throwError();
+                return false; // should never reach here
             }
 
             return false;
         }
 
         if (context.hasError()) {
-            for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
-                if (invokeException(handleExceptionVariant, sender, commandName, args, context.error().getError()))
-                    return true;
-            }
-
-            for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-                if (listener.listener().fallbackHandle(sender, commandName, args))
-                    return true;
-
-            }
+            if (handleError(sender, commandName, args, registeredCommand, context.error().getError()))
+                return true;
 
             context.error().throwError();
+            return false; // should never reach here
         }
+        
 
         for (RegisteredCommandVariant method : context.option().getRegisteredCommandVariants()) {
             try {
                 if (invoke(context, sender, method))
                     return true;
             } catch (Throwable e) {
-                for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
-                    if (invokeException(handleExceptionVariant, sender, commandName, args, e))
-                        return true;
-                }
-
-                for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-                    if (listener.listener().fallbackHandle(sender, commandName, args))
-                        return true;
-
-                }
+                if (handleError(sender, commandName, args, registeredCommand, e)) return true;
 
                 throw e;
             }
@@ -154,6 +138,24 @@ public abstract class CommandManager {
 
         }
 
+        return false;
+    }
+
+    private boolean handleError(Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand, Throwable error) {
+        for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
+            if (invokeException(handleExceptionVariant, sender, commandName, args, error))
+                return true;
+        }
+
+        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+            if (listener.listener().handleException(sender, commandName, args, error))
+                return true;
+        }
+
+        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+            if (listener.listener().fallbackHandle(sender, commandName, args))
+                return true;
+        }
         return false;
     }
 

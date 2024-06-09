@@ -10,8 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandError;
-import net.apartium.cocoabeans.commands.exception.InvalidUsageError;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -149,7 +148,7 @@ import java.util.*;
         return new CommandContext(
                 sender,
                 null,
-                new InvalidUsageError(commandName, args, index),
+                new InvalidUsageResponse(commandName, args, index),
                 args,
                 commandName,
                 Map.of()

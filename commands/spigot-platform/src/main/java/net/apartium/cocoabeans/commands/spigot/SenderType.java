@@ -12,7 +12,7 @@ package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementError;
+import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.bukkit.command.BlockCommandSender;
@@ -33,7 +33,7 @@ public enum SenderType implements Requirement {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
             if (sender == null || !(sender.getSender() instanceof Player))
-                return RequirementResult.error(new RequirementError(
+                return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         ERROR_MESSAGE
@@ -55,7 +55,7 @@ public enum SenderType implements Requirement {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
             if (sender == null || !(sender.getSender() instanceof BlockCommandSender))
-                return RequirementResult.error(new RequirementError(
+                return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         ERROR_MESSAGE
@@ -76,7 +76,7 @@ public enum SenderType implements Requirement {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
             if (sender == null || !(sender.getSender() instanceof ConsoleCommandSender))
-                return RequirementResult.error(new RequirementError(
+                return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         ERROR_MESSAGE
@@ -98,7 +98,7 @@ public enum SenderType implements Requirement {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
             if (sender == null || !(sender.getSender() instanceof Entity))
-                return RequirementResult.error(new RequirementError(
+                return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         ERROR_MESSAGE

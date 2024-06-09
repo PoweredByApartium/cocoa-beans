@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.commands.CommandNode;
-import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Whitelist;
 import org.bukkit.command.ConsoleCommandSender;
@@ -60,7 +59,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
             Object senderObj = context.sender().getSender();
             if (senderObj == null)
                 return invert ? RequirementResult.meet() : RequirementResult.error(
-                        new RequirementError(
+                        new UnmetRequirementResponse(
                                 this,
                                 context,
                                 "Sender is null"
@@ -71,7 +70,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                 return (consoleBypass && senderObj instanceof ConsoleCommandSender) != invert
                         ? RequirementResult.meet()
                         : RequirementResult.error(
-                        new RequirementError(
+                        new UnmetRequirementResponse(
                                 this,
                                 context,
                                 "Sender is not a player"
@@ -81,7 +80,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
             return uuids.contains(player.getUniqueId()) != invert
                     ? RequirementResult.meet()
                     : RequirementResult.error(
-                    new RequirementError(
+                    new UnmetRequirementResponse(
                             this,
                             context,
                             "Sender is not whitelisted"

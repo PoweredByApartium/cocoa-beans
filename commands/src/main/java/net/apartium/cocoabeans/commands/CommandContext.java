@@ -10,7 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.Map;
 // TODO change to interface
 public record CommandContext(Sender sender,
                              @Nullable CommandOption option,
-                             @Nullable CommandError error,
+                             @Nullable BadCommandResponse error,
                              String[] args,
                              String commandName,
                              Map<Class<?>, List<Object>> parsedArgs
