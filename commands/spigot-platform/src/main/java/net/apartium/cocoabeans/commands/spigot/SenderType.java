@@ -13,6 +13,8 @@ package net.apartium.cocoabeans.commands.spigot;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementError;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
@@ -24,29 +26,46 @@ public enum SenderType implements Requirement {
      * @see Player
      */
     PLAYER {
-        @Override
-        public boolean meetsRequirement(Sender sender) {
-            return sender.getSender() != null && sender.getSender() instanceof Player;
-        }
+
+        private static final String ERROR_MESSAGE = "This command can only be used by players";
 
         @Override
-        public RequirementError getError(String commandName, String[] args, int depth) {
-            return new RequirementError(this, commandName, args, depth, "This command can only be used by players");
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+            if (sender == null || !(sender.getSender() instanceof Player))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context.commandName(),
+                        context.args(),
+                        context.depth(),
+                        ERROR_MESSAGE
+                ));
+
+            return RequirementResult.meet();
         }
+
     },
 
     /**
      * @see org.bukkit.block.CommandBlock
      */
     BLOCK {
-        @Override
-        public boolean meetsRequirement(Sender sender) {
-            return sender.getSender() != null && sender.getSender() instanceof BlockCommandSender;
-        }
+
+        private static final String ERROR_MESSAGE = "This command can only be used by command block";
 
         @Override
-        public RequirementError getError(String commandName, String[] args, int depth) {
-            return new RequirementError(this, commandName, args, depth, "This command can only be used by command block");
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+            if (sender == null || !(sender.getSender() instanceof BlockCommandSender))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context.commandName(),
+                        context.args(),
+                        context.depth(),
+                        ERROR_MESSAGE
+                ));
+
+            return RequirementResult.meet();
         }
     },
 
@@ -54,14 +73,22 @@ public enum SenderType implements Requirement {
      * @see ConsoleCommandSender
      */
     CONSOLE {
-        @Override
-        public boolean meetsRequirement(Sender sender) {
-            return sender.getSender() != null && sender.getSender() instanceof ConsoleCommandSender;
-        }
+
+        private static final String ERROR_MESSAGE = "This command can only be used by console";
 
         @Override
-        public RequirementError getError(String commandName, String[] args, int depth) {
-            return new RequirementError(this, commandName, args, depth, "This command can only be used by console");
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+            if (sender == null || !(sender.getSender() instanceof ConsoleCommandSender))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context.commandName(),
+                        context.args(),
+                        context.depth(),
+                        ERROR_MESSAGE
+                ));
+
+            return RequirementResult.meet();
         }
     },
 
@@ -70,14 +97,22 @@ public enum SenderType implements Requirement {
      * @see Player
      */
     ENTITY {
-        @Override
-        public boolean meetsRequirement(Sender sender) {
-            return sender.getSender() != null && sender.getSender() instanceof Entity;
-        }
+
+        private static final String ERROR_MESSAGE = "This command can only be used by entities";
 
         @Override
-        public RequirementError getError(String commandName, String[] args, int depth) {
-            return new RequirementError(this, commandName, args, depth, "This command can only be used by entities");
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+            if (sender == null || !(sender.getSender() instanceof Entity))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context.commandName(),
+                        context.args(),
+                        context.depth(),
+                        ERROR_MESSAGE
+                ));
+
+            return RequirementResult.meet();
         }
     }
 

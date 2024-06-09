@@ -12,8 +12,7 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
+import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Whitelist;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -57,15 +56,42 @@ public class WhitelistRequirementFactory implements RequirementFactory {
         }
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            Object senderObj = sender.getSender();
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            Object senderObj = context.sender().getSender();
             if (senderObj == null)
-                return invert;
+                return invert ? RequirementResult.meet() : RequirementResult.error(
+                        new RequirementError(
+                                this,
+                                context.commandName(),
+                                context.args(),
+                                context.depth(),
+                                "Sender is null"
+                        )
+                );
 
             if (!(senderObj instanceof Player player))
-                return (consoleBypass && senderObj instanceof ConsoleCommandSender) != invert;
+                return (consoleBypass && senderObj instanceof ConsoleCommandSender) != invert
+                        ? RequirementResult.meet()
+                        : RequirementResult.error(
+                        new RequirementError(
+                                this,
+                                context.commandName(),
+                                context.args(),
+                                context.depth(),
+                                "Sender is not a player"
+                        )
+                );
 
-            return uuids.contains(player.getUniqueId()) != invert;
+            return uuids.contains(player.getUniqueId()) != invert
+                    ? RequirementResult.meet()
+                    : RequirementResult.error(
+                    new RequirementError(
+                            this,
+                            context.commandName(),
+                            context.args(),
+                            context.depth(),
+                            "Sender is not whitelisted"
+                    ));
         }
     }
 }

@@ -11,8 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.requirements.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -126,8 +125,14 @@ public class RequirementSetTest {
     public static class TestRequirement implements Requirement {
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            return false;
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            return RequirementResult.error(new RequirementError(
+                    this,
+                    context.commandName(),
+                    context.args(),
+                    context.depth(),
+                    ""
+            ));
         }
 
         @Override
@@ -144,9 +149,19 @@ public class RequirementSetTest {
             this.senders = senders;
         }
 
+
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            return senders.contains(sender);
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            if (!senders.contains(context.sender()))
+                return RequirementResult.error(new RequirementError(
+                        this,
+                        context.commandName(),
+                        context.args(),
+                        context.depth(),
+                        ""
+                ));
+
+            return RequirementResult.meet();
         }
 
         @Override
@@ -167,8 +182,14 @@ public class RequirementSetTest {
     public static class AnotherRequirement implements Requirement {
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            return false;
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            return RequirementResult.error(new RequirementError(
+                    this,
+                    context.commandName(),
+                    context.args(),
+                    context.depth(),
+                    ""
+            ));
         }
 
     }
@@ -176,8 +197,14 @@ public class RequirementSetTest {
     public record DifferentRequirement(int number) implements Requirement {
 
         @Override
-        public boolean meetsRequirement(Sender sender) {
-            return false;
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            return RequirementResult.error(new RequirementError(
+                    this,
+                    context.commandName(),
+                    context.args(),
+                    context.depth(),
+                    ""
+            ));
         }
 
         @Override

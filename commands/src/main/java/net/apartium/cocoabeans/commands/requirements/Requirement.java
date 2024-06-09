@@ -20,13 +20,11 @@ public interface Requirement {
 
 
     /**
-     * Check if given sender meets this requirement.
-     * @param sender sender object
-     * @return true if meets req, else false
+     * Check if given context meets this requirement.
+     * @param context context to evaluate
+     * @return if sender meets requirement or else given an error
      */
-    boolean meetsRequirement(Sender sender);
-    default RequirementError getError(String commandName, String[] args, int depth) {
-        return new RequirementError(this, commandName, args, depth, "Requirement not met");
-    };
+    RequirementResult meetsRequirement(RequirementEvaluationContext context);
+
 
 }

@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.requirements.RequirementError;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,9 +108,9 @@ GeneralCommandTest {
 
     @Test
     void senderMeetsRequirementTest() {
-        CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, new String[0], 0);
-        assertTrue(processingContext.senderMeetsRequirement(sender -> true));
-        assertFalse(processingContext.senderMeetsRequirement(sender -> false));
+        CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, "test", new String[0], 0);
+        assertTrue(processingContext.senderMeetsRequirement(sender -> RequirementResult.meet()).meetRequirement());
+        assertFalse(processingContext.senderMeetsRequirement(sender -> RequirementResult.error(new RequirementError(null, null, null, 0, "no"))).meetRequirement());
     }
 
     @Test
@@ -122,9 +124,9 @@ GeneralCommandTest {
         testCommandManager.addCommand(new SecondCommandForTest());
 
         evaluate("test", "");
-        assertEquals(List.of("Requirement not met"), sender.getMessages());
+        assertEquals(List.of("This command can't be used"), sender.getMessages());
         evaluate("t", "");
-        assertEquals(List.of("Requirement not met"), sender.getMessages());
+        assertEquals(List.of("This command can't be used"), sender.getMessages());
     }
 
     @Test

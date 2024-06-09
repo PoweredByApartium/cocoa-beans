@@ -17,10 +17,7 @@ import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.exception.UnknownCommandError;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
-import net.apartium.cocoabeans.commands.requirements.ArgumentRequirementFactory;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.requirements.*;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
@@ -75,7 +72,7 @@ public abstract class CommandManager {
     public boolean handle(Sender sender, String commandName, String[] args) throws Throwable {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null)
-            new UnknownCommandError(commandName).throwError();
+            throw new UnknownCommandError(commandName).getError();
 
         CommandContext context = registeredCommand.getCommandBranchProcessor().handle(
                 registeredCommand,
@@ -88,10 +85,10 @@ public abstract class CommandManager {
         if (context == null) {
             CommandError commandException = null;
             for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-                RequirementSet.MeetRequirementResult meetRequirementResult = listener.requirements().meetsRequirements(sender, commandName, args, 0);
 
-                if (meetRequirementResult.hasError()) {
-                    commandException = meetRequirementResult.getError();
+                RequirementResult requirementResult = listener.requirements().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, 0));
+                if (requirementResult.hasError()) {
+                    commandException = requirementResult.getError();
                     break;
                 }
             }

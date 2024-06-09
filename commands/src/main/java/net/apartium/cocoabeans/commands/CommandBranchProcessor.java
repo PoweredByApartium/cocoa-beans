@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandError;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -38,15 +40,15 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            RequirementSet.MeetRequirementResult meetRequirementResult = entry.key().meetsRequirements(sender, commandName, args, index);
+            RequirementResult requirementResult = entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, index));
 
-            if (meetRequirementResult.hasError()) {
-                if (commandError == null || commandError.getDepth() < meetRequirementResult.getError().getDepth())
-                    commandError = meetRequirementResult.getError();
+            if (requirementResult.hasError()) {
+                if (commandError == null || commandError.getDepth() < requirementResult.getError().getDepth())
+                    commandError = requirementResult.getError();
                 continue;
             }
 
-            if (!meetRequirementResult.meetRequirement())
+            if (!requirementResult.meetRequirement())
                 continue;
 
 
@@ -116,7 +118,7 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender, commandName, args, index).meetRequirement())
+            if (!entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, index)).meetRequirement())
                 continue;
 
             result.addAll(commandOption.handleTabCompletion(commandWrapper, commandName, args, sender, index));
@@ -131,7 +133,7 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            if (entry.key().meetsRequirements(sender, commandName, args, depth).meetRequirement())
+            if (entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, depth)).meetRequirement())
                     return true;
 
         }

@@ -11,8 +11,6 @@
 package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.commands.exception.CommandError;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -174,49 +172,14 @@ public class RequirementSet implements Set<Requirement> {
         return Arrays.hashCode(requirements);
     }
 
-    public MeetRequirementResult meetsRequirements(Sender sender, String commandName, String[] args, int depth) {
+    public RequirementResult meetsRequirements(RequirementEvaluationContext context) {
         for (Requirement requirement : requirements) {
-            if (!requirement.meetsRequirement(sender)) {
-                RequirementError error = requirement.getError(commandName, args, depth);
-                if (error != null)
-                    return MeetRequirementResult.ofError(error);
-
-                return MeetRequirementResult.of(false);
-            }
+            RequirementResult requirementResult = requirement.meetsRequirement(context);
+            if (!requirementResult.meetRequirement())
+                return requirementResult;
         }
 
-        return MeetRequirementResult.of(true);
+        return RequirementResult.meet();
     }
 
-    public static class MeetRequirementResult {
-
-        private final CommandError error;
-        private final boolean meetRequirement;
-
-        private MeetRequirementResult(CommandError error, boolean meetRequirement) {
-            this.error = error;
-            this.meetRequirement = meetRequirement;
-        }
-
-        public CommandError getError() {
-            return error;
-        }
-
-        public boolean hasError() {
-            return error != null;
-        }
-
-        public boolean meetRequirement() {
-            return meetRequirement;
-        }
-
-        public static MeetRequirementResult ofError(CommandError error) {
-            return new MeetRequirementResult(error, false);
-        }
-
-        public static MeetRequirementResult of(boolean meetRequirement) {
-            return new MeetRequirementResult(null, meetRequirement);
-        }
-
-    }
 }

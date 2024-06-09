@@ -10,13 +10,19 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.Requirement;
-import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
+import net.apartium.cocoabeans.commands.requirements.*;
 
 public class WallRequirementFactory implements RequirementFactory {
 
     @Override
     public Requirement getRequirement(CommandNode commandNode, Object obj) {
-        return sender -> false;
+        return new WallRequirementImpl();
+    }
+
+    private static class WallRequirementImpl implements Requirement {
+        @Override
+        public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            return RequirementResult.error(new RequirementError(this, context.commandName(), context.args(), context.depth(), "This command can't be used"));
+        }
     }
 }
