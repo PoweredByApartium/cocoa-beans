@@ -19,7 +19,11 @@ public class SphereRegion implements Region {
 
     @Override
     public double distance(Position position) {
-        return position.distance(center) - radius;
+        double distance = position.distance(center) - radius;
+        if (distance < 0)
+            return 0;
+
+        return distance;
     }
 
     public Position getCenter() {

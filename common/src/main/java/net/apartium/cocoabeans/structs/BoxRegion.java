@@ -15,6 +15,13 @@ public class BoxRegion implements Region {
         this.z1 = Math.max(z0, z1);
     }
 
+    public BoxRegion(Position pos0, Position pos1) {
+        this(pos0.getX(), pos1.getX(),
+             pos0.getY(), pos1.getY(),
+             pos0.getZ(), pos1.getZ()
+        );
+    }
+
 
     @Override
     public boolean contains(Position position) {
@@ -77,6 +84,15 @@ public class BoxRegion implements Region {
     public void setZ(double z0, double z1) {
         this.z0 = Math.min(z0, z1);
         this.z1 = Math.max(z0, z1);
+    }
+
+    public void set(Position pos0, Position pos1) {
+        this.x0 = Math.min(pos0.getX(), pos1.getX());
+        this.x1 = Math.max(pos0.getX(), pos1.getX());
+        this.y0 = Math.min(pos0.getY(), pos1.getY());
+        this.y1 = Math.max(pos0.getY(), pos1.getY());
+        this.z0 = Math.min(pos0.getZ(), pos1.getZ());
+        this.z1 = Math.max(pos0.getZ(), pos1.getZ());
     }
 
 
