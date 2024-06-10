@@ -3,19 +3,28 @@
 ## Welcome to Cocoa beans!
 This library aims to be a very well-made and thought-out toolkit for developers to save the hassle
 of copying common code between projects. Cocoa beans is modular, it contains a spigot module 
-and a common java module, with more modules planned for the future.\
+and a common java module and commands java module and commands spigot module inside of it, with more modules planned for the future.\
 **Contributions are welcome!**
 
 ### Relevant Links
 * [Spigot javadocs](https://cocoa-beans.apartium.net/spigot/)
 * [Common javadocs](https://cocoa-beans.apartium.net/common/)
+* [Command javadocs](https://cocoa-beans.apartium.net/commands/)
+* [Command Spigot javadocs](https://cocoa-beans.apartium.net/commands-spigot/)
 * [Our wiki](https://github.com/PoweredByApartium/cocoa-beans/wiki)
+<br/>
 
-### Requirements
-* Java 17
-* Minecraft 1.19 (For the spigot module)
+>[!IMPORTANT]
+> ### Requirements
+> * Java 17
+> * Minecraft 1.8 and above (For the spigot modules)
 
 ### Installation
+>[!NOTE]
+> Cocoabean could be included in your jar file, but if you are making a Spigot plugin you should consider downloading the library as a plugin from Hangar.
+
+![Latest release](https://github.com/PoweredByApartium/cocoa-beans/releases/latest)
+
 **Maven:**
 ```xml
 <repositories>
@@ -33,6 +42,14 @@ and a common java module, with more modules planned for the future.\
         <artifactId>common</artifactId>
         <version>[VERSION]</version>
     </dependency>
+
+    <!-- For the command system itself -->
+    <dependency>
+        <groupId>net.apartium.cocoa-beans</groupId>
+        <!-- You can also use 'commands-spigot' instead to get the spigot utilities as well -->
+        <artifactId>commands</artifactId>
+        <version>[VERSION]</version>
+    </dependency>
 </dependencies>
 ```
 
@@ -48,6 +65,9 @@ repositories {
 dependencies {
     // You can also use 'spigot' instead to get the spigot utilities as well
     implementation 'net.apartium.cocoa-beans:common:[VERSION]'
+
+    // For the command system (You also could use 'commands-spigot' instead to get the spigot command utilities as well)
+    implementation 'net.apartium.cocoa-beans:commands:[VERSION]'
 }
 ```
 
