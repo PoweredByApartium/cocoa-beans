@@ -21,7 +21,7 @@ and a common java module and commands java module and commands spigot module ins
 
 ### Installation
 >[!NOTE]
-> Cocoabean could be implementation or compileOnly if you add it by other means like adding cocoabeans plugin
+> Cocoabean could be included in your jar file, but if you are making a Spigot plugin you should consider downloading the library as a plugin from Hangar.
 
 ![Latest release](https://github.com/PoweredByApartium/cocoa-beans/releases/latest)
 
