@@ -8,14 +8,6 @@ import java.util.Random;
 @ApiStatus.AvailableSince("0.0.24")
 public class SecretGenerator {
 
-    /**
-     * @param numCharacters number of character generated for the secret (mostly it's 32 (160 bit))
-     * @return SecretGenerator
-     */
-    public static SecretGenerator create(int numCharacters) {
-        return new SecretGenerator(numCharacters);
-    }
-
     private final int numCharacters;
 
     private SecretGenerator(int numCharacters) {
@@ -32,6 +24,14 @@ public class SecretGenerator {
 
         random.nextBytes(bytes);
         return BaseConverter.base32().encode(bytes);
+    }
+
+    /**
+     * @param numCharacters number of character generated for the secret (mostly it's 32 (160 bit))
+     * @return SecretGenerator
+     */
+    public static SecretGenerator create(int numCharacters) {
+        return new SecretGenerator(numCharacters);
     }
 
 }
