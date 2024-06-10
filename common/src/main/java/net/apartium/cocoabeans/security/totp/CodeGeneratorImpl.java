@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.security.totp;
 
-import net.apartium.cocoabeans.codec.BaseConverter;
+import net.apartium.cocoabeans.encode.BaseConverter;
 import net.apartium.cocoabeans.security.HashingAlgorithm;
 
 import javax.crypto.Mac;
