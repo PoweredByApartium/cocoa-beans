@@ -10,7 +10,7 @@ val snapshot = System.getProperty("apartium.snapshot", "true").toBoolean()
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = "0.0.17" + (if (snapshot) "-SNAPSHOT" else "")
+version = "0.0.21" + (if (snapshot) "-SNAPSHOT" else "")
 
 allprojects {
 
