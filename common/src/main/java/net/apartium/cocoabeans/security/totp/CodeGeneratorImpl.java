@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.security.totp;
 
+import net.apartium.cocoabeans.codec.BaseConverter;
 import net.apartium.cocoabeans.security.HashingAlgorithm;
-import org.apache.commons.codec.binary.Base32;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -44,8 +44,7 @@ import java.security.NoSuchAlgorithmException;
         }
 
         // Create a HMAC-SHA1 signing key from the shared key
-        Base32 codec = new Base32();
-        byte[] decodedKey = codec.decode(secret);
+        byte[] decodedKey = BaseConverter.base32().decode(secret);
         SecretKeySpec signKey = new SecretKeySpec(decodedKey, algorithm.getHmacAlgorithm());
         Mac mac = Mac.getInstance(algorithm.getHmacAlgorithm());
         mac.init(signKey);

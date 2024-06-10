@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.security.totp;
 
-import org.apache.commons.codec.binary.Base32;
+import net.apartium.cocoabeans.codec.BaseConverter;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Random;
@@ -31,7 +31,7 @@ public class SecretGenerator {
         byte[] bytes = new byte[(numCharacters * 5) / 8];
 
         random.nextBytes(bytes);
-        return new Base32().encodeToString(bytes);
+        return BaseConverter.base32().encode(bytes);
     }
 
 }
