@@ -35,7 +35,7 @@ import net.apartium.cocoabeans.utils.TimeProvider;
     private boolean checkCode(String secret, String attemptCode, long counter) {
         try {
             return equal(codeGenerator.generate(secret, counter), attemptCode);
-        } catch (CodeGenerationException e) {
+        } catch (Exception e) {
             return false;
         }
     }

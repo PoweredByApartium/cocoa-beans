@@ -1,7 +1,11 @@
 package net.apartium.cocoabeans.security.totp;
 
+import net.apartium.cocoabeans.security.HashingAlgorithm;
+import org.jetbrains.annotations.ApiStatus;
+
 import java.security.InvalidParameterException;
 
+@ApiStatus.AvailableSince("0.0.24")
 public interface CodeGenerator {
 
     /**
@@ -26,6 +30,6 @@ public interface CodeGenerator {
      * @param counter The current time bucket number (Number of seconds since epoch / bucket period)
      * @return The n-digit code for the secret/counter.
      */
-    String generate(String secret, long counter) throws CodeGenerationException;
+    String generate(String secret, long counter) throws Exception;
 
 }

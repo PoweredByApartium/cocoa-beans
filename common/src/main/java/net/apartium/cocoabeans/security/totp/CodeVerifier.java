@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.security.totp;
 
 import net.apartium.cocoabeans.utils.TimeProvider;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.AvailableSince("0.0.24")
 public interface CodeVerifier {
 
     /**

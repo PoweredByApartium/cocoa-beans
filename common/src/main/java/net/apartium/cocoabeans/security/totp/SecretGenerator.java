@@ -1,9 +1,11 @@
 package net.apartium.cocoabeans.security.totp;
 
 import org.apache.commons.codec.binary.Base32;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Random;
 
+@ApiStatus.AvailableSince("0.0.24")
 public class SecretGenerator {
 
     /**

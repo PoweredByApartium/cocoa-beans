@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.security.totp;
 
+import net.apartium.cocoabeans.security.HashingAlgorithm;
 import org.apache.commons.codec.binary.Base32;
 
 import javax.crypto.Mac;
@@ -30,13 +31,9 @@ import java.security.NoSuchAlgorithmException;
     }
 
     @Override
-    public String generate(String secret, long counter) throws CodeGenerationException {
-        try {
-            byte[] hash = generateHash(secret, counter);
-            return getDigitsFromHash(hash);
-        } catch (Exception e) {
-            throw new CodeGenerationException("Failed to generate code.", e);
-        }
+    public String generate(String secret, long counter) throws Exception {
+        byte[] hash = generateHash(secret, counter);
+        return getDigitsFromHash(hash);
     }
 
     private byte[] generateHash(String secret, long counter) throws InvalidKeyException, NoSuchAlgorithmException {

@@ -12,7 +12,7 @@ public class CodeVerifierTest {
     private final String secret = "IWPMXJ7WLAT2ABCJTUVKCAOY5WFL73DF";
 
     @Test
-    public void testIsValidCode() {
+    public void testIsValidCode() throws Exception {
 
         CodeVerifier codeVerifier = CodeVerifier.create(CodeGenerator.create(), () -> 612);
         assertTrue(codeVerifier.isValidCode(secret, CodeGenerator.create().generate(secret, 19)));

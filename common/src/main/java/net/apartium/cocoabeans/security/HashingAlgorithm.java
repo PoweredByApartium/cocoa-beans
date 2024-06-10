@@ -1,5 +1,8 @@
-package net.apartium.cocoabeans.security.totp;
+package net.apartium.cocoabeans.security;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.24")
 public enum HashingAlgorithm {
 
     SHA1("HmacSHA1", "SHA1"),
