@@ -3,6 +3,9 @@ package net.apartium.cocoabeans.security.totp;
 import net.apartium.cocoabeans.utils.TimeProvider;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Use this interface to verify if the given code is valid (it's safe against timing attacks)
+ */
 @ApiStatus.AvailableSince("0.0.24")
 public interface CodeVerifier {
 
