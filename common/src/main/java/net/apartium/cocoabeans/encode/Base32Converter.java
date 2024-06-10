@@ -1,14 +1,9 @@
-package net.apartium.cocoabeans.codec;
+package net.apartium.cocoabeans.encode;
 
-/**
- * Base 32 converter
- * A-Z And 2-7 And = for padding
- * {@see https://en.wikipedia.org/wiki/Base32}
- * to create call {@link BaseConverter#base32()}
- */
 /* package-private */ class Base32Converter implements BaseConverter {
 
     private static final String BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
     private static final int[] BASE32_LOOKUP = {
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -28,7 +23,9 @@ package net.apartium.cocoabeans.codec;
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
+    /* package-private */ static final Base32Converter INSTANCE = new Base32Converter();
 
+    private Base32Converter() {}
 
     @Override
     public String encode(byte[] data) {
@@ -77,8 +74,14 @@ package net.apartium.cocoabeans.codec;
         if (length == 0)
             return new byte[0];
 
+        for (int i = length - 1; i >= 0; i--) {
+            if (data.charAt(i) != '=')
+                break;
+            length -= 1;
+        }
 
-        int numBytes = length * 5 / 8;
+
+        int numBytes = (length * 5) / 8;
         byte[] result = new byte[numBytes];
 
         int buffer = 0;

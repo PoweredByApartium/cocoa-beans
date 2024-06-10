@@ -40,13 +40,6 @@ import net.apartium.cocoabeans.utils.TimeProvider;
         }
     }
 
-
-    /**
-     * Compare two strings for equality without leaking timing information
-     * @param a a
-     * @param b b
-     * @return true if equal else false
-     */
     private boolean equal(String a, String b) {
         if (a == null || b == null)
             return false;

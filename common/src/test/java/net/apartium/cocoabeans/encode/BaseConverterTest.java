@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.codec;
+package net.apartium.cocoabeans.encode;
 
 import org.apache.commons.codec.binary.Base32;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,16 @@ public class BaseConverterTest {
         BaseConverter baseConverter = BaseConverter.base32();
         Base32 base32 = new Base32();
 
-        byte[] data = new byte[10];
-        for (int i = 0; i < 128; i++) {
-            ThreadLocalRandom.current().nextBytes(data);
-            String actual = base32.encodeToString(data);
-            assertEquals(actual, baseConverter.encode(data));
-            equal(data, baseConverter.decode(actual));
+        for (int i0 = 10; i0 <= 256; i0++) {
+            byte[] data = new byte[i0];
+            for (int i = 0; i < 128; i++) {
+                ThreadLocalRandom.current().nextBytes(data);
+                String actual = base32.encodeToString(data);
+                assertEquals(actual, baseConverter.encode(data));
+                equal(data, baseConverter.decode(actual));
+            }
         }
+
 
         assertEquals(0, baseConverter.decode("").length);
     }
