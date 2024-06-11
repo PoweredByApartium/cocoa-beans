@@ -3,6 +3,6 @@ version = parent!!.project.version
 
 dependencies {
     api(project.project(":common"))
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform("org.junit:junit-bom:${project.findProperty("junit.bom.version")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

@@ -1,3 +1,5 @@
+import io.papermc.hangarpublishplugin.model.Platforms
+
 plugins {
     id("java-library")
     id("maven-publish")
@@ -10,7 +12,8 @@ val snapshot = System.getProperty("apartium.snapshot", "true").toBoolean()
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = "0.0.21" + (if (snapshot) "-SNAPSHOT" else "")
+version = System.getenv("PROJECT_VERSION") ?: (project.findProperty("project.version")
+    .toString() + (if (snapshot) "-SNAPSHOT" else ""))
 
 allprojects {
 
@@ -54,8 +57,8 @@ allprojects {
     }
 
     dependencies {
-        compileOnlyApi("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
-        compileOnly("org.jetbrains:annotations:23.0.0")
+        compileOnlyApi("com.fasterxml.jackson.core:jackson-annotations:${findProperty("jackson.annotations.version")}")
+        compileOnly("org.jetbrains:annotations:${findProperty("jetbrains.annotations.version")}")
     }
 
     tasks {
@@ -69,7 +72,6 @@ allprojects {
 hangarPublish {
     publications.register("plugin") {
         version = project.version as String
-        id = System.getenv("HANGAR_ID") ?: project.findProperty("hangar.id").toString()
         if (snapshot) {
             channel.set("Snapshot")
         } else {
@@ -77,17 +79,13 @@ hangarPublish {
         }
 
         apiKey = System.getenv("HANGAR_API_KEY") ?: project.findProperty("hangar.api.key").toString()
+        id.set(System.getenv("HANGAR_ID") ?: project.findProperty("hangar.id").toString())
 
         platforms {
-            paper {
-                jar.set(tasks.jar.flatMap { it.archiveFile })
+            register(Platforms.PAPER) {
+                jar.set(tasks.shadowJar.flatMap { it.archiveFile })
                 jar.set(project(":spigot").tasks.shadowJar.flatMap { it.archiveFile })
                 platformVersions = listOf("1.17", "1.19", "1.20")
-                dependencies {
-                    hangar(System.getenv("HANGAR_PROJECT") ?: project.findProperty("hangar.project").toString()) {
-                        required = false
-                    }
-                }
             }
         }
     }
