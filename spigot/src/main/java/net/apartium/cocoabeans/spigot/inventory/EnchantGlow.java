@@ -10,28 +10,16 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
-import io.papermc.paper.enchantments.EnchantmentRarity;
-import net.kyori.adventure.text.Component;
-import org.bukkit.NamespacedKey;
+import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.EntityCategory;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.lang.reflect.Field;
-import java.util.Set;
 
 /**
  * Add glowing enchant to your items
  */
-public class EnchantGlow extends Enchantment {
-
-	public static final NamespacedKey
-			ENCHANT_GLOW_KEY = new NamespacedKey(JavaPlugin.getProvidingPlugin(EnchantGlow.class), "glow");
+public class EnchantGlow {
 
 	public static final Enchantment ENCHANT_GLOW = getGlow();
 
@@ -45,84 +33,14 @@ public class EnchantGlow extends Enchantment {
 			e.printStackTrace();
 		}
 
-		JavaPlugin plugin = JavaPlugin.getProvidingPlugin(EnchantGlow.class);
-		EnchantGlow glow = new EnchantGlow(ENCHANT_GLOW_KEY);
-		if (Enchantment.getByKey(ENCHANT_GLOW_KEY) == null)
-			Enchantment.registerEnchantment(glow);
-		return glow;
+		MinecraftVersion minecraftVersion = ServerUtils.getVersion();
+		if (minecraftVersion.update() >= 8 && minecraftVersion.update() <= 12) {
+			return ItemFactoryInstantiator.construct("EnchantGlow_1_8_R1", Enchantment.class);
+		} else if (minecraftVersion.update() == 20) {
+			return ItemFactoryInstantiator.construct("EnchantGlow_1_20_R1", Enchantment.class);
+		} else {
+			throw new RuntimeException("Unsupported server version " + minecraftVersion);
+		}
 	}
 
-	public EnchantGlow(NamespacedKey id) {
-		super(id);
-	}
-
-	@Override
-	public boolean canEnchantItem(ItemStack item) {
-		return true;
-	}
-
-	@Override
-	public @NotNull Component displayName(int level) {
-		return Component.empty();
-	}
-
-	@Override
-	public boolean conflictsWith(Enchantment other) {
-		return false;
-	}
-
-	@Override
-	public EnchantmentTarget getItemTarget() {
-		return EnchantmentTarget.ALL;
-	}
-
-	@Override
-	public int getMaxLevel() {
-		return 10;
-	}
-
-	@Override
-	public String getName() {
-		return "Glow";
-	}
-
-	@Override
-	public int getStartLevel() {
-		return 1;
-	}
-	
-	@Override
-	public boolean isTreasure() {
-		return false;
-	}
-
-	@Override
-	public boolean isCursed() {
-		return false;
-	}
-
-	public boolean isTradeable() {
-		return false;
-	}
-
-	public boolean isDiscoverable() {
-		return false;
-	}
-
-	@Override
-	public @NotNull EnchantmentRarity getRarity() {
-		return EnchantmentRarity.COMMON;
-	}
-
-	public float getDamageIncrease(int level, @NotNull EntityCategory entityCategory) {
-		return 0;
-	}
-
-	public @NotNull Set<EquipmentSlot> getActiveSlots() {
-		return Set.of();
-	}
-
-	public @NotNull String translationKey() {
-		return Enchantment.CHANNELING.translationKey();
-	}
 }

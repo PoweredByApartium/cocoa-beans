@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -24,6 +25,12 @@ public interface CommandProcessingContext {
      * @return sender instance
      */
     @NotNull Sender sender();
+
+    /**
+     * Returns the label of the command
+     * @return label of the command
+     */
+    String label();
 
     /**
      * Returns an unmodifiable list representing all the args left to process
@@ -40,8 +47,8 @@ public interface CommandProcessingContext {
     /**
      * Check if sender meets given requirement instance.
      * @param requirement requirement to meet
-     * @return true if meets, else false
+     * @return requirement result
      */
-    boolean senderMeetsRequirement(Requirement requirement);
+    RequirementResult senderMeetsRequirement(Requirement requirement);
 
 }

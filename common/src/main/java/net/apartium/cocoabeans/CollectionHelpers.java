@@ -151,6 +151,12 @@ public class CollectionHelpers {
         return result;
     }
 
+    public static <E> void addElementSorted(List<E> list, E element, Comparator<E> comparator) {
+        int index = Collections.binarySearch(list, element, comparator);
+        if (index < 0) index = -index - 1;
+        list.add(index, element);
+    }
+
 
 
 }

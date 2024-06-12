@@ -11,8 +11,6 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.collect.Multimap;
-import net.apartium.cocoabeans.structs.MinecraftVersion;
-import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.Color;
@@ -27,6 +25,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Blocking;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -67,9 +66,18 @@ public abstract class ItemBuilder {
      * @param offlinePlayer offline player to make skull of
      * @return new builder instance
      */
+    @Blocking
     public static ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
         return factory.skullBuilder(offlinePlayer);
+    }
 
+    /**
+     * Create a new item builder instance constituting of given player's skull
+     * @param playerProfile profile containing player's textures
+     * @return new builder instance
+     */
+    public static ItemBuilder skullBuilder(com.destroystokyo.paper.profile.PlayerProfile playerProfile) {
+        return factory.skullBuilder(playerProfile);
     }
 
     /**
@@ -121,15 +129,23 @@ public abstract class ItemBuilder {
 
     /**
      * Applicable for skulls.
-     * @param offlinePlayer
-     * @return
+     * @param offlinePlayer player
+     * @return current instance
      * @see ItemBuilder#skullBuilder(URL) 
      * @see ItemBuilder#skullBuilder(String) 
      * @see ItemBuilder#skullBuilder(OfflinePlayer) 
      */
-    public ItemBuilder setOwingPlayer(OfflinePlayer offlinePlayer) {
+    @Blocking
+    public abstract ItemBuilder setOwningPlayer(OfflinePlayer offlinePlayer);
+
+    /**
+     * Set profile associated with a skull
+     * @param profile profile with textures
+     * @return current instance
+     */
+    public ItemBuilder setSkullProfile(com.destroystokyo.paper.profile.PlayerProfile profile) {
         if (!(meta instanceof SkullMeta skullMeta)) return this;
-        skullMeta.setOwningPlayer(offlinePlayer);
+        skullMeta.setPlayerProfile(profile);
         return this;
     }
 

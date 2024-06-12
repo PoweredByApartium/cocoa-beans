@@ -14,12 +14,13 @@ import net.apartium.cocoabeans.commands.CommandContext;
 import net.apartium.cocoabeans.commands.ArgumentMapper;
 import net.apartium.cocoabeans.commands.RegisteredCommandVariant;
 import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+
+import static net.apartium.cocoabeans.commands.SimpleArgumentMapper.PRIMITIVE_TO_WRAPPER_MAP;
 
 public class SpigotArgumentMapper implements ArgumentMapper {
 
@@ -53,7 +54,61 @@ public class SpigotArgumentMapper implements ArgumentMapper {
                 continue;
             }
 
-            result.add(context.parsedArgs().get(type).get(index));
+            List<Object> objects = context.parsedArgs().get(type);
+
+            if (objects == null || objects.isEmpty() || objects.size() <= index)
+                objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+
+            if (objects == null || objects.isEmpty() || objects.size() <= index)
+                throw new RuntimeException("No argument found for type " + type);
+
+            Object obj = objects.get(index);
+
+            if (type == Optional.class) {
+                type = (Class<?>) ((ParameterizedType) parameters[i - 1].parameterizedType()).getActualTypeArguments()[0];
+
+                if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()) ) {
+                    result.add(Optional.empty());
+                    counterMap.put(type, index + 1);
+                    continue;
+                }
+
+                result.add(Optional.of(obj));
+                counterMap.put(type, index + 1);
+                continue;
+            }
+
+            if (
+                    type == OptionalInt.class ||
+                    type == OptionalLong.class ||
+                    type == OptionalDouble.class ||
+                    type == OptionalFloat.class
+            ) {
+                if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()) ) {
+                    result.add(Optional.empty());
+                    counterMap.put(type, index + 1);
+                    continue;
+                }
+
+                if (type == OptionalFloat.class) {
+                    result.add(OptionalFloat.of((float) obj));
+                    type = float.class;
+                } else if (type == OptionalDouble.class) {
+                    result.add(OptionalDouble.of((double) obj));
+                    type = double.class;
+                } else if (type == OptionalLong.class) {
+                    result.add(OptionalLong.of((long) obj));
+                    type = long.class;
+                } else {
+                    result.add(OptionalInt.of((int) obj));
+                    type = int.class;
+                }
+
+                counterMap.put(type, index + 1);
+                continue;
+            }
+
+            result.add(obj);
             counterMap.put(type, index + 1);
         }
 

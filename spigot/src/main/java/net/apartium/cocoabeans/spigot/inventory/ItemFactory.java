@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +24,8 @@ public interface ItemFactory {
     ItemBuilder builder(Material material);
 
     ItemBuilder skullBuilder(OfflinePlayer offlinePlayer);
+
+    ItemBuilder skullBuilder(PlayerProfile playerProfile);
 
     ItemBuilder skullBuilder(URL url);
 

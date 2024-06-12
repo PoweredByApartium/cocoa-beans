@@ -98,4 +98,46 @@ class CollectionHelpersTest {
         Assertions.assertTrue(CollectionHelpers.equalsArray(strArr0, strArr1));
 
     }
+
+    @Test
+    void testSortedArray() {
+        List<Integer> list = new ArrayList<>();
+        Comparator<Integer> comparator = Integer::compare;
+
+        CollectionHelpers.addElementSorted(list, 1, comparator);
+        assertEquals(list, List.of(1));
+        CollectionHelpers.addElementSorted(list, 3, comparator);
+        assertEquals(list, List.of(1, 3));
+        CollectionHelpers.addElementSorted(list, 2, comparator);
+        assertEquals(list, List.of(1, 2, 3));
+        CollectionHelpers.addElementSorted(list, 5, comparator);
+        assertEquals(list, List.of(1, 2, 3, 5));
+        CollectionHelpers.addElementSorted(list, -2, comparator);
+        assertEquals(list, List.of(-2, 1, 2, 3, 5));
+        CollectionHelpers.addElementSorted(list, 1, comparator);
+        assertEquals(list, List.of(-2, 1, 1, 2, 3, 5));
+        CollectionHelpers.addElementSorted(list, 1, comparator);
+        assertEquals(list, List.of(-2, 1, 1, 1, 2, 3, 5));
+        CollectionHelpers.addElementSorted(list, 1, comparator);
+        assertEquals(list, List.of(-2, 1, 1, 1, 1, 2, 3, 5));
+    }
+
+    @Test
+    void testTheTest() {
+        assertEquals(List.of("1", "2", "3"), List.of("1", "2", "3"));
+        assertNotEquals(List.of("1", "2", "3"), List.of("3", "1", "2"));
+    }
+
+    boolean equal(List<?> arr0, List<?> arr1) {
+        if (arr0.size() != arr1.size())
+            return false;
+
+        for (int i = 0; i < arr0.size(); i++) {
+            if (!arr0.get(i).equals(arr1.get(i)))
+                return false;
+        }
+
+        return true;
+    }
+
 }

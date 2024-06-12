@@ -10,6 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
@@ -29,21 +32,51 @@ import java.util.List;
     }
 
     /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
+
+        BadCommandResponse commandError = null;
+
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender))
+            RequirementResult requirementResult = entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, index));
+
+            if (requirementResult.hasError()) {
+                if (commandError == null || commandError.getDepth() < requirementResult.getError().getDepth())
+                    commandError = requirementResult.getError();
+                continue;
+            }
+
+            if (!requirementResult.meetRequirement())
                 continue;
 
-            if (args.length == index) {
+
+
+            if (args.length <= index) {
+                if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
+                    CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
+
+                    if (commandContext == null)
+                        continue;
+
+                    if (commandContext.hasError()) {
+                        if (commandError == null || commandError.getDepth() < commandContext.error().getDepth())
+                            commandError = commandContext.error();
+
+                        continue;
+                    }
+
+                    return commandContext;
+                }
+
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
                 return new CommandContext(
                         sender,
                         entry.value(),
+                        null,
                         args,
                         commandName,
                         new HashMap<>()
@@ -51,23 +84,32 @@ import java.util.List;
             }
 
             CommandContext result = commandOption.handle(
-                    commandWrapper,
-                    commandName,
-                    args,
-                    sender,
-                    index
-            );
+                        commandWrapper,
+                        commandName,
+                        args,
+                        sender,
+                        index
+                );
 
             if (result == null)
                 continue;
 
+            if (result.hasError()) {
+                if (commandError == null || commandError.getDepth() < result.error().getDepth())
+                    commandError = result.error();
+                continue;
+            }
+
             return result;
         }
+
+        if (commandError != null)
+            return new CommandContext(sender, null, commandError, args, commandName, new HashMap<>());
 
         return null;
     }
 
-    /* package-private */ List<String> handleTabCompletion(RegisteredCommand commandWrapper, String[] args, Sender sender, int index) {
+    /* package-private */ List<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index) return List.of();
 
         List<String> result = new ArrayList<>();
@@ -76,23 +118,23 @@ import java.util.List;
             if (commandOption == null)
                 continue;
 
-            if (!entry.key().meetsRequirements(sender))
+            if (!entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, index)).meetRequirement())
                 continue;
 
-            result.addAll(commandOption.handleTabCompletion(commandWrapper, args, sender, index));
+            result.addAll(commandOption.handleTabCompletion(commandWrapper, commandName, args, sender, index));
         }
 
         return result;
     }
 
-    /* package-private */ boolean haveAnyRequirementsMeet(Sender sender) {
+    /* package-private */ boolean haveAnyRequirementsMeet(Sender sender, String commandName, String[] args, int depth) {
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)
                 continue;
 
-            if (entry.key().meetsRequirements(sender))
-                return true;
+            if (entry.key().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, depth)).meetRequirement())
+                    return true;
 
         }
 

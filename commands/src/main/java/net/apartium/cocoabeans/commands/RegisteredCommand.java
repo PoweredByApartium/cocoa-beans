@@ -10,6 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
+import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
@@ -17,18 +20,22 @@ import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
 
 /*package-private*/ class RegisteredCommand {
 
+    private static final Comparator<HandleExceptionVariant> HANDLE_EXCEPTION_VARIANT_COMPARATOR = (a, b) -> Integer.compare(b.priority(), a.priority());
+
+    private static final Comparator<RegisteredCommandVariant> REGISTERED_COMMAND_VARIANT_COMPARATOR = (a, b) -> Integer.compare(b.priority(), a.priority());
+
     public record RegisteredCommandNode(CommandNode listener, RequirementSet requirements) {}
 
     private final CommandManager commandManager;
 
     private final List<RegisteredCommandNode> commands = new ArrayList<>();
+    private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
 
 
@@ -96,6 +103,24 @@ import java.util.*;
             for (SubCommand subCommand : subCommands) {
                 parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
             }
+
+            ExceptionHandle exceptionHandle = method.getAnnotation(ExceptionHandle.class);
+            if (exceptionHandle != null) {
+                try {
+                    CollectionHelpers.addElementSorted(
+                            handleExceptionVariants,
+                            new HandleExceptionVariant(
+                                publicLookup.unreflect(method),
+                                Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
+                                node,
+                                exceptionHandle.priority()
+                            ),
+                            HANDLE_EXCEPTION_VARIANT_COMPARATOR
+                    );
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
     }
@@ -123,12 +148,16 @@ import java.util.*;
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor);
 
             try {
-                cmdOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
-                        publicLookup.unreflect(method),
-                        serializeParameters(node, method.getParameters()),
-                        node,
-                        subCommand.priority()
-                ));
+                CollectionHelpers.addElementSorted(
+                        cmdOption.getRegisteredCommandVariants(),
+                        new RegisteredCommandVariant(
+                            publicLookup.unreflect(method),
+                            serializeParameters(node, method.getParameters()),
+                            node,
+                            subCommand.priority()
+                        ),
+                        REGISTERED_COMMAND_VARIANT_COMPARATOR
+                );
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error accessing method", e);
             }
@@ -145,27 +174,57 @@ import java.util.*;
 
             if (cmd.startsWith("<") && cmd.endsWith(">")) {
                 // TODO may need to check that can be parser before doing all calculation
-                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1, cmd.length() - 1));
-                if (typeParser != null) {
-                    CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                            .filter(entry -> entry.key().equals(typeParser))
+                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1 + (cmd.startsWith("<??") ? 2 : cmd.startsWith("<?") ? 1 : 0), cmd.length() - 1));
+                if (cmd.startsWith("<??"))
+                    typeParser = new OptionalArgumentParser<>(typeParser, true);
+                else if(cmd.startsWith("<?"))
+                    typeParser = new OptionalArgumentParser<>(typeParser, false);
+
+                if (typeParser == null)
+                    throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
+
+                ArgumentParser<?> finalTypeParser = typeParser;
+                CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
+                        .filter(entry -> entry.key().equals(finalTypeParser))
+                        .findAny()
+                        .map(Entry::value)
+                        .orElse(null);
+
+                if (commandBranchProcessor == null) {
+                    commandBranchProcessor = new CommandBranchProcessor(commandManager);
+                    CollectionHelpers.addElementSorted(
+                            currentCommandOption.getArgumentTypeHandlerMap(),
+                            new Entry<>(
+                                    typeParser,
+                                    commandBranchProcessor
+                            ),
+                            (a, b) -> b.key().compareTo(a.key())
+                    );
+                }
+
+                if (finalTypeParser instanceof OptionalArgumentParser) {
+                    CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
+                            .filter(entry -> entry.key().equals(finalTypeParser))
                             .findAny()
                             .map(Entry::value)
                             .orElse(null);
 
-                    if (commandBranchProcessor == null) {
-                        commandBranchProcessor = new CommandBranchProcessor(commandManager);
-                        currentCommandOption.getArgumentTypeHandlerMap().add(new Entry<>(
-                                typeParser,
-                                commandBranchProcessor
-                        ));
+                    if (branchProcessor == null) {
+                        branchProcessor = commandBranchProcessor;
+                        CollectionHelpers.addElementSorted(
+                                currentCommandOption.getOptionalArgumentTypeHandlerMap(),
+                                new Entry<>(
+                                    (OptionalArgumentParser<?>) finalTypeParser,
+                                    branchProcessor
+                                ),
+                                (a, b) -> b.key().compareTo(a.key())
+                        );
                     }
-
-                    currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
-                    continue;
                 }
 
-                throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
+                currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
+                continue;
+
             }
 
             Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
@@ -177,12 +236,15 @@ import java.util.*;
         }
 
         try {
-            currentCommandOption.getRegisteredCommandVariants().add(new RegisteredCommandVariant(
-                    publicLookup.unreflect(method),
-                    serializeParameters(node, method.getParameters()),
-                    node,
-                    subCommand.priority()
-            ));
+            CollectionHelpers.addElementSorted(
+                    currentCommandOption.getRegisteredCommandVariants(),
+                    new RegisteredCommandVariant(
+                        publicLookup.unreflect(method),
+                        serializeParameters(node, method.getParameters()),
+                        node,
+                        subCommand.priority()),
+                    REGISTERED_COMMAND_VARIANT_COMPARATOR
+            );
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error accessing method", e);
         }
@@ -193,6 +255,7 @@ import java.util.*;
         for (int i = 0; i < result.length; i++) {
             result[i] = new RegisteredCommandVariant.Parameter(
                     parameters[i].getType(),
+                    parameters[i].getParameterizedType(),
                     serializeArgumentRequirement(commandNode, parameters[i].getAnnotations())
             );
         }
@@ -355,5 +418,9 @@ import java.util.*;
 
     public CommandBranchProcessor getCommandBranchProcessor() {
         return commandBranchProcessor;
+    }
+
+    public Iterable<HandleExceptionVariant> getHandleExceptionVariants() {
+        return handleExceptionVariants;
     }
 }

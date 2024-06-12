@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.Sender;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -173,11 +172,14 @@ public class RequirementSet implements Set<Requirement> {
         return Arrays.hashCode(requirements);
     }
 
-    public boolean meetsRequirements(Sender sender) {
-        for (Requirement permission : requirements) {
-            if (!permission.meetsRequirement(sender)) return false;
+    public RequirementResult meetsRequirements(RequirementEvaluationContext context) {
+        for (Requirement requirement : requirements) {
+            RequirementResult requirementResult = requirement.meetsRequirement(context);
+            if (!requirementResult.meetRequirement())
+                return requirementResult;
         }
 
-        return true;
+        return RequirementResult.meet();
     }
+
 }
