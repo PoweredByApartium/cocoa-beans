@@ -78,7 +78,7 @@ hangarPublish {
             channel.set("Release")
         }
 
-        apiKey = System.getenv("HANGAR_API_KEY") ?: project.findProperty("hangar.api.key").toString()
+        apiKey = System.getenv("HANGAR_TOKEN") ?: project.findProperty("hangar.token.key").toString()
         id.set("CocoaBeans")
 
         platforms {
