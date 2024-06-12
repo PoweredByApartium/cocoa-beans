@@ -7,13 +7,13 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @author Thebotgame (Kfir b.)
  */
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public interface BaseConverter {
 
     /**
      * Returns a Base 32 alphabet converter
      * [A-Z, 2-7, = for padding]
-     * @see <a href=" https://en.wikipedia.org/wiki/Base32">Base32</a>
+     * @see <a href="https://en.wikipedia.org/wiki/Base32">Base32</a>
      * @return Base32 converter instance
      */
     static BaseConverter base32() {

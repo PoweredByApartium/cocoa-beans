@@ -7,7 +7,7 @@ def snapshot = Boolean.getBoolean("apartium.snapshot")
 def isCi = System.getenv("GITHUB_ACTOR") != null
 
 group 'net.apartium.cocoa-beans'
-version '0.0.24' + (snapshot ? "-SNAPSHOT" : "")
+version '0.0.25' + (snapshot ? "-SNAPSHOT" : "")
 
 
 allprojects {

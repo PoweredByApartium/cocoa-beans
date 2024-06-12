@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Random;
 
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public class SecretGenerator {
 
     private final int numCharacters;

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.time.Clock;
 
 @FunctionalInterface
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public interface TimeProvider {
 
     /**

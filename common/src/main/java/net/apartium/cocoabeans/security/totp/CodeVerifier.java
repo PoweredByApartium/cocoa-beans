@@ -7,7 +7,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Use this interface to verify if the given totp code is valid (it's safe against timing attacks)
  * @see <a href="https://en.wikipedia.org/wiki/Timing_attack">Timing Attack</a>
  */
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public interface CodeVerifier {
 
     /**

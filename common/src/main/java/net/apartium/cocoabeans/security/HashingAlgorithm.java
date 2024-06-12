@@ -2,7 +2,7 @@ package net.apartium.cocoabeans.security;
 
 import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public enum HashingAlgorithm {
 
     SHA1("HmacSHA1", "SHA1"),

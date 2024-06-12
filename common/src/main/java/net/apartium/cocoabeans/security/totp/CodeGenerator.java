@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.security.InvalidParameterException;
 
-@ApiStatus.AvailableSince("0.0.24")
+@ApiStatus.AvailableSince("0.0.25")
 public interface CodeGenerator {
 
     /**
