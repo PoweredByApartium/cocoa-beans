@@ -20,7 +20,7 @@ jobs:
       - name: Run integration tests
         run: |
           ls -la
-          ./gradlew test
+          ./gradlew intTest -x test --no-daemon
           ls -la
       - name: Publish `build-logic` Test Report
         uses: mikepenz/action-junit-report@v4
