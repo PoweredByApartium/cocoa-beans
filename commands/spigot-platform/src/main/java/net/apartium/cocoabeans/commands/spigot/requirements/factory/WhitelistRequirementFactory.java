@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.spigot.exception.WhitelistException;
 import net.apartium.cocoabeans.commands.spigot.requirements.Whitelist;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -34,6 +35,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
             return null;
 
         return new WhitelistRequirementImpl(
+                whitelist,
                 Arrays.stream(whitelist.value())
                         .map(UUID::fromString)
                         .collect(Collectors.toSet()),
@@ -44,11 +46,13 @@ public class WhitelistRequirementFactory implements RequirementFactory {
 
     private static class WhitelistRequirementImpl implements Requirement {
 
+        private final Whitelist whitelist;
         private final Set<UUID> uuids;
         private final boolean consoleBypass;
         private final boolean invert;
 
-        public WhitelistRequirementImpl(Set<UUID> uuids, boolean consoleBypass, boolean invert) {
+        public WhitelistRequirementImpl(Whitelist whitelist, Set<UUID> uuids, boolean consoleBypass, boolean invert) {
+            this.whitelist = whitelist;
             this.uuids = uuids;
             this.consoleBypass = consoleBypass;
             this.invert = invert;
@@ -85,6 +89,17 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                             context,
                             "Sender is not whitelisted"
                     ));
+        }
+
+        private class UnmetWhitelistResponse extends UnmetRequirementResponse {
+            public UnmetWhitelistResponse(Requirement requirement, RequirementEvaluationContext context, String message) {
+                super(requirement, context, message);
+            }
+
+            @Override
+            public Exception getError() {
+                return new WhitelistException(this, whitelist);
+            }
         }
     }
 }

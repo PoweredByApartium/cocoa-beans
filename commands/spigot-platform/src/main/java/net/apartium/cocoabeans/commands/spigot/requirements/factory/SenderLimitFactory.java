@@ -14,6 +14,7 @@ import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
+import net.apartium.cocoabeans.commands.spigot.exception.SenderLimitException;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,15 +32,17 @@ public class SenderLimitFactory implements RequirementFactory {
         if (!(obj instanceof SenderLimit senderLimit))
             return null;
 
-        return new SenderLimitImpl(senderLimit.value(), senderLimit.invert());
+        return new SenderLimitImpl(senderLimit, senderLimit.value(), senderLimit.invert());
     }
 
     private static class SenderLimitImpl implements Requirement {
 
+        private final SenderLimit senderLimit;
         private final EnumSet<SenderType> senderTypes;
         private final boolean invert;
 
-        public SenderLimitImpl(SenderType[] senderTypes, boolean invert) {
+        public SenderLimitImpl(SenderLimit senderLimit, SenderType[] senderTypes, boolean invert) {
+            this.senderLimit = senderLimit;
             this.senderTypes = EnumSet.copyOf(Arrays.asList(senderTypes));
             this.invert = invert;
         }
@@ -54,6 +57,18 @@ public class SenderLimitFactory implements RequirementFactory {
                     context,
                     "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
             ));
+        }
+
+        private class UnmetSenderLimit extends UnmetRequirementResponse {
+
+            public UnmetSenderLimit(Requirement requirement, RequirementEvaluationContext context, String message) {
+                super(requirement, context, message);
+            }
+
+            @Override
+            public Exception getError() {
+                return new SenderLimitException(this, senderLimit);
+            }
         }
 
         @Override

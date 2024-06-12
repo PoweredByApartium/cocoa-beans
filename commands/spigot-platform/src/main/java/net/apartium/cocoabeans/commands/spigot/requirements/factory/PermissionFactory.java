@@ -13,6 +13,7 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
@@ -25,29 +26,42 @@ public class PermissionFactory implements RequirementFactory {
         if (!(obj instanceof Permission permission))
             return null;
 
-        return new PermissionImpl(permission.value(), permission.invert());
+        return new PermissionImpl(permission, permission.value(), permission.invert());
     }
 
-    private record PermissionImpl(String permission, boolean invert) implements Requirement {
+    private record PermissionImpl(Permission permission, String permissionAsString, boolean invert) implements Requirement {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
             if (sender == null || !(sender.getSender() instanceof CommandSender commandSender))
-                return RequirementResult.error(new UnmetRequirementResponse(
+                return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
                         "You don't have permission to execute this command"
                 ));
 
-            if (!commandSender.hasPermission(permission))
-                return RequirementResult.error(new UnmetRequirementResponse(
+            if (!commandSender.hasPermission(permissionAsString))
+                return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
                         "You don't have permission to execute this command"
                 ));
 
             return RequirementResult.meet();
+        }
+
+        private class UnmetPermissionResponse extends UnmetRequirementResponse {
+
+
+            public UnmetPermissionResponse(Requirement requirement, RequirementEvaluationContext context, String message) {
+                super(requirement, context, message);
+            }
+
+            @Override
+            public Exception getError() {
+                return new PermissionException(this, permission);
+            }
         }
 
     }

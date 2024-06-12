@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.CommandException;
+import net.apartium.cocoabeans.commands.exception.RequirementException;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
@@ -25,13 +26,7 @@ public class UnmetRequirementResponse extends BadCommandResponse {
 
     @Override
     public Exception getError() {
-        return new RequirementException();
+        return new RequirementException(this);
     }
 
-    public class RequirementException extends CommandException {
-
-        public RequirementException() {
-            super(UnmetRequirementResponse.this);
-        }
-    }
 }
