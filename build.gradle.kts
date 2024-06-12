@@ -79,7 +79,7 @@ hangarPublish {
         }
 
         apiKey = System.getenv("HANGAR_API_KEY") ?: project.findProperty("hangar.api.key").toString()
-        id.set("CocoaBeans")
+        id.set(System.getenv("HANGAR_ID") ?: project.findProperty("hangar.id").toString())
 
         platforms {
             register(Platforms.PAPER) {
