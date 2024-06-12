@@ -10,7 +10,11 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -19,6 +23,15 @@ public class ItemBuilder_1_8_R1 extends ItemBuilder {
     @ApiStatus.Internal
     public ItemBuilder_1_8_R1(ItemStack itemStack) {
         super(itemStack);
+    }
+
+    @Override
+    public ItemBuilder setOwningPlayer(OfflinePlayer offlinePlayer) {
+        if (!(meta instanceof SkullMeta)) return this;
+        PlayerProfile playerProfile = Bukkit.createProfile(offlinePlayer.getUniqueId());
+        if (!playerProfile.completeFromCache(true))
+            playerProfile.complete(true);
+        return setSkullProfile(playerProfile);
     }
 
     @Override

@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +35,15 @@ public class ItemFactory_1_8_R1 implements ItemFactory {
     public ItemBuilder skullBuilder(OfflinePlayer offlinePlayer) {
         ItemBuilder builder = builder(Material.SKULL_ITEM);
         builder.setDurability((short) 3);
-        builder.setOwingPlayer(offlinePlayer);
+        builder.setOwningPlayer(offlinePlayer);
+        return builder;
+    }
+
+    @Override
+    public ItemBuilder skullBuilder(PlayerProfile playerProfile) {
+        ItemBuilder builder = builder(Material.SKULL_ITEM);
+        builder.setDurability((short) 3);
+        builder.setSkullProfile(playerProfile);
         return builder;
     }
 

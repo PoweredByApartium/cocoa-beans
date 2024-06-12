@@ -10,11 +10,16 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
+import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
+
+import java.util.Optional;
+import java.util.OptionalLong;
 
 @Command("test")
 public class CommandForTest implements CommandNode {
@@ -138,6 +143,26 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testLong(Sender sender, long num) got " + num);
     }
 
+    @SubCommand("optional <?long>")
+    public void testOptionalLong(Sender sender, OptionalLong optLong) {
+        sender.sendMessage("testOptionalLong(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.getAsLong() : "null"));
+    }
+
+    @SubCommand("optional meow <??long>")
+    public void testOptionalLongMeow(Sender sender, Optional<Long> optLong) {
+        sender.sendMessage("testOptionalLongMeow(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
+    }
+
+    @SubCommand("optional meow <??long> wow")
+    public void testOptionalLongMeow1(Sender sender, Optional<Long> optLong) {
+        sender.sendMessage("testOptionalLongMeow1(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
+    }
+
+    @SubCommand("optional yoo <?string>")
+    public void testOptionalStringMeow(Sender sender, Optional<String> optString) {
+        sender.sendMessage("testOptionalStringMeow(Sender sender, Optional<String> optString) got " + (optString.orElse("null")));
+    }
+
     @SubCommand("config get <string>")
     public void getConfigValue(Sender sender, String s) {
         sender.sendMessage("getConfigValue(Sender sender, String s) " + s + " = true");
@@ -160,4 +185,11 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [" + String.join(", ", args) + "]");
         return true;
     }
+
+    @ExceptionHandle(UnmetRequirementResponse.RequirementException.class)
+    public boolean meow(UnmetRequirementResponse exception, Sender sender) {
+        sender.sendMessage("You don't have permission to execute this command!");
+        return true;
+    }
+
 }

@@ -14,6 +14,7 @@ import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 public record RegisteredCommandVariant(
         MethodHandle method,
@@ -24,6 +25,7 @@ public record RegisteredCommandVariant(
 
     public record Parameter(
             Class<?> type,
+            Type parameterizedType,
             ArgumentRequirement[] argumentRequirements
     ) {
 

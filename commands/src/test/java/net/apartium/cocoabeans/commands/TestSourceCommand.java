@@ -28,7 +28,7 @@ public class TestSourceCommand implements CommandNode {
 
     }
 
-    @SourceParser(keyword = "test2", clazz = Test.class, resultMaxAgeInMills = 1000)
+    @SourceParser(keyword = "test2", clazz = Test.class, resultMaxAgeInMills = 10)
     public Map<String, Test> toTest2() {
         return Arrays.stream(Test.values()).
                 flatMap(value -> Arrays.stream(new Map.Entry[]{

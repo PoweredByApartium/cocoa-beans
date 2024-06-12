@@ -10,19 +10,19 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.Sender;
-
 /**
  * Represents a requirement to run a command or a sub command, eg a permission, sender type (player / console etc)
  * @see RequirementFactory
  */
 public interface Requirement {
 
+
     /**
-     * Check if given sender meets this requirement.
-     * @param sender sender object
-     * @return true if meets req, else false
+     * Check if given context meets this requirement.
+     * @param context context to evaluate
+     * @return if sender meets requirement or else given an error
      */
-    boolean meetsRequirement(Sender sender);
+    RequirementResult meetsRequirement(RequirementEvaluationContext context);
+
 
 }

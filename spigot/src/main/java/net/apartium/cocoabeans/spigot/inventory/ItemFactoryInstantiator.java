@@ -26,9 +26,13 @@ import org.jetbrains.annotations.ApiStatus;
     }
 
     private static ItemFactory constructImpl(String clazz) {
+        return construct(clazz, ItemFactory.class);
+    }
+
+    /* package-private */ static <T> T construct(String name, Class<T> type) {
         try {
-            Class<? extends ItemFactory> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.inventory.%s", clazz), true, ItemFactory.class.getClassLoader())
-                    .asSubclass(ItemFactory.class);
+            Class<? extends T> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.inventory.%s", name), true, ItemFactory.class.getClassLoader())
+                    .asSubclass(type);
             return cls.getConstructor().newInstance();
         } catch (RuntimeException e) {
             throw e;
@@ -36,4 +40,5 @@ import org.jetbrains.annotations.ApiStatus;
             throw new RuntimeException(e);
         }
     }
+
 }

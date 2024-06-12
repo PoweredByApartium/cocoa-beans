@@ -28,5 +28,10 @@ public interface CommandNode {
     default boolean fallbackHandle(Sender sender, String label, String[] args) {
         return false;
     }
+    
+    @ApiStatus.AvailableSince("0.0.23")
+    default boolean handleException(Sender sender, String label, String[] args, Throwable throwable) {
+        return false;
+    }
 
 }

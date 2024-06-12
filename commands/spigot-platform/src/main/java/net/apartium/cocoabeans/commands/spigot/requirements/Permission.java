@@ -31,5 +31,7 @@ public @interface Permission {
      * @return permission
      */
     String value();
+    boolean invert() default false;
+
 
 }

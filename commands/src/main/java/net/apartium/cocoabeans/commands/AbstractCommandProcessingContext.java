@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,15 +28,23 @@ import java.util.List;
 
     private final int index;
 
-    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String[] args, int index) {
+    private final String label;
+
+    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
         this.index = index;
+        this.label = label;
     }
 
     @Override
     public @NotNull Sender sender() {
         return this.sender;
+    }
+
+    @Override
+    public String label() {
+        return label;
     }
 
     @Override
@@ -48,8 +58,8 @@ import java.util.List;
     }
 
     @Override
-    public boolean senderMeetsRequirement(Requirement requirement) {
-        return requirement.meetsRequirement(sender());
+    public RequirementResult senderMeetsRequirement(Requirement requirement) {
+        return requirement.meetsRequirement(new RequirementEvaluationContext(sender, label, args.toArray(new String[0]), index));
     }
 
 }
