@@ -18,13 +18,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Run integration tests
-        run: |
-          ls -la
-          ./gradlew test
-          ls -la
+        run: ./gradlew test
       - name: Publish `build-logic` Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
+        run: |
+          ls -la
+          cd build-logic
+          ls -la
         with:
           report_paths: '**/build-logic/build/test-results/test/TEST-*.xml'
       - name: Publish `commands` Test Report
