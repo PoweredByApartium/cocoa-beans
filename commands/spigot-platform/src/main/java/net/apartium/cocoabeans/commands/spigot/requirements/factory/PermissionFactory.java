@@ -13,8 +13,8 @@ package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
-import net.apartium.cocoabeans.commands.spigot.SpigotSender;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 
 public class PermissionFactory implements RequirementFactory {
@@ -33,14 +33,14 @@ public class PermissionFactory implements RequirementFactory {
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
-            if (sender == null || !(sender.getSender() instanceof SpigotSender<?> spigotSender))
+            if (sender == null || !(sender.getSender() instanceof CommandSender commandSender))
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
                         "You don't have permission to execute this command"
                 ));
 
-            if (!spigotSender.getSender().hasPermission(permission))
+            if (!commandSender.hasPermission(permission))
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
