@@ -7,7 +7,7 @@ group = parent!!.group
 version = parent!!.version
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.findProperty("paper.version")}")
-    compileOnly("com.mojang:authlib:${project.findProperty("monjang.authlib.version")}")
+    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
+    compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
     api(project.project(":common"))
 }
