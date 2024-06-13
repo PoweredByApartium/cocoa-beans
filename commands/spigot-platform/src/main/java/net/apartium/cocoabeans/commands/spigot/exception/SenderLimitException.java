@@ -8,10 +8,11 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.26")
 public class SenderLimitException extends RequirementException {
 
-    private SenderLimit senderLimit;
+    private final SenderLimit senderLimit;
 
-    public SenderLimitException(UnmetRequirementResponse response, SenderLimit senderLimit) {
+    public SenderLimitException(UnmetRequirementResponse response, SenderLimit senderLimit, SenderLimit senderLimit1) {
         super(response);
+        this.senderLimit = senderLimit1;
     }
 
     public SenderLimit getSenderLimit() {
