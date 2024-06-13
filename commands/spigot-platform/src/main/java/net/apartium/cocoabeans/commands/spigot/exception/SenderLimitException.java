@@ -10,9 +10,9 @@ public class SenderLimitException extends RequirementException {
 
     private final SenderLimit senderLimit;
 
-    public SenderLimitException(UnmetRequirementResponse response, SenderLimit senderLimit, SenderLimit senderLimit1) {
+    public SenderLimitException(UnmetRequirementResponse response, SenderLimit senderLimit) {
         super(response);
-        this.senderLimit = senderLimit1;
+        this.senderLimit = senderLimit;
     }
 
     public SenderLimit getSenderLimit() {
