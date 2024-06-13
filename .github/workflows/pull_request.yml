@@ -1,4 +1,3 @@
-
 name: Pull request CI
 
 on:
@@ -20,13 +19,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Run integration tests
         run: ./gradlew test
-      - name: Publish Test Report
+
+      - name: Publish Test Reports
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          report_paths: |
-            **/build-logic/build/test-results/test/TEST-*.xml
-            **/commands/build/test-results/test/TEST-*.xml
-            **/common/build/test-results/test/TEST-*.xml
-            **/plugin/build/test-results/test/TEST-*.xml
-            **/spigot/build/test-results/test/TEST-*.xml
+          name: ${{ matrix.module }}
+          report_paths: '**/${{ matrix.module }}/build/test-results/test/TEST-*.xml'
+        matrix:
+          module: [build-logic, commands, common, plugin, spigot]
