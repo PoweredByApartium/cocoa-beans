@@ -24,29 +24,29 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          name: build logic
+          check_name: build logic
           report_paths: '**/build-logic/build/test-results/test/TEST-*.xml'
       - name: Publish `commands` Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          name: commands
+          check_name: commands
           report_paths: '**/commands/build/test-results/test/TEST-*.xml'
       - name: Publish `common` Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          name: common
+          check_name: common
           report_paths: '**/common/build/test-results/test/TEST-*.xml'
       - name: Publish `plugin` Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          name: plugin
+          check_name: plugin
           report_paths: '**/plugin/build/test-results/test/TEST-*.xml'
       - name: Publish `spigot` Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          name: spigot
+          check_name: spigot
           report_paths: '**/spigot/build/test-results/test/TEST-*.xml'
