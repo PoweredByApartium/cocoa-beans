@@ -23,6 +23,8 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
+          detailed_summary: true
+          follow_symlink: true
           check_name: |
             commands
             common
