@@ -6,6 +6,6 @@ plugins {
 group = parent!!.group
 version = parent!!.version
 dependencies {
-    compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:${project.findProperty("panda.spigot.version")}")
+    compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:${project.findProperty("versions.panda.spigot")}")
     compileOnly(project.project(":spigot"))
 }

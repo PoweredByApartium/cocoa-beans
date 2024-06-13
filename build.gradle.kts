@@ -57,8 +57,8 @@ allprojects {
     }
 
     dependencies {
-        compileOnlyApi("com.fasterxml.jackson.core:jackson-annotations:${findProperty("jackson.annotations.version")}")
-        compileOnly("org.jetbrains:annotations:${findProperty("jetbrains.annotations.version")}")
+        compileOnlyApi("com.fasterxml.jackson.core:jackson-annotations:${findProperty("versions.jackson.annotations")}")
+        compileOnly("org.jetbrains:annotations:${findProperty("versions.jetbrains.annotations")}")
     }
 
     tasks {

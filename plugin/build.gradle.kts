@@ -9,7 +9,7 @@ group = "net.apartium.cocoa-beans"
 version = parent!!.version
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:${project.findProperty("spigot.version")}")
+    compileOnly("org.spigotmc:spigot-api:${project.findProperty("versions.spigot")}")
 
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
