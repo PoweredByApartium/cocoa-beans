@@ -8,6 +8,14 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module:
+          - build-logic
+          - commands
+          - common
+          - plugin
+          - spigot
 
     steps:
       - uses: actions/checkout@v3
@@ -25,6 +33,4 @@ jobs:
         if: success() || failure()
         with:
           name: ${{ matrix.module }}
-          report_paths: '**/${{ matrix.module }}/build/test-results/test/TEST-*.xml'
-        matrix:
-          module: [build-logic, commands, common, plugin, spigot]
+          report_paths: '**/build/test-results/test/TEST-*.xml'
