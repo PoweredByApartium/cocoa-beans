@@ -30,12 +30,4 @@ jobs:
             **/plugin/build/test-results/test/TEST-*.xml
             **/spigot/build/test-results/test/TEST-*.xml
         env:
-          CHECK_NAME: ${{ matrix.check_name }}
-        strategy:
-          matrix:
-            check_name:
-              - build logic
-              - commands
-              - common
-              - plugin
-              - spigot
+          CHECK_NAMES: 'build logic, commands, common, plugin, spigot'
