@@ -24,14 +24,10 @@ jobs:
         if: success() || failure()
         with:
           check_name: |
-            logic-build
             commands
             common
-            plugin
             spigot
           report_paths: |
-            **/build-logic/build/test-results/test/TEST-*.xml
             **/commands/build/test-results/test/TEST-*.xml
             **/common/build/test-results/test/TEST-*.xml
-            **/plugin/build/test-results/test/TEST-*.xml
             **/spigot/build/test-results/test/TEST-*.xml
