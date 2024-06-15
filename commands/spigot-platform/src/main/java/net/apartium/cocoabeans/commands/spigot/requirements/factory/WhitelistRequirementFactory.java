@@ -77,7 +77,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                         new UnmetWhitelistResponse(
                                 this,
                                 context,
-                                "Sender is not a player"
+                                invert ? "Invert console by pass lolllllllllll" : "Sender is not a player"
                         )
                 );
 
@@ -87,7 +87,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                     new UnmetWhitelistResponse(
                             this,
                             context,
-                            "Sender is not " + (invert ? "in the blacklist" : "whitelisted")
+                            "Sender is " + (invert ? "in the blacklist" : "not whitelisted")
                     ));
         }
 
