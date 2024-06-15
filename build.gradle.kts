@@ -8,12 +8,11 @@ plugins {
 }
 
 
-val snapshot = System.getProperty("apartium.snapshot", "true").toBoolean()
+val snapshot = false && System.getProperty("apartium.snapshot", "true").toBoolean()
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = System.getenv("PROJECT_VERSION") ?: (project.findProperty("project.version")
-    .toString() + (if (snapshot) "-SNAPSHOT" else ""))
+version = project.findProperty("project.version") as String
 
 allprojects {
 
