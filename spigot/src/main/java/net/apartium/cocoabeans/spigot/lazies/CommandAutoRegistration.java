@@ -3,7 +3,6 @@ package net.apartium.cocoabeans.spigot.lazies;
 import com.google.common.reflect.ClassPath;
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.Ensures;
-import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.spigot.Commands;
@@ -26,6 +25,15 @@ import java.util.Locale;
  * @see CommandExecutor
  */
 public class CommandAutoRegistration {
+
+    private static Class<?> COMMAND_NODE_CLASS;
+    {
+        try {
+            COMMAND_NODE_CLASS = Class.forName("net.apartium.cocoabeans.commands.CommandNode");
+        } catch (ClassNotFoundException e) {
+            COMMAND_NODE_CLASS = null;
+        }
+    }
 
     private final JavaPlugin
             plugin;
@@ -107,7 +115,7 @@ public class CommandAutoRegistration {
                 continue;
             }
 
-            if (CommandNode.class.isAssignableFrom(clazz)) {
+            if (COMMAND_NODE_CLASS != null && COMMAND_NODE_CLASS.isAssignableFrom(clazz)) {
                 handleCommandNode(clazz);
                 continue;
             }
