@@ -87,7 +87,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                     new UnmetWhitelistResponse(
                             this,
                             context,
-                            "Sender is not whitelisted"
+                            "Sender is not " + (invert ? "in the blacklist" : "whitelisted")
                     ));
         }
 
