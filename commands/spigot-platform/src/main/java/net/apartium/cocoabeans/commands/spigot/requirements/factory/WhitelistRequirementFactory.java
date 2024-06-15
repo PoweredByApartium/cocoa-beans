@@ -63,11 +63,10 @@ public class WhitelistRequirementFactory implements RequirementFactory {
             Object senderObj = context.sender().getSender();
             if (senderObj == null)
                 return invert ? RequirementResult.meet() : RequirementResult.error(
-                        new UnmetRequirementResponse(
+                        new UnmetWhitelistResponse(
                                 this,
                                 context,
-                                "Sender is null",
-                                whitelist
+                                "Sender is null"
                         )
                 );
 
@@ -75,22 +74,20 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                 return (consoleBypass && senderObj instanceof ConsoleCommandSender) != invert
                         ? RequirementResult.meet()
                         : RequirementResult.error(
-                        new UnmetRequirementResponse(
+                        new UnmetWhitelistResponse(
                                 this,
                                 context,
-                                "Sender is not a player",
-                                whitelist
+                                invert ? "Invert console by pass lolllllllllll" : "Sender is not a player"
                         )
                 );
 
             return uuids.contains(player.getUniqueId()) != invert
                     ? RequirementResult.meet()
                     : RequirementResult.error(
-                    new UnmetRequirementResponse(
+                    new UnmetWhitelistResponse(
                             this,
                             context,
-                            "Sender is not whitelisted",
-                            whitelist
+                            "Sender is " + (invert ? "in the blacklist" : "not whitelisted")
                     ));
         }
 
