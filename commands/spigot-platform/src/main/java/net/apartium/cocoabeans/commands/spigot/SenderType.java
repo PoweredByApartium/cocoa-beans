@@ -36,7 +36,8 @@ public enum SenderType implements Requirement {
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
-                        ERROR_MESSAGE
+                        ERROR_MESSAGE,
+                        null
                 ));
 
             return RequirementResult.meet();
@@ -58,7 +59,8 @@ public enum SenderType implements Requirement {
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
-                        ERROR_MESSAGE
+                        ERROR_MESSAGE,
+                        null
                 ));
 
             return RequirementResult.meet();
@@ -79,7 +81,8 @@ public enum SenderType implements Requirement {
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
-                        ERROR_MESSAGE
+                        ERROR_MESSAGE,
+                        null
                 ));
 
             return RequirementResult.meet();
@@ -101,7 +104,8 @@ public enum SenderType implements Requirement {
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
-                        ERROR_MESSAGE
+                        ERROR_MESSAGE,
+                        null
                 ));
 
             return RequirementResult.meet();

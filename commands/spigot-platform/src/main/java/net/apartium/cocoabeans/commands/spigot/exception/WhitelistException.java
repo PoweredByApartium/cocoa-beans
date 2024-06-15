@@ -8,14 +8,11 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.26")
 public class WhitelistException extends RequirementException {
 
-    private final Whitelist whitelist;
-
     public WhitelistException(UnmetRequirementResponse response, Whitelist whitelist) {
-        super(response);
-        this.whitelist = whitelist;
+        super(response, whitelist);
     }
 
     public Whitelist getWhitelist() {
-        return whitelist;
+        return (Whitelist) requirement;
     }
 }

@@ -66,7 +66,8 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                         new UnmetRequirementResponse(
                                 this,
                                 context,
-                                "Sender is null"
+                                "Sender is null",
+                                whitelist
                         )
                 );
 
@@ -77,7 +78,8 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                         new UnmetRequirementResponse(
                                 this,
                                 context,
-                                "Sender is not a player"
+                                "Sender is not a player",
+                                whitelist
                         )
                 );
 
@@ -87,13 +89,14 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                     new UnmetRequirementResponse(
                             this,
                             context,
-                            "Sender is not whitelisted"
+                            "Sender is not whitelisted",
+                            whitelist
                     ));
         }
 
         private class UnmetWhitelistResponse extends UnmetRequirementResponse {
             public UnmetWhitelistResponse(Requirement requirement, RequirementEvaluationContext context, String message) {
-                super(requirement, context, message);
+                super(requirement, context, message, whitelist);
             }
 
             @Override

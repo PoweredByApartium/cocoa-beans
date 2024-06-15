@@ -16,13 +16,20 @@ public class WallRequirementFactory implements RequirementFactory {
 
     @Override
     public Requirement getRequirement(CommandNode commandNode, Object obj) {
-        return new WallRequirementImpl();
+        return new WallRequirementImpl((WallRequirement) obj);
     }
 
     private static class WallRequirementImpl implements Requirement {
+
+        private final WallRequirement wallRequirement;
+
+        public WallRequirementImpl(WallRequirement wallRequirement) {
+            this.wallRequirement = wallRequirement;
+        }
+
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            return RequirementResult.error(new UnmetRequirementResponse(this, context, "This command can't be used"));
+            return RequirementResult.error(new UnmetRequirementResponse(this, context, "This command can't be used", wallRequirement));
         }
     }
 }
