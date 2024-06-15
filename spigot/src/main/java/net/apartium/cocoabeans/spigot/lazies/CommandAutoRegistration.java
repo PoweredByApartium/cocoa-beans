@@ -3,6 +3,9 @@ package net.apartium.cocoabeans.spigot.lazies;
 import com.google.common.reflect.ClassPath;
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.Ensures;
+import net.apartium.cocoabeans.commands.Command;
+import net.apartium.cocoabeans.commands.CommandManager;
+import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,6 +34,9 @@ public class CommandAutoRegistration {
             allowDirectCommandMapRegistration,
             loadDevCommands;
 
+    CommandManager
+            commandManager;
+
     /**
      * Creates a new instance of command auto registration
      * @param plugin plugin instance to be associated with new commands
@@ -48,6 +54,11 @@ public class CommandAutoRegistration {
      */
     public CommandAutoRegistration enableDevCommands(boolean value) {
         this.loadDevCommands = value;
+        return this;
+    }
+
+    public CommandAutoRegistration setCommandManager(CommandManager commandManager) {
+        this.commandManager = commandManager;
         return this;
     }
 
@@ -96,6 +107,11 @@ public class CommandAutoRegistration {
                 continue;
             }
 
+            if (CommandNode.class.isAssignableFrom(clazz)) {
+                handleCommandNode(clazz);
+                continue;
+            }
+
             if (!CommandExecutor.class.isAssignableFrom(clazz))
                 continue;
 
@@ -107,7 +123,7 @@ public class CommandAutoRegistration {
             if (devCommand && !loadDevCommands)
                 continue;
 
-            CommandExecutor instance = createInstance(clazz);
+            CommandExecutor instance = (CommandExecutor) createInstance(clazz);
 
             PluginCommand pluginCommand = plugin.getCommand(annotation.value());
             if (pluginCommand == null) {
@@ -132,10 +148,26 @@ public class CommandAutoRegistration {
 
     }
 
-    private CommandExecutor createInstance(Class<?> clazz) {
+    private void handleCommandNode(Class<?> clazz) {
+        if (clazz.getAnnotation(net.apartium.cocoabeans.commands.Command.class) == null) {
+            plugin.getLogger().warning("Command class " + clazz.getName() + " is not annotated with @Command!");
+            return;
+        }
+
+        Command annotation = clazz.getAnnotation(Command.class);
+        if (annotation != null && annotation.devServer() && !loadDevCommands) {
+            plugin.getLogger().warning(clazz.getName() + " wasn't registered to this plugin because it's a dev command!");
+            return;
+        }
+
+        CommandNode node = (CommandNode) createInstance(clazz);
+        commandManager.addCommand(node);
+    }
+
+    private Object createInstance(Class<?> clazz) {
         Constructor<?> constructor = clazz.getConstructors()[0];
         try {
-            return (CommandExecutor) constructor.newInstance(constructor.getParameterCount() == 0 ? new Object[0] : new Object[] {plugin});
+            return constructor.newInstance(constructor.getParameterCount() == 0 ? new Object[0] : new Object[] {plugin});
         } catch (Exception e) {
             Dispensers.dispense(e);
             return null;
