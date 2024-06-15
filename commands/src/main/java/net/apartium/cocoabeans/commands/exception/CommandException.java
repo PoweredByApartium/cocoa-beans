@@ -5,29 +5,29 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.22")
 public class CommandException extends RuntimeException {
 
-    private final BadCommandResponse commandError;
+    private final BadCommandResponse badCommandResponse;
 
     public CommandException(BadCommandResponse commandError) {
-        this.commandError = commandError;
+        this.badCommandResponse = commandError;
     }
 
-    public BadCommandResponse getCommandError() {
-        return commandError;
+    public BadCommandResponse getBadCommandResponse() {
+        return badCommandResponse;
     }
 
     public String getCommandName() {
-        return commandError.getCommandName();
+        return badCommandResponse.getCommandName();
     }
 
     public String[] getArgs() {
-        return commandError.getArgs();
+        return badCommandResponse.getArgs();
     }
 
     public String getMessage() {
-        return commandError.getMessage();
+        return badCommandResponse.getMessage();
     }
 
     public int getDepth() {
-        return commandError.getDepth();
+        return badCommandResponse.getDepth();
     }
 }

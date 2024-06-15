@@ -50,7 +50,7 @@ public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
             }
 
             if (BadCommandResponse.class.isAssignableFrom(type) && throwable instanceof CommandException) {
-                BadCommandResponse commandError = ((CommandException) throwable).getCommandError();
+                BadCommandResponse commandError = ((CommandException) throwable).getBadCommandResponse();
                 if (commandError.getClass().isAssignableFrom(type)) {
                     result.add(commandError);
                     continue;

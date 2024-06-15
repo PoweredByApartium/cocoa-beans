@@ -129,7 +129,8 @@ public class RequirementSetTest {
             return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
-                    ""
+                    "",
+                    null
             ));
         }
 
@@ -154,7 +155,8 @@ public class RequirementSetTest {
                 return RequirementResult.error(new UnmetRequirementResponse(
                         this,
                         context,
-                        ""
+                        "",
+                        null
                 ));
 
             return RequirementResult.meet();
@@ -182,7 +184,8 @@ public class RequirementSetTest {
             return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
-                    ""
+                    "",
+                    null
             ));
         }
 
@@ -195,7 +198,8 @@ public class RequirementSetTest {
             return RequirementResult.error(new UnmetRequirementResponse(
                     this,
                     context,
-                    ""
+                    "",
+                    null
             ));
         }
 
