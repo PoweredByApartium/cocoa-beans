@@ -34,12 +34,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Build docs using Writerside Docker builder
-        uses: JetBrains/writerside-github-action@v4
-        with:
-          instance: ${{ env.INSTANCE }}
-          artifact: ${{ env.ARTIFACT }}
-          docker-version: ${{ env.DOCKER_VERSION }}
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
