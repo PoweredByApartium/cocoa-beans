@@ -16,10 +16,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   checkoutSetup:
     uses: ./.github/workflows/setup.yml
