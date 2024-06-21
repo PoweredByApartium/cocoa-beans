@@ -2,6 +2,8 @@ name: Base setup
 
 on:
   workflow_call:
+    outputs:
+      output-path: docs
 
 env:
   INSTANCE: 'Writerside/cb'
