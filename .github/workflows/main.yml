@@ -16,9 +16,6 @@ permissions:
   id-token: write
 
 jobs:
-  checkoutSetup:
-    uses: ./.github/workflows/setup.yml
-
   # Single deploy job since we're just deploying
   deploy:
     needs: checkoutSetup
@@ -32,6 +29,9 @@ jobs:
       id-token: write
       pages: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -44,6 +44,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      - uses: actions/upload-artifact@v4
+      - name: checkoutSetup
+        uses: ./.github/workflows/setup.yml
+      - name: upload
+        uses: actions/upload-artifact@v4
         with:
           path: 'docs/'
