@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   checkoutPages:
-    uses: ./.github/workflows/pages.yml@45-new-docs-r
+    uses: ./.github/workflows/pages.yml
   # Single deploy job since we're just deploying
   deploy:
     environment:
