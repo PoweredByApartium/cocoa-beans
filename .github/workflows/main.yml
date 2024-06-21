@@ -15,10 +15,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   checkoutSetup:
     uses: ./.github/workflows/setup.yml
@@ -42,7 +38,9 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Publish to maven repository
-        run: ./gradlew publish -Dapartium.snapshot=true
+        run: |
+          ./gradlew publish -Dapartium.snapshot=true
+          ls docs/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
