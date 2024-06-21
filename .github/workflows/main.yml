@@ -40,10 +40,9 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publish
         env:
-          output-path:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - uses: actions/upload-artifact@v4
         with:
-          path:  ${{ steps.action-a.outputs.output-path }}
+          path:  ${{ steps.setup.outputs.output-path }}
