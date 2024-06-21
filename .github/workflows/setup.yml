@@ -5,7 +5,8 @@ on:
     outputs:
       output_path:
         description: "Docs path"
-        value: "docs"
+        path: ${{ jobs.example_job.outputs.output_path }}
+
 
 env:
   INSTANCE: 'Writerside/cb'
@@ -26,6 +27,8 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step1.outputs.output_path }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,8 +47,10 @@ jobs:
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
       - name: Create pages directory
+        id: docs
         run: |
-          mkdir docs
+          mkdir docs 
+          echo "output_path=docs" >> $GITHUB_OUTPUT
           mkdir docs/common
           mkdir docs/spigot
           mkdir docs/commands
