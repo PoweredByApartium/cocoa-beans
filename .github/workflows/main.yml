@@ -38,8 +38,6 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Publish to maven repository
-        with:
-          output-path: ${{ steps.setup.outputs.output-path }}
         run: |
           ./gradlew publish
           ls -la
