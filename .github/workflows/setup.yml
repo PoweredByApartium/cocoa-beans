@@ -5,7 +5,7 @@ on:
     outputs:
       output_path:
         description: "Docs path"
-        value: "/docs"
+        value: "docs"
 
 env:
   INSTANCE: 'Writerside/cb'

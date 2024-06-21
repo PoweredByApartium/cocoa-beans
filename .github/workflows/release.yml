@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload our temp directory
-          path: 'docs'
+          path:  ${{ steps.action-a.outputs.output-path }}
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
