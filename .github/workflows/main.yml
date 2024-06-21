@@ -18,6 +18,7 @@ permissions:
 jobs:
   checkoutSetup:
     uses: ./.github/workflows/setup.yml
+
   # Single deploy job since we're just deploying
   deploy:
     needs: checkoutSetup
@@ -43,4 +44,4 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - uses: actions/upload-artifact@v4
         with:
-          path:  ${{ jobs.checkoutSetup.outputs.output_path }}
+          path: 'docs/'

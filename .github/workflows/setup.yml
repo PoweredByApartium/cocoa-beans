@@ -2,11 +2,6 @@ name: Base setup
 
 on:
   workflow_call:
-    outputs:
-      output_path:
-        description: "Docs path"
-        value: ${{ jobs.setup.outputs.output_path }}
-
 
 env:
   INSTANCE: 'Writerside/cb'
@@ -27,8 +22,6 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    outputs:
-      output: ${{ steps.docs.outputs.output_path }}
     steps:
       - uses: actions/setup-java@v3
         with:
@@ -45,7 +38,6 @@ jobs:
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
       - name: Create pages directory
-        id: docs
         run: |
           mkdir docs 
           mkdir docs/common
@@ -58,6 +50,3 @@ jobs:
           cp -a spigot/build/docs/javadoc/* docs/spigot
           cp -a commands/build/docs/javadoc/* docs/commands
           cp -a commands/spigot-platform/build/docs/javadoc/* docs/commands-spigot
-          
-          output=$(ls -R "docs" | base64 -w 0)
-          echo "output_path=docs" >> $GITHUB_OUTPUT
