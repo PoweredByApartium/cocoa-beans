@@ -37,11 +37,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Download docs artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: docs
-          path: docs
       - name: Publish to maven repository
         run: |
           ./gradlew publish

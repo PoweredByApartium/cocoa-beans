@@ -52,8 +52,3 @@ jobs:
           cp -a spigot/build/docs/javadoc/* docs/spigot
           cp -a commands/build/docs/javadoc/* docs/commands
           cp -a commands/spigot-platform/build/docs/javadoc/* docs/commands-spigot
-      - name: Archive pages
-        uses: actions/upload-artifact@v4
-        with:
-          name: Pages
-          path: 'docs'
