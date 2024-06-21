@@ -43,6 +43,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: checkoutSetup
         uses: ./.github/workflows/setup.yml@45-new-docs-r
       - name: upload
