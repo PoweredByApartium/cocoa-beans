@@ -40,6 +40,7 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish -Dapartium.snapshot=true
         env:
+          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
