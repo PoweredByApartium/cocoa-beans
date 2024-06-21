@@ -57,7 +57,7 @@ jobs:
       #  env:
       #    HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
       - name: Get pages dir
-        uses: ./.github/workflows/pages.yml
+        uses: PoweredByApartium/cocoa-beans/.github/workflows/pages.yml@45-new-docs-r
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
