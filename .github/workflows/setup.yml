@@ -5,7 +5,7 @@ on:
     outputs:
       output_path:
         description: "Docs path"
-        path: ${{ jobs.example_job.outputs.output_path }}
+        value: ${{ jobs.example_job.outputs.output_path }}
 
 
 env:
