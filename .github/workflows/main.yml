@@ -31,8 +31,6 @@ jobs:
       id-token: write
       pages: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -45,4 +43,4 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - uses: actions/upload-artifact@v4
         with:
-          path:  ${{ needs.checkoutSetup.outputs.output_path }}
+          path:  ${{ jobs.checkoutSetup.outputs.output_path }}
