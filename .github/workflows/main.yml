@@ -20,6 +20,7 @@ jobs:
     uses: ./.github/workflows/setup.yml
   # Single deploy job since we're just deploying
   deploy:
+    needs: checkoutSetup
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -32,6 +33,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Publish to maven repository
+        run: ./gradlew publish -Dapartium.snapshot=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: Archive pages
         uses: actions/upload-artifact@v4
         with:
