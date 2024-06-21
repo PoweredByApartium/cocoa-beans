@@ -4,26 +4,16 @@ name: Deploy javadocs to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["45-new-docs-r #TODO fix"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-env:
-  INSTANCE: 'Writerside/cb'
-  ARTIFACT: 'webHelpHI2-all.zip'
-  DOCKER_VERSION: '233.14938'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
 
 jobs:
   # Single deploy job since we're just deploying
@@ -58,27 +48,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      - name: Create temp directory
-        shell: sh
-        run: |
-          mkdir docs
-          mkdir docs/common
-          mkdir docs/spigot
-          mkdir docs/commands
-          mkdir docs/commands-spigot
-          unzip artifacts/webHelpCB2-all.zip -d docs
-          ls docs/
-          cp -a common/build/docs/javadoc/* docs/common
-          cp -a spigot/build/docs/javadoc/* docs/spigot
-          cp -a commands/build/docs/javadoc/* docs/commands
-          cp -a commands/spigot-platform/build/docs/javadoc/* docs/commands-spigot
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Get pages dir
+        uses: ./.github/workflows/pages.yml
+      - name: Archive pages
+        uses: actions/upload-artifact@v4
         with:
-          # Upload our temp directory
+          name: Pages
           path: 'docs'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1

@@ -1,0 +1,49 @@
+name: Pages
+
+on:
+  workflow_call:
+
+env:
+  INSTANCE: 'Writerside/cb'
+  ARTIFACT: 'webHelpHI2-all.zip'
+  DOCKER_VERSION: '233.14938'
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Generate javadoc
+        run: ./gradlew javadoc
+      - name: Build docs using Writerside Docker builder
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+      - name: Create pages directory
+        run: |
+          mkdir docs
+          mkdir docs/common
+          mkdir docs/spigot
+          mkdir docs/commands
+          mkdir docs/commands-spigot
+          unzip artifacts/webHelpCB2-all.zip -d docs
+          ls docs/
+          cp -a common/build/docs/javadoc/* docs/common
+          cp -a spigot/build/docs/javadoc/* docs/spigot
+          cp -a commands/build/docs/javadoc/* docs/commands
+          cp -a commands/spigot-platform/build/docs/javadoc/* docs/commands-spigot
