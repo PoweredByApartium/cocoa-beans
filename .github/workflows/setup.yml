@@ -1,4 +1,4 @@
-name: Pages
+name: Base setup
 
 on:
   workflow_call:
@@ -29,8 +29,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Generate javadoc
-        run: ./gradlew javadoc
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Publish to maven repository
+        run: ./gradlew publish -Dapartium.snapshot=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: Build docs using Writerside Docker builder
         uses: JetBrains/writerside-github-action@v4
         with:
