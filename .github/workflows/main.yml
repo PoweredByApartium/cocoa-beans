@@ -43,7 +43,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
-        run: ./gradlew publish -Dapartium.snapshot=true
+        run: ./gradlew publishPluginPublicationToHangar publish -Dapartium.snapshot=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}

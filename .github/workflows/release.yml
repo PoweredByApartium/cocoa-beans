@@ -52,10 +52,6 @@ jobs:
           files: |
             plugin/build/libs/*.jar
             LICENSE.md
-      - name: hangar publish
-        run: ./gradlew publishPluginPublicationToHangar
-        env:
-          HANGAR_API_KEY: ${{ secrets.HANGAR_API_KEY }}
       - name: Get pages dir
         uses: ./.github/workflows/pages.yml
       - name: Setup Pages
