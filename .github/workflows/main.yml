@@ -43,6 +43,7 @@ jobs:
           ls -la
           ls docs/
         env:
+          output-path: ${{ steps.action-a.outputs.output-path }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
