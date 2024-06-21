@@ -52,6 +52,10 @@ jobs:
           files: |
             plugin/build/libs/*.jar
             LICENSE.md
+      #- name: Publish to maven repository
+      #  run: ./gradlew publishPluginPublicationToHangar
+      #  env:
+      #    HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
       - name: Get pages dir
         uses: ./.github/workflows/pages.yml
       - name: Setup Pages
