@@ -7,7 +7,7 @@ name: Publish package to GitHub Packages
 on:
   push:
     branches:
-      - 45-new-docs-r #TODO fix
+      - 445-new-docs-r #TODO fix
     tags:
       - v0.0.*
 
@@ -43,12 +43,12 @@ jobs:
         with:
           name: artifacts
           path: "**/build/libs/*.jar"
-      - name: Create a release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            plugin/build/libs/*.jar
-            LICENSE.md
+      #- name: Create a release
+      #  uses: softprops/action-gh-release@v2
+      #  with:
+     #     files: |
+      #      plugin/build/libs/*.jar
+      #      LICENSE.md
       #- name: Publish to maven repository
       #  run: ./gradlew publishPluginPublicationToHangar
       #  env:
