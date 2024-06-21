@@ -28,7 +28,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      output: ${{ steps.step1.outputs.output_path }}
+      output: ${{ steps.docs.outputs.output_path }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
