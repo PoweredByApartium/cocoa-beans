@@ -45,4 +45,4 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - uses: actions/upload-artifact@v4
         with:
-          path: ${{ needs.checkoutSetup.outputs.output_path }}
+          output_path: ${{ steps.docs.outputs.output_path }}
