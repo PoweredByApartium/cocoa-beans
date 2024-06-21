@@ -43,6 +43,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Get pages dir
         uses: ./.github/workflows/pages.yml
       - name: Archive pages
