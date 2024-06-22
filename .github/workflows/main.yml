@@ -1,41 +1,47 @@
-name: Main Workflow
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy javadocs to Pages
 
 on:
-  push:
-    branches:
-      - 445-new-docs-r #TODO fix
+  workflow_call:
+    inputs:
+      project-folder:
+        description: "Docs folder"
+        type: string
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  main:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      pages: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Download docs artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: docs
-          path: docs
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
-        run: ./gradlew publish -Dapartium.snapshot=true
+        run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - name: upload
+        uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
-          path: "**/build/libs/*.jar"
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: 'docs/'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          path: ${{ inputs.project-folder }}
