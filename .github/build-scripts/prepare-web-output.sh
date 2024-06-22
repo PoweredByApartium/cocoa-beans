@@ -1,9 +1,5 @@
 #!/bin/bash
 
-java -version # Debug only
-
-./gradlew javadoc
-
 mkdir docs
 unzip artifacts/webHelpCB2-all.zip -d docs
 mkdir -p docs/common
