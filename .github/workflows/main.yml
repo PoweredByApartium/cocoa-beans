@@ -41,8 +41,7 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: run docs script
         run: |
-          git update-index --chmod=+x  ./.github/script.sh
-          /.github/setup.sh
+          ./.github/setup.sh
       - name: upload
         uses: actions/upload-artifact@v4
         with:
