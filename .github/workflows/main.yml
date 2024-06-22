@@ -2,12 +2,8 @@
 name: Deploy javadocs to Pages
 
 on:
-  workflow_call:
-    inputs:
-      project-folder:
-        description: "Docs folder"
-        type: string
-        default: docs
+  push:
+    branches: ["45-new-docs-r"] #TODO fix
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -43,7 +39,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      - name: run docs script
+        run: ./setup.sh
       - name: upload
         uses: actions/upload-artifact@v4
         with:
-          path: ${{ inputs.project-folder }}
+          path: 'docs/'
