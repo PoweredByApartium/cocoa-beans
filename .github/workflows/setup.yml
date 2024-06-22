@@ -4,8 +4,6 @@ on:
   workflow_call:
     outputs:
       value: ${{ steps.docs.outputs.dir }}
-      dir:
-        description: 'The path to the created directory'
 
 env:
   INSTANCE: 'Writerside/cb'
