@@ -16,6 +16,11 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  INSTANCE: 'Writerside/cb'
+  ARTIFACT: 'webHelpHI2-all.zip'
+  DOCKER_VERSION: '233.14938'
+
 jobs:
   publish:
     needs: checkoutSetup
@@ -50,13 +55,18 @@ jobs:
       #  run: ./gradlew publishPluginPublicationToHangar
       #  env:
       #    HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+      - name: run docs script
+        run: |
+          ls -la
+          chmod +x ./.github/setup.sh
+          ./.github/setup.sh
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload our temp directory
-          path:  ${{ steps.setup.outputs.output_path }}
+          path:  'docs/'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
