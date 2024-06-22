@@ -35,7 +35,6 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publish -Dapartium.snapshot=true
         env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-17.0.11.0.9-2.el9.x86_64/bin/java
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
@@ -53,7 +52,6 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar
         env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-17.0.11.0.9-2.el9.x86_64/bin/java
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
