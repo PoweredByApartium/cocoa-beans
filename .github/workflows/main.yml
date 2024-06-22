@@ -27,7 +27,10 @@ jobs:
     needs: checkoutSetup
     runs-on: ubuntu-latest
     steps:
-      - run: ls -la
+      - run: |
+          dir="${{ steps.create-dir.outputs.dir }}"
+          echo "Using directory: $dir"
+          ls -la
 
   # Single deploy job since we're just deploying
   deploy:

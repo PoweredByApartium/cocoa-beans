@@ -3,7 +3,7 @@ name: Base setup
 on:
   workflow_call:
     outputs:
-      value: ${{ steps.docs.outputs.dir }}
+      value: ${{ steps.setup.outputs.dir }}
 
 env:
   INSTANCE: 'Writerside/cb'
