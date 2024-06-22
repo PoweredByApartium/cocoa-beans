@@ -63,4 +63,4 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/45-new-docs-r'
     uses: ./.github/workflows/main.yml
     with:
-      path: 'docs'
+      project-folder: 'docs'
