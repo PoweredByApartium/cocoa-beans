@@ -22,7 +22,7 @@ env:
 jobs:
   publish:
     needs: checkoutSetup
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
