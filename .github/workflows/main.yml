@@ -29,6 +29,10 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
+      - name: test
+        run: |
+          ls -la artifacts
+          ls -la
   # Single deploy job since we're just deploying
   deploy:
     needs: writerside
