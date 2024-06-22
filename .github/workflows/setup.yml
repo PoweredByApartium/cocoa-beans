@@ -2,6 +2,9 @@ name: Base setup
 
 on:
   workflow_call:
+    outputs:
+      dir:
+        description: 'The path to the created directory'
 
 env:
   INSTANCE: 'Writerside/cb'
@@ -55,3 +58,4 @@ jobs:
           cp -a spigot/build/docs/javadoc/* docs/spigot
           cp -a commands/build/docs/javadoc/* docs/commands
           cp -a commands/spigot-platform/build/docs/javadoc/* docs/commands-spigot
+          echo "::set-output name=dir::$GITHUB_WORKSPACE/docs"
