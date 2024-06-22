@@ -21,7 +21,6 @@ env:
 
 jobs:
   publish:
-    needs: checkoutSetup
     runs-on: ubuntu-latest
     permissions:
       contents: read
