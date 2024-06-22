@@ -7,10 +7,12 @@ on:
       project-folder:
         description: "Docs folder"
         type: string
+        default: docs
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
+  packages: write
   pages: write
   id-token: write
 
