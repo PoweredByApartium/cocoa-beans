@@ -3,6 +3,7 @@ name: Base setup
 on:
   workflow_call:
     outputs:
+      value: docs
       dir:
         description: 'The path to the created directory'
 
