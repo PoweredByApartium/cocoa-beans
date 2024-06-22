@@ -31,8 +31,8 @@ jobs:
           docker-version: ${{ env.DOCKER_VERSION }}
       - name: test
         run: |
-          ls -la artifacts
-          ls -la
+          mkdir docs
+          unzip artifacts/webHelpCB2-all.zip -d docs
   # Single deploy job since we're just deploying
   deploy:
     needs: writerside
