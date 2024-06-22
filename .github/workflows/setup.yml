@@ -3,7 +3,7 @@ name: Base setup
 on:
   workflow_call:
     outputs:
-      value: docs
+      value: ${{ steps.docs.outputs.dir }}
       dir:
         description: 'The path to the created directory'
 
