@@ -20,7 +20,6 @@ env:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    needs: writerside
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
