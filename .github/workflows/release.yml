@@ -6,8 +6,6 @@
 name: Publish package to GitHub Packages
 on:
   push:
-    branches:
-      - 445-new-docs-r #TODO fix
     tags:
       - v0.0.*
 
@@ -45,16 +43,22 @@ jobs:
         with:
           name: artifacts
           path: "**/build/libs/*.jar"
-      #- name: Create a release
-      #  uses: softprops/action-gh-release@v2
-      #  with:
-     #     files: |
-      #      plugin/build/libs/*.jar
-      #      LICENSE.md
-      #- name: Publish to maven repository
-      #  run: ./gradlew publishPluginPublicationToHangar
-      #  env:
-      #    HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+      - name: Create a release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            plugin/build/libs/*.jar
+            LICENSE.md
+      - name: Publish to maven repository
+        run: ./gradlew publishPluginPublicationToHangar
+        env:
+         HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
       - name: run docs script
         run: |
           ls -la
