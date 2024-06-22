@@ -7,8 +7,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -19,6 +18,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Run integration tests
         run: ./gradlew test
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-17.0.11.0.9-2.el9.x86_64/bin/java
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()

@@ -23,7 +23,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       contents: read
       packages: write
@@ -41,6 +41,7 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publish
         env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-17.0.11.0.9-2.el9.x86_64/bin/java
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
