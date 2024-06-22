@@ -16,6 +16,16 @@ permissions:
   id-token: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: debug
+        run: ls -la
+      - name: checkoutSetup
+        uses: ./.github/workflows/setup.yml@45-new-docs-r
+      - name: debug2
+        run: ls -la
+
   # Single deploy job since we're just deploying
   deploy:
     environment:
@@ -45,8 +55,6 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       - name: Checkout
         uses: actions/checkout@v4
-      - name: checkoutSetup
-        uses: ./.github/workflows/setup.yml@45-new-docs-r
       - name: upload
         uses: actions/upload-artifact@v4
         with:
