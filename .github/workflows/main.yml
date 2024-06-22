@@ -50,10 +50,6 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-      - name: test
-        run: |
-          mkdir docs
-          unzip artifacts/webHelpCB2-all.zip -d docs
       - name: run docs script
         run: |
           ls -la

@@ -4,6 +4,8 @@ java -version # Debug only
 
 ./gradlew javadoc
 
+mkdir docs
+unzip artifacts/webHelpCB2-all.zip -d docs
 mkdir -p docs/common
 mkdir -p docs/spigot
 mkdir -p docs/commands-spigot
