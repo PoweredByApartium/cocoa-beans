@@ -22,7 +22,7 @@ jobs:
       - name: debug
         run: ls -la
       - name: checkoutSetup
-        uses: ./.github/workflows/setup.yml@45-new-docs-r
+        uses: ./.github/workflows/setup.yml
       - name: debug2
         run: ls -la
 
