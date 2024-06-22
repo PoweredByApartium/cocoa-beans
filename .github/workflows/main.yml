@@ -53,7 +53,7 @@ jobs:
       - name: run docs script
         run: |
           git update-index --chmod=+x ./build-scripts/prepare-web-output.sh
-          sh /build-scripts/prepare-web-output.sh
+          sh ./build-scripts/prepare-web-output.sh
       - name: upload
         uses: actions/upload-artifact@v4
         with:
