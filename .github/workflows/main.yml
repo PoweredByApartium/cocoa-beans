@@ -18,6 +18,15 @@ env:
   DOCKER_VERSION: '233.14938'
 
 jobs:
+  writerside:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
   # Single deploy job since we're just deploying
   deploy:
     environment:

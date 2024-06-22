@@ -2,7 +2,7 @@
 
 java -version # Debug only
 
-run: ./gradlew javadoc
+./gradlew javadoc
 
 mkdir docs
 mkdir -p docs/common
