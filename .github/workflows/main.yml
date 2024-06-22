@@ -18,21 +18,6 @@ env:
   DOCKER_VERSION: '233.14938'
 
 jobs:
-  writerside:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Build Writerside docs using Docker
-        uses: JetBrains/writerside-github-action@v4
-        with:
-          instance: ${{ env.INSTANCE }}
-          artifact: ${{ env.ARTIFACT }}
-          docker-version: ${{ env.DOCKER_VERSION }}
-      - name: test
-        run: |
-          mkdir docs
-          unzip artifacts/webHelpCB2-all.zip -d docs
   # Single deploy job since we're just deploying
   deploy:
     needs: writerside
@@ -60,6 +45,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+      - name: test
+        run: |
+          mkdir docs
+          unzip artifacts/webHelpCB2-all.zip -d docs
       - name: run docs script
         run: |
           ls -la
