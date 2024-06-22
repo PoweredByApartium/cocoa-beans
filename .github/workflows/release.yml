@@ -7,7 +7,7 @@ name: Publish package to GitHub Packages
 on:
   push:
     branches:
-      #- 445-new-docs-r #TODO fix
+      - 445-new-docs-r #TODO fix
     tags:
       - v0.0.*
 

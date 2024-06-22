@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - 445-new-docs-r #TODO fix
+      - 45-new-docs-r #TODO fix
     tags:
       - v0.0.*
 
