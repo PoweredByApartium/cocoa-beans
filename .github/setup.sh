@@ -9,6 +9,7 @@ mkdir -p docs/common
 mkdir -p docs/spigot
 mkdir -p docs/commands-spigot
 mkdir -p docs/commands
+ls -la artifacts
 unzip artifacts/webHelpCB2-all.zip -d docs
 ls docs/
 cp -a common/build/docs/javadoc/* docs/common
