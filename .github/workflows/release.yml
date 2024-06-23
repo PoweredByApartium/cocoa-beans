@@ -28,6 +28,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Update Gradle Version #TODO change target branch
         run: |
           echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
