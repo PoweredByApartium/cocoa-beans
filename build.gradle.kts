@@ -69,12 +69,13 @@ allprojects {
 
 hangarPublish {
     publications.register("plugin") {
-        version = project.version as String
+        //version = project.version as String
         /*if (snapshot) {
             channel.set("Snapshot")
         } else {
             channel.set("Release")
         }*/
+        version = "1.test"
         channel.set("test1") // TODO fix
 
         apiKey = System.getenv("HANGAR_TOKEN") ?: project.findProperty("hangar.token.key").toString()
