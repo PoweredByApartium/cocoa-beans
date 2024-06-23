@@ -74,6 +74,9 @@ jobs:
           git tag $TAG_VERSION
           git push origin $TAG_VERSION
 
+      - name: debug
+        run: cat gradle.properties
+
   publish:
     needs: setup
     runs-on: ubuntu-latest
@@ -83,8 +86,8 @@ jobs:
       id-token: write
       pages: write
     steps:
-      - name: debug
-        run: cat gradle.properties
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
