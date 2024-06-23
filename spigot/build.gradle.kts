@@ -9,5 +9,6 @@ version = parent!!.version
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
     compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
+    compileOnly(project.project(":commands"))
     api(project.project(":common"))
 }
