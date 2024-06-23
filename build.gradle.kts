@@ -69,13 +69,12 @@ allprojects {
 
 hangarPublish {
     publications.register("plugin") {
-        //version = project.version as String
+        version = project.version as String
         /*if (snapshot) {
             channel.set("Snapshot")
         } else {
             channel.set("Release")
         }*/
-        version = "1.test"// TODO fix
         channel.set("Snapshot")
 
 
