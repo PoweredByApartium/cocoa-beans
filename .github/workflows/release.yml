@@ -28,11 +28,6 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-
       - name: Update Gradle Version #TODO change target branch
         run: |
           echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
