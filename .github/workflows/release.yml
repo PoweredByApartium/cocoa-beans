@@ -36,15 +36,21 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update Gradle Version #TODO change target branch
+      - name: Setup git
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
+
+      - name: Update Gradle Version #TODO change target branch
+        run: |
           git pull origin release-ci
           echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
           git add gradle.properties
           git commit -m "Update project version to ${{ github.event.inputs.name }}"
           git push origin release-ci
+
+      - name: Tag changes
+        run: |
           git tag ${{ github.event.inputs.name }}
           git push origin ${{ github.event.inputs.name }}
 
