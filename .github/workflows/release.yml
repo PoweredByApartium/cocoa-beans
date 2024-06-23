@@ -30,16 +30,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Git
+      - name: Update Gradle Version #TODO change target branch
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-
-      - name: Update Gradle Version #TODO change target branch
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
           echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
           git add gradle.properties
           git commit -m "Update project version to ${{ github.event.inputs.name }}"
