@@ -49,11 +49,6 @@ jobs:
           git commit -m "Update project version to ${{ github.event.inputs.name }}"
           git push origin release-ci
 
-      - name: Tag changes
-        run: |
-          git tag ${{ github.event.inputs.name }}
-          git push origin ${{ github.event.inputs.name }}
-
       - name: Create Tag
         id: create_tag
         run: |
