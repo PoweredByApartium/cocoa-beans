@@ -3,11 +3,11 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Publish package to GitHub Packages
+name: Release
 on:
   push:
     tags:
-      - v0.0.*
+      - v*
 
 permissions:
   contents: read

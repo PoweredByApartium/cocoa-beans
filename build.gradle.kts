@@ -11,7 +11,8 @@ val snapshot = System.getProperty("GITHUB_REF_TYPE", "branch").equals("branch")
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = project.findProperty("project.version") as String
+version = System.getenv("PROJECT_VERSION") ?: (project.findProperty("project.version")
+    .toString() + (if (snapshot) "-SNAPSHOT" else ""))
 
 allprojects {
 
