@@ -14,7 +14,9 @@ on:
         type: string
 
 permissions:
-  contents: read
+  pull-requests: write
+  contents: write
+  repository-projects: write
   packages: write
   pages: write
   id-token: write
