@@ -44,25 +44,10 @@ jobs:
       - name: Update Gradle Version #TODO change target branch
         run: |
           git pull origin release-ci
-          echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
-
-          echo "# General"  > gradle.properties
-          echo "versions.jackson.annotations = 2.13.4"  > gradle.properties
-          echo "versions.jetbrains.annotations = 23.0.0"  > gradle.properties
-          echo "versions.junit = 5.8.1"  > gradle.properties
-          echo "versions.junit.bom = 5.9.1"  > gradle.properties
-          echo "versions.apache.commons-codec = 1.17.0"  > gradle.properties
-            
-          echo "# Minecraft"  > gradle.properties
-          echo "versions.paper = 1.19-R0.1-SNAPSHOT"  > gradle.properties
-          echo "versions.paper.1.20 = 1.19-R0.1-SNAPSHOT"  > gradle.properties
-          echo "versions.monjang.authlib = 3.11.49"  > gradle.properties
-          echo "versions.panda.spigot = 1.8.8-R0.1-SNAPSHOT"  > gradle.properties
-          echo "versions.spigot = 1.18.1-R0.1-SNAPSHOT"  > gradle.properties
-            
-          echo "# Hangar"  > gradle.properties
-          echo "hangar.id = testprojectapa"  > gradle.properties
-          
+          new_version=${{ github.event.inputs.name }}
+          gradle_properties="gradle.properties"
+          sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
+          echo "Updated project.version to $new_version"
           git add gradle.properties
           git commit -m "Update project version to ${{ github.event.inputs.name }}"
           git push origin release-ci
