@@ -5,9 +5,12 @@
 
 name: Release
 on:
-  push:
-    tags:
-      - v*
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Version'
+        required: true
+        type: string
 
 permissions:
   contents: read
