@@ -32,7 +32,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Publish to maven repository
-        run: ./gradlew publishPluginPublicationToHangar publish javadoc
+        run: ./gradlew publishPluginPublicationToHangar publish
         env:
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
