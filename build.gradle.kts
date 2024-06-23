@@ -75,6 +75,7 @@ hangarPublish {
         } else {
             channel.set("Release")
         }*/
+
         version = "1.test"
         channel.set("test1") // TODO fix
 
