@@ -37,6 +37,8 @@ jobs:
           git config --local user.name "GitHub Actions"
 
       - name: Update Gradle Version #TODO change target branch
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "project.version=${{ github.event.inputs.name }}" > gradle.properties
           git add gradle.properties
