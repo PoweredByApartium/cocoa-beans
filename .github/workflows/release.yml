@@ -57,7 +57,6 @@ jobs:
           docker-version: ${{ env.DOCKER_VERSION }}
       - name: run docs script
         run: |
-          git update-index --chmod=+x ./build-scripts/prepare-web-output.sh
           sh /build-scripts/prepare-web-output.sh
       - name: Setup Pages
         uses: actions/configure-pages@v3
