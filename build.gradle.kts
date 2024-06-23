@@ -75,8 +75,9 @@ hangarPublish {
         } else {
             channel.set("Release")
         }*/
-        version = "1.test"
-        channel.set("test1") // TODO fix
+        version = "1.test"// TODO fix
+        channel.set("Snapshot")
+
 
         apiKey = System.getenv("HANGAR_TOKEN") ?: project.findProperty("hangar.token.key").toString()
         id.set("CocoaBeans")
