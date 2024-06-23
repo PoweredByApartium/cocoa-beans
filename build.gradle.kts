@@ -7,12 +7,11 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
-
-val snapshot = false && System.getProperty("apartium.snapshot", "true").toBoolean()
+val snapshot = System.getProperty("GITHUB_REF_TYPE", "branch").equals("branch")
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = project.findProperty("project.version") as String
+version = project.findProperty("project.version").toString() + (if (snapshot) "-SNAPSHOT" else "")
 
 allprojects {
 
