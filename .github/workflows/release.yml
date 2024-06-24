@@ -78,6 +78,10 @@ jobs:
           git tag $TAG_VERSION
           git push origin $TAG_VERSION
 
+      - name: run docs script
+        run: |
+          sh build-scripts/prepare-web-output.sh
+
       - name: Push pages
         run: |
           git pull origin gh-pages
