@@ -86,7 +86,7 @@ jobs:
           git push origin gh-pages
 
   ghRelease:
-    needs: publish
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Upload a Build Artifact
