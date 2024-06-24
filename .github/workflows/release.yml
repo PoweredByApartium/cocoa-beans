@@ -35,6 +35,22 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+      - name: Update Gradle Version #TODO change target branch
+        run: |
+          git pull origin release-ci
+          new_version=${{ github.event.inputs.name }}
+          gradle_properties="gradle.properties"
+          sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
+          echo "Updated project.version to $new_version"
+          git add gradle.properties
+          git commit -m "Update project version to ${{ github.event.inputs.name }}"
+          git push origin release-ci
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -54,21 +70,6 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-      - name: Setup git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-
-      - name: Update Gradle Version #TODO change target branch
-        run: |
-          git pull origin release-ci
-          new_version=${{ github.event.inputs.name }}
-          gradle_properties="gradle.properties"
-          sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
-          echo "Updated project.version to $new_version"
-          git add gradle.properties
-          git commit -m "Update project version to ${{ github.event.inputs.name }}"
-          git push origin release-ci
 
       - name: Create Tag
         id: create_tag
