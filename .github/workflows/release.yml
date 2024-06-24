@@ -127,9 +127,8 @@ jobs:
       - name: run docs script
         run: |
           ls -la
-          ls -la /build-scripts/
-          chmod +x /build-scripts/prepare-web-output.sh 
-          sh /build-scripts/prepare-web-output.sh
+          ls -la build-scripts/
+          sh build-scripts/prepare-web-output.sh
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
