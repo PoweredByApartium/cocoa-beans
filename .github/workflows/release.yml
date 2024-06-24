@@ -95,13 +95,10 @@ jobs:
       - name: run docs script
         run: |
           sh build-scripts/prepare-web-output.sh
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload our temp directory
-          path:  'docs/'
+          git branch -M gh-pages
+          git add docs/
+          git commit -m "Update docs in github pages branch"
+          git push origin gh-pages
 
   ghRelease:
     needs: publish
