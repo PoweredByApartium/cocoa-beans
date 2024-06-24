@@ -84,7 +84,6 @@ jobs:
 
       - name: Push pages
         run: |
-          git pull origin gh-pages
           git add docs/
           git commit -m "Update docs in github pages branch"
           git push origin gh-pages
