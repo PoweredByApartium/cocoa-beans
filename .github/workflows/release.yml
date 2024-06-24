@@ -92,6 +92,10 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
       - name: run docs script
         run: |
           sh build-scripts/prepare-web-output.sh
@@ -118,11 +122,3 @@ jobs:
           files: |
             plugin/build/libs/*.jar
             LICENSE.md
-
-  pages:
-    needs: publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
