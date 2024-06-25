@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"net.apartium.cocoabeans.spigot.inventory","l":"EnchantGlow_1_8_R1"},{"p":"net.apartium.cocoabeans.spigot.inventory","l":"ItemBuilder_1_8_R1"},{"p":"net.apartium.cocoabeans.spigot.inventory","l":"ItemFactory_1_8_R1"}];updateSearchResults();
