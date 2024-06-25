@@ -2,6 +2,12 @@ name: Run tests
 
 on:
     workflow_call:
+        
+permissions:
+    contents: read
+    packages: write
+    id-token: write
+    pages: write
 
 jobs:
     run_tests:
@@ -21,6 +27,7 @@ jobs:
           uses: mikepenz/action-junit-report@v4
           if: success() || failure()
           with:
+           token: ${{ secrets.GITHUB_TOKEN }} 
            detailed_summary: true
            follow_symlink: true
            check_name: |
