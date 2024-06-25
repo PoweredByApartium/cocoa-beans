@@ -35,10 +35,11 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve conflicts
+        run: sh build-scripts/gh-pages.sh  
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup git
         run: |
@@ -83,8 +84,6 @@ jobs:
           git tag $TAG_VERSION
           git push origin $TAG_VERSION
 
-      - name: Resolve conflicts
-        run: sh build-scripts/gh-pages.sh  
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
 
