@@ -118,3 +118,12 @@ jobs:
           files: |
             plugin/build/libs/*.jar
             LICENSE.md
+
+  changelog:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: "✏️ Generate release changelog"
+        uses: heinrichreimer/action-github-changelog-generator@v2.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
