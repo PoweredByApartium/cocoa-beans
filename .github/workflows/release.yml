@@ -84,10 +84,11 @@ jobs:
 
       - name: Push pages
         run: |
-          git checkout gh-pages
-          git pull origin gh-pages
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
           git add docs/
-          git commit -m "Update docs in github pages branch"
+          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
 
   ghRelease:
