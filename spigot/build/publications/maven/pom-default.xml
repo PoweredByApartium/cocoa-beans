@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.apartium.cocoa-beans</groupId>
+  <artifactId>spigot</artifactId>
+  <version>v0.36.test-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>net.apartium.cocoa-beans</groupId>
+      <artifactId>common</artifactId>
+      <version>v0.36.test-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>

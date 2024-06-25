@@ -1,0 +1,1217 @@
+{
+  "testsErrorsCount" : 2,
+  "testsTotal" : 172,
+  "testsWarningsCount" : 0,
+  "testsPassedCount" : 170,
+  "testsWarnings" : { },
+  "testsErrors" : {
+    "MRK032" : [ {
+      "id" : "MRK032----Home--in---Home-md-1-1",
+      "problemId" : "MRK032",
+      "name" : "Element ID contains whitespace characters",
+      "description" : "\"🫘 Home\" in 🫘 Home.md:1:1"
+    } ],
+    "REF002" : [ {
+      "id" : "REF002--Advanced-error-handling--md--in-Examples-md-7-3",
+      "problemId" : "REF002",
+      "name" : "Referenced topic doesn't exist",
+      "description" : "\"Advanced-error-handling﻿.md\" in Examples.md:7:3"
+    } ]
+  },
+  "idsAndTitles" : {
+    "CTT002" : "Output generated from this topic exceeds the threshold",
+    "MRK017" : "Section starting page group title is empty",
+    "REF012" : "Unknown 'style' attribute value on a 'seealso' section",
+    "VIS005" : "Origin module for image cannot be found in the project",
+    "CNF001" : "Category specified in <seealso> is not declared in c.list",
+    "SCT009" : "The requested keymap cannot be found",
+    "TOC007" : "The 'toc-title' attribute is redundant as it matches the topic title",
+    "TOC013" : "The value of the 'show-structure-depth' attribute on a <toc-element> must be a valid number",
+    "VIS011" : "Dark version of image or video file cannot be found",
+    "MRK032" : "Element ID contains whitespace characters",
+    "REF008" : "Link points to a topic in a 'draft' state that is not included in the current build",
+    "TOC012" : "The 'custom-title' attribute on a <toc-element> is deprecated. Move it to the topic itself.",
+    "CNF017" : "Cannot read analytics script or html snippet",
+    "MRK016" : "Section starting page link summary is empty",
+    "MRK015" : "Section starting page must contain exactly two links under the 'spotlight' element",
+    "MRK025" : "The 'type' attribute is missing on a link under the 'spotlight' element",
+    "SCT001" : "Hard-coded shortcut: consider referencing the corresponding action in the 'key' attribute of the 'shortcut' element",
+    "CDE018" : "Expected at least one closed @start...@end block, but found none.",
+    "CDE001" : "The <compare> element must contain exactly two code blocks",
+    "INT008" : "Unexpected HTML rendering error: cannot produce a PDF",
+    "MRK062" : "The value of the 'depth' attribute on a <toc> must be a valid number",
+    "VIS002" : "GIF animations and image thumbnails can only be block elements, do not place them inside a paragraph",
+    "CDE009" : "Cannot use both the 'include-symbol' and the 'include-lines' attributes to reference a code snippet",
+    "CNF021" : "Web filename is reserved, use a different value for the <web-file-name> tag",
+    "CDE002" : "The 'collapsed-title-line-number' attribute value on a 'code-block' element is not a valid number",
+    "TOC006" : "<toc-element> ID is duplicated",
+    "TOC016" : "<toc-element> should have one of following attributes: 'topic', 'toc-title', or 'ref'",
+    "INT002" : "Map ID is not unique",
+    "INT009" : "Unexpected diagram rendering error",
+    "REF001" : "Cannot link to a topic that is not included in the current instance",
+    "REF009" : "Cannot include from topic that does not exist",
+    "REF006" : "'toc-element' for the current instance references a topic file that cannot be found",
+    "MRK008" : "The 'ref' attribute is missing for the <category> element",
+    "MRK036" : "The 'start' attribute on a list is only valid for 'alpha-lower' and 'decimal' list types",
+    "VIS010" : "Unknown image style",
+    "REF007" : "Cannot redirect from file name that is associated with an existing article",
+    "MRK035" : "The value of the 'start' attribute on a list must be a valid number",
+    "API002" : "",
+    "CNF020" : "Absolute images web-path was given, but images are bundled into single artifact",
+    "CTT001" : "Inappropriate language detected",
+    "PTY005" : "The specified property bundle is not available for the current product",
+    "MRK050" : "Unknown 'color' attribute value on a format element",
+    "MRK052" : "Web name is empty",
+    "PTY001" : "The <property> element must contain the 'bundle' and 'key' attributes",
+    "SCT011" : "platforms.xml file is corrupted",
+    "VIS008" : "GIF animations cannot be rendered without a border, do not use 'border-effect=\"none\"'",
+    "VIS009" : "Unknown image 'border-effect' value",
+    "CNF027" : "Multiple values for {0} are not allowed here.",
+    "REF010" : "Link in the 'seealso' section points to itself",
+    "SCT004" : "The file containing the keymap referenced from platforms.xml cannot be found or is empty",
+    "MRK023" : "Section starting page must contain a 'primary' section",
+    "VIS003" : "Logo aspect ratio H:W must be between 0.24 and 1.20",
+    "REF014" : "Cannot include an include directly",
+    "REF004" : "Link uses anchor that does not exist",
+    "TOC005" : "Wrapper <toc-element> cannot have the 'help-id' attribute as it does not produce any content, so there is nothing to link from the UI",
+    "MRK013" : "Starting page title is empty",
+    "CTT005" : "Variable depends on itself",
+    "SCT005" : "Action ID is not found in the product keymap. ",
+    "CNF006" : "The 'accepts-web-file-names' attribute points to a non-existing redirection rule",
+    "MRK004" : "Topic ID doesn't match the containing file name",
+    "MRK038" : "The value of the 'level' attribute on a chapter must be a valid number between 2 and 6 ",
+    "CNF008" : "The 'start-page' attribute on 'instance-profile' cannot be empty",
+    "PTY006" : "Cannot process regular expression that cleans up a property value",
+    "API003" : "",
+    "REF003" : "Cannot include element with the specified ID because it does not exist",
+    "MRK034" : "The value of the 'columns' attribute on a list must be a number between 1 and 5",
+    "MRK058" : "Large image in paragraph rendered as a block element by default. Put it outside the paragraph or set the 'style' attribute to indicate your intent.",
+    "MRK006" : "The 'term' attribute is missing for the <tooltip> element",
+    "VIS015" : "Image file type is not supported",
+    "MRK011" : "Only <code>, <property>, <shortcut>, image or text with inline formatting is allowed inside an <a> element to define link text",
+    "MRK060" : "The chapter must contain exactly one <tldr> element. All except the first one were ignored",
+    "VIS004" : "Image or video must have the 'src' attribute",
+    "MRK048" : "Summary element does not provide any text",
+    "CNF010" : "Cannot find specified resource in the resources folder",
+    "SCT006" : "Shortcut is not defined for layout",
+    "CDE004" : "Cannot read the source code snippet from the specified location, falling back to the 'code-block' element content",
+    "CTT004" : "Undefined variable",
+    "CNF016" : "Redirect map ID is not unique",
+    "INT004" : "Unexpected article rendering error:",
+    "TOC003" : "The nesting level for a <toc-element> is more than 3. Consider restructuring content for easier navigation.",
+    "PTY004" : "Product specified in the 'from-product' attribute on the <property> element is not found",
+    "CDE006" : "'code-block' cannot be empty",
+    "TOC002" : "<toc-element> points to a library topic",
+    "MRK018" : "Section starting page group is empty",
+    "CNF023" : "Topic filenames must be unique, regardless of letter case",
+    "MRK054" : "Collapsible procedure title is empty",
+    "REF002" : "Referenced topic doesn't exist",
+    "INT006" : "JSON serialization error",
+    "CNF025" : "Web filename is empty. Add letters or digits to the topic filename or specify a custom web filename",
+    "MRK020" : "Javascript expression specified in the 'use-when' attribute failed to execute",
+    "MRK055" : "Unknown 'caps' attribute value",
+    "MRK059" : "Nested paragraphs are not allowed. Consider unwrapping or properly breaking the paragraphs.",
+    "MRK041" : "Unknown 'style' attribute value on a table",
+    "INT001" : "Error description template is not found",
+    "CDE011" : "Code sample contains errors",
+    "MRK039" : "Unknown 'style' attribute value on a procedure",
+    "CDE003" : "The code snippet doesn't contain the line with the number specified in the 'collapsed-title-line-number' attribute",
+    "CDE017" : "Syntax error in a code block",
+    "CNF012" : "Tooltip not found",
+    "MRK001" : "The element doesn't comply with validation rules",
+    "PTY007" : "Property content is corrupted",
+    "CNF003" : "Invalid buildprofiles.xml property value",
+    "MRK027" : "The source file for the 'include' is corrupted",
+    "MRK014" : "Section starting page description is empty",
+    "CNF009" : "Global variable name in v.list is duplicated",
+    "SCT008" : "Shortcut is not defined in the current product's keymap",
+    "CDE014" : "Content other than text or CDATA in a code block, for example, HTML/XML-like tags",
+    "CNF018" : "Footer link without 'href' attribute",
+    "MRK043" : "Cannot sort table with 'colspan' or 'rowspan'",
+    "MRK003" : "Element ID is not unique",
+    "CNF015" : "Cannot write the result to the specified output directory",
+    "VIS013" : "Video file type is not supported, must be MP4",
+    "VIS007" : "Unable to count frames in a GIF image",
+    "API001" : "",
+    "INT007" : "XML serialization error",
+    "VIS012" : "Image file type is not supported, must be PNG or SVG",
+    "MRK045" : "'sorted' attribute must appear on the first row cells",
+    "MRK024" : "Section starting page must contain a 'secondary' section",
+    "CDE015" : "Unsupported 'style' value on the <compare> element",
+    "MRK012" : "Element is unknown",
+    "MRK002" : "Source file syntax is corrupted",
+    "MRK053" : "Element has no title",
+    "MRK040" : "Tab with an empty title",
+    "CDE016" : "Unknown language is specified for a code block",
+    "MRK051" : "The topic must contain exactly one <tldr> element. All except the first one were ignored",
+    "CNF028" : "Expected true or false.",
+    "CNF011" : "Category sort order is not a valid number",
+    "MRK042" : "'colspan' and 'rowspan' attributes of a table cell must be valid numbers",
+    "CNF013" : "Cannot reference a resource as the r.list file is missing",
+    "MRK019" : "Element is not allowed on a section starting page",
+    "SCT003" : "Shortcut is not defined for the requested platform",
+    "CDE005" : "Cannot read the source code snippet from the specified location, and there is no fallback content in the 'code-block' element",
+    "CNF024" : "The 'start-page' attribute on 'instance-profile' is empty",
+    "MRK037" : "Unknown 'sorted' attribute value",
+    "CDE010" : "The specified code construct is not found in the source file or the file language is not recognized",
+    "MRK026" : "Unknown 'type' attribute value on a link under the 'spotlight' element",
+    "TOC004" : "Wrapper <toc-element> cannot have the 'accepts-web-file-names' attribute as it does not produce any content, so it cannot take redirects",
+    "MRK046" : "Element referred from 'rel' attribute does not exist or is inaccessible in the current context",
+    "VIS014" : "Referenced file is outside the documentation project",
+    "MRK028" : "Invalid 'style' attribute value on a deflist",
+    "MRK061" : "Chapter titles with level more than 6 are rendered as level 6",
+    "MRK049" : "Unknown 'style' attribute value on a format element",
+    "MRK007" : "The 'resource-id' attribute is missing for the <res> element",
+    "TOC001" : "<toc-element> points to an article that doesn't exist",
+    "CDE012" : "Cannot validate code sample because its language is not supported",
+    "CNF019" : "Unknown social link type {0}",
+    "REF005" : "Link inside topic points to the same topic without an anchor",
+    "VIS001" : "Image or video file cannot be found",
+    "CDE007" : "The 'include-lines' attribute on a 'code-block' element must represent a line number range like 1-3, or multiple comma-separated ranges like 1-3,5-7",
+    "REF013" : "Cannot include a parent element in its child element",
+    "INT010" : "Unexpected PlantUML error:",
+    "TOC011" : "The 'accepts-web-file-names' attribute references the same topic in several TOC elements",
+    "CNF005" : "The 'accepts-web-file-names' attribute contains symbols that cannot appear in a file name",
+    "PTY003" : "The specified property key cannot be found in the bundle specified by <property> element",
+    "TOC010" : "<toc-element> cannot have both the 'accepts-web-file-names' and the 'accepts-web-file-names-ref' attribute. Consider moving all references to redirection-rules.xml",
+    "SCT002" : "Shortcut is not defined for the requested keymap",
+    "MRK009" : "Element is not allowed in the current context",
+    "VIS006" : "Image or video 'width' and 'height' attributes must be positive integers",
+    "CNF026" : "Referenced file {0} does not exist or is not possible to read.",
+    "PTY002" : "The property bundle referenced from a <property> element cannot be found",
+    "CDE008" : "The code snippet doesn't contain the lines specified in the 'include-lines' attribute of the corresponding 'code-block' element",
+    "MRK005" : "The 'help-id' attribute is redundant as it matches the primary topic ID",
+    "MRK057" : "Paragraph can only contain inline elements",
+    "MRK056" : "Title can not contain inline formatting",
+    "MRK033" : "Unknown 'style' attribute value on a list",
+    "CNF002" : "Topic title cannot be empty",
+    "SCT007" : "Shortcut is not defined for the default keymap",
+    "MRK047" : "Summary element has both 'rel' attribute and text specified",
+    "CDE013" : "Cannot validate code sample because its language is not specified",
+    "CNF014" : "The instance version links require 'web-path' in instance declaration",
+    "CNF022" : "Web filename is duplicated, ensure that web filename is unique",
+    "MRK044" : "Cannot sort table with rows of different length"
+  },
+  "testsPassed" : {
+    "API001" : [ {
+      "id" : "API001-",
+      "problemId" : "API001",
+      "name" : "",
+      "description" : ""
+    } ],
+    "API002" : [ {
+      "id" : "API002-",
+      "problemId" : "API002",
+      "name" : "",
+      "description" : ""
+    } ],
+    "API003" : [ {
+      "id" : "API003-",
+      "problemId" : "API003",
+      "name" : "",
+      "description" : ""
+    } ],
+    "CDE001" : [ {
+      "id" : "CDE001-",
+      "problemId" : "CDE001",
+      "name" : "The <compare> element must contain exactly two code blocks",
+      "description" : ""
+    } ],
+    "CDE002" : [ {
+      "id" : "CDE002-",
+      "problemId" : "CDE002",
+      "name" : "The 'collapsed-title-line-number' attribute value on a 'code-block' element is not a valid number",
+      "description" : ""
+    } ],
+    "CDE003" : [ {
+      "id" : "CDE003-",
+      "problemId" : "CDE003",
+      "name" : "The code snippet doesn't contain the line with the number specified in the 'collapsed-title-line-number' attribute",
+      "description" : ""
+    } ],
+    "CDE004" : [ {
+      "id" : "CDE004-",
+      "problemId" : "CDE004",
+      "name" : "Cannot read the source code snippet from the specified location, falling back to the 'code-block' element content",
+      "description" : ""
+    } ],
+    "CDE005" : [ {
+      "id" : "CDE005-",
+      "problemId" : "CDE005",
+      "name" : "Cannot read the source code snippet from the specified location, and there is no fallback content in the 'code-block' element",
+      "description" : ""
+    } ],
+    "CDE006" : [ {
+      "id" : "CDE006-",
+      "problemId" : "CDE006",
+      "name" : "'code-block' cannot be empty",
+      "description" : ""
+    } ],
+    "CDE007" : [ {
+      "id" : "CDE007-",
+      "problemId" : "CDE007",
+      "name" : "The 'include-lines' attribute on a 'code-block' element must represent a line number range like 1-3, or multiple comma-separated ranges like 1-3,5-7",
+      "description" : ""
+    } ],
+    "CDE008" : [ {
+      "id" : "CDE008-",
+      "problemId" : "CDE008",
+      "name" : "The code snippet doesn't contain the lines specified in the 'include-lines' attribute of the corresponding 'code-block' element",
+      "description" : ""
+    } ],
+    "CDE009" : [ {
+      "id" : "CDE009-",
+      "problemId" : "CDE009",
+      "name" : "Cannot use both the 'include-symbol' and the 'include-lines' attributes to reference a code snippet",
+      "description" : ""
+    } ],
+    "CDE010" : [ {
+      "id" : "CDE010-",
+      "problemId" : "CDE010",
+      "name" : "The specified code construct is not found in the source file or the file language is not recognized",
+      "description" : ""
+    } ],
+    "CDE011" : [ {
+      "id" : "CDE011-",
+      "problemId" : "CDE011",
+      "name" : "Code sample contains errors",
+      "description" : ""
+    } ],
+    "CDE012" : [ {
+      "id" : "CDE012-",
+      "problemId" : "CDE012",
+      "name" : "Cannot validate code sample because its language is not supported",
+      "description" : ""
+    } ],
+    "CDE013" : [ {
+      "id" : "CDE013-",
+      "problemId" : "CDE013",
+      "name" : "Cannot validate code sample because its language is not specified",
+      "description" : ""
+    } ],
+    "CDE014" : [ {
+      "id" : "CDE014-",
+      "problemId" : "CDE014",
+      "name" : "Content other than text or CDATA in a code block, for example, HTML/XML-like tags",
+      "description" : ""
+    } ],
+    "CDE015" : [ {
+      "id" : "CDE015-",
+      "problemId" : "CDE015",
+      "name" : "Unsupported 'style' value on the <compare> element",
+      "description" : ""
+    } ],
+    "CDE016" : [ {
+      "id" : "CDE016-",
+      "problemId" : "CDE016",
+      "name" : "Unknown language is specified for a code block",
+      "description" : ""
+    } ],
+    "CDE017" : [ {
+      "id" : "CDE017-",
+      "problemId" : "CDE017",
+      "name" : "Syntax error in a code block",
+      "description" : ""
+    } ],
+    "CDE018" : [ {
+      "id" : "CDE018-",
+      "problemId" : "CDE018",
+      "name" : "Expected at least one closed @start...@end block, but found none.",
+      "description" : ""
+    } ],
+    "CNF001" : [ {
+      "id" : "CNF001-",
+      "problemId" : "CNF001",
+      "name" : "Category specified in <seealso> is not declared in c.list",
+      "description" : ""
+    } ],
+    "CNF002" : [ {
+      "id" : "CNF002-",
+      "problemId" : "CNF002",
+      "name" : "Topic title cannot be empty",
+      "description" : ""
+    } ],
+    "CNF003" : [ {
+      "id" : "CNF003-",
+      "problemId" : "CNF003",
+      "name" : "Invalid buildprofiles.xml property value",
+      "description" : ""
+    } ],
+    "CNF005" : [ {
+      "id" : "CNF005-",
+      "problemId" : "CNF005",
+      "name" : "The 'accepts-web-file-names' attribute contains symbols that cannot appear in a file name",
+      "description" : ""
+    } ],
+    "CNF006" : [ {
+      "id" : "CNF006-",
+      "problemId" : "CNF006",
+      "name" : "The 'accepts-web-file-names' attribute points to a non-existing redirection rule",
+      "description" : ""
+    } ],
+    "CNF008" : [ {
+      "id" : "CNF008-",
+      "problemId" : "CNF008",
+      "name" : "The 'start-page' attribute on 'instance-profile' cannot be empty",
+      "description" : ""
+    } ],
+    "CNF009" : [ {
+      "id" : "CNF009-",
+      "problemId" : "CNF009",
+      "name" : "Global variable name in v.list is duplicated",
+      "description" : ""
+    } ],
+    "CNF010" : [ {
+      "id" : "CNF010-",
+      "problemId" : "CNF010",
+      "name" : "Cannot find specified resource in the resources folder",
+      "description" : ""
+    } ],
+    "CNF011" : [ {
+      "id" : "CNF011-",
+      "problemId" : "CNF011",
+      "name" : "Category sort order is not a valid number",
+      "description" : ""
+    } ],
+    "CNF012" : [ {
+      "id" : "CNF012-",
+      "problemId" : "CNF012",
+      "name" : "Tooltip not found",
+      "description" : ""
+    } ],
+    "CNF013" : [ {
+      "id" : "CNF013-",
+      "problemId" : "CNF013",
+      "name" : "Cannot reference a resource as the r.list file is missing",
+      "description" : ""
+    } ],
+    "CNF014" : [ {
+      "id" : "CNF014-",
+      "problemId" : "CNF014",
+      "name" : "The instance version links require 'web-path' in instance declaration",
+      "description" : ""
+    } ],
+    "CNF015" : [ {
+      "id" : "CNF015-",
+      "problemId" : "CNF015",
+      "name" : "Cannot write the result to the specified output directory",
+      "description" : ""
+    } ],
+    "CNF016" : [ {
+      "id" : "CNF016-",
+      "problemId" : "CNF016",
+      "name" : "Redirect map ID is not unique",
+      "description" : ""
+    } ],
+    "CNF017" : [ {
+      "id" : "CNF017-",
+      "problemId" : "CNF017",
+      "name" : "Cannot read analytics script or html snippet",
+      "description" : ""
+    } ],
+    "CNF018" : [ {
+      "id" : "CNF018-",
+      "problemId" : "CNF018",
+      "name" : "Footer link without 'href' attribute",
+      "description" : ""
+    } ],
+    "CNF019" : [ {
+      "id" : "CNF019-",
+      "problemId" : "CNF019",
+      "name" : "Unknown social link type {0}",
+      "description" : ""
+    } ],
+    "CNF020" : [ {
+      "id" : "CNF020-",
+      "problemId" : "CNF020",
+      "name" : "Absolute images web-path was given, but images are bundled into single artifact",
+      "description" : ""
+    } ],
+    "CNF021" : [ {
+      "id" : "CNF021-",
+      "problemId" : "CNF021",
+      "name" : "Web filename is reserved, use a different value for the <web-file-name> tag",
+      "description" : ""
+    } ],
+    "CNF022" : [ {
+      "id" : "CNF022-",
+      "problemId" : "CNF022",
+      "name" : "Web filename is duplicated, ensure that web filename is unique",
+      "description" : ""
+    } ],
+    "CNF023" : [ {
+      "id" : "CNF023-",
+      "problemId" : "CNF023",
+      "name" : "Topic filenames must be unique, regardless of letter case",
+      "description" : ""
+    } ],
+    "CNF024" : [ {
+      "id" : "CNF024-",
+      "problemId" : "CNF024",
+      "name" : "The 'start-page' attribute on 'instance-profile' is empty",
+      "description" : ""
+    } ],
+    "CNF025" : [ {
+      "id" : "CNF025-",
+      "problemId" : "CNF025",
+      "name" : "Web filename is empty. Add letters or digits to the topic filename or specify a custom web filename",
+      "description" : ""
+    } ],
+    "CNF026" : [ {
+      "id" : "CNF026-",
+      "problemId" : "CNF026",
+      "name" : "Referenced file {0} does not exist or is not possible to read.",
+      "description" : ""
+    } ],
+    "CNF027" : [ {
+      "id" : "CNF027-",
+      "problemId" : "CNF027",
+      "name" : "Multiple values for {0} are not allowed here.",
+      "description" : ""
+    } ],
+    "CNF028" : [ {
+      "id" : "CNF028-",
+      "problemId" : "CNF028",
+      "name" : "Expected true or false.",
+      "description" : ""
+    } ],
+    "CTT001" : [ {
+      "id" : "CTT001-",
+      "problemId" : "CTT001",
+      "name" : "Inappropriate language detected",
+      "description" : ""
+    } ],
+    "CTT002" : [ {
+      "id" : "CTT002-",
+      "problemId" : "CTT002",
+      "name" : "Output generated from this topic exceeds the threshold",
+      "description" : ""
+    } ],
+    "CTT004" : [ {
+      "id" : "CTT004-",
+      "problemId" : "CTT004",
+      "name" : "Undefined variable",
+      "description" : ""
+    } ],
+    "CTT005" : [ {
+      "id" : "CTT005-",
+      "problemId" : "CTT005",
+      "name" : "Variable depends on itself",
+      "description" : ""
+    } ],
+    "INT001" : [ {
+      "id" : "INT001-",
+      "problemId" : "INT001",
+      "name" : "Error description template is not found",
+      "description" : ""
+    } ],
+    "INT002" : [ {
+      "id" : "INT002-",
+      "problemId" : "INT002",
+      "name" : "Map ID is not unique",
+      "description" : ""
+    } ],
+    "INT004" : [ {
+      "id" : "INT004-",
+      "problemId" : "INT004",
+      "name" : "Unexpected article rendering error:",
+      "description" : ""
+    } ],
+    "INT006" : [ {
+      "id" : "INT006-",
+      "problemId" : "INT006",
+      "name" : "JSON serialization error",
+      "description" : ""
+    } ],
+    "INT007" : [ {
+      "id" : "INT007-",
+      "problemId" : "INT007",
+      "name" : "XML serialization error",
+      "description" : ""
+    } ],
+    "INT008" : [ {
+      "id" : "INT008-",
+      "problemId" : "INT008",
+      "name" : "Unexpected HTML rendering error: cannot produce a PDF",
+      "description" : ""
+    } ],
+    "INT009" : [ {
+      "id" : "INT009-",
+      "problemId" : "INT009",
+      "name" : "Unexpected diagram rendering error",
+      "description" : ""
+    } ],
+    "INT010" : [ {
+      "id" : "INT010-",
+      "problemId" : "INT010",
+      "name" : "Unexpected PlantUML error:",
+      "description" : ""
+    } ],
+    "MRK001" : [ {
+      "id" : "MRK001-",
+      "problemId" : "MRK001",
+      "name" : "The element doesn't comply with validation rules",
+      "description" : ""
+    } ],
+    "MRK002" : [ {
+      "id" : "MRK002-",
+      "problemId" : "MRK002",
+      "name" : "Source file syntax is corrupted",
+      "description" : ""
+    } ],
+    "MRK003" : [ {
+      "id" : "MRK003-",
+      "problemId" : "MRK003",
+      "name" : "Element ID is not unique",
+      "description" : ""
+    } ],
+    "MRK004" : [ {
+      "id" : "MRK004-",
+      "problemId" : "MRK004",
+      "name" : "Topic ID doesn't match the containing file name",
+      "description" : ""
+    } ],
+    "MRK005" : [ {
+      "id" : "MRK005-",
+      "problemId" : "MRK005",
+      "name" : "The 'help-id' attribute is redundant as it matches the primary topic ID",
+      "description" : ""
+    } ],
+    "MRK006" : [ {
+      "id" : "MRK006-",
+      "problemId" : "MRK006",
+      "name" : "The 'term' attribute is missing for the <tooltip> element",
+      "description" : ""
+    } ],
+    "MRK007" : [ {
+      "id" : "MRK007-",
+      "problemId" : "MRK007",
+      "name" : "The 'resource-id' attribute is missing for the <res> element",
+      "description" : ""
+    } ],
+    "MRK008" : [ {
+      "id" : "MRK008-",
+      "problemId" : "MRK008",
+      "name" : "The 'ref' attribute is missing for the <category> element",
+      "description" : ""
+    } ],
+    "MRK009" : [ {
+      "id" : "MRK009-",
+      "problemId" : "MRK009",
+      "name" : "Element is not allowed in the current context",
+      "description" : ""
+    } ],
+    "MRK011" : [ {
+      "id" : "MRK011-",
+      "problemId" : "MRK011",
+      "name" : "Only <code>, <property>, <shortcut>, image or text with inline formatting is allowed inside an <a> element to define link text",
+      "description" : ""
+    } ],
+    "MRK012" : [ {
+      "id" : "MRK012-",
+      "problemId" : "MRK012",
+      "name" : "Element is unknown",
+      "description" : ""
+    } ],
+    "MRK013" : [ {
+      "id" : "MRK013-",
+      "problemId" : "MRK013",
+      "name" : "Starting page title is empty",
+      "description" : ""
+    } ],
+    "MRK014" : [ {
+      "id" : "MRK014-",
+      "problemId" : "MRK014",
+      "name" : "Section starting page description is empty",
+      "description" : ""
+    } ],
+    "MRK015" : [ {
+      "id" : "MRK015-",
+      "problemId" : "MRK015",
+      "name" : "Section starting page must contain exactly two links under the 'spotlight' element",
+      "description" : ""
+    } ],
+    "MRK016" : [ {
+      "id" : "MRK016-",
+      "problemId" : "MRK016",
+      "name" : "Section starting page link summary is empty",
+      "description" : ""
+    } ],
+    "MRK017" : [ {
+      "id" : "MRK017-",
+      "problemId" : "MRK017",
+      "name" : "Section starting page group title is empty",
+      "description" : ""
+    } ],
+    "MRK018" : [ {
+      "id" : "MRK018-",
+      "problemId" : "MRK018",
+      "name" : "Section starting page group is empty",
+      "description" : ""
+    } ],
+    "MRK019" : [ {
+      "id" : "MRK019-",
+      "problemId" : "MRK019",
+      "name" : "Element is not allowed on a section starting page",
+      "description" : ""
+    } ],
+    "MRK020" : [ {
+      "id" : "MRK020-",
+      "problemId" : "MRK020",
+      "name" : "Javascript expression specified in the 'use-when' attribute failed to execute",
+      "description" : ""
+    } ],
+    "MRK023" : [ {
+      "id" : "MRK023-",
+      "problemId" : "MRK023",
+      "name" : "Section starting page must contain a 'primary' section",
+      "description" : ""
+    } ],
+    "MRK024" : [ {
+      "id" : "MRK024-",
+      "problemId" : "MRK024",
+      "name" : "Section starting page must contain a 'secondary' section",
+      "description" : ""
+    } ],
+    "MRK025" : [ {
+      "id" : "MRK025-",
+      "problemId" : "MRK025",
+      "name" : "The 'type' attribute is missing on a link under the 'spotlight' element",
+      "description" : ""
+    } ],
+    "MRK026" : [ {
+      "id" : "MRK026-",
+      "problemId" : "MRK026",
+      "name" : "Unknown 'type' attribute value on a link under the 'spotlight' element",
+      "description" : ""
+    } ],
+    "MRK027" : [ {
+      "id" : "MRK027-",
+      "problemId" : "MRK027",
+      "name" : "The source file for the 'include' is corrupted",
+      "description" : ""
+    } ],
+    "MRK028" : [ {
+      "id" : "MRK028-",
+      "problemId" : "MRK028",
+      "name" : "Invalid 'style' attribute value on a deflist",
+      "description" : ""
+    } ],
+    "MRK033" : [ {
+      "id" : "MRK033-",
+      "problemId" : "MRK033",
+      "name" : "Unknown 'style' attribute value on a list",
+      "description" : ""
+    } ],
+    "MRK034" : [ {
+      "id" : "MRK034-",
+      "problemId" : "MRK034",
+      "name" : "The value of the 'columns' attribute on a list must be a number between 1 and 5",
+      "description" : ""
+    } ],
+    "MRK035" : [ {
+      "id" : "MRK035-",
+      "problemId" : "MRK035",
+      "name" : "The value of the 'start' attribute on a list must be a valid number",
+      "description" : ""
+    } ],
+    "MRK036" : [ {
+      "id" : "MRK036-",
+      "problemId" : "MRK036",
+      "name" : "The 'start' attribute on a list is only valid for 'alpha-lower' and 'decimal' list types",
+      "description" : ""
+    } ],
+    "MRK037" : [ {
+      "id" : "MRK037-",
+      "problemId" : "MRK037",
+      "name" : "Unknown 'sorted' attribute value",
+      "description" : ""
+    } ],
+    "MRK038" : [ {
+      "id" : "MRK038-",
+      "problemId" : "MRK038",
+      "name" : "The value of the 'level' attribute on a chapter must be a valid number between 2 and 6 ",
+      "description" : ""
+    } ],
+    "MRK039" : [ {
+      "id" : "MRK039-",
+      "problemId" : "MRK039",
+      "name" : "Unknown 'style' attribute value on a procedure",
+      "description" : ""
+    } ],
+    "MRK040" : [ {
+      "id" : "MRK040-",
+      "problemId" : "MRK040",
+      "name" : "Tab with an empty title",
+      "description" : ""
+    } ],
+    "MRK041" : [ {
+      "id" : "MRK041-",
+      "problemId" : "MRK041",
+      "name" : "Unknown 'style' attribute value on a table",
+      "description" : ""
+    } ],
+    "MRK042" : [ {
+      "id" : "MRK042-",
+      "problemId" : "MRK042",
+      "name" : "'colspan' and 'rowspan' attributes of a table cell must be valid numbers",
+      "description" : ""
+    } ],
+    "MRK043" : [ {
+      "id" : "MRK043-",
+      "problemId" : "MRK043",
+      "name" : "Cannot sort table with 'colspan' or 'rowspan'",
+      "description" : ""
+    } ],
+    "MRK044" : [ {
+      "id" : "MRK044-",
+      "problemId" : "MRK044",
+      "name" : "Cannot sort table with rows of different length",
+      "description" : ""
+    } ],
+    "MRK045" : [ {
+      "id" : "MRK045-",
+      "problemId" : "MRK045",
+      "name" : "'sorted' attribute must appear on the first row cells",
+      "description" : ""
+    } ],
+    "MRK046" : [ {
+      "id" : "MRK046-",
+      "problemId" : "MRK046",
+      "name" : "Element referred from 'rel' attribute does not exist or is inaccessible in the current context",
+      "description" : ""
+    } ],
+    "MRK047" : [ {
+      "id" : "MRK047-",
+      "problemId" : "MRK047",
+      "name" : "Summary element has both 'rel' attribute and text specified",
+      "description" : ""
+    } ],
+    "MRK048" : [ {
+      "id" : "MRK048-",
+      "problemId" : "MRK048",
+      "name" : "Summary element does not provide any text",
+      "description" : ""
+    } ],
+    "MRK049" : [ {
+      "id" : "MRK049-",
+      "problemId" : "MRK049",
+      "name" : "Unknown 'style' attribute value on a format element",
+      "description" : ""
+    } ],
+    "MRK050" : [ {
+      "id" : "MRK050-",
+      "problemId" : "MRK050",
+      "name" : "Unknown 'color' attribute value on a format element",
+      "description" : ""
+    } ],
+    "MRK051" : [ {
+      "id" : "MRK051-",
+      "problemId" : "MRK051",
+      "name" : "The topic must contain exactly one <tldr> element. All except the first one were ignored",
+      "description" : ""
+    } ],
+    "MRK052" : [ {
+      "id" : "MRK052-",
+      "problemId" : "MRK052",
+      "name" : "Web name is empty",
+      "description" : ""
+    } ],
+    "MRK053" : [ {
+      "id" : "MRK053-",
+      "problemId" : "MRK053",
+      "name" : "Element has no title",
+      "description" : ""
+    } ],
+    "MRK054" : [ {
+      "id" : "MRK054-",
+      "problemId" : "MRK054",
+      "name" : "Collapsible procedure title is empty",
+      "description" : ""
+    } ],
+    "MRK055" : [ {
+      "id" : "MRK055-",
+      "problemId" : "MRK055",
+      "name" : "Unknown 'caps' attribute value",
+      "description" : ""
+    } ],
+    "MRK056" : [ {
+      "id" : "MRK056-",
+      "problemId" : "MRK056",
+      "name" : "Title can not contain inline formatting",
+      "description" : ""
+    } ],
+    "MRK057" : [ {
+      "id" : "MRK057-",
+      "problemId" : "MRK057",
+      "name" : "Paragraph can only contain inline elements",
+      "description" : ""
+    } ],
+    "MRK058" : [ {
+      "id" : "MRK058-",
+      "problemId" : "MRK058",
+      "name" : "Large image in paragraph rendered as a block element by default. Put it outside the paragraph or set the 'style' attribute to indicate your intent.",
+      "description" : ""
+    } ],
+    "MRK059" : [ {
+      "id" : "MRK059-",
+      "problemId" : "MRK059",
+      "name" : "Nested paragraphs are not allowed. Consider unwrapping or properly breaking the paragraphs.",
+      "description" : ""
+    } ],
+    "MRK060" : [ {
+      "id" : "MRK060-",
+      "problemId" : "MRK060",
+      "name" : "The chapter must contain exactly one <tldr> element. All except the first one were ignored",
+      "description" : ""
+    } ],
+    "MRK061" : [ {
+      "id" : "MRK061-",
+      "problemId" : "MRK061",
+      "name" : "Chapter titles with level more than 6 are rendered as level 6",
+      "description" : ""
+    } ],
+    "MRK062" : [ {
+      "id" : "MRK062-",
+      "problemId" : "MRK062",
+      "name" : "The value of the 'depth' attribute on a <toc> must be a valid number",
+      "description" : ""
+    } ],
+    "PTY001" : [ {
+      "id" : "PTY001-",
+      "problemId" : "PTY001",
+      "name" : "The <property> element must contain the 'bundle' and 'key' attributes",
+      "description" : ""
+    } ],
+    "PTY002" : [ {
+      "id" : "PTY002-",
+      "problemId" : "PTY002",
+      "name" : "The property bundle referenced from a <property> element cannot be found",
+      "description" : ""
+    } ],
+    "PTY003" : [ {
+      "id" : "PTY003-",
+      "problemId" : "PTY003",
+      "name" : "The specified property key cannot be found in the bundle specified by <property> element",
+      "description" : ""
+    } ],
+    "PTY004" : [ {
+      "id" : "PTY004-",
+      "problemId" : "PTY004",
+      "name" : "Product specified in the 'from-product' attribute on the <property> element is not found",
+      "description" : ""
+    } ],
+    "PTY005" : [ {
+      "id" : "PTY005-",
+      "problemId" : "PTY005",
+      "name" : "The specified property bundle is not available for the current product",
+      "description" : ""
+    } ],
+    "PTY006" : [ {
+      "id" : "PTY006-",
+      "problemId" : "PTY006",
+      "name" : "Cannot process regular expression that cleans up a property value",
+      "description" : ""
+    } ],
+    "PTY007" : [ {
+      "id" : "PTY007-",
+      "problemId" : "PTY007",
+      "name" : "Property content is corrupted",
+      "description" : ""
+    } ],
+    "REF001" : [ {
+      "id" : "REF001-",
+      "problemId" : "REF001",
+      "name" : "Cannot link to a topic that is not included in the current instance",
+      "description" : ""
+    } ],
+    "REF003" : [ {
+      "id" : "REF003-",
+      "problemId" : "REF003",
+      "name" : "Cannot include element with the specified ID because it does not exist",
+      "description" : ""
+    } ],
+    "REF004" : [ {
+      "id" : "REF004-",
+      "problemId" : "REF004",
+      "name" : "Link uses anchor that does not exist",
+      "description" : ""
+    } ],
+    "REF005" : [ {
+      "id" : "REF005-",
+      "problemId" : "REF005",
+      "name" : "Link inside topic points to the same topic without an anchor",
+      "description" : ""
+    } ],
+    "REF006" : [ {
+      "id" : "REF006-",
+      "problemId" : "REF006",
+      "name" : "'toc-element' for the current instance references a topic file that cannot be found",
+      "description" : ""
+    } ],
+    "REF007" : [ {
+      "id" : "REF007-",
+      "problemId" : "REF007",
+      "name" : "Cannot redirect from file name that is associated with an existing article",
+      "description" : ""
+    } ],
+    "REF008" : [ {
+      "id" : "REF008-",
+      "problemId" : "REF008",
+      "name" : "Link points to a topic in a 'draft' state that is not included in the current build",
+      "description" : ""
+    } ],
+    "REF009" : [ {
+      "id" : "REF009-",
+      "problemId" : "REF009",
+      "name" : "Cannot include from topic that does not exist",
+      "description" : ""
+    } ],
+    "REF010" : [ {
+      "id" : "REF010-",
+      "problemId" : "REF010",
+      "name" : "Link in the 'seealso' section points to itself",
+      "description" : ""
+    } ],
+    "REF012" : [ {
+      "id" : "REF012-",
+      "problemId" : "REF012",
+      "name" : "Unknown 'style' attribute value on a 'seealso' section",
+      "description" : ""
+    } ],
+    "REF013" : [ {
+      "id" : "REF013-",
+      "problemId" : "REF013",
+      "name" : "Cannot include a parent element in its child element",
+      "description" : ""
+    } ],
+    "REF014" : [ {
+      "id" : "REF014-",
+      "problemId" : "REF014",
+      "name" : "Cannot include an include directly",
+      "description" : ""
+    } ],
+    "SCT001" : [ {
+      "id" : "SCT001-",
+      "problemId" : "SCT001",
+      "name" : "Hard-coded shortcut: consider referencing the corresponding action in the 'key' attribute of the 'shortcut' element",
+      "description" : ""
+    } ],
+    "SCT002" : [ {
+      "id" : "SCT002-",
+      "problemId" : "SCT002",
+      "name" : "Shortcut is not defined for the requested keymap",
+      "description" : ""
+    } ],
+    "SCT003" : [ {
+      "id" : "SCT003-",
+      "problemId" : "SCT003",
+      "name" : "Shortcut is not defined for the requested platform",
+      "description" : ""
+    } ],
+    "SCT004" : [ {
+      "id" : "SCT004-",
+      "problemId" : "SCT004",
+      "name" : "The file containing the keymap referenced from platforms.xml cannot be found or is empty",
+      "description" : ""
+    } ],
+    "SCT005" : [ {
+      "id" : "SCT005-",
+      "problemId" : "SCT005",
+      "name" : "Action ID is not found in the product keymap. ",
+      "description" : ""
+    } ],
+    "SCT006" : [ {
+      "id" : "SCT006-",
+      "problemId" : "SCT006",
+      "name" : "Shortcut is not defined for layout",
+      "description" : ""
+    } ],
+    "SCT007" : [ {
+      "id" : "SCT007-",
+      "problemId" : "SCT007",
+      "name" : "Shortcut is not defined for the default keymap",
+      "description" : ""
+    } ],
+    "SCT008" : [ {
+      "id" : "SCT008-",
+      "problemId" : "SCT008",
+      "name" : "Shortcut is not defined in the current product's keymap",
+      "description" : ""
+    } ],
+    "SCT009" : [ {
+      "id" : "SCT009-",
+      "problemId" : "SCT009",
+      "name" : "The requested keymap cannot be found",
+      "description" : ""
+    } ],
+    "SCT011" : [ {
+      "id" : "SCT011-",
+      "problemId" : "SCT011",
+      "name" : "platforms.xml file is corrupted",
+      "description" : ""
+    } ],
+    "TOC001" : [ {
+      "id" : "TOC001-",
+      "problemId" : "TOC001",
+      "name" : "<toc-element> points to an article that doesn't exist",
+      "description" : ""
+    } ],
+    "TOC002" : [ {
+      "id" : "TOC002-",
+      "problemId" : "TOC002",
+      "name" : "<toc-element> points to a library topic",
+      "description" : ""
+    } ],
+    "TOC003" : [ {
+      "id" : "TOC003-",
+      "problemId" : "TOC003",
+      "name" : "The nesting level for a <toc-element> is more than 3. Consider restructuring content for easier navigation.",
+      "description" : ""
+    } ],
+    "TOC004" : [ {
+      "id" : "TOC004-",
+      "problemId" : "TOC004",
+      "name" : "Wrapper <toc-element> cannot have the 'accepts-web-file-names' attribute as it does not produce any content, so it cannot take redirects",
+      "description" : ""
+    } ],
+    "TOC005" : [ {
+      "id" : "TOC005-",
+      "problemId" : "TOC005",
+      "name" : "Wrapper <toc-element> cannot have the 'help-id' attribute as it does not produce any content, so there is nothing to link from the UI",
+      "description" : ""
+    } ],
+    "TOC006" : [ {
+      "id" : "TOC006-",
+      "problemId" : "TOC006",
+      "name" : "<toc-element> ID is duplicated",
+      "description" : ""
+    } ],
+    "TOC007" : [ {
+      "id" : "TOC007-",
+      "problemId" : "TOC007",
+      "name" : "The 'toc-title' attribute is redundant as it matches the topic title",
+      "description" : ""
+    } ],
+    "TOC010" : [ {
+      "id" : "TOC010-",
+      "problemId" : "TOC010",
+      "name" : "<toc-element> cannot have both the 'accepts-web-file-names' and the 'accepts-web-file-names-ref' attribute. Consider moving all references to redirection-rules.xml",
+      "description" : ""
+    } ],
+    "TOC011" : [ {
+      "id" : "TOC011-",
+      "problemId" : "TOC011",
+      "name" : "The 'accepts-web-file-names' attribute references the same topic in several TOC elements",
+      "description" : ""
+    } ],
+    "TOC012" : [ {
+      "id" : "TOC012-",
+      "problemId" : "TOC012",
+      "name" : "The 'custom-title' attribute on a <toc-element> is deprecated. Move it to the topic itself.",
+      "description" : ""
+    } ],
+    "TOC013" : [ {
+      "id" : "TOC013-",
+      "problemId" : "TOC013",
+      "name" : "The value of the 'show-structure-depth' attribute on a <toc-element> must be a valid number",
+      "description" : ""
+    } ],
+    "TOC016" : [ {
+      "id" : "TOC016-",
+      "problemId" : "TOC016",
+      "name" : "<toc-element> should have one of following attributes: 'topic', 'toc-title', or 'ref'",
+      "description" : ""
+    } ],
+    "VIS001" : [ {
+      "id" : "VIS001-",
+      "problemId" : "VIS001",
+      "name" : "Image or video file cannot be found",
+      "description" : ""
+    } ],
+    "VIS002" : [ {
+      "id" : "VIS002-",
+      "problemId" : "VIS002",
+      "name" : "GIF animations and image thumbnails can only be block elements, do not place them inside a paragraph",
+      "description" : ""
+    } ],
+    "VIS003" : [ {
+      "id" : "VIS003-",
+      "problemId" : "VIS003",
+      "name" : "Logo aspect ratio H:W must be between 0.24 and 1.20",
+      "description" : ""
+    } ],
+    "VIS004" : [ {
+      "id" : "VIS004-",
+      "problemId" : "VIS004",
+      "name" : "Image or video must have the 'src' attribute",
+      "description" : ""
+    } ],
+    "VIS005" : [ {
+      "id" : "VIS005-",
+      "problemId" : "VIS005",
+      "name" : "Origin module for image cannot be found in the project",
+      "description" : ""
+    } ],
+    "VIS006" : [ {
+      "id" : "VIS006-",
+      "problemId" : "VIS006",
+      "name" : "Image or video 'width' and 'height' attributes must be positive integers",
+      "description" : ""
+    } ],
+    "VIS007" : [ {
+      "id" : "VIS007-",
+      "problemId" : "VIS007",
+      "name" : "Unable to count frames in a GIF image",
+      "description" : ""
+    } ],
+    "VIS008" : [ {
+      "id" : "VIS008-",
+      "problemId" : "VIS008",
+      "name" : "GIF animations cannot be rendered without a border, do not use 'border-effect=\"none\"'",
+      "description" : ""
+    } ],
+    "VIS009" : [ {
+      "id" : "VIS009-",
+      "problemId" : "VIS009",
+      "name" : "Unknown image 'border-effect' value",
+      "description" : ""
+    } ],
+    "VIS010" : [ {
+      "id" : "VIS010-",
+      "problemId" : "VIS010",
+      "name" : "Unknown image style",
+      "description" : ""
+    } ],
+    "VIS011" : [ {
+      "id" : "VIS011-",
+      "problemId" : "VIS011",
+      "name" : "Dark version of image or video file cannot be found",
+      "description" : ""
+    } ],
+    "VIS012" : [ {
+      "id" : "VIS012-",
+      "problemId" : "VIS012",
+      "name" : "Image file type is not supported, must be PNG or SVG",
+      "description" : ""
+    } ],
+    "VIS013" : [ {
+      "id" : "VIS013-",
+      "problemId" : "VIS013",
+      "name" : "Video file type is not supported, must be MP4",
+      "description" : ""
+    } ],
+    "VIS014" : [ {
+      "id" : "VIS014-",
+      "problemId" : "VIS014",
+      "name" : "Referenced file is outside the documentation project",
+      "description" : ""
+    } ],
+    "VIS015" : [ {
+      "id" : "VIS015-",
+      "problemId" : "VIS015",
+      "name" : "Image file type is not supported",
+      "description" : ""
+    } ]
+  }
+}
