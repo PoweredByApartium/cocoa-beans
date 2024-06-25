@@ -83,6 +83,8 @@ jobs:
           git tag $TAG_VERSION
           git push origin $TAG_VERSION
 
+      - name: Resolve conflicts
+        run: sh build-scripts/gh-pages.sh  
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
 
