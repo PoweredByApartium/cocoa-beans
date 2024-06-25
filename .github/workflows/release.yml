@@ -82,14 +82,14 @@ jobs:
         run: |
           sh build-scripts/prepare-web-output.sh
 
-      - name: Git add
-        run: git add docs/
+      - name: Push pages
+        run: |
+          git checkout gh-pages
+          git pull origin gh-pages
+          git add docs/
+          git commit -m "Update docs in github pages branch"
+          git push origin gh-pages
 
-      - name: Git commit
-        run: git commit -m "Update docs in github pages branch"
-
-      - name: Push
-        run: git push origin gh-pages
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
