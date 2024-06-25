@@ -82,12 +82,13 @@ jobs:
           git tag $TAG_VERSION
           git push origin $TAG_VERSION
 
+      - name: Generate docs folder
+        run: sh build-scripts/prepare-web-output.sh 
+
       - name: Push pages
         run: |
             git fetch origin
-            git checkout gh-pages
             git pull origin gh-pages
-            sh build-scripts/prepare-web-output.sh
             git add docs/
             git commit -m "Update docs in github pages branch" || echo "No changes to commit"
             git push origin gh-pages
