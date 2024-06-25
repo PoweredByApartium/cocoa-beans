@@ -92,7 +92,9 @@ jobs:
             git commit -m "Update docs in github pages branch" || echo "No changes to commit"
 
       - name: Push pages2
-        run: git push origin gh-pages      
+        run: |
+          git fetch origin
+          git push origin gh-pages      
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
