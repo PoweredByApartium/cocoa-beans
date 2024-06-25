@@ -40,10 +40,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Resolve conflicts
-        run: sh build-scripts/gh-pages.sh  
+        run: |
+          git fetch origin
+          git checkout gh-pages
+          git rm -rf docs/
+          git commit -m "."
+          git push origin gh-pages
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup git
         run: |
