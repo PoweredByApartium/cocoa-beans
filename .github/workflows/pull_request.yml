@@ -7,4 +7,4 @@ on:
 
 jobs:
   tests:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml

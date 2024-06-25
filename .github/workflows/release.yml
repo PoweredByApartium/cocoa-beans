@@ -29,7 +29,7 @@ env:
 
 jobs:
   tests:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml
 
   setup:
     needs: tests
@@ -52,23 +52,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: release-ci
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup git
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
 
-      - name: Update Gradle Version #TODO change target branch
+      - name: Update Gradle Version
         run: |
-          git pull origin release-ci
+          git pull origin main
           new_version=${{ github.event.inputs.name }}
           gradle_properties="gradle.properties"
           sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
           echo "Updated project.version to $new_version"
           git add gradle.properties
           git commit -m "Update project version to ${{ github.event.inputs.name }}"
-          git push origin release-ci
+          git push origin main
 
       - uses: actions/setup-java@v3
         with:
