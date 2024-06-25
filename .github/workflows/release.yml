@@ -29,7 +29,7 @@ env:
 
 jobs:
   tests:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@main
 
   setup:
     needs: tests
