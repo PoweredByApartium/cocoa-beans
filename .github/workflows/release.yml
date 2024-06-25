@@ -85,13 +85,14 @@ jobs:
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
 
-      - name: Push pages
+      - name: Push pages1
         run: |
             git fetch origin
             git add docs/
             git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-            git push origin gh-pages
 
+      - name: Push pages2
+        run: git push origin gh-pages      
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
