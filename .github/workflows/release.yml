@@ -38,6 +38,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup git
         run: |
@@ -91,7 +92,6 @@ jobs:
             git branch -M gh-pages
             git add docs/
             git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-            git pull --rebase origin gh-pages
             git push origin gh-pages     
            
   ghRelease:
