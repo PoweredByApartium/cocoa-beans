@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run tests
-        uses: ./.github/workflows/callable.test.yml
+        uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
 
   setup:
     needs: tests
