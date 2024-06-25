@@ -91,6 +91,7 @@ jobs:
             git branch -M gh-pages
             git add docs/
             git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+            git pull --rebase origin gh-pages
             git push origin gh-pages     
            
   ghRelease:
