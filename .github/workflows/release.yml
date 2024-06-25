@@ -132,7 +132,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     steps:
-      - name: "✏️ Generate release changelog"
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
+          tag: ${{ github.event.inputs.name }}
+          writeToFile: true
