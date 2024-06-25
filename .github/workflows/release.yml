@@ -90,7 +90,7 @@ jobs:
         run: |
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages || true
+          git pull --rebase origin gh-pages 
           git add docs/
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
