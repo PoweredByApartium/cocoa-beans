@@ -35,6 +35,10 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Resolve conflicts
         run: sh build-scripts/gh-pages.sh  
       - name: Checkout repository
