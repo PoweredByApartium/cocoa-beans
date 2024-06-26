@@ -63,7 +63,7 @@ jobs:
           IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
           IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
           
-          if [[ "${CURRENT[0]}" != "${INPUT[0]}" ]]; then
+          if [[ "${CURRENT[1]}" != "${INPUT[1]}" ]]; then
             echo "::set-output name=major_version_change::true"
           else
             echo "::set-output name=major_version_change::false"
