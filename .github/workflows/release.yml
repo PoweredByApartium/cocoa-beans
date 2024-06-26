@@ -96,6 +96,12 @@ jobs:
           fetch-depth: true
           ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git
+        run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "GitHub Actions"
+
       - name: Create Tag
         id: create_tag
         run: |
@@ -113,11 +119,6 @@ jobs:
               git add gradle.properties
               git commit -m "Update project version to ${{ github.event.inputs.name }}"
               git push origin release-ci
-              
-      - name: Setup git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
       
       - uses: actions/setup-java@v3
         with:
