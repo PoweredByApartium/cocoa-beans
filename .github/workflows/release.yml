@@ -75,10 +75,10 @@ jobs:
       - name: Prepare directories
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
-          git fetch origin
-          git checkout gh-pages
           PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
           echo "Creating old version directory for version $PREVIOUS_VERSION"
+          git fetch origin
+          git checkout gh-pages
           mkdir -p "docs_$PREVIOUS_VERSION"
           cp -r docs/* "docs_$PREVIOUS_VERSION"
 
