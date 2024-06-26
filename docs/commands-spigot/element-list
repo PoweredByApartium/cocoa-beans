@@ -1,0 +1,5 @@
+net.apartium.cocoabeans.commands.spigot
+net.apartium.cocoabeans.commands.spigot.exception
+net.apartium.cocoabeans.commands.spigot.parsers
+net.apartium.cocoabeans.commands.spigot.requirements
+net.apartium.cocoabeans.commands.spigot.requirements.factory
