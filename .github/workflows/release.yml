@@ -72,19 +72,23 @@ jobs:
       - name: Prepare directories
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
-          if [ -d "docs" ]; then
-            PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
-            echo "Creating old version directory for version $PREVIOUS_VERSION"
             git fetch origin
             git checkout gh-pages
-            mkdir -p "docs_$PREVIOUS_VERSION"
-            cp -r docs/* "docs_$PREVIOUS_VERSION"
-
-            git add .
-            git rm -rf docs/
-            git commit -m "Creating old version directory"
-            git push origin gh-pages
-          fi
+            if [ -d "docs" ]; then
+              PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
+              echo "Previous version detected: $PREVIOUS_VERSION"
+              
+              echo "Creating old version directory for version $PREVIOUS_VERSION"
+              mkdir -p "docs_$PREVIOUS_VERSION"
+              cp -r docs/* "docs_$PREVIOUS_VERSION"
+          
+              git add .
+              git rm -rf docs/
+              git commit -m "Creating old version directory"
+              git push origin gh-pages
+            else
+                echo "Directory 'docs' not found. Skipping backup."
+            fi
 
       - name: Create Tag
         id: create_tag
