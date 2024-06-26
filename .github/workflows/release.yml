@@ -73,9 +73,9 @@ jobs:
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
             git fetch origin
+            PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
             git checkout gh-pages
             if [ -d "docs" ]; then
-              PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
               echo "Previous version detected: $PREVIOUS_VERSION"
               
               echo "Creating old version directory for version $PREVIOUS_VERSION"
