@@ -51,23 +51,15 @@ jobs:
         id: determine_version
         run: |
           CURRENT_VERSION=$(git describe --tags --abbrev=0)
-          INPUT_VERSION=${{ github.event.inputs.version }}
+          INPUT_VERSION=${{ github.event.inputs.name }}
           
-          if [ "$CURRENT_VERSION" != "$INPUT_VERSION" ]; then
-            echo "::set-output name=version_change::true"
-          else
-            echo "::set-output name=version_change::false"
-          fi
+          echo "version_change=$([ "$CURRENT_VERSION" != "$INPUT_VERSION" ] && echo true || echo false)" >> $GITHUB_OUTPUT
           
           # Determine if it's a major version change
           IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
           IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
           
-          if [[ "${CURRENT[1]}" != "${INPUT[1]}" ]]; then
-            echo "::set-output name=major_version_change::true"
-          else
-            echo "::set-output name=major_version_change::false"
-          fi
+          echo "::set-output name=major_version_change::$([[ "${CURRENT[1]}" != "${INPUT[1]}" ]] && echo true || echo false)"
 
       - name: Prepare directories
         if: steps.determine_version.outputs.major_version_change == 'true'
@@ -144,9 +136,9 @@ jobs:
         run: sh build-scripts/prepare-web-output.sh 
   
       - name: Update documentation
-        if: steps.determine_version.outputs.version_change == 'true'
+        if: needs.setup.determine_version.outputs.* == 'true'
         run: |
-          echo "Updating documentation for version ${{ github.event.inputs.version }}"
+          echo "Updating documentation for version ${{ github.event.inputs.name }}"
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
