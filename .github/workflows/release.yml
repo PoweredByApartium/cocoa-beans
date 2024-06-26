@@ -96,7 +96,14 @@ jobs:
             TAG_VERSION=${{ github.event.inputs.name }}
             git tag $TAG_VERSION
             git push origin $TAG_VERSION
-        
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: true
+          ref: release-ci
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Update Gradle Version
         run: |
               git pull origin release-ci
