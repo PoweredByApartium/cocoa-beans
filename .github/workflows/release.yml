@@ -42,6 +42,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          fetch-depth: true
           ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup git
@@ -137,7 +138,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
-          
+
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
