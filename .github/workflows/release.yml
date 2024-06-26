@@ -47,6 +47,13 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
       
+      - name: Create Tag
+        id: create_tag
+        run: |
+            TAG_VERSION=${{ github.event.inputs.name }}
+            git tag $TAG_VERSION
+            git push origin $TAG_VERSION
+
       - name: Determine version changes
         id: determine_version
         run: |
@@ -90,20 +97,13 @@ jobs:
                 echo "Directory 'docs' not found. Skipping backup."
             fi
 
-      - name: Create Tag
-        id: create_tag
-        run: |
-            TAG_VERSION=${{ github.event.inputs.name }}
-            git tag $TAG_VERSION
-            git push origin $TAG_VERSION
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: true
           ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Update Gradle Version
         run: |
               git pull origin release-ci
