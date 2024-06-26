@@ -72,17 +72,19 @@ jobs:
       - name: Prepare directories
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
-          PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
-          echo "Creating old version directory for version $PREVIOUS_VERSION"
-          git fetch origin
-          git checkout gh-pages
-          mkdir -p "docs_$PREVIOUS_VERSION"
-          cp -r docs/* "docs_$PREVIOUS_VERSION"
+          if [ -d "docs" ]; then
+            PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
+            echo "Creating old version directory for version $PREVIOUS_VERSION"
+            git fetch origin
+            git checkout gh-pages
+            mkdir -p "docs_$PREVIOUS_VERSION"
+            cp -r docs/* "docs_$PREVIOUS_VERSION"
 
-          git add .
-          git rm -rf docs/
-          git commit -m "Creating old version directory"
-          git push origin gh-pages
+            git add .
+            git rm -rf docs/
+            git commit -m "Creating old version directory"
+            git push origin gh-pages
+          fi
 
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
@@ -150,7 +152,7 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}  
-          
+
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
