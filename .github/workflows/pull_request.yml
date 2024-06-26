@@ -1,10 +1,9 @@
 name: Pull request CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   tests:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@main
+    if: github.event_name == 'pull_request'
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
