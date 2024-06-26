@@ -53,14 +53,22 @@ jobs:
           CURRENT_VERSION=$(git describe --tags --abbrev=0)
           INPUT_VERSION=${{ github.event.inputs.name }}
           
-          echo "::set-output name=version_change::$([ "$CURRENT_VERSION" != "$INPUT_VERSION" ] && echo true || echo false)"
-
-          # Determine if it's a major version change
+          echo "Current version: $CURRENT_VERSION"
+          echo "Input version: $INPUT_VERSION"
+          
+          CURRENT_VERSION=${CURRENT_VERSION#v}
+          INPUT_VERSION=${INPUT_VERSION#v}
+          
           IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
           IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
           
-          echo "::set-output name=major_version_change::$([[ "${CURRENT[1]}" != "${INPUT[1]}" ]] && echo true || echo false)"
-
+          echo "Current version array: ${CURRENT[@]}"
+          echo "Input version array: ${INPUT[@]}"
+          
+          echo "::set-output name=version_change::$([ "$CURRENT_VERSION" != "$INPUT_VERSION" ] && echo true || echo false)"
+          
+          echo "::set-output name=major_version_change::$([[ "${CURRENT[0]}" != "${INPUT[0]}" ]] && echo true || echo false)"
+          
       - name: Prepare directories
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
