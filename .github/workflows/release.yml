@@ -38,13 +38,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
           fetch-depth: true
           ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup git
         run: |
           git config --local user.email "actions@github.com"
@@ -118,7 +115,22 @@ jobs:
             git add gradle.properties
             git commit -m "Update project version to ${{ github.event.inputs.name }}"
             git push origin release-ci
-  
+
+  publish:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: true
+          ref: release-ci
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+      
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -137,8 +149,8 @@ jobs:
         with:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
-          docker-version: ${{ env.DOCKER_VERSION }}
-
+          docker-version: ${{ env.DOCKER_VERSION }}  
+          
   ghRelease:
     needs: setup
     runs-on: ubuntu-latest
