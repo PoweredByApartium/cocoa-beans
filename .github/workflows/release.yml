@@ -148,7 +148,6 @@ jobs:
         env: 
             TARGET_VERSION: ${{ github.event.inputs.name }}
         run: |
-            TARGET_VERSION="$1"
             if [ -z "${TARGET_VERSION}" ]; then
               echo "Error: TARGET_VERSION is not set"
               exit 1
