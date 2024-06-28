@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ -z "${TARGET_VERSION}" ]; then
     echo "Error: TARGET_VERSION is not set"
     exit 1
@@ -33,3 +32,4 @@ if $capturing; then
 else
     echo "Target version not found"
     exit 1
+fi
