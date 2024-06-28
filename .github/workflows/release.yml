@@ -158,7 +158,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action-automatic-releases: ${{ github.event.inputs.name }}
+          automatic_release_tag: ${{ github.event.inputs.name }}
           title: ${{ github.event.inputs.name }}
           files: |
               LICENSE.txt
