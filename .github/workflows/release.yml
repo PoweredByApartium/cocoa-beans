@@ -154,6 +154,11 @@ jobs:
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
 
+      - name: Export changelog
+        run: build-scripts/export-changelog.sh
+        env:
+          TARGET_VERSION: ${{ github.event.inputs.name }}
+
       - name: Generate release
         uses: softprops/action-gh-release@v2
         with:
