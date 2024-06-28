@@ -5,7 +5,7 @@ if [ -z "${TARGET_VERSION}" ]; then
     exit 1
 fi
 
-file="../CHANGELOG.md"
+file="CHANGELOG.md"
 if [ ! -f "$file" ]; then
     echo "File not found: $file"
     exit 1
