@@ -154,11 +154,6 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: artifacts
-          path: "**/build/libs/*.jar"
       - name: Generate release
         uses: marvinpinto/action-automatic-releases@latest
         repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -167,3 +162,8 @@ jobs:
         files: |
             LICENSE.txt
             **/build/libs/*jar
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: artifacts
+          path: "**/build/libs/*.jar"
