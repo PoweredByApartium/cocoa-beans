@@ -129,22 +129,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-    
-      - name: Generate release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ github.event.inputs.name }}
-          title: ${{ github.event.inputs.name }}
-          files: |
-              LICENSE.txt
-              **/build/libs/*jar
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: artifacts
-          path: "**/build/libs/*.jar"
-          
+
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -165,19 +150,22 @@ jobs:
           git add docs/
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
-  
-  ghRelease:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: test
-        run: |
-          echo "test1"
-          ls -la
 
-          echo "test2"
-          ls -la plugin/build/libs/
+      - name: Remove javadoc jars
+        run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
 
-          echo "test3"
-          ls -la **/build/libs/
-     
+      - name: Generate release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.event.inputs.name }}
+          title: ${{ github.event.inputs.name }}
+          prerelease: false
+          files: |
+              **/build/libs/*jar
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: artifacts
+          path: "**/build/libs/*.jar"
