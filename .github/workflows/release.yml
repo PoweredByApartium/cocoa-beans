@@ -129,16 +129,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      - name: test
-        run: |
-          echo "test1"
-          ls -la
-
-          echo "test2"
-          ls -la plugin/build/libs/
-
-          echo "test3"
-          ls -la **/build/libs/
+    
+      - name: Generate release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.event.inputs.name }}
+          title: ${{ github.event.inputs.name }}
+          files: |
+              LICENSE.txt
+              **/build/libs/*jar
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: artifacts
+          path: "**/build/libs/*.jar"
+          
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -174,17 +180,4 @@ jobs:
 
           echo "test3"
           ls -la **/build/libs/
-      - name: Generate release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ github.event.inputs.name }}
-          title: ${{ github.event.inputs.name }}
-          files: |
-              LICENSE.txt
-              **/build/libs/*jar
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: artifacts
-          path: "**/build/libs/*.jar"
+     
