@@ -164,6 +164,16 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: test
+        run: |
+          echo "test1"
+          ls -la
+
+          echo "test2"
+          ls -la plugin/build/libs/
+
+          echo "test3"
+          ls -la **/build/libs/
       - name: Generate release
         uses: marvinpinto/action-automatic-releases@latest
         with:
