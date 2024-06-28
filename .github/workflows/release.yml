@@ -153,7 +153,10 @@ jobs:
 
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
-
+      
+      - name: Debug
+        run: ls -la build-scripts/
+      
       - name: Export changelog
         run: |
           chmod +x build-scripts/export-changelog.sh 
