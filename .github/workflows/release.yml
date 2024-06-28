@@ -156,12 +156,13 @@ jobs:
     steps:
       - name: Generate release
         uses: marvinpinto/action-automatic-releases@latest
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        action-automatic-releases: ${{ github.event.inputs.name }}
-        title: ${{ github.event.inputs.name }}
-        files: |
-            LICENSE.txt
-            **/build/libs/*jar
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action-automatic-releases: ${{ github.event.inputs.name }}
+          title: ${{ github.event.inputs.name }}
+          files: |
+              LICENSE.txt
+              **/build/libs/*jar
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
