@@ -155,7 +155,7 @@ jobs:
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
 
       - name: Export changelog
-        run: build-scripts/export-changelog.sh
+        run: sh build-scripts/export-changelog.sh
         env:
           TARGET_VERSION: ${{ github.event.inputs.name }}
 
