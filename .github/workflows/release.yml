@@ -140,27 +140,11 @@ jobs:
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
   
-      - name: Update documentation
-        if: steps.determine_version.outputs.version_change == 'true'
-        run: |
-          echo "Updating documentation for version ${{ github.event.inputs.name }}"
-          git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages || true
-          git add docs/
-          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-          git push origin gh-pages
-
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
       
-      - name: Debug
-        run: ls -la build-scripts/
-      
       - name: Export changelog
-        run: |
-          chmod +x build-scripts/export-changelog.sh 
-          sh build-scripts/export-changelog.sh
+        run: sh build-scripts/export-changelog.sh
         env:
           TARGET_VERSION: ${{ github.event.inputs.name }}
 
@@ -176,3 +160,16 @@ jobs:
         with:
           name: artifacts
           path: "**/build/libs/*.jar"
+
+      - name: Update documentation
+        if: steps.determine_version.outputs.version_change == 'true'
+        run: |
+          echo "Updating documentation for version ${{ github.event.inputs.name }}"
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+          git add docs/
+          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+          git push origin gh-pages
+
+      
