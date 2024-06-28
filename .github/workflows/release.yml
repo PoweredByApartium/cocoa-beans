@@ -129,6 +129,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      - name: test
+        run: |
+          echo "test1"
+          ls -la
+
+          echo "test2"
+          ls -la plugin/build/libs/
+
+          echo "test3"
+          ls -la **/build/libs/
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
