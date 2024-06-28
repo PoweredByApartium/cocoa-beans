@@ -148,17 +148,18 @@ jobs:
         env: 
             TARGET_VERSION: ${{ github.event.inputs.name }}
         run: |
+            TARGET_VERSION="$1"
             if [ -z "${TARGET_VERSION}" ]; then
               echo "Error: TARGET_VERSION is not set"
               exit 1
             fi
-
+            
             file="CHANGELOG.md"
             if [ ! -f "$file" ]; then
-                echo "File not found: $file"
-                exit 1
+              echo "File not found: $file"
+              exit 1
             fi
-
+            
             capturing=false
             content=""
             while IFS= read -r line; do
@@ -174,14 +175,14 @@ jobs:
                     content+=$'\n'"$line"
                 fi
             done < "$file"
-
+            
             if $capturing; then
                 echo -e "$content" > CHANGELOG_temp.md
                 echo "Content written to CHANGELOG_temp.md"
             else
                 echo "Target version not found"
                 exit 1
-            fi
+            fi        
 
       - name: Generate release
         uses: softprops/action-gh-release@v2
