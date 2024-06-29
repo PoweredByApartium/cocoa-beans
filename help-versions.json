@@ -1,5 +1,10 @@
 [
   {
+    "version": "v132.test",
+    "url": "docs_v132.test",
+    "isCurrent": false
+  },
+  {
     "version": "v133.test",
     "url": "docs_v133.test",
     "isCurrent": true
