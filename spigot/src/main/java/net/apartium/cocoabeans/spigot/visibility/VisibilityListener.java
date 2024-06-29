@@ -5,7 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class VisibilityListener implements Listener {
+/* package-private */ class VisibilityListener implements Listener {
 
     private final VisibilityManager manager;
 
