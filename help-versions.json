@@ -2,6 +2,11 @@
   {
     "version": "v142.test",
     "url": "docs",
+    "isCurrent": false
+  },
+  {
+    "version": "v143.test",
+    "url": "docs",
     "isCurrent": true
   }
 ]
