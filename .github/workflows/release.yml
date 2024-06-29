@@ -249,7 +249,7 @@ jobs:
           else
               updated_json=$(jq --arg version "$version" '
                   .[-1].version = $version |
-                  .[-1].url = "docs_" + $version |
+                  .[-1].url = "docs" |
                   .[-1].isCurrent = true |
                   .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
