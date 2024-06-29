@@ -221,23 +221,43 @@ jobs:
           name: artifacts
           path: "**/build/libs/*.jar"
 
-      - name: Setup gh-pages
-        run: |
-          echo "Updating documentation for version ${{ github.event.inputs.name }}"
-          git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages || true
-          
-      - name: Update writerside versions
+      - name: Update documentation
+        if: steps.determine_version.outputs.version_change == 'true'
         env:
           version: ${{ github.event.inputs.name }}
           major: ${{ steps.determine_version.outputs.major_version_change  }}
-        run: sh build-scripts/writerside.sh 
-
-      - name: Update documentation
-        if: steps.determine_version.outputs.version_change == 'true'
+        shell: bash
         run: |
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+          json_file="help-versions.json"
+          if [ "$major" = "true" ]; then
+              # For major updates
+              new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "docs_$version",
+          "isCurrent": true
+          }
+          EOF
+          )
+              
+              updated_json=$(jq --argjson new "$new_element" '
+                  map(.isCurrent = false) + [$new]
+              ' "$json_file")
+          else
+              updated_json=$(jq --arg version "$version" '
+                  .[-1].version = $version |
+                  .[-1].url = "docs_" + $version |
+                  .[-1].isCurrent = true |
+                  .[0:-1] |= map(.isCurrent = false)
+              ' "$json_file")
+          fi
+
+          echo "$updated_json" > "$json_file"
           git add docs/
+          git add help-versions.json
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
       
