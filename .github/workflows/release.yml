@@ -66,26 +66,6 @@ jobs:
           
           echo "::set-output name=major_version_change::$([[ "${CURRENT[0]}" != "${INPUT[0]}" ]] && echo true || echo false)"
           
-      - name: Prepare directories
-        if: steps.determine_version.outputs.major_version_change == 'true'
-        run: |
-            git fetch origin
-            PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
-            git checkout gh-pages
-            if [ -d "docs" ]; then
-              echo "Previous version detected: $PREVIOUS_VERSION"
-              
-              echo "Creating old version directory for version $PREVIOUS_VERSION"
-              mkdir -p "docs_$PREVIOUS_VERSION"
-              cp -r docs/* "docs_$PREVIOUS_VERSION"
-          
-              git add .
-              git rm -rf docs/
-              git commit -m "Creating old version directory"
-              git push origin gh-pages
-            else
-                echo "Directory 'docs' not found. Skipping backup."
-            fi
       - name: Create Tag
         id: create_tag
         run: |
@@ -229,7 +209,7 @@ jobs:
               new_element=$(cat <<EOF
           {
           "version": "$version",
-          "url": "docs",
+          "url": "/$version",
           "isCurrent": true
           }
           EOF
@@ -241,13 +221,14 @@ jobs:
           else
               updated_json=$(jq --arg version "$version" '
                   .[-1].version = $version |
-                  .[-1].url = "docs_$version" |
+                  .[-1].url = "/$version" |
                   .[-1].isCurrent = true |
                   .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
           fi
           echo "$updated_json" > "$json_file"
-          git add docs/
+          mv docs $version
+          git add $version/
           git add help-versions.json
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
