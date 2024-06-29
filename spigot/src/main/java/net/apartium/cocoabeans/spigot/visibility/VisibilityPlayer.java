@@ -53,7 +53,7 @@ public class VisibilityPlayer {
         return visibleGroups;
     }
 
-    public void addVisibleGroup(VisibilityGroup group) {
+    /* package-private */ void addVisibleGroup(VisibilityGroup group) {
         visibleGroups.add(group);
 
         Player player = getPlayer();
@@ -61,8 +61,12 @@ public class VisibilityPlayer {
             manager.updateVisiblityForPlayer(this, group);
     }
 
-    public void removeVisibleGroup(VisibilityGroup group) {
+    /* package-private */ void removeVisibleGroup(VisibilityGroup group) {
         visibleGroups.remove(group);
+
+        Player player = getPlayer();
+        if (player != null)
+            manager.updateVisiblityForPlayer(player);
     }
 
     @Override

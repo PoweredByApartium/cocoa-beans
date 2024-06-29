@@ -210,10 +210,4 @@ public class VisibilityManager {
         return new VisibilityGroup(visibilityManager, name);
     }
 
-
-    public enum VisibilityPlayerRemoveType {
-        NEVER,
-        ON_LEAVE
-    }
-
 }
