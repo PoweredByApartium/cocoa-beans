@@ -9,7 +9,7 @@ import java.util.*;
 
 public class VisibilityManager {
 
-    private final Set<VisibilityGroup> groups = new HashSet<>();
+    private final Map<String, VisibilityGroup> groups = new HashMap<>();
     private final Map<UUID, VisibilityPlayer> players = new HashMap<>();
     private final JavaPlugin plugin;
     private VisibilityPlayerRemoveType removeType;
@@ -52,7 +52,7 @@ public class VisibilityManager {
 
         Set<Player> playerToShow = new HashSet<>(Bukkit.getOnlinePlayers());
 
-        for (VisibilityGroup visibilityGroup : groups) {
+        for (VisibilityGroup visibilityGroup : groups.values()) {
             boolean playerInGroup = visibilityGroup.hasPlayer(joinPlayer);
             boolean playerInVisibleGroup = visibilityGroup.getVisibleGroups().stream().anyMatch(group -> group.hasPlayer(joinPlayer));
             if (!playerInGroup && !playerInVisibleGroup)
@@ -141,15 +141,39 @@ public class VisibilityManager {
 
     }
 
+    public void updateVisiblityForPlayer(VisibilityPlayer visibilityPlayer, VisibilityGroup group) {
+        Player player = visibilityPlayer.getPlayer();
+        if (player == null)
+            return;
+
+        for (VisibilityPlayer target : group.getPlayers()) {
+            Player targetPlayer = target.getPlayer();
+            if (targetPlayer == null)
+                continue;
+
+            if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(targetPlayer)))
+                continue;
+
+            player.showPlayer(plugin, targetPlayer);
+        }
+    }
+
     public VisibilityGroup createGroup(String name) {
+        if (groups.containsKey(name))
+            return groups.get(name);
+
         VisibilityGroup group = createInstance(this, name);
-        groups.add(group);
+        groups.put(name, group);
         return group;
     }
 
-    public boolean deleteGroup(VisibilityGroup group) {
-        if (!groups.remove(group))
+    public boolean deleteGroup(String name) {
+        VisibilityGroup remove = groups.remove(name);
+        if (remove == null)
             return false;
+
+        if (remove.getPlayers().isEmpty())
+            return true;
 
         for (VisibilityPlayer visibilityPlayer : players.values()) {
             Player player = visibilityPlayer.getPlayer();
@@ -162,8 +186,12 @@ public class VisibilityManager {
         return true;
     }
 
-    public Set<VisibilityGroup> getGroups() {
-        return groups;
+    public VisibilityGroup getGroup(String name) {
+        return groups.get(name);
+    }
+
+    public Collection<VisibilityGroup> getGroups() {
+        return groups.values();
     }
 
     public JavaPlugin getPlugin() {
@@ -181,6 +209,7 @@ public class VisibilityManager {
     protected VisibilityGroup createInstance(VisibilityManager visibilityManager, String name) {
         return new VisibilityGroup(visibilityManager, name);
     }
+
 
     public enum VisibilityPlayerRemoveType {
         NEVER,
