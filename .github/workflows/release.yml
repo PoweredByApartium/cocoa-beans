@@ -75,21 +75,15 @@ jobs:
         run: |
             git fetch origin
             PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
-            git checkout gh-pages
-            if [ -d "docs" ]; then
-              echo "Previous version detected: $PREVIOUS_VERSION"
-              
-              echo "Creating old version directory for version $PREVIOUS_VERSION"
-              mkdir -p "docs_$PREVIOUS_VERSION"
-              cp -r docs/* "docs_$PREVIOUS_VERSION"
-          
-              git add .
-              git rm -rf docs/
-              git commit -m "Creating old version directory"
-              git push origin gh-pages
-            else
-                echo "Directory 'docs' not found. Skipping backup."
-            fi
+            git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+            git pull origin gh-pages || true
+            echo "Creating old version directory for version $PREVIOUS_VERSION"
+            mkdir -p "docs_$PREVIOUS_VERSION"
+            cp -r docs/* "docs_$PREVIOUS_VERSION"
+            mv "docs_$PREVIOUS_VERSION" docs/
+            git add .
+            git commit -m "Creating old version directory"
+            git push origin gh-pages
 
       - name: Create Tag
         id: create_tag
@@ -237,7 +231,7 @@ jobs:
               new_element=$(cat <<EOF
           {
           "version": "$version",
-          "url": "docs",
+          "url": "/",
           "isCurrent": true
           }
           EOF
@@ -249,7 +243,7 @@ jobs:
           else
               updated_json=$(jq --arg version "$version" '
                   .[-1].version = $version |
-                  .[-1].url = "docs" |
+                  .[-1].url = "docs_$version" |
                   .[-1].isCurrent = true |
                   .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
