@@ -221,6 +221,13 @@ jobs:
           name: artifacts
           path: "**/build/libs/*.jar"
 
+      - name: Setup gh-pages
+        run: |
+          echo "Updating documentation for version ${{ github.event.inputs.name }}"
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+          
       - name: Update writerside versions
         env:
           version: ${{ github.event.inputs.name }}
@@ -230,10 +237,6 @@ jobs:
       - name: Update documentation
         if: steps.determine_version.outputs.version_change == 'true'
         run: |
-          echo "Updating documentation for version ${{ github.event.inputs.name }}"
-          git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages || true
           git add docs/
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
