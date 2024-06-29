@@ -51,7 +51,7 @@ jobs:
         id: determine_version
         run: |
           git fetch origin
-          CURRENT_VERSION=$(git describe --tags --abbrev=0)
+          CURRENT_VERSION=$(git tag -l | sort -V | tail -n 1)
           INPUT_VERSION=${{ github.event.inputs.name }}
           
           echo "Current version: $CURRENT_VERSION"
@@ -74,7 +74,7 @@ jobs:
         if: steps.determine_version.outputs.major_version_change == 'true'
         run: |
             git fetch origin
-            PREVIOUS_VERSION=$(git describe --tags --abbrev=0)
+            PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
             git checkout gh-pages
             if [ -d "docs" ]; then
               echo "Previous version detected: $PREVIOUS_VERSION"
@@ -221,6 +221,12 @@ jobs:
           name: artifacts
           path: "**/build/libs/*.jar"
 
+      - name: Update writerside versions
+        env:
+          version: ${{ github.event.inputs.name }}
+          major: ${{ steps.determine_version.outputs.major_version_change  }}
+        run: sh build-scripts/writerside.sh 
+
       - name: Update documentation
         if: steps.determine_version.outputs.version_change == 'true'
         run: |
@@ -231,5 +237,5 @@ jobs:
           git add docs/
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
-
+      
       
