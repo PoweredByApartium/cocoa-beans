@@ -77,13 +77,18 @@ jobs:
             PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
             git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
             git pull origin gh-pages || true
-            echo "Creating old version directory for version $PREVIOUS_VERSION"
-            mkdir -p "docs_$PREVIOUS_VERSION"
-            cp -r docs/* "docs_$PREVIOUS_VERSION"
-            mv "docs_$PREVIOUS_VERSION" docs/
-            git add .
-            git commit -m "Creating old version directory"
-            git push origin gh-pages
+            
+            if [ -d "docs" ]; then
+              echo "Creating old version directory for version $PREVIOUS_VERSION"
+              mkdir -p "docs_$PREVIOUS_VERSION"
+              cp -r docs/* "docs_$PREVIOUS_VERSION"
+              mv "docs_$PREVIOUS_VERSION" docs/
+              git add .
+              git commit -m "Creating old version directory"
+              git push origin gh-pages
+            else
+                echo "Directory 'docs' not found. Skipping backup."
+            fi
 
       - name: Create Tag
         id: create_tag
