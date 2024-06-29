@@ -237,7 +237,7 @@ jobs:
               new_element=$(cat <<EOF
           {
           "version": "$version",
-          "url": "docs_$version",
+          "url": "docs",
           "isCurrent": true
           }
           EOF
