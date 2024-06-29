@@ -1,0 +1,12 @@
+[
+  {
+    "version": "tes2",
+    "url": "docs_tes2",
+    "isCurrent": false
+  },
+  {
+    "version": "tes3",
+    "url": "docs_tes3",
+    "isCurrent": true
+  }
+]
