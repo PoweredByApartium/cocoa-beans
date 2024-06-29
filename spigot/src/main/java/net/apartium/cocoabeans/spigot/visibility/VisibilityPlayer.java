@@ -55,10 +55,6 @@ public class VisibilityPlayer {
 
     /* package-private */ void addVisibleGroup(VisibilityGroup group) {
         visibleGroups.add(group);
-
-        Player player = getPlayer();
-        if (player != null)
-            manager.updateVisiblityForPlayer(this, group);
     }
 
     /* package-private */ void removeVisibleGroup(VisibilityGroup group) {

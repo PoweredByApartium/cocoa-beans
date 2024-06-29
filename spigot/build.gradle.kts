@@ -10,4 +10,8 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
     compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
     api(project.project(":common"))
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.9.0")
 }

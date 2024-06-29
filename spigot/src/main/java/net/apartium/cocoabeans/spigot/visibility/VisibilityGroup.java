@@ -26,40 +26,37 @@ public class VisibilityGroup {
     }
 
     public boolean addPlayer(Player player) {
-        VisibilityPlayer visibilityPlayer = manager.getPlayer(player);
-
-        if (!players.add(visibilityPlayer))
-            return false;
-
-        visibilityPlayer.addVisibleGroup(this);
-        return true;
+        return addPlayer(manager.getPlayer(player));
     }
 
     public boolean addPlayer(UUID uuid) {
-        VisibilityPlayer visibilityPlayer = manager.getPlayer(uuid);
-
-        if (!players.add(visibilityPlayer))
-            return false;
-
-        visibilityPlayer.addVisibleGroup(this);
-        return true;
+        return addPlayer(manager.getPlayer(uuid));
     }
 
     public boolean addPlayer(VisibilityPlayer player) {
         if (!players.add(player))
             return false;
 
+        boolean empty = player.getVisibleGroups().isEmpty();
+
         player.addVisibleGroup(this);
+        Player bukkitPlayer = player.getPlayer();
+        if (empty && bukkitPlayer != null) {
+            manager.handlePlayerJoin(bukkitPlayer);
+        } else if (bukkitPlayer != null) {
+            for (VisibilityPlayer visibilityPlayer : players) {
+                if (visibilityPlayer.getPlayer() == null)
+                    continue;
+
+                manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+            }
+        }
+
         return true;
     }
 
     public boolean removePlayer(Player player) {
-        VisibilityPlayer visibilityPlayer = manager.getPlayer(player);
-        if (!players.remove(visibilityPlayer))
-            return false;
-
-        visibilityPlayer.removeVisibleGroup(this);
-        return true;
+        return removePlayer(manager.getPlayer(player));
     }
 
     public boolean removePlayer(VisibilityPlayer player) {
@@ -67,6 +64,16 @@ public class VisibilityGroup {
             return false;
 
         player.removeVisibleGroup(this);
+        for (VisibilityPlayer visibilityPlayer : players) {
+            Player bukkitPlayer = visibilityPlayer.getPlayer();
+            if (bukkitPlayer == null)
+                continue;
+
+            if (bukkitPlayer == player.getPlayer())
+                continue;
+
+            manager.updateVisiblityForPlayer(bukkitPlayer);
+        }
         return true;
     }
 

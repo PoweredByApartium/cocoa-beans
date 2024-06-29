@@ -12,7 +12,7 @@ public class VisibilityManager {
     private final Map<String, VisibilityGroup> groups = new HashMap<>();
     private final Map<UUID, VisibilityPlayer> players = new HashMap<>();
     private final JavaPlugin plugin;
-    private VisibilityPlayerRemoveType removeType;
+    private final VisibilityPlayerRemoveType removeType;
     private VisibilityListener visibilityListener;
 
     public VisibilityManager(JavaPlugin plugin) {
@@ -40,9 +40,37 @@ public class VisibilityManager {
         visibilityListener = null;
     }
 
+    public void reloadVisibility() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            updateVisiblityForPlayer(player);
+        }
+    }
+
     public void handlePlayerJoin(Player joinPlayer) {
+        VisibilityPlayer visibilityPlayer = getPlayer(joinPlayer);
+
+        if (visibilityPlayer.getVisibleGroups().isEmpty()) {
+            for (Player target : Bukkit.getOnlinePlayers()) {
+                if (target == joinPlayer)
+                    continue;
+
+                if (getPlayer(target).getVisibleGroups().isEmpty()) {
+                    target.showPlayer(plugin, joinPlayer);
+                    continue;
+                }
+
+                joinPlayer.hidePlayer(plugin, target);
+                target.hidePlayer(plugin, joinPlayer);
+            }
+
+            return;
+        }
+
         for (Player target : Bukkit.getOnlinePlayers()) {
             if (target == joinPlayer)
+                continue;
+
+            if (getPlayer(target).getVisibleGroups().isEmpty())
                 continue;
 
             target.hidePlayer(plugin, joinPlayer);
@@ -50,7 +78,7 @@ public class VisibilityManager {
 
         updateVisiblityForPlayer(joinPlayer);
 
-        Set<Player> playerToShow = new HashSet<>(Bukkit.getOnlinePlayers());
+        Set<Player> playerToShow = new HashSet<>();
 
         for (VisibilityGroup visibilityGroup : groups.values()) {
             boolean playerInGroup = visibilityGroup.hasPlayer(joinPlayer);
@@ -68,19 +96,11 @@ public class VisibilityManager {
                 if (targetPlayer == null)
                     continue;
 
-                playerToShow.add(targetPlayer);
-            }
-        }
-
-        for (VisibilityGroup visibleGroup : getPlayer(joinPlayer).getVisibleGroups()) {
-            for (VisibilityPlayer player : visibleGroup.getPlayers()) {
-                Player targetPlayer = player.getPlayer();
-                if (targetPlayer == null)
+                if (targetPlayer == joinPlayer)
                     continue;
 
-                playerToShow.remove(targetPlayer);
+                playerToShow.add(targetPlayer);
             }
-
         }
 
         for (Player target : playerToShow) {
@@ -110,15 +130,40 @@ public class VisibilityManager {
     }
 
     public void updateVisiblityForPlayer(Player player) {
+        VisibilityPlayer visibilityPlayer = getPlayer(player);
+
+        if (visibilityPlayer.getVisibleGroups().isEmpty()) {
+            for (Player target : Bukkit.getOnlinePlayers()) {
+                if (target == player)
+                    continue;
+
+                if (!getPlayer(target).getVisibleGroups().isEmpty()) {
+                    player.hidePlayer(plugin, target);
+                    target.hidePlayer(plugin, player);
+                    continue;
+                }
+
+                player.showPlayer(plugin, target);
+                target.showPlayer(plugin, player);
+            }
+
+            return;
+        }
+
         for (Player target : Bukkit.getOnlinePlayers()) {
             if (target == player)
                 continue;
+
+            if (getPlayer(target).getVisibleGroups().isEmpty()) {
+                player.hidePlayer(plugin, target);
+                target.hidePlayer(plugin, player);
+                continue;
+            }
 
             player.hidePlayer(plugin, target);
         }
 
         Set<Player> playersToShow = new HashSet<>();
-        VisibilityPlayer visibilityPlayer = getPlayer(player);
 
         for (VisibilityGroup group : visibilityPlayer.getVisibleGroups()) {
             if (!group.hasPlayer(player))
@@ -127,6 +172,9 @@ public class VisibilityManager {
             for (VisibilityPlayer target : group.getPlayers()) {
                 Player targetPlayer = target.getPlayer();
                 if (targetPlayer == null)
+                    continue;
+
+                if (player == targetPlayer)
                     continue;
 
                 if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(targetPlayer)))
@@ -141,30 +189,8 @@ public class VisibilityManager {
 
     }
 
-    public void updateVisiblityForPlayer(VisibilityPlayer visibilityPlayer, VisibilityGroup group) {
-        Player player = visibilityPlayer.getPlayer();
-        if (player == null)
-            return;
-
-        for (VisibilityPlayer target : group.getPlayers()) {
-            Player targetPlayer = target.getPlayer();
-            if (targetPlayer == null)
-                continue;
-
-            if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(targetPlayer)))
-                continue;
-
-            player.showPlayer(plugin, targetPlayer);
-        }
-    }
-
-    public VisibilityGroup createGroup(String name) {
-        if (groups.containsKey(name))
-            return groups.get(name);
-
-        VisibilityGroup group = createInstance(this, name);
-        groups.put(name, group);
-        return group;
+    public VisibilityGroup getOrCreateGroup(String name) {
+        return groups.computeIfAbsent(name, this::createInstance);
     }
 
     public boolean deleteGroup(String name) {
@@ -186,28 +212,16 @@ public class VisibilityManager {
         return true;
     }
 
-    public VisibilityGroup getGroup(String name) {
-        return groups.get(name);
-    }
-
     public Collection<VisibilityGroup> getGroups() {
         return groups.values();
-    }
-
-    public JavaPlugin getPlugin() {
-        return plugin;
-    }
-
-    public void setRemoveType(VisibilityPlayerRemoveType removeType) {
-        this.removeType = removeType;
     }
 
     public VisibilityPlayerRemoveType getRemoveType() {
         return removeType;
     }
 
-    protected VisibilityGroup createInstance(VisibilityManager visibilityManager, String name) {
-        return new VisibilityGroup(visibilityManager, name);
+    protected VisibilityGroup createInstance(String name) {
+        return new VisibilityGroup(this, name);
     }
 
 }
