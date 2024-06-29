@@ -254,7 +254,7 @@ jobs:
           PREVIOUS_VERSION: steps.perv_tag.outputs.p_tag
         run: |
             git fetch origin
-            git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+            git checkout gh-pages origin/gh-pages || git checkout gh-pages
             git pull origin gh-pages || true
             
             if [ -d "docs" ]; then
