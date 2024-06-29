@@ -10,6 +10,7 @@
             </header-logo>
             <noindex-content>false</noindex-content>
             <offline-docs>false</offline-docs>
+            <version-switcher>https://poweredbyapartium.github.io/cocoa-beans/help-versions.json</version-switcher>
         </variables>
         <footer>
             <copyright>Apartium 2024</copyright>
