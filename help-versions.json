@@ -11,12 +11,12 @@
   },
   {
     "version": "v134.test",
-    "url": "docs",
+    "url": "docs_v134.test",
     "isCurrent": false
   },
   {
     "version": "v136.test",
-    "url": "docs",
+    "url": "/",
     "isCurrent": true
   }
 ]
