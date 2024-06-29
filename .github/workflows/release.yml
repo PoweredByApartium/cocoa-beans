@@ -69,26 +69,13 @@ jobs:
           echo "::set-output name=version_change::$([ "$CURRENT_VERSION" != "$INPUT_VERSION" ] && echo true || echo false)"
           
           echo "::set-output name=major_version_change::$([[ "${CURRENT[0]}" != "${INPUT[0]}" ]] && echo true || echo false)"
-          
-      - name: Prepare directories
-        if: steps.determine_version.outputs.major_version_change == 'true'
+      
+      - name: Ger previus tag
+        id: perv_tag
         run: |
-            git fetch origin
-            PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
-            git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-            git pull origin gh-pages || true
-            
-            if [ -d "docs" ]; then
-              echo "Creating old version directory for version $PREVIOUS_VERSION"
-              mkdir -p "docs_$PREVIOUS_VERSION"
-              cp -r docs/* "docs_$PREVIOUS_VERSION"
-              mv "docs_$PREVIOUS_VERSION" docs/
-              git add .
-              git commit -m "Creating old version directory"
-              git push origin gh-pages
-            else
-                echo "Directory 'docs' not found. Skipping backup."
-            fi
+          git fetch origin
+          PREVIOUS_VERSION=$(git tag -l | sort -V | tail -n 1)
+          echo "::set-output name=p_tag::$PREVIOUS_VERSION" 
 
       - name: Create Tag
         id: create_tag
@@ -260,4 +247,24 @@ jobs:
           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
           git push origin gh-pages
       
-      
+      - name: Prepare directories
+        if: steps.determine_version.outputs.major_version_change == 'true'
+        shell: bash
+        env:
+          PREVIOUS_VERSION: steps.perv_tag.outputs.p_tag
+        run: |
+            git fetch origin
+            git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+            git pull origin gh-pages || true
+            
+            if [ -d "docs" ]; then
+              echo "Creating old version directory for version $PREVIOUS_VERSION"
+              mkdir -p "docs_$PREVIOUS_VERSION"
+              cp -r docs/* "docs_$PREVIOUS_VERSION"
+              mv "docs_$PREVIOUS_VERSION" docs/
+              git add .
+              git commit -m "Creating old version directory"
+              git push origin gh-pages
+            else
+                echo "Directory 'docs' not found. Skipping backup."
+            fi
