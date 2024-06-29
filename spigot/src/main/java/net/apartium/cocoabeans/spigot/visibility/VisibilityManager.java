@@ -12,10 +12,16 @@ public class VisibilityManager {
     private final Set<VisibilityGroup> groups = new HashSet<>();
     private final Map<UUID, VisibilityPlayer> players = new HashMap<>();
     private final JavaPlugin plugin;
+    private VisibilityPlayerRemoveType removeType;
     private VisibilityListener visibilityListener;
 
     public VisibilityManager(JavaPlugin plugin) {
+        this(plugin, VisibilityPlayerRemoveType.NEVER);
+    }
+
+    public VisibilityManager(JavaPlugin plugin, VisibilityPlayerRemoveType removeType) {
         this.plugin = plugin;
+        this.removeType = removeType;
     }
 
     public void registerListener() {
@@ -91,8 +97,16 @@ public class VisibilityManager {
         return players.computeIfAbsent(player.getUniqueId(), (key) -> new VisibilityPlayer(this, player));
     }
 
-    public boolean deletePlayer(UUID uuid) {
-        return players.remove(uuid) != null;
+    public void removePlayer(UUID uuid) {
+        VisibilityPlayer remove = players.remove(uuid);
+
+        if (remove == null)
+            return;
+
+        for (VisibilityGroup group : remove.getVisibleGroups()) {
+            group.removePlayer(remove);
+        }
+
     }
 
     public void updateVisiblityForPlayer(Player player) {
@@ -152,9 +166,25 @@ public class VisibilityManager {
         return groups;
     }
 
+    public JavaPlugin getPlugin() {
+        return plugin;
+    }
+
+    public void setRemoveType(VisibilityPlayerRemoveType removeType) {
+        this.removeType = removeType;
+    }
+
+    public VisibilityPlayerRemoveType getRemoveType() {
+        return removeType;
+    }
 
     protected VisibilityGroup createInstance(VisibilityManager visibilityManager, String name) {
         return new VisibilityGroup(visibilityManager, name);
+    }
+
+    public enum VisibilityPlayerRemoveType {
+        NEVER,
+        ON_LEAVE
     }
 
 }

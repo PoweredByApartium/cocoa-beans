@@ -22,4 +22,12 @@ public class VisibilityListener implements Listener {
         manager.handlePlayerJoin(event.getPlayer());
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerJoinEvent event) {
+        if (manager.getRemoveType() != VisibilityManager.VisibilityPlayerRemoveType.ON_LEAVE)
+            return;
+
+        manager.removePlayer(event.getPlayer().getUniqueId());
+    }
+
 }
