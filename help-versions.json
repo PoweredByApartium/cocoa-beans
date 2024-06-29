@@ -12,6 +12,11 @@
   {
     "version": "v134.test",
     "url": "docs",
+    "isCurrent": false
+  },
+  {
+    "version": "v136.test",
+    "url": "docs",
     "isCurrent": true
   }
 ]
