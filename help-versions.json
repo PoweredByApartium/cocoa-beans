@@ -1,3 +1,7 @@
 [
-
+  {
+    "version": "v142.test",
+    "url": "docs",
+    "isCurrent": true
+  }
 ]
