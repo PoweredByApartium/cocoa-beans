@@ -55,6 +55,10 @@ public class VisibilityPlayer {
 
     public void addVisibleGroup(VisibilityGroup group) {
         visibleGroups.add(group);
+
+        Player player = getPlayer();
+        if (player != null)
+            manager.updateVisiblityForPlayer(this, group);
     }
 
     public void removeVisibleGroup(VisibilityGroup group) {
