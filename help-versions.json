@@ -1,22 +1,3 @@
 [
-  {
-    "version": "v132.test",
-    "url": "docs_v132.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v133.test",
-    "url": "docs_v133.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v134.test",
-    "url": "docs_v134.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v136.test",
-    "url": "/",
-    "isCurrent": true
-  }
+
 ]
