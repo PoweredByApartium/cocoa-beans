@@ -49,76 +49,71 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
         group1.addPlayer(cloudflareDNS);
         group1.addPlayer(googleDNS);
 
-        assertTrue(ikfir.canSee(voigon));
-        assertTrue(voigon.canSee(ikfir));
+        assertCanSee(ikfir, voigon);
 
-        assertFalse(cloudflareDNS.canSee(ikfir));
-        assertFalse(cloudflareDNS.canSee(voigon));
+        assertCantSee(cloudflareDNS, ikfir);
+        assertCantSee(cloudflareDNS, voigon);
 
-        assertFalse(ikfir.canSee(cloudflareDNS));
-        assertFalse(voigon.canSee(cloudflareDNS));
+        assertCantSee(googleDNS, ikfir);
+        assertCantSee(googleDNS, voigon);
 
-        assertFalse(ikfir.canSee(googleDNS));
-        assertFalse(googleDNS.canSee(ikfir));
+        assertCantSee(thebotgame, ikfir);
+        assertCantSee(thebotgame, voigon);
+        assertCantSee(thebotgame, cloudflareDNS);
+        assertCantSee(thebotgame, googleDNS);
 
-        assertFalse(thebotgame.canSee(ikfir));
-        assertFalse(thebotgame.canSee(voigon));
-        assertFalse(thebotgame.canSee(cloudflareDNS));
-        assertFalse(thebotgame.canSee(googleDNS));
 
-        assertFalse(ikfir.canSee(thebotgame));
-        assertFalse(voigon.canSee(thebotgame));
-        assertFalse(cloudflareDNS.canSee(thebotgame));
-        assertFalse(googleDNS.canSee(thebotgame));
-
-        assertTrue(thebotgame.canSee(ikfirBot));
-        assertTrue(ikfirBot.canSee(thebotgame));
+        assertCanSee(thebotgame, ikfirBot);
 
         visibilityManager.registerListener();
         PlayerMock iVoigon = server.addPlayer("iVoigon");
 
-        assertTrue(thebotgame.canSee(iVoigon));
-        assertTrue(iVoigon.canSee(thebotgame));
+        assertCanSee(thebotgame, ikfirBot);
+        assertCanSee(thebotgame, iVoigon);
 
+        assertCanSee(ikfirBot, iVoigon);
 
-        assertFalse(iVoigon.canSee(ikfir));
-        assertFalse(iVoigon.canSee(voigon));
-        assertFalse(iVoigon.canSee(cloudflareDNS));
-        assertFalse(iVoigon.canSee(googleDNS));
-
-        assertFalse(ikfir.canSee(iVoigon));
-        assertFalse(voigon.canSee(iVoigon));
-        assertFalse(cloudflareDNS.canSee(iVoigon));
-        assertFalse(googleDNS.canSee(iVoigon));
+        assertCantSee(iVoigon, ikfir);
+        assertCantSee(iVoigon, voigon);
+        assertCantSee(iVoigon, cloudflareDNS);
+        assertCantSee(iVoigon, googleDNS);
 
         group1.addPlayer(ikfir);
 
-        assertTrue(cloudflareDNS.canSee(ikfir));
-        assertTrue(googleDNS.canSee(ikfir));
 
-        assertTrue(ikfir.canSee(cloudflareDNS));
-        assertTrue(ikfir.canSee(googleDNS));
+        assertCanSee(cloudflareDNS, ikfir);
+        assertCanSee(googleDNS, ikfir);
+
+        assertCantSee(iVoigon, ikfir);
 
         group.removePlayer(ikfir);
 
-        assertTrue(ikfir.canSee(cloudflareDNS));
-        assertTrue(ikfir.canSee(googleDNS));
+        assertCanSee(cloudflareDNS, ikfir);
+        assertCanSee(googleDNS, ikfir);
 
-        assertFalse(ikfir.canSee(voigon));
-        assertFalse(voigon.canSee(ikfir));
+        assertCantSee(voigon, ikfir);
+
+        assertCantSee(ikfir, iVoigon);
+        assertCantSee(ikfir, thebotgame);
+        assertCantSee(ikfir, ikfirBot);
 
         group1.removePlayer(ikfir);
 
-        assertFalse(cloudflareDNS.canSee(ikfir));
-        assertFalse(googleDNS.canSee(ikfir));
+        assertCantSee(cloudflareDNS, ikfir);
+        assertCantSee(googleDNS, ikfir);
 
-        assertFalse(ikfir.canSee(cloudflareDNS));
-        assertFalse(ikfir.canSee(googleDNS));
+        assertCanSee(ikfir, iVoigon);
+        assertCanSee(ikfir, thebotgame);
+        assertCanSee(ikfir, ikfirBot);
+    }
 
-        assertTrue(ikfir.canSee(thebotgame));
-        assertTrue(ikfir.canSee(ikfirBot));
+    void assertCanSee(PlayerMock player, PlayerMock target) {
+        assertTrue(player.canSee(target));
+        assertTrue(target.canSee(player));
+    }
 
-        assertTrue(thebotgame.canSee(ikfir));
-        assertTrue(ikfirBot.canSee(ikfir));
+    void assertCantSee(PlayerMock player, PlayerMock target) {
+        assertFalse(player.canSee(target));
+        assertFalse(target.canSee(player));
     }
 }

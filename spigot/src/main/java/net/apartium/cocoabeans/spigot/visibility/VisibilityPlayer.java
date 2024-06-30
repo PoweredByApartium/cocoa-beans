@@ -59,10 +59,6 @@ public class VisibilityPlayer {
 
     /* package-private */ void removeVisibleGroup(VisibilityGroup group) {
         visibleGroups.remove(group);
-
-        Player player = getPlayer();
-        if (player != null)
-            manager.updateVisiblityForPlayer(player);
     }
 
     @Override

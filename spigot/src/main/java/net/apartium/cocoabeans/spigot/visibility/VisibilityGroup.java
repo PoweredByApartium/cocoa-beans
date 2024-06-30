@@ -64,16 +64,18 @@ public class VisibilityGroup {
             return false;
 
         player.removeVisibleGroup(this);
+        if (player.getPlayer() == null)
+            return true;
+
+        manager.updateVisiblityForPlayer(player.getPlayer());
         for (VisibilityPlayer visibilityPlayer : players) {
             Player bukkitPlayer = visibilityPlayer.getPlayer();
             if (bukkitPlayer == null)
                 continue;
 
-            if (bukkitPlayer == player.getPlayer())
-                continue;
-
             manager.updateVisiblityForPlayer(bukkitPlayer);
         }
+
         return true;
     }
 
