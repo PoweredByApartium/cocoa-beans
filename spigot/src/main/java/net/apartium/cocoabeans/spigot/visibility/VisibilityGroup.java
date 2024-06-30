@@ -80,18 +80,51 @@ public class VisibilityGroup {
     }
 
     public boolean addGroup(VisibilityGroup group, boolean visible) {
+        boolean result;
         if (visible)
-            return visibleGroups.add(group);
+            result = visibleGroups.add(group);
         else
-            return hiddenGroups.add(group);
+            result = hiddenGroups.add(group);
+
+        if (!result)
+            return false;
+
+        for (VisibilityPlayer visibilityPlayer : players) {
+            if (visibilityPlayer.getPlayer() == null)
+                continue;
+
+            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+        }
+
+        return true;
     }
 
     public boolean removeVisibleGroup(VisibilityGroup group) {
-        return visibleGroups.remove(group);
+        if (!visibleGroups.remove(group))
+            return false;
+
+        for (VisibilityPlayer visibilityPlayer : players) {
+            if (visibilityPlayer.getPlayer() == null)
+                continue;
+
+            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+        }
+
+        return true;
     }
 
     public boolean removeHiddenGroup(VisibilityGroup group) {
-        return hiddenGroups.remove(group);
+        if (!hiddenGroups.remove(group))
+            return false;
+
+        for (VisibilityPlayer visibilityPlayer : players) {
+            if (visibilityPlayer.getPlayer() == null)
+                continue;
+
+            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+        }
+
+        return true;
     }
 
 

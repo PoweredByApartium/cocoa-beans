@@ -19,6 +19,8 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
             cloudflareDNS,
             googleDNS;
 
+    private VisibilityManager visibilityManager;
+
     @BeforeEach
     @Override
     public void setup() {
@@ -38,7 +40,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         plugin.getLogger();
 
-        VisibilityManager visibilityManager = new VisibilityManager(plugin, VisibilityPlayerRemoveType.NEVER);
+        visibilityManager = new VisibilityManager(plugin, VisibilityPlayerRemoveType.NEVER);
 
         VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
         VisibilityGroup group1 = visibilityManager.getOrCreateGroup("test2");
@@ -122,15 +124,76 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         assertCantSee(cloudflareDNS, voigon);
         assertCantSee(googleDNS, voigon);
+
+        group.addPlayer(ikfir);
+
+        assertCanSee(ikfir, voigon);
+
+        assertCantSee(ikfir, ikfirBot);
+        assertCantSee(ikfir, iVoigon);
+        assertCantSee(ikfir, thebotgame);
+        assertCantSee(ikfir, googleDNS);
+        assertCantSee(ikfir, cloudflareDNS);
+
+        group1 = visibilityManager.getOrCreateGroup("test2");
+
+        group1.addPlayer(cloudflareDNS);
+        group1.addPlayer(googleDNS);
+
+        assertCantSee(cloudflareDNS, ikfir);
+        assertCantSee(googleDNS, ikfir);
+
+        assertCanSee(cloudflareDNS, googleDNS);
+
+        assertCantSee(cloudflareDNS, ikfirBot);
+        assertCantSee(cloudflareDNS, iVoigon);
+        assertCantSee(cloudflareDNS, thebotgame);
+
+        assertCantSee(googleDNS, ikfirBot);
+        assertCantSee(googleDNS, iVoigon);
+        assertCantSee(googleDNS, thebotgame);
+
+        group.addGroup(group1, true);
+
+        assertCanSeeOneSide(ikfir, cloudflareDNS);
+        assertCanSeeOneSide(ikfir, googleDNS);
+
+        assertCantSeeOneSide(cloudflareDNS, ikfir);
+        assertCantSeeOneSide(googleDNS, ikfir);
+
+        assertCanSeeOneSide(voigon, cloudflareDNS);
+        assertCanSeeOneSide(voigon, googleDNS);
+
+        assertCantSeeOneSide(cloudflareDNS, voigon);
+        assertCantSeeOneSide(googleDNS, voigon);
+
+        group.removeVisibleGroup(group1);
+
+        assertCantSee(ikfir, cloudflareDNS);
+        assertCantSee(ikfir, googleDNS);
+
+        assertCantSee(voigon, cloudflareDNS);
+        assertCantSee(voigon, googleDNS);
+
+    }
+
+    void assertCanSeeOneSide(PlayerMock player, PlayerMock target) {
+        assertTrue(player.canSee(target));
+        assertTrue(visibilityManager.canSee(player, target));
+    }
+
+    void assertCantSeeOneSide(PlayerMock player, PlayerMock target) {
+        assertFalse(player.canSee(target));
+        assertFalse(visibilityManager.canSee(player, target));
     }
 
     void assertCanSee(PlayerMock player, PlayerMock target) {
-        assertTrue(player.canSee(target));
-        assertTrue(target.canSee(player));
+        assertCanSeeOneSide(player, target);
+        assertCanSeeOneSide(target, player);
     }
 
     void assertCantSee(PlayerMock player, PlayerMock target) {
-        assertFalse(player.canSee(target));
-        assertFalse(target.canSee(player));
+        assertCantSeeOneSide(player, target);
+        assertCantSeeOneSide(target, player);
     }
 }

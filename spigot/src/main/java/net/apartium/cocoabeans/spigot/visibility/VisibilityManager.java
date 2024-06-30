@@ -169,12 +169,34 @@ public class VisibilityManager {
             if (!group.hasPlayer(player))
                 continue;
 
+            for (VisibilityGroup targetGroup : group.getVisibleGroups()) {
+                for (VisibilityPlayer target : targetGroup.getPlayers()) {
+                    Player targetPlayer = target.getPlayer();
+                    if (targetPlayer == null)
+                        continue;
+
+                    if (player == targetPlayer)
+                        continue;
+
+                    if (playersToShow.contains(targetPlayer))
+                        continue;
+
+                    if (group.getHiddenGroups().stream().anyMatch(tg -> tg.hasPlayer(targetPlayer)))
+                        continue;
+
+                    playersToShow.add(targetPlayer);
+                }
+            }
+
             for (VisibilityPlayer target : group.getPlayers()) {
                 Player targetPlayer = target.getPlayer();
                 if (targetPlayer == null)
                     continue;
 
                 if (player == targetPlayer)
+                    continue;
+
+                if (playersToShow.contains(targetPlayer))
                     continue;
 
                 if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(targetPlayer)))
@@ -212,6 +234,29 @@ public class VisibilityManager {
         }
 
         return true;
+    }
+
+    public boolean canSee(Player player, Player target) {
+        VisibilityPlayer visibilityPlayer = getPlayer(player);
+        VisibilityPlayer visibilityTarget = getPlayer(target);
+
+        if (visibilityPlayer.getVisibleGroups().isEmpty() && visibilityTarget.getVisibleGroups().isEmpty())
+            return true;
+
+        if (visibilityPlayer.getVisibleGroups().isEmpty() || visibilityTarget.getVisibleGroups().isEmpty())
+            return false;
+
+        for (VisibilityGroup group : visibilityPlayer.getVisibleGroups()) {
+            if (!group.hasPlayer(target) && group.getVisibleGroups().stream().noneMatch(targetGroup -> targetGroup.hasPlayer(target)))
+                continue;
+
+            if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(target)))
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 
     public Collection<VisibilityGroup> getGroups() {
