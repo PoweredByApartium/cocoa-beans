@@ -105,6 +105,23 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
         assertCanSee(ikfir, iVoigon);
         assertCanSee(ikfir, thebotgame);
         assertCanSee(ikfir, ikfirBot);
+
+        assertTrue(visibilityManager.deleteGroup("test2"));
+
+        assertCanSee(cloudflareDNS, googleDNS);
+
+        assertCanSee(cloudflareDNS, ikfir);
+        assertCanSee(cloudflareDNS, iVoigon);
+        assertCanSee(cloudflareDNS, thebotgame);
+        assertCanSee(cloudflareDNS, ikfirBot);
+
+        assertCanSee(googleDNS, ikfir);
+        assertCanSee(googleDNS, iVoigon);
+        assertCanSee(googleDNS, thebotgame);
+        assertCanSee(googleDNS, ikfirBot);
+
+        assertCantSee(cloudflareDNS, voigon);
+        assertCantSee(googleDNS, voigon);
     }
 
     void assertCanSee(PlayerMock player, PlayerMock target) {

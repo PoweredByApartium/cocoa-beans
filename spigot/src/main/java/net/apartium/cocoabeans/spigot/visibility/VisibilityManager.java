@@ -202,6 +202,8 @@ public class VisibilityManager {
             return true;
 
         for (VisibilityPlayer visibilityPlayer : players.values()) {
+            visibilityPlayer.removeVisibleGroup(remove);
+
             Player player = visibilityPlayer.getPlayer();
             if (player == null)
                 continue;
