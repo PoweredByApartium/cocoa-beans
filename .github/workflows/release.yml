@@ -1,4 +1,3 @@
-
 name: Release
 
 on:
@@ -10,25 +9,25 @@ on:
         type: string
 
 permissions:
-  pull-requests: write
-  contents: write
-  repository-projects: write
-  packages: write
-  pages: write
-  id-token: write
-
+    pull-requests: write
+    contents: write
+    repository-projects: write
+    packages: write
+    pages: write
+    id-token: write
+  
 env:
-  INSTANCE: 'Writerside/cb'
-  ARTIFACT: 'webHelpHI2-all.zip'
-  DOCKER_VERSION: '233.14938'
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    INSTANCE: 'Writerside/cb'
+    ARTIFACT: 'webHelpHI2-all.zip'
+    DOCKER_VERSION: '233.14938'
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  tests:
+  run_tests:
     uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
-
+  
   setup:
-    needs: tests
+    needs: run_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,59 +41,48 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-      
+
+      - name: Fetch previus version
+        id: perv_version
+        run: |
+          git fetch origin
+          echo "::set-output name=version::$(git tag -l | sort -V | tail -n 1)"
+
       - name: Determine version changes
         id: determine_version
         run: |
           git fetch origin
-          CURRENT_VERSION=$(git tag -l | sort -V | tail -n 1)
+          CURRENT_VERSION=${{ steps.perv_version.outputs.version }}
           INPUT_VERSION=${{ github.event.inputs.name }}
-          
-          echo "Current version: $CURRENT_VERSION"
-          echo "Input version: $INPUT_VERSION"
-          
+
           CURRENT_VERSION=${CURRENT_VERSION#v}
           INPUT_VERSION=${INPUT_VERSION#v}
           
           IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
           IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
-          
-          echo "Current version array: ${CURRENT[@]}"
-          echo "Input version array: ${INPUT[@]}"
-          
-          echo "::set-output name=version_change::$([ "$CURRENT_VERSION" != "$INPUT_VERSION" ] && echo true || echo false)"
-          
-          echo "::set-output name=major_version_change::$([[ "${CURRENT[0]}" != "${INPUT[0]}" ]] && echo true || echo false)"
-          
-      - name: Create Tag
-        id: create_tag
-        run: |
-            TAG_VERSION=${{ github.event.inputs.name }}
-            git tag $TAG_VERSION
-            git push origin $TAG_VERSION
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: true
-          ref: release-ci
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
+
+          minor=$( [ "${current[0]}" == "${previous[0]}" ] && [ "${current[1]}" == "${previous[1]}" ] && [ "${current[2]}" != "${previous[2]}" ] )
+          echo "::set-output name=is_minor::$minor"
+      
       - name: Update Gradle Version
         run: |
-              git pull origin release-ci
-              new_version=${{ github.event.inputs.name }}
-              gradle_properties="gradle.properties"
-              sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
-                echo "Updated project.version to $new_version"
-                git add gradle.properties
-                git commit -m "Update project version to ${{ github.event.inputs.name }}"
-                git push origin release-ci
+            git pull origin release-ci
+            new_version=${{ github.event.inputs.name }}
+            gradle_properties="gradle.properties"
+            sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
+            echo "Updated project.version to $new_version"
+            git add gradle.properties
+            git commit -m "Update project version to ${{ github.event.inputs.name }}"
+            git push origin release-ci  
+      
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
         env:
@@ -109,77 +97,125 @@ jobs:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}  
-
+  
       - name: Generate docs folder
         run: sh build-scripts/prepare-web-output.sh 
-  
+        env:
+          docs: ${{ github.event.inputs.name }}
+
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
       
+      - name: Update docs
+        if: !steps.determine_version.outputs.is_minor
+        env:
+          version:  ${{ github.event.inputs.name }}
+            
+        run: |
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+
+            new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "/$version",
+          "isCurrent": true
+          } 
+          EOF
+          )
+              
+           updated_json=$(jq --argjson new "$new_element" '
+               map(.isCurrent = false) + [$new]
+           ' "$json_file")
+          
+           echo "$updated_json" > "$json_file"
+
+           git add $version/
+           git add help-versions.json
+           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+           git push origin gh-pages
+
+  release:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: true
+          ref: release-ci
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create Tag
+        run: |
+          TAG_VERSION=${{ github.event.inputs.name }}
+          git tag $TAG_VERSION
+          git push origin $TAG_VERSION
       - name: Export changelog
         shell: bash
         env: 
             TARGET_VERSION: ${{ github.event.inputs.name }}
         run: |
-              if [ -z "${TARGET_VERSION}" ]; then
-                echo "Error: TARGET_VERSION is not set"
+            if [ -z "${TARGET_VERSION}" ]; then
+              echo "Error: TARGET_VERSION is not set"
+              exit 1
+            fi
+            
+            file="CHANGELOG.md"
+            if [ ! -f "$file" ]; then
+                echo "File not found: $file"
                 exit 1
-              fi
-              
-              file="CHANGELOG.md"
-              if [ ! -f "$file" ]; then
-                  echo "File not found: $file"
-                  exit 1
-              fi
-              
-              capturing=false
-              content=""
-              while IFS= read -r line; do
-                  if [[ $line == \#\#* ]]; then
-                      version=$(echo "$line" | sed 's/^## //')
-                      if [[ $version == $TARGET_VERSION ]]; then
-                          capturing=true
-                          content="$line"
-                      elif $capturing; then
-                          break
-                      fi
-                  elif $capturing; then
-                      content+=$'\n'"$line"
-                  fi
-              done < "$file"
-              
-              # After loop, check if capturing is still true to handle the case of single version
-              if $capturing; then
-                  echo -e "$content" > CHANGELOG_temp.md
-                  echo "Content written to CHANGELOG_temp.md"
-              else
-                  # If capturing is false, check if the TARGET_VERSION was found
-                  found_version=false
-                  while IFS= read -r line; do
-                      if [[ $line == \#\#* ]]; then
-                          version=$(echo "$line" | sed 's/^## //')
-                          if [[ $version == $TARGET_VERSION ]]; then
-                              found_version=true
-                              capturing=true
-                              content="$line"
-                              break
-                          fi
-                      fi
-                  done < "$file"
-                  
-                  if $capturing; then
-                      echo -e "$content" > CHANGELOG_temp.md
-                      echo "Content written to CHANGELOG_temp.md"
-                  else
-                      if $found_version; then
-                          echo "No content found after $TARGET_VERSION in $file"
-                      else
-                          echo "Target version not found in $file"
-                      fi
-                      exit 1
-                  fi
-              fi
-          
+            fi
+            
+            capturing=false
+            content=""
+            while IFS= read -r line; do
+                if [[ $line == \#\#* ]]; then
+                    version=$(echo "$line" | sed 's/^## //')
+                    if [[ $version == $TARGET_VERSION ]]; then
+                        capturing=true
+                        content="$line"
+                    elif $capturing; then
+                        break
+                    fi
+                elif $capturing; then
+                    content+=$'\n'"$line"
+                fi
+            done < "$file"
+            
+            # After loop, check if capturing is still true to handle the case of single version
+            if $capturing; then
+                echo -e "$content" > CHANGELOG_temp.md
+                echo "Content written to CHANGELOG_temp.md"
+            else
+                # If capturing is false, check if the TARGET_VERSION was found
+                found_version=false
+                while IFS= read -r line; do
+                    if [[ $line == \#\#* ]]; then
+                        version=$(echo "$line" | sed 's/^## //')
+                        if [[ $version == $TARGET_VERSION ]]; then
+                            found_version=true
+                            capturing=true
+                            content="$line"
+                            break
+                        fi
+                    fi
+                done < "$file"
+                
+                if $capturing; then
+                    echo -e "$content" > CHANGELOG_temp.md
+                    echo "Content written to CHANGELOG_temp.md"
+                else
+                    if $found_version; then
+                        echo "No content found after $TARGET_VERSION in $file"
+                    else
+                        echo "Target version not found in $file"
+                    fi
+                    exit 1
+                fi
+            fi
+    
       - name: Generate release
         uses: softprops/action-gh-release@v2
         with:
@@ -187,48 +223,9 @@ jobs:
           body_path: CHANGELOG_temp.md
           files: |
               plugin/build/libs/*jar
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: artifacts
           path: "**/build/libs/*.jar"
-
-      - name: Update documentation
-        if: steps.determine_version.outputs.version_change == 'true'
-        env:
-          version: ${{ github.event.inputs.name }}
-          major: ${{ steps.determine_version.outputs.major_version_change  }}
-        shell: bash
-        run: |
-          git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages || true
-          json_file="help-versions.json"
-          if [ "$major" = "true" ]; then
-              # For major updates
-              new_element=$(cat <<EOF
-          {
-          "version": "$version",
-          "url": "/$version",
-          "isCurrent": true
-          }
-          EOF
-          )
-              
-              updated_json=$(jq --argjson new "$new_element" '
-                  map(.isCurrent = false) + [$new]
-              ' "$json_file")
-          else
-              updated_json=$(jq --arg version "$version" '
-                  .[-1].version = $version |
-                  .[-1].url = "/$version" |
-                  .[-1].isCurrent = true |
-                  .[0:-1] |= map(.isCurrent = false)
-              ' "$json_file")
-          fi
-          echo "$updated_json" > "$json_file"
-          mv docs $version
-          git add $version/
-          git add help-versions.json
-          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-          git push origin gh-pages
