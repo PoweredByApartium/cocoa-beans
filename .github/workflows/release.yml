@@ -104,7 +104,7 @@ jobs:
           s|https://cocoa-beans\.apartium\.net/spigot/|https://cocoa-beans.apartium.net/'"$new_version"'/spigot/|
           s|https://cocoa-beans\.apartium\.net/common/|https://cocoa-beans.apartium.net/'"$new_version"'/common/|
           ' "Writerside/topics/🫘 Home.md"
-                    
+
           git add .
           git commit -m "Update writerside.cfg and home.md"
           git push origin release-ci
@@ -155,8 +155,11 @@ jobs:
           
            echo "$updated_json" > "$json_file"
 
+           sed -i 's|url=https://cocoa-beans.apartium.net/|url=https://cocoa-beans.apartium.net/'"$version"'/|' "index.html"
+
            git add $version/
            git add help-versions.json
+           git add index.html
            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
            git push origin gh-pages
 
