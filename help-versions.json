@@ -1,3 +1,7 @@
 [
-
+  {
+    "version": "v150.0.0.test",
+    "url": "/v150.0.0.test",
+    "isCurrent": true
+  }
 ]
