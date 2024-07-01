@@ -96,7 +96,7 @@ jobs:
       - name: Pre writerside
         run: |
           input_file="Writerside/writerside.cfg"
-          sed -i 's/\(<instance src="cb\.tree" version="\)[^"]*\("/\1'"$new_version"'\2/' "$input_file"    
+          sed -i "s/version=\"[^\"]*\"/version=\"$new_version\"/" "$input_file"
         env:
           new_version: ${{ github.event.inputs.name }}
         
