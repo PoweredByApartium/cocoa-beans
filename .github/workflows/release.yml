@@ -220,17 +220,13 @@ jobs:
            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
            git push origin gh-pages
 
-  release:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: true
-          ref: release-ci
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
+           - name: Checkout repository
+           uses: actions/checkout@v3
+           with:
+             fetch-depth: true
+             ref: release-ci
+             token: ${{ secrets.GITHUB_TOKEN }}
+         
       - name: Export changelog
         shell: bash
         env: 
@@ -294,17 +290,17 @@ jobs:
                     exit 1
                 fi
             fi
-    
-      - name: Generate release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.name }}
-          body_path: CHANGELOG_temp.md
-          files: |
-              plugin/build/libs/*jar
-
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: artifacts
-          path: "**/build/libs/*.jar"
+       
+         - name: Generate release
+           uses: softprops/action-gh-release@v2
+           with:
+             tag_name: ${{ github.event.inputs.name }}
+             body_path: CHANGELOG_temp.md
+             files: |
+                 plugin/build/libs/*jar
+   
+         - name: Upload a Build Artifact
+           uses: actions/upload-artifact@v3.1.0
+           with:
+             name: artifacts
+             path: "**/build/libs/*.jar"
