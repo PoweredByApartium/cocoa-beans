@@ -1,50 +1,5 @@
 [
   {
-    "version": "v150.0.0.test",
-    "url": "/v150.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v151.0.0.test",
-    "url": "/v151.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v152.0.0.test",
-    "url": "/v152.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v153.0.0.test",
-    "url": "/v153.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v155.0.0.test",
-    "url": "/v155.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v156.0.0.test",
-    "url": "/v156.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v158.0.0.test",
-    "url": "/v158.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v159.0.0.test",
-    "url": "/v159.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v160.0.0.test",
-    "url": "/v160.0.0.test",
-    "isCurrent": false
-  },
-  {
     "version": "v161.0.0.test",
     "url": "/v161.0.0.test",
     "isCurrent": false
