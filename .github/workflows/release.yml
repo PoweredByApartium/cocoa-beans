@@ -291,16 +291,15 @@ jobs:
                 fi
             fi
        
-         - name: Generate release
-           uses: softprops/action-gh-release@v2
-           with:
-             tag_name: ${{ github.event.inputs.name }}
-             body_path: CHANGELOG_temp.md
-             files: |
-                 plugin/build/libs/*jar
-   
-         - name: Upload a Build Artifact
-           uses: actions/upload-artifact@v3.1.0
-           with:
-             name: artifacts
-             path: "**/build/libs/*.jar"
+    - name: Generate release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.name }}
+        body_path: CHANGELOG_temp.md
+        files: |
+            plugin/build/libs/*jar
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: artifacts
+        path: "**/build/libs/*.jar"
