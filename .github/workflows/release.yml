@@ -101,9 +101,9 @@ jobs:
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
           
-          sed -i 's|https://cocoa-beans.apartium.net/spigot/[^/)]*)|https://cocoa-beans.apartium.net/spigot/'"$new_version"')|' "Writerside/topics/🫘 Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/common/[^/)]*)|https://cocoa-beans.apartium.net/common/'"$new_version"')|' "Writerside/topics/🫘 Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/commands/[^/)]*)|https://cocoa-beans.apartium.net/commands/'"$new_version"')|' "Writerside/topics/🫘 Home.md"
+          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/spigot/|https://cocoa-beans.apartium.net/'"$new_version"'/spigot/|' "Writerside/topics/🫘 Home.md"
+          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/common/|https://cocoa-beans.apartium.net/'"$new_version"'/common/|' "Writerside/topics/🫘 Home.md"
+          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/commands/|https://cocoa-beans.apartium.net/'"$new_version"'/commands/|' "Writerside/topics/🫘 Home.md"
 
           git add .
           git commit -m "Update writerside.cfg and home.md"
@@ -155,8 +155,8 @@ jobs:
           
            echo "$updated_json" > "$json_file"
 
-           sed -i 's|url=https://cocoa-beans.apartium.net/|url=https://cocoa-beans.apartium.net/'"$version"'/|' "index.html"
-
+           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/"/>|url=https://cocoa-beans.apartium.net/'"$version"'/"/>|' "index.html"
+           
            git add $version/
            git add help-versions.json
            git add index.html
