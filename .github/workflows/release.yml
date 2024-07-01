@@ -163,18 +163,18 @@ jobs:
             git push origin gh-pages
             json_file="help-versions.json"
 
-              new_element=$(cat <<EOF
-            {
-            "version": "$version",
-            "url": "/$version",
-            "isCurrent": true
-            } 
-            EOF
-            )
+            new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "/$version",
+          "isCurrent": true
+          } 
+          EOF
+          )
 
             updated_json=$(jq --arg version "$version" '
                   .[-1].version = $version |
-                  .[-1].url = "docs_$version" |
+                  .[-1].url = "$version" |
                   .[-1].isCurrent = true |
                   .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
