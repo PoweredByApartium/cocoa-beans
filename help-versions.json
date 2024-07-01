@@ -7,11 +7,11 @@
   {
     "version": "v162.0.0.test",
     "url": "/v162.0.0.test",
-    "isCurrent": true
+    "isCurrent": false
   },
   {
-    "version": "v162.0.2.test",
-    "url": "/v162.0.2.test",
+    "version": "v162.0.3.test",
+    "url": "$version",
     "isCurrent": true
   }
 ]
