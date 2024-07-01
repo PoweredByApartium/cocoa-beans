@@ -64,9 +64,8 @@ jobs:
           echo "Current version array: ${CURRENT[@]}"
           echo "Input version array: ${INPUT[@]}"
           
-          # TODO FIX
-          echo "::set-output name=is_minor::$([[ "${CURRENT[2]}" != "${INPUT[2]}" ]] && echo true || echo false)"
-
+          echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ])"
+      
       - name: Update Gradle Version
         run: |
             git pull origin release-ci
@@ -198,7 +197,7 @@ jobs:
           body_path: CHANGELOG_temp.md
           files: |
               plugin/build/libs/*jar
-              
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
