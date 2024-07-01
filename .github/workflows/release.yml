@@ -151,7 +151,7 @@ jobs:
           perv_version: ${{ steps.perv_version.outputs.version }}
         run: |
           git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
           
           if [ -d "$perv_version" ]; then
@@ -195,7 +195,7 @@ jobs:
           version: ${{ github.event.inputs.name }}
         run: |
           git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
                   
           json_file="help-versions.json"
