@@ -138,6 +138,9 @@ jobs:
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
+        
+          sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
+          
           json_file="help-versions.json"
 
             new_element=$(cat <<EOF
@@ -154,8 +157,6 @@ jobs:
            ' "$json_file")
           
            echo "$updated_json" > "$json_file"
-
-           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/"/>|url=https://cocoa-beans.apartium.net/'"$version"'/"/>|' "index.html"
            
            git add $version/
            git add help-versions.json
