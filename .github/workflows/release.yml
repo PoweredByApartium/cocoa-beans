@@ -93,6 +93,13 @@ jobs:
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 
+      - name: Pre writerside
+        run: |
+          input_file="Writerside/writerside.cfg"
+          sed -i 's/\(<instance src="cb\.tree" version="\)[^"]*\("/\1'"$new_version"'\2/' "$input_file"    
+        env:
+          new_version: ${{ github.event.inputs.name }}
+        
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -118,7 +125,7 @@ jobs:
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
           json_file="help-versions.json"
-          
+
             new_element=$(cat <<EOF
           {
           "version": "$version",
