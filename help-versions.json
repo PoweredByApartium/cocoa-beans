@@ -11,7 +11,7 @@
   },
   {
     "version": "v162.0.3.test",
-    "url": "$version",
+    "url": "$v162.0.3.test",
     "isCurrent": true
   }
 ]
