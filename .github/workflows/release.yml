@@ -97,6 +97,9 @@ jobs:
         run: |
           input_file="Writerside/writerside.cfg"
           sed -i "s/version=\"[^\"]*\"/version=\"$new_version\"/" "$input_file"
+          git add .
+          git commit -m "."
+          git push origin release-ci
         env:
           new_version: ${{ github.event.inputs.name }}
         
