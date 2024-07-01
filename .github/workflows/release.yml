@@ -99,8 +99,16 @@ jobs:
         run: |
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
+          
+          sed -i '
+          s|https://cocoa-beans\.apartium\.net/spigot/|https://cocoa-beans.apartium.net/'"$new_version"'/spigot/|
+          s|https://cocoa-beans\.apartium\.net/common/|https://cocoa-beans.apartium.net/'"$new_version"'/common/|
+          ' "Writerside/topics/🫘 Home.md"
+
+          sed -i 's|url=https://cocoa-beans.apartium.net/|url=https://cocoa-beans.apartium.net/'"$new_version"'/|' "index.html"
+          
           git add .
-          git commit -m "Update writerside.cfg"
+          git commit -m "Update writerside.cfg and home.md"
           git push origin release-ci
 
       - name: Build Writerside docs using Docker
@@ -114,6 +122,12 @@ jobs:
         run: sh build-scripts/prepare-web-output.sh 
         env:
           docs: ${{ github.event.inputs.name }}
+    
+      - name: Create Tag
+        run: |
+          TAG_VERSION=${{ github.event.inputs.name }}
+          git tag $TAG_VERSION
+          git push origin $TAG_VERSION
 
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
@@ -159,11 +173,6 @@ jobs:
           ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Create Tag
-        run: |
-          TAG_VERSION=${{ github.event.inputs.name }}
-          git tag $TAG_VERSION
-          git push origin $TAG_VERSION
       - name: Export changelog
         shell: bash
         env: 
