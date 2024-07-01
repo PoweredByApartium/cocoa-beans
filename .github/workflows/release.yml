@@ -107,7 +107,7 @@ jobs:
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
       
       - name: Update docs
-        if: !steps.determine_version.outputs.is_minor
+        if: steps.determine_version.outputs.is_minor == 'false'
         env:
           version:  ${{ github.event.inputs.name }}
             
