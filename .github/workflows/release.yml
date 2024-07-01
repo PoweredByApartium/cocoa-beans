@@ -94,6 +94,8 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       
       - name: Pre writerside
+        env:
+          new_version: ${{ github.event.inputs.name }}
         run: |
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
@@ -119,8 +121,7 @@ jobs:
       - name: Update docs
         if: steps.determine_version.outputs.is_minor == 'false'
         env:
-          version:  ${{ github.event.inputs.name }}
-            
+          version: ${{ github.event.inputs.name }}
         run: |
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
