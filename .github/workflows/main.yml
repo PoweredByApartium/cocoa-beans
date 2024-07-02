@@ -53,6 +53,9 @@ jobs:
           new_version: snapshot
         run: |
           git fetch origin
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git pull origin gh-pages || true
+          
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
           
@@ -86,7 +89,7 @@ jobs:
           version: snapshot
         run: |
           git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
           
           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
