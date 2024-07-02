@@ -1,11 +1,6 @@
 [
   {
     "version": "snapshot",
-    "url": "snapshot",
-    "isCurrent": false
-  },
-  {
-    "version": "snapshot",
     "url": "/snapshot",
     "isCurrent": true
   }
