@@ -7,7 +7,10 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
-val snapshot: Boolean = System.getProperty("IS_SNAPSHOT")?.toBoolean() ?: true
+// TODO change release-ci to main
+val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml@release-ci"
+println("Test: " + System.getenv("GITHUB_WORKFLOW_REF"))
+val snapshot: Boolean = !(System.getenv("GITHUB_WORKFLOW_REF").equals(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
