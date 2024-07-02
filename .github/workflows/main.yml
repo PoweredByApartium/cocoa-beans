@@ -77,7 +77,7 @@ jobs:
       - name: upload
         uses: actions/upload-artifact@v4
         with:
-          path: 'snapshot/'
+          path: 'temp_snapshot/'
       
       - name: Generate snapshot docs
         run: |
@@ -98,6 +98,7 @@ jobs:
           )
 
           if [ -d "snapshot" ]; then
+            echo "test1"
             git rm -rf snapshot
             git commit -m "Removed old version"
 
@@ -113,6 +114,7 @@ jobs:
 
             git commit -m "Overide docs"
           else
+            echo "test2"
             git add snapshot/
 
             updated_json=$(jq --argjson new "$new_element" '
