@@ -97,16 +97,7 @@ jobs:
         env:
           new_version: ${{ github.event.inputs.name }}
         run: |
-          input_file="Writerside/writerside.cfg"
-          sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
-          
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/spigot/|https://cocoa-beans.apartium.net/'"$new_version"'/spigot/|' "Writerside/topics/🫘 Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/common/|https://cocoa-beans.apartium.net/'"$new_version"'/common/|' "Writerside/topics/🫘 Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/commands/|https://cocoa-beans.apartium.net/'"$new_version"'/commands/|' "Writerside/topics/🫘 Home.md"
-
-          git add .
-          git commit -m "Update writerside.cfg and home.md"
-          git push origin release-ci
+          sh build-scripts/pre-writerside.sh
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
@@ -237,7 +228,6 @@ jobs:
             git commit -m "Removed old version"
             
             git add $version/
-            git push origin gh-pages
             json_file="help-versions.json"
 
             new_element=$(cat <<EOF
@@ -296,10 +286,3 @@ jobs:
            git add help-versions.json
            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
            git push origin gh-pages
-
-           - name: Checkout repository
-           uses: actions/checkout@v3
-           with:
-             fetch-depth: true
-             ref: release-ci
-             token: ${{ secrets.GITHUB_TOKEN }}
