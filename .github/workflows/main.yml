@@ -18,17 +18,12 @@ env:
   DOCKER_VERSION: '233.14938'
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
