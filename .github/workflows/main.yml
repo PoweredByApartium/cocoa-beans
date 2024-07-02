@@ -121,15 +121,15 @@ jobs:
               updated_json=$(jq --arg version "$version" '
               .[-1].version = $version |
               .[-1].url = "/snapshot" |
-              .[-1].isCurrent = true |
-              .[0:-1] |= map(.isCurrent = false)
+              .[-1].isCurrent = false |
+              .[0:-1] |= map(.isCurrent = true)
               ' "$json_file")
               git commit -m "Override docs" || echo "No changes to commit for docs override"
           else
               echo "Creating new snapshot"
               mv temp_snapshot/ snapshot/
               git add snapshot/
-              updated_json=$(jq --argjson new "$new_element" '
+              updated_json=$(jq --arg json new "$new_element" '
               map(.isCurrent = false) + [$new]
               ' "$json_file")
               git commit -m "Update docs" || echo "No changes to commit for docs update"
