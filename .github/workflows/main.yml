@@ -20,7 +20,11 @@ env:
   DOCKER_VERSION: '233.14938'
 
 jobs:
+  writerside_test:
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.writerside.yml@release-ci
+
   deploy:
+    needs: writerside_test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
