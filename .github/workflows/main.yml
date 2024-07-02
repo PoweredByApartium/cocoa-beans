@@ -26,14 +26,21 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
+          ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
 
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
@@ -42,11 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      
-      - name: Setup git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
       
       - name: Pre writerside
         env:
@@ -60,6 +62,7 @@ jobs:
           sed -i 's|https://cocoa-beans.apartium.net/[^/]*/commands/|https://cocoa-beans.apartium.net/'"$new_version"'/commands/|' "Writerside/topics/🫘 Home.md"
           git add .
           git commit -m "Update writerside.cfg and home.md"
+          git push origin gh-pages
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
