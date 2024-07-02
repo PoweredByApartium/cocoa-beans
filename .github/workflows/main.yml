@@ -80,50 +80,56 @@ jobs:
           path: 'temp_snapshot/'
       
       - name: Generate snapshot docs
+        env:
+          version: snapshot
         run: |
           git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
+          
           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
-          git commit -m "Update index.html"
-
+          git add index.html
+          git commit -m "Update index.html" || echo "No changes to index.html"
+          
           json_file="help-versions.json"
+          if [ ! -f "$json_file" ]; then
+              echo "Error: $json_file not found"
+              exit 1
+          fi
+          
           new_element=$(cat <<EOF
           {
           "version": "$version",
           "url": "/$version",
           "isCurrent": true
-          } 
+          }
           EOF
           )
-
+          
           if [ -d "snapshot" ]; then
-            echo "test1"
-            git rm -rf snapshot
-            git commit -m "Removed old version"
-
-            mv temp_snapshot/ snapshot/
-            git add snapshot/
-
-            updated_json=$(jq --arg version "$version" '
-                  .[-1].version = $version |
-                  .[-1].url = $version |
-                  .[-1].isCurrent = true |
-                  .[0:-1] |= map(.isCurrent = false)
+              echo "Updating existing snapshot"
+              git rm -rf snapshot
+              git commit -m "Removed old version" || echo "No old version to remove"
+              mv temp_snapshot/ snapshot/
+              git add snapshot/
+              updated_json=$(jq --arg version "$version" '
+              .[-1].version = $version |
+              .[-1].url = $version |
+              .[-1].isCurrent = true |
+              .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
-
-            git commit -m "Overide docs"
+              git commit -m "Override docs" || echo "No changes to commit for docs override"
           else
-            echo "test2"
-            git add snapshot/
-
-            updated_json=$(jq --argjson new "$new_element" '
-                map(.isCurrent = false) + [$new]
-            ' "$json_file")
-            git commit -m "Update docs"
+              echo "Creating new snapshot"
+              git add snapshot/
+              updated_json=$(jq --argjson new "$new_element" '
+              map(.isCurrent = false) + [$new]
+              ' "$json_file")
+              git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
-
+          
           echo "$updated_json" > "$json_file"
           git add help-versions.json
-          git commit -m "Update version json"            
+          git commit -m "Update version json" || echo "No changes to version json"
+          
           git push origin gh-pages
