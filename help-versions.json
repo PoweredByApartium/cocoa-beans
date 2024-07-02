@@ -12,6 +12,11 @@
   {
     "version": "v164.0.0.test",
     "url": "v164.0.0.test",
+    "isCurrent": false
+  },
+  {
+    "version": "snapshot",
+    "url": "/snapshot",
     "isCurrent": true
   }
 ]
