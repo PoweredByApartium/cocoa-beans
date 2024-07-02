@@ -52,6 +52,7 @@ jobs:
         env:
           new_version: snapshot
         run: |
+          git fetch origin
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
           

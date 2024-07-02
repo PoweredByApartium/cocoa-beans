@@ -65,7 +65,7 @@ jobs:
           echo "Input version array: ${INPUT[@]}"
           
           echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ])"
-      
+
       - name: Update Gradle Version
         run: |
             git pull origin release-ci
