@@ -8,9 +8,9 @@ plugins {
 }
 
 // TODO change release-ci to main
-val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml@release-ci"
-println("Test: " + System.getenv("GITHUB_WORKFLOW_REF"))
+val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml@refs/heads/release-ci"
 val snapshot: Boolean = !(System.getenv("GITHUB_WORKFLOW_REF").equals(releaseWorkflow))
+println("Test: " + System.getenv("GITHUB_WORKFLOW_REF"))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
