@@ -7,7 +7,7 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
-val snapshot = System.getProperty("IS_SNAPSHOT") ?: true
+val snapshot: Boolean = System.getProperty("IS_SNAPSHOT")?.toBoolean() ?: true
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
