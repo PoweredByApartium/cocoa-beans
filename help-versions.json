@@ -20,8 +20,8 @@
     "isCurrent": false
   },
   {
-    "version": "v170.0.0.test",
-    "url": "/v170.0.0.test",
+    "version": "snapshot",
+    "url": "snapshot",
     "isCurrent": true
   }
 ]
