@@ -16,7 +16,7 @@
   },
   {
     "version": "snapshot",
-    "url": "/snapshot",
+    "url": "snapshot",
     "isCurrent": true
   }
 ]
