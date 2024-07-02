@@ -1,27 +1,3 @@
 [
-  {
-    "version": "v161.0.0.test",
-    "url": "/v161.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v162.0.0.test",
-    "url": "/v162.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "v164.0.0.test",
-    "url": "/v164.0.0.test",
-    "isCurrent": false
-  },
-  {
-    "version": "snapshot",
-    "url": "snapshot",
-    "isCurrent": false
-  },
-  {
-    "version": "snapshot",
-    "url": "snapshot",
-    "isCurrent": true
-  }
+  
 ]
