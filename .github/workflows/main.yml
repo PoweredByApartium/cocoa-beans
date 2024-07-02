@@ -53,9 +53,6 @@ jobs:
           new_version: snapshot
         run: |
           git fetch origin
-          git checkout gh-pages origin/gh-pages || git checkout gh-pages
-          git pull origin gh-pages || true
-          
           input_file="Writerside/writerside.cfg"
           sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
           
@@ -64,7 +61,7 @@ jobs:
           sed -i 's|https://cocoa-beans.apartium.net/[^/]*/commands/|https://cocoa-beans.apartium.net/'"$new_version"'/commands/|' "Writerside/topics/🫘 Home.md"
           git add .
           git commit -m "Update writerside.cfg and home.md"
-          git push origin gh-pages
+          git push origin release-ci
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
