@@ -50,7 +50,7 @@ jobs:
       
       - name: Pre writerside
         env:
-          new_version: "snapshot"
+          new_version: snapshot
         run: |
           sh build-scripts/pre-writerside.sh
 
@@ -63,7 +63,7 @@ jobs:
 
       - name: run docs script
         env:
-          docs: "temp_snapshot"
+          docs: temp_snapshot
         run: |
           sh /build-scripts/prepare-web-output.sh
 
