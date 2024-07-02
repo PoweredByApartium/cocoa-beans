@@ -121,6 +121,7 @@ jobs:
               git commit -m "Override docs" || echo "No changes to commit for docs override"
           else
               echo "Creating new snapshot"
+              mv temp_snapshot/ snapshot/
               git add snapshot/
               updated_json=$(jq --argjson new "$new_element" '
               map(.isCurrent = false) + [$new]
