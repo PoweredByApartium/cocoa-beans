@@ -84,14 +84,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-
-      - name: Publish to maven repository
-        run: ./gradlew publishPluginPublicationToHangar publish
-        env:
-          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
-          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       
       - name: Pre writerside
         env:
@@ -106,6 +98,14 @@ jobs:
           git add .
           git commit -m "Update writerside.cfg and home.md"
           git push origin release-ci
+
+      - name: Publish to maven repository
+        run: ./gradlew publishPluginPublicationToHangar publish
+        env:
+          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4

@@ -43,15 +43,6 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Publish to maven repository
-        run: ./gradlew publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
-          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      
       - name: Pre writerside
         env:
           new_version: snapshot
@@ -66,6 +57,15 @@ jobs:
           git add .
           git commit -m "Update writerside.cfg and home.md" || git diff --staged --quiet
           git push origin release-ci || echo "No changes to push"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Publish to maven repository
+        run: ./gradlew publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
+          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
