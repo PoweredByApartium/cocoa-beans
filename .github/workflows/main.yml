@@ -107,8 +107,8 @@ jobs:
               echo "Updating existing snapshot"
               git rm -rf snapshot
               git commit -m "Removed old version" || echo "No old version to remove"
-              git mkdir snapshot/
-              git mv temp_snapshot/ snapshot/
+              mkdir snapshot/
+              mv temp_snapshot/ snapshot/
               git add snapshot/
           else
               echo "Creating new snapshot"
