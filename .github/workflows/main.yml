@@ -112,7 +112,8 @@ jobs:
               git add snapshot/
           else
               echo "Creating new snapshot"
-              mv temp_snapshot/ snapshot/
+              git mkdir snapshot/
+              git mv temp_snapshot/ snapshot/
               git add snapshot/
 
               new_element=$(cat <<EOF
@@ -124,11 +125,7 @@ jobs:
           EOF
           )
 
-              updated_json=$(jq --arg json new "$new_element" '
-              map(.isCurrent = false) + [$new]
-              ' "$json_file")
-
-              echo "$updated_json" > "$json_file"
+              echo "$new_element" > "$json_file"
               git add help-versions.json
 
               git commit -m "Update docs" || echo "No changes to commit for docs update"
