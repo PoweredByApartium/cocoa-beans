@@ -1,12 +1,5 @@
-[
-  {
-    "version": "snapshot",
-    "url": "/snapshot",
-    "isCurrent": false
-  },
-  {
-    "version": "v181.0.1.test",
-    "url": "/v181.0.1.test",
-    "isCurrent": true
-  }
-]
+{
+"version": "snapshot",
+"url": "/snapshot",
+"isCurrent": false
+}
