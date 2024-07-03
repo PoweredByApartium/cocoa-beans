@@ -90,7 +90,7 @@ jobs:
           version: snapshot
         run: |
           git fetch origin
-          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
           
           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
@@ -110,6 +110,7 @@ jobs:
               mkdir snapshot/
               mv temp_snapshot/ snapshot/
               git add snapshot/
+              git commit -m "Overide docs" || echo "No changes to commit for docs update"
           else
               echo "Creating new snapshot"
               git mkdir snapshot/
