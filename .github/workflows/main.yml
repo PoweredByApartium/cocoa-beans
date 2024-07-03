@@ -103,40 +103,34 @@ jobs:
               exit 1
           fi
           
-          new_element=$(cat <<EOF
-          {
-          "version": "$version",
-          "url": "/$version",
-          "isCurrent": true
-          }
-          EOF
-          )
-          
           if [ -d "snapshot" ]; then
               echo "Updating existing snapshot"
               git rm -rf snapshot
               git commit -m "Removed old version" || echo "No old version to remove"
               mv temp_snapshot/ snapshot/
               git add snapshot/
-              updated_json=$(jq --arg version "$version" '
-              .[-1].version = $version |
-              .[-1].url = "/snapshot" |
-              .[-1].isCurrent = false |
-              .[0:-1] |= map(.isCurrent = true)
-              ' "$json_file")
-              git commit -m "Override docs" || echo "No changes to commit for docs override"
           else
               echo "Creating new snapshot"
               mv temp_snapshot/ snapshot/
               git add snapshot/
+
+              new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "/$version",
+          "isCurrent": false
+          }
+          EOF
+          )
+
               updated_json=$(jq --arg json new "$new_element" '
               map(.isCurrent = false) + [$new]
               ' "$json_file")
+
+              echo "$updated_json" > "$json_file"
+              git add help-versions.json
+
               git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
-          
-          echo "$updated_json" > "$json_file"
-          git add help-versions.json
-          git commit -m "Update version json" || echo "No changes to version json"
           
           git push origin gh-pages
