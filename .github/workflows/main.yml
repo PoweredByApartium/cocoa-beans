@@ -93,16 +93,6 @@ jobs:
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
           
-          sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
-          git add index.html
-          git commit -m "Update index.html" || echo "No changes to index.html"
-          
-          json_file="help-versions.json"
-          if [ ! -f "$json_file" ]; then
-              echo "Error: $json_file not found"
-              exit 1
-          fi
-          
           if [ -d "snapshot" ]; then
               echo "Updating existing snapshot"
               git rm -rf snapshot
@@ -114,19 +104,6 @@ jobs:
               echo "Creating new snapshot"
               mv temp_snapshot/ snapshot/
               git add snapshot/
-
-              new_element=$(cat <<EOF
-          {
-          "version": "$version",
-          "url": "/$version",
-          "isCurrent": false
-          }
-          EOF
-          )
-
-              echo "$new_element" > "$json_file"
-              git add help-versions.json
-
               git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
           
