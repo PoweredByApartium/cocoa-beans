@@ -113,8 +113,8 @@ jobs:
               git commit -m "Overide docs" || echo "No changes to commit for docs update"
           else
               echo "Creating new snapshot"
-              git mkdir snapshot/
-              git mv temp_snapshot/ snapshot/
+              mkdir snapshot/
+              mv temp_snapshot/ snapshot/
               git add snapshot/
 
               new_element=$(cat <<EOF
