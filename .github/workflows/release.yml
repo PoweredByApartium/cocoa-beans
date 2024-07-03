@@ -74,7 +74,7 @@ jobs:
             sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
             echo "Updated project.version to $new_version"
             git add gradle.properties
-            git commit -m "Update project version to ${{ github.event.inputs.name }}"
+            git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
             git push origin release-ci  
       
       - uses: actions/setup-java@v3
