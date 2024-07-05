@@ -10,8 +10,8 @@
     "isCurrent": false
   },
   {
-    "version": "v182.0.1.test",
-    "url": "v182.0.1.test",
+    "version": "v182.0.2.test",
+    "url": "/$version",
     "isCurrent": true
   }
 ]
