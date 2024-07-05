@@ -5,8 +5,6 @@ on:
         
 permissions:
     contents: read
-    packages: write
-    id-token: write
     pages: write
 
 jobs:
@@ -34,9 +32,11 @@ jobs:
            follow_symlink: true
            check_name: |
                 commands
+                commands-spigot
                 common
                 spigot
            report_paths: |
                 **/commands/build/test-results/test/TEST-*.xml
+                **/commands/spigot-platform/build/test-results/test/TEST-*.xml
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
