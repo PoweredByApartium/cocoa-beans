@@ -3,7 +3,7 @@ name: Snapshot run
 
 on:
   push:
-    branches: ["release-ci"]
+    branches: ["main"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: release-ci
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup git
@@ -48,18 +48,9 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 
       - name: Pre writerside
-        run: |
-          new_version="snapshot"
-          input_file="Writerside/writerside.cfg"
-          sed -i 's/\(<instance.*version="\)[^"]*"/\1'"$new_version"'"/' "$input_file"
-          
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/spigot/|https://cocoa-beans.apartium.net/'"$new_version"'/spigot/|' "Writerside/topics/Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/common/|https://cocoa-beans.apartium.net/'"$new_version"'/common/|' "Writerside/topics/Home.md"
-          sed -i 's|https://cocoa-beans.apartium.net/[^/]*/commands/|https://cocoa-beans.apartium.net/'"$new_version"'/commands/|' "Writerside/topics/Home.md"
-          
-          git add .
-          git commit -m "Update writerside.cfg and home.md" || git diff --staged --quiet
-          git push origin release-ci || echo "No changes to push"
+        env:
+          new_version: snapshot
+        run: sh build-scripts/pre-writerside.sh@main
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
