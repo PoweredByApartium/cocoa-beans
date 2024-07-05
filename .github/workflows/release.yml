@@ -242,7 +242,7 @@ jobs:
             new_element=$(cat <<EOF
           {
           "version": "$version",
-          "url": "/$version",
+          "url": "/\($version)",
           "isCurrent": true
           } 
           EOF
@@ -250,7 +250,7 @@ jobs:
 
             updated_json=$(jq --arg version "$version" '
                   .[-1].version = $version |
-                  .[-1].url = "/$version" |
+                  .[-1].url = "/\($version)" |
                   .[-1].isCurrent = true |
                   .[0:-1] |= map(.isCurrent = false)
               ' "$json_file")
