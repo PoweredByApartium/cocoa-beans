@@ -12,6 +12,11 @@
   {
     "version": "v182.0.3.test",
     "url": "/v182.0.3.test",
+    "isCurrent": false
+  },
+  {
+    "version": "v183.0.0.test",
+    "url": "/v183.0.0.test",
     "isCurrent": true
   }
 ]
