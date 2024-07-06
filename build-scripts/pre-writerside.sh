@@ -8,4 +8,4 @@ sed -i "s/\(<var name=\"version\" value=\"\)[^\"]*\(\"\/>\)/\1$new_version\2/" "
 
 git add .
 git commit -m "Update writerside.cfg and home.md" || git diff --staged --quiet
-git push origin release-ci || echo "No changes to push"
+git push origin $branch || echo "No changes to push"

@@ -5,8 +5,8 @@ on:
 
 jobs:
   unit_test:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@main
+    uses: .github/workflows/callable.test.yml
 
   writerside_test:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.writerside.yml@main
+    uses: .github/workflows/callable.writerside.yml
       
