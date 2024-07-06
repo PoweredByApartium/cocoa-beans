@@ -68,14 +68,14 @@ jobs:
 
       - name: Update Gradle Version
         run: |
-            git pull origin main
+            git pull origin release-ci
             new_version=${{ github.event.inputs.name }}
             gradle_properties="gradle.properties"
             sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
             echo "Updated project.version to $new_version"
             git add gradle.properties
             git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
-            git push origin main  
+            git push origin release-ci
       
       - uses: actions/setup-java@v3
         with:
@@ -88,7 +88,7 @@ jobs:
       - name: Pre writerside
         env:
           new_version: snapshot
-        run: sh build-scripts/pre-writerside.sh@main
+        run: sh build-scripts/pre-writerside.sh@release-ci
 
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
