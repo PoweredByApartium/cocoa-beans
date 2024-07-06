@@ -46,9 +46,8 @@ jobs:
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 
-      - name: Pre upload
-        run: |
-          mv **/plugin/build/libs/*.jar ~
+      - name: Move JAR file to root
+        run: mv plugin/build/libs/*.jar ./
 
       - name: upload
         uses: actions/upload-artifact@v4
