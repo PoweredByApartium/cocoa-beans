@@ -7,7 +7,8 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
+  repository-projects: write
   packages: write
   pages: write
   id-token: write
@@ -18,42 +19,80 @@ env:
   DOCKER_VERSION: '233.14938'
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-      pages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
-        run: ./gradlew publish
+        run: ./gradlew publish shadowJar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+
+      - name: Move JAR file to root
+        run: mv plugin/build/libs/*.jar ./
+
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plugin
+          path: '*.jar'
+
+      - name: Pre writerside
+        env:
+          new_version: snapshot
+        run: sh build-scripts/pre-writerside.sh
+
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
           docker-version: ${{ env.DOCKER_VERSION }}
+
       - name: run docs script
+        env:
+          docs: temp_snapshot
         run: |
-          sh ./build-scripts/prepare-web-output.sh
-      - name: upload
-        uses: actions/upload-artifact@v4
-        with:
-          path: 'docs/'
+          sh build-scripts/prepare-web-output.sh
+      
+      - name: Generate snapshot docs
+        env:
+          version: snapshot
+        run: |
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+          
+          if [ -d "snapshot" ]; then
+              echo "Updating existing snapshot"
+              git rm -rf snapshot
+              git commit -m "Removed old version" || echo "No old version to remove"
+              mv temp_snapshot/ snapshot/
+              git add snapshot/
+              git commit -m "Overide docs" || echo "No changes to commit for docs update"
+          else
+              echo "Creating new snapshot"
+              mv temp_snapshot/ snapshot/
+              git add snapshot/
+              git commit -m "Update docs" || echo "No changes to commit for docs update"
+          fi
+          
+          git push origin gh-pages

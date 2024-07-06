@@ -1,7 +1,13 @@
-# Cocoa Beans
+# 🫘 Cocoa Beans
 
 Welcome to the cocoa-beans wiki!
 Cocoa beans is a toolkit for you to take with you to every new project. Instead of copying and pasting utilities code between projects, merge them into cocoa beans and improve other developer's utilities, so you can save time and complexity managing code across multiple projects.
+
+## Relevant Links
+* [Spigot javadocs](https://cocoa-beans.apartium.net/%version%/spigot/)
+* [Common javadocs](https://cocoa-beans.apartium.net/%version%/common/)
+* [Commands javadocs](https://cocoa-beans.apartium.net/%version%/commands/)
+* [Commands Spigot javadocs](https://cocoa-beans.apartium.net/%version%/commands-spigot/)
 
 ## Including in your project
 
