@@ -24,7 +24,7 @@ env:
 
 jobs:
   run_tests:
-    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@release-ci
+    uses: PoweredByApartium/cocoa-beans/.github/workflows/callable.test.yml@main
   
   setup:
     needs: run_tests
@@ -68,14 +68,14 @@ jobs:
 
       - name: Update Gradle Version
         run: |
-            git pull origin release-ci
+            git pull origin main
             new_version=${{ github.event.inputs.name }}
             gradle_properties="gradle.properties"
             sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
             echo "Updated project.version to $new_version"
             git add gradle.properties
             git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
-            git push origin release-ci
+            git push origin main
       
       - uses: actions/setup-java@v3
         with:
