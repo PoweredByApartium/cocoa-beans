@@ -87,7 +87,7 @@ jobs:
 
       - name: Pre writerside
         env:
-          new_version: snapshot
+          new_version: ${{ github.event.inputs.name }}
         run: sh build-scripts/pre-writerside.sh
 
       - name: Publish to maven repository
