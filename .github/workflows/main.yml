@@ -3,7 +3,7 @@ name: Snapshot run
 
 on:
   push:
-    branches: ["main"]
+    branches: ["release-ci"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: release-ci
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup git
@@ -50,7 +50,7 @@ jobs:
       - name: Pre writerside
         env:
           new_version: snapshot
-        run: sh build-scripts/pre-writerside.sh@main
+        run: sh build-scripts/pre-writerside.sh@release-ci
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
