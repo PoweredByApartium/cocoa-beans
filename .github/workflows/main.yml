@@ -40,11 +40,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
-        run: ./gradlew publish
+        run: ./gradlew publish shadowJar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          path: '**/plugin/build/libs/*.jar'
 
       - name: Pre writerside
         env:
@@ -63,11 +68,6 @@ jobs:
           docs: temp_snapshot
         run: |
           sh build-scripts/prepare-web-output.sh
-
-      - name: upload
-        uses: actions/upload-artifact@v4
-        with:
-          path: '**/plugin/build/libs/*.jar'
       
       - name: Generate snapshot docs
         env:

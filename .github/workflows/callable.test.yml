@@ -49,13 +49,3 @@ jobs:
               **/commands/spigot-platform/build/test-results/test/TEST-*.xml
               **/common/build/test-results/test/TEST-*.xml
               **/spigot/build/test-results/test/TEST-*.xml
-
-        - name: Upload a javadoc html Artifact
-          uses: actions/upload-artifact@v3.1.0
-          with:
-            name: artifacts
-            path: |
-                **/commands/build/reports/tests/test/
-                **/commands/spigot-platform/build/reports/tests/test/
-                **/common/build/reports/tests/test/
-                **/spigot/build/reports/tests/test/
