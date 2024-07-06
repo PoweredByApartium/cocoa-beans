@@ -68,7 +68,7 @@ jobs:
       - name: upload
         uses: actions/upload-artifact@v4
         with:
-          path: 'temp_snapshot/'
+          path: '**/plugin/build/libs/*.jar'
       
       - name: Generate snapshot docs
         env:
