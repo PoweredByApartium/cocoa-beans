@@ -40,6 +40,16 @@ jobs:
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
 
+        - name: Publish Test Report
+          uses: test-summary/action@v2
+          if: success() || failure()
+          with:
+            paths: |
+              **/commands/build/test-results/test/TEST-*.xml
+              **/commands/spigot-platform/build/test-results/test/TEST-*.xml
+              **/common/build/test-results/test/TEST-*.xml
+              **/spigot/build/test-results/test/TEST-*.xml
+
         - name: Upload a javadoc html Artifact
           uses: actions/upload-artifact@v3.1.0
           with:
