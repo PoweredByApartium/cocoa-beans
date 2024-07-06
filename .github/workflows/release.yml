@@ -88,7 +88,7 @@ jobs:
       - name: Pre writerside
         env:
           new_version: snapshot
-        run: sh build-scripts/pre-writerside.sh@release-ci
+        run: sh build-scripts/pre-writerside.sh
 
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
