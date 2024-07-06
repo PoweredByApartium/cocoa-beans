@@ -3,7 +3,7 @@ name: Snapshot run
 
 on:
   push:
-    branches: ["main"]
+    branches: ["release-ci"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
