@@ -5,8 +5,8 @@ on:
 
 jobs:
   unit_test:
-    uses: .github/workflows/callable.test.yml
+    uses: ./.github/workflows/callable.test.yml
 
   writerside_test:
-    uses: .github/workflows/callable.writerside.yml
+    uses: ./.github/workflows/callable.writerside.yml
       

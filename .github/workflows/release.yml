@@ -24,7 +24,7 @@ env:
 
 jobs:
   run_tests:
-    uses: .github/workflows/callable.test.yml
+    uses: ./.github/workflows/callable.test.yml
   
   setup:
     needs: run_tests
