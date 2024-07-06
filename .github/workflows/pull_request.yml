@@ -1,9 +1,7 @@
 name: Pull request CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  pull_request
 
 jobs:
   unit_test:
