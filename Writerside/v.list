@@ -2,5 +2,5 @@
 <!DOCTYPE vars SYSTEM "https://resources.jetbrains.com/writerside/1.0/vars.dtd">
 <vars>
     <var name="product" value="Writerside"/>
-    <var name="version" value="test"/>
+    <var name="version" value="v185.0.1.test"/>
 </vars>
