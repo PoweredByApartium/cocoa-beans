@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.commands.spigot;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
+import net.apartium.cocoabeans.commands.CommandManager;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,8 @@ public class CommandsSpigotTestBase {
         plugin = MockBukkit.createMockPlugin();
 
         commandManager = new SpigotCommandManager(plugin);
-        // todo add parsers probably?
+        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
     }
 
     @AfterEach

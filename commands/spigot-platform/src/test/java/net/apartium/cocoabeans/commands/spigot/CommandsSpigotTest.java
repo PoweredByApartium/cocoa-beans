@@ -15,8 +15,6 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
 
     @BeforeEach
     void setupTestCommand() {
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
         commandManager.registerArgumentTypeHandler(new LocationParser(0));
 
         commandManager.addCommand(new CommandForTest());
