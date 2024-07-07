@@ -180,6 +180,10 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("sendMessageToSender(Sender sender, String message) message have been sent: " + message);
     }
 
+    @SubCommand("config set <string> <string>")
+    public void setConfigValue(Sender sender, String key, String value) {
+        sender.sendMessage("setConfigValue(Sender sender, String key, String value) " + key + " = " + value);
+    }
 
     @Override
     public boolean fallbackHandle(Sender sender, String label, String[] args) {
