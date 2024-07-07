@@ -220,6 +220,18 @@ GeneralCommandTest {
         assertEquals(List.of("getConfigValue(Sender sender, String s) lol = true"), sender.getMessages());
     }
 
+    @Test
+    void twoParserAfterEachOther() {
+        evaluate("test", "config set key0 value1");
+        assertEquals(List.of("setConfigValue(Sender sender, String key, String value) key0 = value1"), sender.getMessages());
+
+        evaluate("test", "config set cat meow");
+        assertEquals(List.of("setConfigValue(Sender sender, String key, String value) cat = meow"), sender.getMessages());
+
+        evaluate("test", "config set key6 value_45");
+        assertEquals(List.of("setConfigValue(Sender sender, String key, String value) key6 = value_45"), sender.getMessages());
+    }
+
 
     @Test
     void range2TestFail() {

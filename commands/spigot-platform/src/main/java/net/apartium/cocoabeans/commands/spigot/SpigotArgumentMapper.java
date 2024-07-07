@@ -59,13 +59,16 @@ public class SpigotArgumentMapper implements ArgumentMapper {
             if (objects == null || objects.isEmpty() || objects.size() <= index)
                 objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
 
-            if (objects == null || objects.isEmpty() || objects.size() <= index)
-                throw new RuntimeException("No argument found for type " + type);
-
-            Object obj = objects.get(index);
-
             if (type == Optional.class) {
                 type = (Class<?>) ((ParameterizedType) parameters[i - 1].parameterizedType()).getActualTypeArguments()[0];
+
+                if (objects == null)
+                    objects = context.parsedArgs().get(type);
+
+                if (objects == null || objects.isEmpty() || objects.size() <= index)
+                    throw new RuntimeException("No argument found for type " + type);
+
+                Object obj = objects.get(index);
 
                 if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()) ) {
                     result.add(Optional.empty());
@@ -84,29 +87,55 @@ public class SpigotArgumentMapper implements ArgumentMapper {
                     type == OptionalDouble.class ||
                     type == OptionalFloat.class
             ) {
-                if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()) ) {
-                    result.add(Optional.empty());
-                    counterMap.put(type, index + 1);
-                    continue;
-                }
+                type = type == OptionalInt.class ? int.class : type == OptionalLong.class ? long.class : type == OptionalDouble.class ? double.class : float.class;
+
+                if (objects == null)
+                    objects = context.parsedArgs().get(type);
+
+                if (objects == null || objects.isEmpty() || objects.size() <= index)
+                    throw new RuntimeException("No argument found for type " + type);
+
+                Object obj = objects.get(index);
+
+                if (obj instanceof Optional<?> opt)
+                    obj = opt.orElse(null);
+
 
                 if (type == OptionalFloat.class) {
-                    result.add(OptionalFloat.of((float) obj));
+                    if (obj == null)
+                        result.add(OptionalFloat.empty());
+                    else
+                        result.add(OptionalFloat.of((float) obj));
+
                     type = float.class;
                 } else if (type == OptionalDouble.class) {
-                    result.add(OptionalDouble.of((double) obj));
+                    if (obj == null)
+                        result.add(OptionalDouble.empty());
+                    else
+                        result.add(OptionalDouble.of((double) obj));
                     type = double.class;
                 } else if (type == OptionalLong.class) {
-                    result.add(OptionalLong.of((long) obj));
+                    if (obj == null)
+                        result.add(OptionalLong.empty());
+                    else
+                        result.add(OptionalLong.of((long) obj));
                     type = long.class;
                 } else {
-                    result.add(OptionalInt.of((int) obj));
+                    if (obj == null)
+                        result.add(OptionalInt.empty());
+                    else
+                        result.add(OptionalInt.of((int) obj));
                     type = int.class;
                 }
 
                 counterMap.put(type, index + 1);
                 continue;
             }
+
+            if (objects == null || objects.isEmpty() || objects.size() <= index)
+                throw new RuntimeException("No argument found for type " + type);
+
+            Object obj = objects.get(index);
 
             result.add(obj);
             counterMap.put(type, index + 1);
@@ -127,8 +156,10 @@ public class SpigotArgumentMapper implements ArgumentMapper {
     public Result get(Class<?> type, Map<Class<?>, Integer> counterMap,  Map<Class<?>, List<Object>> mapOfObjects, Object obj, Class<?> resultType, int indexOffset) {
         int index = counterMap.computeIfAbsent(type, (k) -> 0);
 
-        if (type.isAssignableFrom(obj.getClass()) && index == 0)
+        if (type.isAssignableFrom(obj.getClass()) && index == 0 && counterMap.getOrDefault(type, -1) == 0)
             return new Result(resultType, obj);
+
+        indexOffset =  counterMap.getOrDefault(type, -1) == 0 ? -1 : 0;
 
         List<Object> objects = mapOfObjects.get(type);
         if (objects == null || objects.size() <= (index + indexOffset))
