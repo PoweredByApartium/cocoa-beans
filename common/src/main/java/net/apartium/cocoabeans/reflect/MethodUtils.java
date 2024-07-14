@@ -10,6 +10,9 @@
 
 package net.apartium.cocoabeans.reflect;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +42,24 @@ public class MethodUtils {
     public static Set<Method> getMethods(Class<?> clazz) {
         return ReflectionCache.getMethods(clazz)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get method from super class
+     * @param method method
+     * @return super class method if exists
+     */
+    public static @Nullable Method getSuperClassMethod(@NotNull Method method) {
+        Class<?> clazz = method.getDeclaringClass();
+
+        if (clazz.getSuperclass() == null)
+            return null;
+
+        try {
+            return clazz.getSuperclass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
     }
 
 }

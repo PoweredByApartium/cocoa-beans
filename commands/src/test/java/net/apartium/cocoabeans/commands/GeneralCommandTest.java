@@ -197,6 +197,19 @@ GeneralCommandTest {
     }
 
     @Test
+    void usingBaseCommand() {
+        testCommandManager.addCommand(new UsingBaseCommandTest());
+
+        evaluate("lol", "test");
+        assertEquals(List.of("runTest: for lol"), sender.getMessages());
+
+        for (int i = 0; i < 10; i++) {
+            evaluate("lol", "testing key" + i);
+            assertEquals(List.of("test: value" + i), sender.getMessages());
+        }
+    }
+
+    @Test
     void range2Test() {
         evaluate("test", "testing2 6");
         assertEquals(List.of("test2Range(Sender sender, int num) You chosen 6"), sender.getMessages());

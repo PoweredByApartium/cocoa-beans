@@ -17,6 +17,7 @@ import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.lang.annotation.Annotation;
@@ -48,7 +49,10 @@ import java.util.*;
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
-        RequirementSet requirementSet = createRequirementSet(node, clazz.getAnnotations());
+        RequirementSet requirementSet = new RequirementSet(
+                createRequirementSet(node, clazz.getAnnotations()),
+                createRequirementSet(node, Optional.ofNullable(clazz.getSuperclass()).map(Class::getAnnotations).orElse(new Annotation[0]))
+        );
 
         Method fallbackHandle;
         try {
@@ -75,24 +79,13 @@ import java.util.*;
 
         // Add source parsers
         for (Method method : methods) {
-            SourceParser sourceParser = method.getAnnotation(SourceParser.class);
-            if (sourceParser == null)
-                continue;
+            addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
+        }
 
-            if (!method.getReturnType().equals(Map.class))
-                throw new RuntimeException("Wrong return type: " + method.getReturnType());
-
-            try {
-                argumentTypeHandlerMap.put(sourceParser.keyword(), new SourceParserImpl<>(
-                        node,
-                        sourceParser.keyword(),
-                        sourceParser.clazz(),
-                        sourceParser.priority(),
-                        publicLookup.unreflect(method),
-                        sourceParser.resultMaxAgeInMills()
-                ));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        if (clazz.getSuperclass() != null) {
+            // Add source parsers
+            for (Method method : clazz.getSuperclass().getMethods()) {
+                addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
             }
         }
 
@@ -100,6 +93,7 @@ import java.util.*;
 
         for (Method method : methods) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
+
             for (SubCommand subCommand : subCommands) {
                 parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
             }
@@ -121,8 +115,62 @@ import java.util.*;
                     throw new RuntimeException(e);
                 }
             }
+
+            if (clazz.getSuperclass() != null) {
+                Method targetMethod = MethodUtils.getSuperClassMethod(method);
+                if (targetMethod == null)
+                    continue;
+
+                SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
+
+                for (SubCommand subCommand : superSubCommands) {
+                    parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
+                }
+
+                exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
+                if (exceptionHandle != null) {
+                    try {
+                        CollectionHelpers.addElementSorted(
+                                handleExceptionVariants,
+                                new HandleExceptionVariant(
+                                        publicLookup.unreflect(method),
+                                        Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
+                                        node,
+                                        exceptionHandle.priority()
+                                ),
+                                HANDLE_EXCEPTION_VARIANT_COMPARATOR
+                        );
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
         }
 
+    }
+
+
+    private void addSourceParser(CommandNode node, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, Method method) {
+        SourceParser sourceParser = method.getAnnotation(SourceParser.class);
+        if (sourceParser == null)
+            return;
+
+        if (!method.getReturnType().equals(Map.class))
+            throw new RuntimeException("Wrong return type: " + method.getReturnType());
+
+        try {
+            argumentTypeHandlerMap.put(sourceParser.keyword(), new SourceParserImpl<>(
+                    node,
+                    sourceParser.keyword(),
+                    sourceParser.clazz(),
+                    sourceParser.priority(),
+                    publicLookup.unreflect(method),
+                    sourceParser.resultMaxAgeInMills()
+            ));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption) {
@@ -140,8 +188,11 @@ import java.util.*;
         Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(argumentTypeHandlerMap);
         methodArgumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, method.getAnnotations()));
 
-        RequirementSet methodRequirements = new RequirementSet(createRequirementSet(node, method.getAnnotations()), requirementSet);
-
+        RequirementSet methodRequirements = new RequirementSet(
+                createRequirementSet(node, method.getAnnotations()),
+                createRequirementSet(node, Optional.ofNullable(MethodUtils.getSuperClassMethod(method)).map(Method::getAnnotations).orElse(new Annotation[0])),
+                requirementSet
+        );
 
         String[] split = subCommand.value().split("\\s+");
         if (split.length == 0 || split.length == 1 && split[0].isEmpty()) {
@@ -311,6 +362,9 @@ import java.util.*;
 
 
     private RequirementSet createRequirementSet(CommandNode commandNode, Annotation[] annotations) {
+        if (annotations == null || annotations.length == 0)
+            return new RequirementSet();
+
         Set<Requirement> requirements = new HashSet<>();
 
         for (Annotation annotation : annotations) {
