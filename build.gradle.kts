@@ -8,7 +8,7 @@ plugins {
 }
 
 val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
-val snapshot: Boolean = !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
+val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"

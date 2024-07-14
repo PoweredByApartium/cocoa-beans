@@ -49,10 +49,19 @@ import java.util.*;
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
-        RequirementSet requirementSet = new RequirementSet(
-                createRequirementSet(node, clazz.getAnnotations()),
-                createRequirementSet(node, Optional.ofNullable(clazz.getSuperclass()).map(Class::getAnnotations).orElse(new Annotation[0]))
-        );
+        Set<Requirement> requirements = new HashSet<>();
+
+        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
+            requirements.addAll(createRequirementSet(node, c.getAnnotations()));
+
+            for (Class<?> anInterface : c.getInterfaces()) {
+                requirements.addAll(createRequirementSet(node, anInterface.getAnnotations()));
+            }
+        }
+
+
+
+        RequirementSet requirementSet = new RequirementSet(requirements);
 
         Method fallbackHandle;
         try {
@@ -72,26 +81,36 @@ import java.util.*;
 
         // Add class parsers
         argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, clazz.getAnnotations()));
+        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
 
-        MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
+            argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, c.getAnnotations()));
 
-        Method[] methods = clazz.getMethods();
-
-        // Add source parsers
-        for (Method method : methods) {
-            addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
-        }
-
-        if (clazz.getSuperclass() != null) {
-            // Add source parsers
-            for (Method method : clazz.getSuperclass().getMethods()) {
-                addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
+            for (Class<?> anInterface : c.getInterfaces()) {
+                argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, anInterface.getAnnotations()));
             }
         }
 
+        MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
+
+
+        // Add source parsers
+        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
+            Method[] methods = clazz.getMethods();
+            for (Method method : methods) {
+                addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
+            }
+
+            for (Class<?> anInterface : c.getInterfaces()) {
+                for (Method method : anInterface.getMethods()) {
+                    addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
+                }
+            }
+        }
+
+
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
 
-        for (Method method : methods) {
+        for (Method method : clazz.getMethods()) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
@@ -116,38 +135,56 @@ import java.util.*;
                 }
             }
 
+
             if (clazz.getSuperclass() != null) {
-                Method targetMethod = MethodUtils.getSuperClassMethod(method);
-                if (targetMethod == null)
-                    continue;
+                Class<?> superClass = clazz.getSuperclass();
+                while (superClass != null) {
+                    Method targetMethod = MethodUtils.getSuperClassMethod(method);
+                    handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
 
-                SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
-
-                for (SubCommand subCommand : superSubCommands) {
-                    parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
-                }
-
-                exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
-                if (exceptionHandle != null) {
-                    try {
-                        CollectionHelpers.addElementSorted(
-                                handleExceptionVariants,
-                                new HandleExceptionVariant(
-                                        publicLookup.unreflect(method),
-                                        Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
-                                        node,
-                                        exceptionHandle.priority()
-                                ),
-                                HANDLE_EXCEPTION_VARIANT_COMPARATOR
-                        );
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                    for (Class<?> anInterface : superClass.getInterfaces()) {
+                        targetMethod = MethodUtils.getInterfaceMethod(method, anInterface);
+                        handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
                     }
+
+
+                    superClass = superClass.getSuperclass();
                 }
+
             }
 
         }
 
+    }
+
+    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod) {
+        ExceptionHandle exceptionHandle;
+        if (targetMethod == null)
+            return;
+
+        SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
+
+        for (SubCommand subCommand : superSubCommands) {
+            parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
+        }
+
+        exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
+        if (exceptionHandle != null) {
+            try {
+                CollectionHelpers.addElementSorted(
+                        handleExceptionVariants,
+                        new HandleExceptionVariant(
+                                publicLookup.unreflect(method),
+                                Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
+                                node,
+                                exceptionHandle.priority()
+                        ),
+                        HANDLE_EXCEPTION_VARIANT_COMPARATOR
+                );
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 

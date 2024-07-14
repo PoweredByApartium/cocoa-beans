@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,4 +64,38 @@ public class MethodUtils {
         }
     }
 
+    /**
+     * Get methods from interfaces
+     * @param method method
+     * @return interfaces methods
+     */
+    public static Method[] getInterfacesMethods(@NotNull Method method) {
+        Class<?>[] interfaces = method.getDeclaringClass().getInterfaces();
+        List<Method> methods = new ArrayList<>();
+
+        for (Class<?> anInterface : interfaces) {
+            try {
+                methods.add(anInterface.getDeclaredMethod(method.getName(), method.getParameterTypes()));
+            } catch (NoSuchMethodException e) {
+                // ignore rather than throwing an exception
+                continue;
+            }
+        }
+
+        return methods.toArray(new Method[0]);
+    }
+
+    /**
+     * Get interface method
+     * @param method method
+     * @param interfaceClass interface class
+     * @return interface method or null
+     */
+    public static @Nullable Method getInterfaceMethod(@NotNull Method method, Class<?> interfaceClass) {
+        try {
+            return interfaceClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
 }
