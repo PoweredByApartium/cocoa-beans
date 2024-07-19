@@ -4,9 +4,9 @@
 
 <instance-profile id="cb"
                  name="Cocoa Beans"
-                 start-page="🫘 Home.md">
+                 start-page="Home.md">
 
-    <toc-element topic="🫘 Home.md"/>
+    <toc-element topic="Home.md"/>
     <toc-element topic="Commands.md">
         <toc-element topic="Examples.md">
             <toc-element topic="Advanced-error-handling.md"/>

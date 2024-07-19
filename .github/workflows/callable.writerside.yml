@@ -1,0 +1,56 @@
+name: Run tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  INSTANCE: 'Writerside/cb'
+  ARTIFACT: 'webHelpHI2-all.zip'
+  ALGOLIA_ARTIFACT: algolia-indexes-CB.zip
+  DOCKER_VERSION: '233.14938'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  writerside_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: |
+            artifacts/${{ env.ARTIFACT }}
+            artifacts/report.json
+      
+      - name: Upload algolia-indexes
+        uses: actions/upload-artifact@v3
+        with:
+          name: algolia-indexes
+          path: artifacts/${{ env.ALGOLIA_ARTIFACT }}
+
+  writerside_test:
+      needs: writerside_build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download artifacts
+          uses: actions/download-artifact@v1
+          with:
+            name: docs
+            path: artifacts
+        - name: Test documentation
+          uses: JetBrains/writerside-checker-action@v1
+          with:
+            instance: ${{ env.INSTANCE }}
+  

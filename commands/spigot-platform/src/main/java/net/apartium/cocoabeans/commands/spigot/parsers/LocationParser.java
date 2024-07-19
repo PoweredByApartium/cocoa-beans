@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 public class LocationParser extends ArgumentParser<Location> {
 
-    protected LocationParser() {
-        super("location", Location.class, 0);
+    public LocationParser(int priority) {
+        super("location", Location.class, priority);
     }
 
     @Override

@@ -1,39 +1,97 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Release
+
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Version'
+        description: 'Version name'
         required: true
         type: string
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
+    pull-requests: write
+    contents: write
+    repository-projects: write
+    packages: write
+    pages: write
+    id-token: write
+  
 env:
-  INSTANCE: 'Writerside/cb'
-  ARTIFACT: 'webHelpHI2-all.zip'
-  DOCKER_VERSION: '233.14938'
+    INSTANCE: 'Writerside/cb'
+    ARTIFACT: 'webHelpHI2-all.zip'
+    DOCKER_VERSION: '233.14938'
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  publish:
+  run_tests:
+    uses: ./.github/workflows/callable.test.yml
+  
+  setup:
+    needs: run_tests
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: true
+          ref:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+      - name: Fetch previus version
+        id: perv_version
+        run: |
+          git fetch origin
+          echo "::set-output name=version::$(git tag -l | sort -V | tail -n 1)"
+
+      - name: Determine version changes
+        id: determine_version
+        run: |
+          git fetch origin
+          CURRENT_VERSION=${{ steps.perv_version.outputs.version }}
+          INPUT_VERSION=${{ github.event.inputs.name }}
+
+          CURRENT_VERSION=${CURRENT_VERSION#v}
+          INPUT_VERSION=${INPUT_VERSION#v}
+          
+          IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
+          IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
+          
+          echo "Current version array: ${CURRENT[@]}"
+          echo "Input version array: ${INPUT[@]}"
+          
+          echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ] && echo true || echo false)"
+
+      - name: Update Gradle Version
+        env:
+          branch: ${{ github.GITHUB_REF_NAME }}
+        run: |
+            git pull origin $branch
+            new_version=${{ github.event.inputs.name }}
+            gradle_properties="gradle.properties"
+            sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
+            echo "Updated project.version to $new_version"
+            git add gradle.properties
+            git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
+            git push origin $branch
+      
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Pre writerside
+        env:
+          new_version: ${{ github.event.inputs.name }}
+        run: sh build-scripts/pre-writerside.sh
+
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
         env:
@@ -41,33 +99,191 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: artifacts
-          path: "**/build/libs/*.jar"
-      - name: Create a release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            plugin/build/libs/*.jar
-            LICENSE.md
+
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
           instance: ${{ env.INSTANCE }}
           artifact: ${{ env.ARTIFACT }}
-          docker-version: ${{ env.DOCKER_VERSION }}
-      - name: run docs script
+          docker-version: ${{ env.DOCKER_VERSION }}  
+  
+      - name: Generate docs folder
+        run: sh build-scripts/prepare-web-output.sh 
+        env:
+          docs: ${{ github.event.inputs.name }}
+    
+      - name: Create Tag
         run: |
-          sh /build-scripts/prepare-web-output.sh
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+          TAG_VERSION=${{ github.event.inputs.name }}
+          git tag $TAG_VERSION
+          git push origin $TAG_VERSION
+
+      - name: Export changelog
+        shell: bash
+        env: 
+            TARGET_VERSION: ${{ github.event.inputs.name }}
+        run: |
+            if [ -z "${TARGET_VERSION}" ]; then
+              echo "Error: TARGET_VERSION is not set"
+              exit 1
+            fi
+            
+            file="CHANGELOG.md"
+            if [ ! -f "$file" ]; then
+                echo "File not found: $file"
+                exit 1
+            fi
+            
+            capturing=false
+            content=""
+            while IFS= read -r line; do
+                if [[ $line == \#\#* ]]; then
+                    version=$(echo "$line" | sed 's/^## //')
+                    if [[ $version == $TARGET_VERSION ]]; then
+                        capturing=true
+                        content="$line"
+                    elif $capturing; then
+                        break
+                    fi
+                elif $capturing; then
+                    content+=$'\n'"$line"
+                fi
+            done < "$file"
+            
+            # After loop, check if capturing is still true to handle the case of single version
+            if $capturing; then
+                echo -e "$content" > CHANGELOG_temp.md
+                echo "Content written to CHANGELOG_temp.md"
+            else
+                # If capturing is false, check if the TARGET_VERSION was found
+                found_version=false
+                while IFS= read -r line; do
+                    if [[ $line == \#\#* ]]; then
+                        version=$(echo "$line" | sed 's/^## //')
+                        if [[ $version == $TARGET_VERSION ]]; then
+                            found_version=true
+                            capturing=true
+                            content="$line"
+                            break
+                        fi
+                    fi
+                done < "$file"
+                
+                if $capturing; then
+                    echo -e "$content" > CHANGELOG_temp.md
+                    echo "Content written to CHANGELOG_temp.md"
+                else
+                    if $found_version; then
+                        echo "No content found after $TARGET_VERSION in $file"
+                    else
+                        echo "Target version not found in $file"
+                    fi
+                    exit 1
+                fi
+            fi
+       
+      - name: Generate release
+        uses: softprops/action-gh-release@v2
         with:
-          # Upload our temp directory
-          path:  'docs/'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          tag_name: ${{ github.event.inputs.name }}
+          body_path: CHANGELOG_temp.md
+          files: |
+              plugin/build/libs/*jar
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: artifacts
+          path: "**/build/libs/*.jar"
+
+      - name: Remove javadoc jars
+        run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
+      
+      - name: Update html
+        env:
+          version: ${{ github.event.inputs.name }}
+        run: |
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git pull origin gh-pages || true
+
+          sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
+         
+          git add index.html
+          git commit -m "Update index.html"
+          git push origin gh-pages
+      
+      - name: Overide docs
+        if: steps.determine_version.outputs.is_minor == 'true'
+        env:
+          version: ${{ github.event.inputs.name }}
+          perv_version: ${{ steps.perv_version.outputs.version }}
+        run: |
+          git fetch origin
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git pull origin gh-pages || true
+          
+          if [ -d "$perv_version" ]; then
+            echo "Creating old version directory for version $perv_version"
+            git rm -rf $perv_version/
+            git commit -m "Removed old version"
+            
+            git add $version/
+            json_file="help-versions.json"
+
+            new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "/\($version)\/",
+          "isCurrent": true
+          } 
+          EOF
+          )
+
+            updated_json=$(jq --arg version "$version" '
+                  .[-1].version = $version |
+                  .[-1].url = "/\($version)\/" |
+                  .[-1].isCurrent = true |
+                  .[0:-1] |= map(.isCurrent = false)
+              ' "$json_file")
+
+            echo "$updated_json" > "$json_file"
+            
+            git add help-versions.json
+            git commit -m "Overide docs in github pages branch" || echo "No changes to commit"
+            git push origin gh-pages
+          else
+              echo "NOT GOOD"
+              exit 1
+          fi
+
+      - name: Update docs
+        if: steps.determine_version.outputs.is_minor == 'false'
+        env:
+          version: ${{ github.event.inputs.name }}
+        run: |
+          git fetch origin
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git pull origin gh-pages || true
+                  
+          json_file="help-versions.json"
+
+            new_element=$(cat <<EOF
+          {
+          "version": "$version",
+          "url": "/$version/",
+          "isCurrent": true
+          } 
+          EOF
+          )
+              
+           updated_json=$(jq --argjson new "$new_element" '
+               map(.isCurrent = false) + [$new]
+           ' "$json_file")
+          
+           echo "$updated_json" > "$json_file"
+           
+           git add $version/
+           git add help-versions.json
+           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+           git push origin gh-pages

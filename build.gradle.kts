@@ -7,7 +7,8 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
-val snapshot = System.getProperty("GITHUB_REF_TYPE", "branch").equals("branch")
+val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
+val snapshot: Boolean = !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
@@ -81,8 +82,7 @@ hangarPublish {
 
         platforms {
             register(Platforms.PAPER) {
-                jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                jar.set(project(":spigot").tasks.shadowJar.flatMap { it.archiveFile })
+                jar.set(project(":plugin").tasks.shadowJar.flatMap { it.archiveFile })
                 platformVersions = listOf("1.17", "1.19", "1.20")
             }
         }
