@@ -17,6 +17,7 @@ import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
@@ -24,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*package-private*/ class RegisteredCommand {
 
@@ -48,20 +50,7 @@ import java.util.*;
 
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
-
-        Set<Requirement> requirements = new HashSet<>();
-
-        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
-            requirements.addAll(createRequirementSet(node, c.getAnnotations()));
-
-            for (Class<?> anInterface : c.getInterfaces()) {
-                requirements.addAll(createRequirementSet(node, anInterface.getAnnotations()));
-            }
-        }
-
-
-
-        RequirementSet requirementSet = new RequirementSet(requirements);
+        RequirementSet requirementSet = new RequirementSet(findAllRequirements(node, clazz));
 
         Method fallbackHandle;
         try {
@@ -78,32 +67,14 @@ import java.util.*;
                 ))
         );
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>(commandManager.argumentTypeHandlerMap);
-
-        // Add class parsers
-        argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, clazz.getAnnotations()));
-        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
-
-            argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, c.getAnnotations()));
-
-            for (Class<?> anInterface : c.getInterfaces()) {
-                argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, anInterface.getAnnotations()));
-            }
-        }
-
         MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
 
+        // Add class parsers & source parser
+        for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
+            argumentTypeHandlerMap.putAll(serializeArgumentTypeHandler(node, c.getAnnotations()));
 
-        // Add source parsers
-        for (Class<?> c = clazz; c != Object.class && c != null; c = c.getSuperclass()) {
-            Method[] methods = clazz.getMethods();
-            for (Method method : methods) {
+            for (Method method : clazz.getMethods()) {
                 addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
-            }
-
-            for (Class<?> anInterface : c.getInterfaces()) {
-                for (Method method : anInterface.getMethods()) {
-                    addSourceParser(node, argumentTypeHandlerMap, publicLookup, method);
-                }
             }
         }
 
@@ -136,21 +107,8 @@ import java.util.*;
             }
 
 
-            if (clazz.getSuperclass() != null) {
-                Class<?> superClass = clazz.getSuperclass();
-                while (superClass != null) {
-                    Method targetMethod = MethodUtils.getSuperClassMethod(method);
-                    handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
-
-                    for (Class<?> anInterface : superClass.getInterfaces()) {
-                        targetMethod = MethodUtils.getInterfaceMethod(method, anInterface);
-                        handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
-                    }
-
-
-                    superClass = superClass.getSuperclass();
-                }
-
+            for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
+                handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
             }
 
         }
@@ -397,36 +355,51 @@ import java.util.*;
         return cmdOption;
     }
 
+    private Set<Requirement> findAllRequirements(CommandNode commandNode, Class<?> clazz) {
+        Set<Requirement> requirements = new HashSet<>();
 
-    private RequirementSet createRequirementSet(CommandNode commandNode, Annotation[] annotations) {
+        for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
+            requirements.addAll(createRequirementSet(commandNode, c.getAnnotations()));
+        }
+
+        return requirements;
+    }
+
+    private Requirement getRequirement(CommandNode commandNode, Annotation annotation) {
+        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
+        if (commandRequirementType == null)
+            return null;
+
+        RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
+            try {
+                return commandRequirementType.value().getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
+        });
+
+        if (requirementFactory == null)
+            return null;
+
+        return requirementFactory.getRequirement(commandNode, annotation);
+    }
+
+
+    private Set<Requirement> createRequirementSet(CommandNode commandNode, Annotation[] annotations) {
         if (annotations == null || annotations.length == 0)
-            return new RequirementSet();
+            return Collections.emptySet();
 
         Set<Requirement> requirements = new HashSet<>();
 
         for (Annotation annotation : annotations) {
-            CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
-            if (commandRequirementType == null)
-                continue;
-
-            RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
-                try {
-                    return commandRequirementType.value().getConstructor().newInstance();
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    return null;
-                }
-            });
-
-            if (requirementFactory == null)
-                continue;
-
-            Requirement requirement = requirementFactory.getRequirement(commandNode, annotation);
+            Requirement requirement = getRequirement(commandNode, annotation);
             if (requirement == null)
                 continue;
+
             requirements.add(requirement);
         }
 
-        return new RequirementSet(requirements);
+        return requirements;
     }
 
     private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations) {
