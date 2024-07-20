@@ -87,11 +87,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Pre writerside
-        env:
-          new_version: ${{ github.event.inputs.name }}
-        run: sh build-scripts/pre-writerside.sh
-
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
         env:
