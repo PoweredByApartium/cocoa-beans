@@ -1,6 +1,7 @@
 import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
+    id("java")
     id("java-library")
     id("maven-publish")
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -8,7 +9,7 @@ plugins {
 }
 
 val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
-val snapshot: Boolean = !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
+val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
@@ -66,6 +67,16 @@ allprojects {
         }
     }
 
+}
+
+tasks.processResources {
+    filesMatching("**/*.cfg") {
+        expand(project.properties)
+    }
+
+    filesMatching("**/*.list") {
+        expand(project.properties)
+    }
 }
 
 hangarPublish {
