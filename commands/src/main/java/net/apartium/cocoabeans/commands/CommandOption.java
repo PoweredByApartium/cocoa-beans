@@ -25,8 +25,8 @@ import java.util.*;
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
-    private final List<Entry<ArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new ArrayList<>();
-    private final List<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> argumentTypeOptionalHandlerMap = new ArrayList<>();
+    private final List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> argumentTypeHandlerMap = new ArrayList<>();
+    private final List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> argumentTypeOptionalHandlerMap = new ArrayList<>();
 
     CommandOption(CommandManager commandManager) {
         this.commandManager = commandManager;
@@ -73,42 +73,38 @@ import java.util.*;
             commandError = result;
         }
 
-        for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
-            ArgumentParser<?> typeParser = entry.key();
+        for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
+            ArgumentParser<?> typeParser = entry.key().parser();
             Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(new AbstractCommandProcessingContext(sender, commandName, args, index));
 
             if (parse.isEmpty()) {
-                if (typeParser instanceof OptionalArgumentParser<?> optionalArgumentParser) {
-                    if (!optionalArgumentParser.optionalNotMatch())
-                        return null;
+                if (!entry.key().optionalNotMatch())
+                    continue;
 
-                    CommandContext result = null;
+                CommandContext result;
 
-                    result = entry.value().handle(
-                            registeredCommand,
-                            commandName,
-                            args,
-                            sender,
-                            index + 1
-                    );
+                result = entry.value().handle(
+                        registeredCommand,
+                        commandName,
+                        args,
+                        sender,
+                        index + 1
+                );
 
-                    if (result == null)
-                        continue;
+                if (result == null)
+                    continue;
 
-                    if (result.hasError()) {
-                        if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
-                            commandError = result;
-
-                        continue;
-                    }
-
-                    result.parsedArgs()
-                            .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
-                            .add(0, Optional.empty());
-
-                    return result;
+                if (result.hasError()) {
+                    if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                        commandError = result;
+                    continue;
                 }
-                continue;
+
+                result.parsedArgs()
+                        .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
+                        .add(0, Optional.empty());
+
+                return result;
             }
 
             int newIndex = parse.get().newIndex();
@@ -228,14 +224,14 @@ import java.util.*;
                 result.add(entry.getKey());
             }
 
-            for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
+            for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
                 Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
-                    if (entry.key() instanceof OptionalArgumentParser<?> optionalArgumentParser) {
-                        if (!optionalArgumentParser.optionalNotMatch())
+                    if (entry.key().isOptional()) {
+                        if (!entry.key().optionalNotMatch())
                             continue;
 
                         result.addAll(entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, index + 1));
@@ -278,7 +274,7 @@ import java.util.*;
                 result.addAll(strings);
         }
 
-        for (Entry<ArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
+        for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
             OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, commandName, args, index));
             if (parse.isEmpty()) {
@@ -287,8 +283,8 @@ import java.util.*;
 
                 Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
-                    if (entry.key() instanceof OptionalArgumentParser<?> optionalArgumentParser) {
-                        if (!optionalArgumentParser.optionalNotMatch())
+                    if (entry.key().isOptional()) {
+                        if (!entry.key().optionalNotMatch())
                             continue;
 
                         result.addAll(entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, index + 1));
@@ -335,11 +331,11 @@ import java.util.*;
         return registeredCommandVariants;
     }
 
-    public List<Entry<ArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {
+    public List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {
         return argumentTypeHandlerMap;
     }
 
-    public List<Entry<OptionalArgumentParser<?>, CommandBranchProcessor>> getOptionalArgumentTypeHandlerMap() {
+    public List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> getOptionalArgumentTypeHandlerMap() {
         return argumentTypeOptionalHandlerMap;
     }
 

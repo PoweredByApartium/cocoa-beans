@@ -1,21 +1,22 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-/* package-private */ class OptionalArgumentParser<T> extends ArgumentParser<T> {
+/* package-private */ class RegisterArgumentParser<T> extends ArgumentParser<T> {
 
     private final ArgumentParser<T> parser;
     private final boolean optionalNotMatch;
+    private final boolean isOptional;
 
-    OptionalArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch) {
+    RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional) {
         super(parser.getKeyword(), parser.getArgumentType(), parser.getPriority());
         this.parser = parser;
         this.optionalNotMatch = optionalNotMatch;
+        this.isOptional = isOptional;
     }
 
     public ArgumentParser<T> parser() {
@@ -24,6 +25,10 @@ import java.util.OptionalInt;
 
     public boolean optionalNotMatch() {
         return optionalNotMatch;
+    }
+
+    public boolean isOptional() {
+        return isOptional;
     }
 
     @Override
@@ -43,14 +48,20 @@ import java.util.OptionalInt;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OptionalArgumentParser<?> that = (OptionalArgumentParser<?>) o;
-        return optionalNotMatch == that.optionalNotMatch && Objects.equals(parser, that.parser);
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+
+        if (getClass() == o.getClass()) {
+            return parser.equals(((RegisterArgumentParser<?>) o).parser());
+        }
+        return parser.equals(o);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(parser, optionalNotMatch);
     }
+
 }

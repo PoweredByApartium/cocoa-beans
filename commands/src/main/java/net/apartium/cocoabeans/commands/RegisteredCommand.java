@@ -174,16 +174,22 @@ import java.util.*;
 
             if (cmd.startsWith("<") && cmd.endsWith(">")) {
                 // TODO may need to check that can be parser before doing all calculation
-                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1 + (cmd.startsWith("<??") ? 2 : cmd.startsWith("<?") ? 1 : 0), cmd.length() - 1));
-                if (cmd.startsWith("<??"))
-                    typeParser = new OptionalArgumentParser<>(typeParser, true);
-                else if(cmd.startsWith("<?"))
-                    typeParser = new OptionalArgumentParser<>(typeParser, false);
+
+                boolean isOptional = cmd.startsWith("<?") || cmd.startsWith("<!?");
+                boolean isInvalid = cmd.startsWith("<!") || cmd.startsWith("<?!");
+
+                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1 + (isInvalid ? 1 : 0) + (isOptional ? 1 : 0), cmd.length() - 1));
 
                 if (typeParser == null)
                     throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
 
-                ArgumentParser<?> finalTypeParser = typeParser;
+
+                RegisterArgumentParser<?> finalTypeParser = new RegisterArgumentParser<> (
+                        typeParser,
+                        isInvalid,
+                        isOptional
+                );
+
                 CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
                         .filter(entry -> entry.key().equals(finalTypeParser))
                         .findAny()
@@ -195,14 +201,14 @@ import java.util.*;
                     CollectionHelpers.addElementSorted(
                             currentCommandOption.getArgumentTypeHandlerMap(),
                             new Entry<>(
-                                    typeParser,
+                                    finalTypeParser,
                                     commandBranchProcessor
                             ),
                             (a, b) -> b.key().compareTo(a.key())
                     );
                 }
 
-                if (finalTypeParser instanceof OptionalArgumentParser) {
+                if (finalTypeParser.isOptional()) {
                     CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
                             .filter(entry -> entry.key().equals(finalTypeParser))
                             .findAny()
@@ -214,7 +220,7 @@ import java.util.*;
                         CollectionHelpers.addElementSorted(
                                 currentCommandOption.getOptionalArgumentTypeHandlerMap(),
                                 new Entry<>(
-                                    (OptionalArgumentParser<?>) finalTypeParser,
+                                    finalTypeParser,
                                     branchProcessor
                                 ),
                                 (a, b) -> b.key().compareTo(a.key())

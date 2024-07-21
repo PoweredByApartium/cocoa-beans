@@ -365,6 +365,18 @@ GeneralCommandTest {
     }
 
     @Test
+    void optionalWoofTest() {
+        evaluate("test", "optional woof");
+        assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [optional, woof]"), sender.getMessages());
+
+        evaluate("test", "optional woof 21");
+        assertEquals(List.of("testOptionalWoof(Sender sender, OptionalInt optInt) got 21"), sender.getMessages());
+
+        evaluate("test", "optional woof 21a");
+        assertEquals(List.of("testOptionalWoof(Sender sender, OptionalInt optInt) got null"), sender.getMessages());
+    }
+
+    @Test
     void test() {
         assertEquals(
                 evaluateTabCompletion("test", "testing example kfir 2").stream().sorted().toList(),
