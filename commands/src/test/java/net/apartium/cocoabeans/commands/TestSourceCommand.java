@@ -2,13 +2,13 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.SourceParser;
+import net.apartium.cocoabeans.commands.parsers.StringsParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@WithParser(value = DummyParser.class, priority = -1)
 @Command("test-source")
 public class TestSourceCommand implements CommandNode {
 
@@ -55,6 +55,7 @@ public class TestSourceCommand implements CommandNode {
         sender.sendMessage("test(Sender sender, Test test) got " + test.num);
     }
 
+    @WithParser(value = DummyParser.class, priority = -10)
     @SubCommand("<ignore>")
     public void testNotFound(Sender sender) {
         sender.sendMessage("testNotFound(Sender sender) didn't get test");
@@ -74,5 +75,4 @@ public class TestSourceCommand implements CommandNode {
         }
 
     }
-
 }
