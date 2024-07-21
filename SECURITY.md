@@ -10,4 +10,4 @@ Supported versions are currently as follows:
 
 ## Reporting a Vulnerability
 
-Send me a message at GitHub or e-mail me at me@voigon.dev
+Send me a message at GitHub or e-mail me at security@apartium.net
