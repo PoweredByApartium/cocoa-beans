@@ -1,37 +1,63 @@
 package net.apartium.cocoabeans.spigot.visibility;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.stream.Stream;
 
+/**
+ * Manager class for cocoa beans hide API
+ * @see VisibilityGroup
+ * @see VisibilityPlayer
+ * Note: There can only be a single instance of this class.
+ */
 public class VisibilityManager {
 
     private final Map<String, VisibilityGroup> groups = new HashMap<>();
     private final Map<UUID, VisibilityPlayer> players = new HashMap<>();
     private final JavaPlugin plugin;
-    private final VisibilityPlayerRemoveType removeType;
     private VisibilityListener visibilityListener;
 
+    /**
+     * Create a new instance of Visibility manager
+     * @param plugin plugin to associate this instance with
+     */
     public VisibilityManager(JavaPlugin plugin) {
-        this(plugin, VisibilityPlayerRemoveType.NEVER);
-    }
-
-    public VisibilityManager(JavaPlugin plugin, VisibilityPlayerRemoveType removeType) {
         this.plugin = plugin;
-        this.removeType = removeType;
     }
 
-    public void registerListener() {
+    /**
+     * Register listener to automatically handle player join and quit
+     * @param removeType See {@link VisibilityPlayerRemoveType}
+     *
+     * If this method is not called the registering plugin is responsible for triggering the following methods:
+     * @see VisibilityManager#handlePlayerJoin(Player)
+     * @see VisibilityManager#removePlayer(UUID)
+     */
+    public void registerListener(VisibilityPlayerRemoveType removeType) {
         if (visibilityListener != null)
             return;
 
-        visibilityListener = new VisibilityListener(this);
+        visibilityListener = new VisibilityListener(this, removeType);
         plugin.getServer().getPluginManager().registerEvents(visibilityListener, plugin);
     }
 
+    /**
+     * Register listener to automatically handle player join and quit with {@link VisibilityPlayerRemoveType#ON_LEAVE}
+     * If this method is not called the registering plugin is responsible for triggering the following methods:
+     * @see VisibilityManager#handlePlayerJoin(Player)
+     * @see VisibilityManager#removePlayer(UUID)
+     */
+    public void registerListener() {
+        registerListener(VisibilityPlayerRemoveType.ON_LEAVE);
+    }
+
+    /**
+     * Unregisters the listener.
+     * @see VisibilityManager#registerListener(VisibilityPlayerRemoveType)
+     */
     public void unregisterListener() {
         if (visibilityListener == null)
             return;
@@ -40,17 +66,24 @@ public class VisibilityManager {
         visibilityListener = null;
     }
 
+    /**
+     * Reload visibility for all online players
+     */
     public void reloadVisibility() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
             updateVisiblityForPlayer(player);
         }
     }
 
+    /**
+     * Handle player joining the server
+     * @param joinPlayer player who joined
+     */
     public void handlePlayerJoin(Player joinPlayer) {
         VisibilityPlayer visibilityPlayer = getPlayer(joinPlayer);
 
         if (visibilityPlayer.getVisibleGroups().isEmpty()) {
-            for (Player target : Bukkit.getOnlinePlayers()) {
+            for (Player target : plugin.getServer().getOnlinePlayers()) {
                 if (target == joinPlayer)
                     continue;
 
@@ -66,7 +99,7 @@ public class VisibilityManager {
             return;
         }
 
-        for (Player target : Bukkit.getOnlinePlayers()) {
+        for (Player target : plugin.getServer().getOnlinePlayers()) {
             if (target == joinPlayer)
                 continue;
 
@@ -109,14 +142,28 @@ public class VisibilityManager {
 
     }
 
+    /**
+     * Get player instance associated with this manager for given player uuid
+     * @param uuid player uuid, no checks are performed on this argument
+     * @return visibility player instance, cannot be null
+     */
     public VisibilityPlayer getPlayer(UUID uuid) {
         return players.computeIfAbsent(uuid, (key) -> new VisibilityPlayer(this, uuid));
     }
 
+    /**
+     * Get player instance associated with this manager for given player
+     * @param player player, cannot be null
+     * @return visibility player instance, cannot be null
+     */
     public VisibilityPlayer getPlayer(Player player) {
         return players.computeIfAbsent(player.getUniqueId(), (key) -> new VisibilityPlayer(this, player));
     }
 
+    /**
+     * Remove player from the in-memory state, including dis-associating with all its groups
+     * @param uuid player uuid
+     */
     public void removePlayer(UUID uuid) {
         VisibilityPlayer remove = players.remove(uuid);
 
@@ -129,11 +176,11 @@ public class VisibilityManager {
 
     }
 
-    public void updateVisiblityForPlayer(Player player) {
+    /* package-private */ void updateVisiblityForPlayer(Player player) {
         VisibilityPlayer visibilityPlayer = getPlayer(player);
 
         if (visibilityPlayer.getVisibleGroups().isEmpty()) {
-            for (Player target : Bukkit.getOnlinePlayers()) {
+            for (Player target : plugin.getServer().getOnlinePlayers()) {
                 if (target == player)
                     continue;
 
@@ -150,7 +197,7 @@ public class VisibilityManager {
             return;
         }
 
-        for (Player target : Bukkit.getOnlinePlayers()) {
+        for (Player target : plugin.getServer().getOnlinePlayers()) {
             if (target == player)
                 continue;
 
@@ -211,10 +258,20 @@ public class VisibilityManager {
 
     }
 
+    /**
+     * Get or create a visiblity group by name.
+     * @param name unique group name
+     * @return a group associated with given name, cannot be null
+     */
     public VisibilityGroup getOrCreateGroup(String name) {
-        return groups.computeIfAbsent(name, this::createInstance);
+        return groups.computeIfAbsent(name, n -> new VisibilityGroup(this, n));
     }
 
+    /**
+     * Deletes a group from in-memory state and updating relevant players accordingly
+     * @param name group name
+     * @return true if the group exists, else false
+     */
     public boolean deleteGroup(String name) {
         VisibilityGroup remove = groups.remove(name);
         if (remove == null)
@@ -236,6 +293,12 @@ public class VisibilityManager {
         return true;
     }
 
+    /**
+     * Checks whether 2 players can see each other.
+     * @param player player
+     * @param target target player
+     * @return if can see each other - true, else false
+     */
     public boolean canSee(Player player, Player target) {
         VisibilityPlayer visibilityPlayer = getPlayer(player);
         VisibilityPlayer visibilityTarget = getPlayer(target);
@@ -259,16 +322,21 @@ public class VisibilityManager {
         return false;
     }
 
+    /**
+     * Get all visibility groups currently registered in memory
+     * @return all visibility groups currently registered in memory
+     */
     public Collection<VisibilityGroup> getGroups() {
-        return groups.values();
+        return Collections.unmodifiableCollection(groups.values());
     }
 
-    public VisibilityPlayerRemoveType getRemoveType() {
-        return removeType;
-    }
-
-    protected VisibilityGroup createInstance(String name) {
-        return new VisibilityGroup(this, name);
+    /**
+     * Gets all players registered with the in-memory state
+     * @see VisibilityPlayer
+     * @return all visibility players currently registered
+     */
+    public Stream<VisibilityPlayer> getPlayers() {
+        return players.values().stream();
     }
 
 }

@@ -9,8 +9,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
     private final VisibilityManager manager;
 
-    public VisibilityListener(VisibilityManager manager) {
+    /* package-private */ final VisibilityPlayerRemoveType removeType;
+
+    public VisibilityListener(VisibilityManager manager, VisibilityPlayerRemoveType removeType) {
         this.manager = manager;
+        this.removeType = removeType;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -20,7 +23,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
     @EventHandler
     public void onPlayerQuit(PlayerJoinEvent event) {
-        if (manager.getRemoveType() != VisibilityPlayerRemoveType.ON_LEAVE)
+        if (removeType != VisibilityPlayerRemoveType.ON_LEAVE)
             return;
 
         manager.removePlayer(event.getPlayer().getUniqueId());

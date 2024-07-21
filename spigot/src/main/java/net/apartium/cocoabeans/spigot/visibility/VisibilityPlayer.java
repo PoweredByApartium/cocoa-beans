@@ -7,6 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
+/**
+ * Represents a player known to the visibility api, whether online or not
+ * @see VisibilityManager
+ * @see VisibilityManager#getPlayer(UUID)
+ * @see VisibilityManager#getPlayer(Player)
+ */
 public class VisibilityPlayer {
 
     private final VisibilityManager manager;
@@ -14,29 +20,41 @@ public class VisibilityPlayer {
     private WeakReference<Player> playerRef;
     private final Set<VisibilityGroup> visibleGroups;
 
-    public VisibilityPlayer(VisibilityManager manager, UUID uuid) {
+    /* package-private */ VisibilityPlayer(VisibilityManager manager, UUID uuid) {
         this.manager = manager;
         this.uuid = uuid;
-        this.playerRef = new WeakReference<>(null);
+        this.playerRef = new WeakReference<>(Bukkit.getPlayer(uuid));
         this.visibleGroups = Collections.newSetFromMap(new WeakHashMap<>());
 
     }
 
-    public VisibilityPlayer(VisibilityManager manager, Player player) {
+    /* package-private */ VisibilityPlayer(VisibilityManager manager, Player player) {
         this.manager = manager;
         this.uuid = player.getUniqueId();
         this.playerRef = new WeakReference<>(player);
         this.visibleGroups = Collections.newSetFromMap(new WeakHashMap<>());
     }
 
+    /**
+     * Get parent manager instance
+     * @return parent manager instance
+     */
     public VisibilityManager getManager() {
         return manager;
     }
 
+    /**
+     * Get player unique id
+     * @return player unique id
+     */
     public UUID getUniqueId() {
         return uuid;
     }
 
+    /**
+     * Attempts to retrieve bukkit player instance
+     * @return player if found, empty if not online
+     */
     public Optional<Player> getPlayer() {
         Player player = playerRef.get();
 
@@ -52,8 +70,12 @@ public class VisibilityPlayer {
         return Optional.of(player);
     }
 
+    /**
+     * Get groups this player is a member of
+     * @return unmodifiable view of backing collection
+     */
     public Collection<VisibilityGroup> getVisibleGroups() {
-        return visibleGroups;
+        return Collections.unmodifiableCollection(visibleGroups);
     }
 
     /* package-private */ void addVisibleGroup(VisibilityGroup group) {

@@ -5,6 +5,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+/**
+ * Represents a group of players who can see each other, and can or cannot see different visibility group
+ * Each visibility group is identified by a unique name and belongs to a {@link VisibilityManager} instance
+ */
 public class VisibilityGroup {
 
     private final VisibilityManager manager;
@@ -25,14 +29,29 @@ public class VisibilityGroup {
         this.hiddenGroups = Collections.newSetFromMap(new WeakHashMap<>());
     }
 
+    /**
+     * Add a member to this group.
+     * @param player player to add
+     * @return false if already a member of this group, else false
+     */
     public boolean addPlayer(Player player) {
         return addPlayer(manager.getPlayer(player));
     }
 
+    /**
+     * Add a member to this group.
+     * @param uuid unique id of player to add
+     * @return false if already a member of this group, else false
+     */
     public boolean addPlayer(UUID uuid) {
         return addPlayer(manager.getPlayer(uuid));
     }
 
+    /**
+     * Add a member to this group.
+     * @param player player to add
+     * @return false if already a member of this group, else false
+     */
     public boolean addPlayer(VisibilityPlayer player) {
         if (!players.add(player))
             return false;
@@ -56,10 +75,20 @@ public class VisibilityGroup {
         return true;
     }
 
+    /**
+     * Removes a player from the group
+     * @param player player to remove
+     * @return true if was part of the group, else false
+     */
     public boolean removePlayer(Player player) {
         return removePlayer(manager.getPlayer(player));
     }
 
+    /**
+     * Removes a player from the group
+     * @param player player to remove
+     * @return true if was part of the group, else false
+     */
     public boolean removePlayer(VisibilityPlayer player) {
         if (!players.remove(player))
             return false;
@@ -80,7 +109,28 @@ public class VisibilityGroup {
         return true;
     }
 
-    public boolean addGroup(VisibilityGroup group, boolean visible) {
+    /**
+     * Adds a group which members of the current group can see
+     * @param group group
+     * @return true if existed, false otherwise
+     */
+    public boolean addVisibleGroup(VisibilityGroup group) {
+        return addGroup(group, true);
+    }
+
+    /**
+     * Adds a group which members of the current group cannot see
+     * @param group group
+     * @return true if existed, false otherwise
+     */
+    public boolean addHiddenGroup(VisibilityGroup group) {
+        return addGroup(group, false);
+    }
+
+    private boolean addGroup(VisibilityGroup group, boolean visible) {
+        if (group == this)
+            return false;
+
         boolean result;
         if (visible)
             result = visibleGroups.add(group);
@@ -101,6 +151,12 @@ public class VisibilityGroup {
         return true;
     }
 
+    /**
+     * Remove visible group
+     * @param group group
+     * @return true if removed, false if doesn't exist
+     * @see VisibilityGroup#addVisibleGroup(VisibilityGroup)
+     */
     public boolean removeVisibleGroup(VisibilityGroup group) {
         if (!visibleGroups.remove(group))
             return false;
@@ -116,6 +172,12 @@ public class VisibilityGroup {
         return true;
     }
 
+    /**
+     * Remove hidden group
+     * @param group group
+     * @return true if removed, false if doesn't exist
+     * @see VisibilityGroup#addHiddenGroup(VisibilityGroup)
+     */
     public boolean removeHiddenGroup(VisibilityGroup group) {
         if (!hiddenGroups.remove(group))
             return false;
@@ -131,29 +193,45 @@ public class VisibilityGroup {
         return true;
     }
 
-
+    /**
+     * Get all players who are direct members of this group
+     * @return unmodifiable viwe of backing collection
+     */
     public Collection<VisibilityPlayer> getPlayers() {
-        return players;
+        return Collections.unmodifiableCollection(players);
     }
 
+    /**
+     * Get name of visibility group
+     * @return visibility group name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get all groups who are visible to current group
+     * @return unmodifiable view of backing collection
+     */
     public Collection<VisibilityGroup> getVisibleGroups() {
-        return visibleGroups;
+        return Collections.unmodifiableCollection(visibleGroups);
     }
 
+    /**
+     * Get all groups who are hidden from current group
+     * @return unmodifiable view of backing collection
+     */
     public Collection<VisibilityGroup> getHiddenGroups() {
-        return hiddenGroups;
+        return Collections.unmodifiableCollection(hiddenGroups);
     }
 
+    /**
+     * Checks whether group contains a player
+     * @param player player
+     * @return true if contains given player, else false
+     */
     public boolean hasPlayer(Player player) {
         return players.contains(manager.getPlayer(player));
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
 }

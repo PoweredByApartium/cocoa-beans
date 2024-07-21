@@ -40,7 +40,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         plugin.getLogger();
 
-        visibilityManager = new VisibilityManager(plugin, VisibilityPlayerRemoveType.NEVER);
+        visibilityManager = new VisibilityManager(plugin);
 
         VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
         VisibilityGroup group1 = visibilityManager.getOrCreateGroup("test2");
@@ -67,7 +67,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         assertCanSee(thebotgame, ikfirBot);
 
-        visibilityManager.registerListener();
+        visibilityManager.registerListener(VisibilityPlayerRemoveType.NEVER);
         PlayerMock iVoigon = server.addPlayer("iVoigon");
 
         assertCanSee(thebotgame, ikfirBot);
@@ -153,7 +153,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
         assertCantSee(googleDNS, iVoigon);
         assertCantSee(googleDNS, thebotgame);
 
-        group.addGroup(group1, true);
+        group.addVisibleGroup(group1);
 
         assertCanSeeOneSide(ikfir, cloudflareDNS);
         assertCanSeeOneSide(ikfir, googleDNS);
