@@ -13,10 +13,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
         this.manager = manager;
     }
 
-    public VisibilityManager getManager() {
-        return manager;
-    }
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         manager.handlePlayerJoin(event.getPlayer());

@@ -92,7 +92,7 @@ public class VisibilityManager {
 
 
             for (VisibilityPlayer player : visibilityGroup.getPlayers()) {
-                Player targetPlayer = player.getPlayer();
+                Player targetPlayer = player.getPlayer().orElse(null);
                 if (targetPlayer == null)
                     continue;
 
@@ -171,7 +171,7 @@ public class VisibilityManager {
 
             for (VisibilityGroup targetGroup : group.getVisibleGroups()) {
                 for (VisibilityPlayer target : targetGroup.getPlayers()) {
-                    Player targetPlayer = target.getPlayer();
+                    Player targetPlayer = target.getPlayer().orElse(null);
                     if (targetPlayer == null)
                         continue;
 
@@ -189,7 +189,7 @@ public class VisibilityManager {
             }
 
             for (VisibilityPlayer target : group.getPlayers()) {
-                Player targetPlayer = target.getPlayer();
+                Player targetPlayer = target.getPlayer().orElse(null);
                 if (targetPlayer == null)
                     continue;
 
@@ -226,7 +226,7 @@ public class VisibilityManager {
         for (VisibilityPlayer visibilityPlayer : players.values()) {
             visibilityPlayer.removeVisibleGroup(remove);
 
-            Player player = visibilityPlayer.getPlayer();
+            Player player = visibilityPlayer.getPlayer().orElse(null);
             if (player == null)
                 continue;
 

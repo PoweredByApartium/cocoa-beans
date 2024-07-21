@@ -40,15 +40,16 @@ public class VisibilityGroup {
         boolean empty = player.getVisibleGroups().isEmpty();
 
         player.addVisibleGroup(this);
-        Player bukkitPlayer = player.getPlayer();
+        Player bukkitPlayer = player.getPlayer().orElse(null);
         if (empty && bukkitPlayer != null) {
             manager.handlePlayerJoin(bukkitPlayer);
         } else if (bukkitPlayer != null) {
             for (VisibilityPlayer visibilityPlayer : players) {
-                if (visibilityPlayer.getPlayer() == null)
+                Optional<Player> target = visibilityPlayer.getPlayer();
+                if (target.isEmpty())
                     continue;
 
-                manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+                manager.updateVisiblityForPlayer(target.get());
             }
         }
 
@@ -64,12 +65,12 @@ public class VisibilityGroup {
             return false;
 
         player.removeVisibleGroup(this);
-        if (player.getPlayer() == null)
+        if (player.getPlayer().isEmpty())
             return true;
 
-        manager.updateVisiblityForPlayer(player.getPlayer());
+        manager.updateVisiblityForPlayer(player.getPlayer().get());
         for (VisibilityPlayer visibilityPlayer : players) {
-            Player bukkitPlayer = visibilityPlayer.getPlayer();
+            Player bukkitPlayer = visibilityPlayer.getPlayer().orElse(null);
             if (bukkitPlayer == null)
                 continue;
 
@@ -90,10 +91,11 @@ public class VisibilityGroup {
             return false;
 
         for (VisibilityPlayer visibilityPlayer : players) {
-            if (visibilityPlayer.getPlayer() == null)
+            Optional<Player> target = visibilityPlayer.getPlayer();
+            if (target.isEmpty())
                 continue;
 
-            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+            manager.updateVisiblityForPlayer(target.get());
         }
 
         return true;
@@ -104,10 +106,11 @@ public class VisibilityGroup {
             return false;
 
         for (VisibilityPlayer visibilityPlayer : players) {
-            if (visibilityPlayer.getPlayer() == null)
+            Optional<Player> target = visibilityPlayer.getPlayer();
+            if (target.isEmpty())
                 continue;
 
-            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+            manager.updateVisiblityForPlayer(target.get());
         }
 
         return true;
@@ -118,10 +121,11 @@ public class VisibilityGroup {
             return false;
 
         for (VisibilityPlayer visibilityPlayer : players) {
-            if (visibilityPlayer.getPlayer() == null)
+            Optional<Player> target = visibilityPlayer.getPlayer();
+            if (target.isEmpty())
                 continue;
 
-            manager.updateVisiblityForPlayer(visibilityPlayer.getPlayer());
+            manager.updateVisiblityForPlayer(target.get());
         }
 
         return true;

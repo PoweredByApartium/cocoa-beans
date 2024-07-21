@@ -37,16 +37,19 @@ public class VisibilityPlayer {
         return uuid;
     }
 
-    public @Nullable Player getPlayer() {
+    public Optional<Player> getPlayer() {
         Player player = playerRef.get();
 
         if (player != null)
-            return player;
+            return Optional.of(player);
 
         player = Bukkit.getPlayer(uuid);
+        if (player == null)
+            return Optional.empty();
+
         playerRef = new WeakReference<>(player);
 
-        return player;
+        return Optional.of(player);
     }
 
     public Collection<VisibilityGroup> getVisibleGroups() {
@@ -62,12 +65,15 @@ public class VisibilityPlayer {
     }
 
     @Override
-    public int hashCode() {
-        return uuid.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VisibilityPlayer that = (VisibilityPlayer) o;
+        return Objects.equals(manager, that.manager) && Objects.equals(uuid, that.uuid);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof VisibilityPlayer && uuid.equals(((VisibilityPlayer) obj).uuid);
+    public int hashCode() {
+        return Objects.hash(manager, uuid);
     }
 }
