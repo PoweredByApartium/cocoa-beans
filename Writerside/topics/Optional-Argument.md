@@ -1,15 +1,14 @@
 # ❓ Optional Argument
 
-An optional argument has two forms
-1. **Optional** `if there is no argument it will just be empty / null`
-2. **Invalid** `if parser couldn't be parser for any reason`
+An optional argument can have 2 forms:
+1. **Optional** `if the argument is not specified it will just be empty / null`
+2. **Invalid** `if parser couldn't parse given argument`
 
-We will want to use optional argument when we want to handle some cases when data could be null.
+We can use optional arguments where the last arguments are not required. 
 
-As an example `/give ikfir diamond` We know we just one to give him 1 diamond.
-But what if instead we would want to give more so we will run `/give ikfir diamond 32` that will give him 32 diamonds
+Imagine a players runs the command `/give ikfir diamond`. We accept an optional int param but it wasn't specified, so the code falls back to 1.
+The player can still get more by running `/give ikfir diamond 32`.
 
-We use the following code
 ```java
 @Command("give")
 public class GiveCommand implements CommandNode {
@@ -27,14 +26,12 @@ public class GiveCommand implements CommandNode {
     
 }
 ```
-If you look at `@SubCommand` You will be able to see a parser named `?int` but that's just are normal int parser
-We could have it perform optional for us
+Look closely at the `@SubCommand` annotation: the last argument contains a `?` operator, which tells the command system it is an optional argument. Optional arguments can also use java's Optional classes to provide null safety.
 
 ### Optional
-The symbol for optional is `?` we will need to use it before parser name for example for int parser that keyword is `int`
-we will do the following `<?int>`
+As mentioned above, optional arguments can be set by using the `?` operator.
+For example, `<int>` is the normal form where the optional form is `<?int>`
 
-Code snippet
 ```java
 @Command("example")
 public class ExampleCommand implements CommandNode {
@@ -49,14 +46,15 @@ public class ExampleCommand implements CommandNode {
 When we run `example` without any args it will call `ExampleCommand#example` with optNum as `OptionalInt#empty`
 But when we will try to run it with a number as arg, For example `example 42` it will call the same function `ExampleCommand#example` with optNum as 42
 
-Lastly if we will try to run `example 42a` it will not call `ExampleCommand#example` because 42a isn't decimal number same go for 40.1 is not integer.
+However, if we will try to run `example 42a` it will not call `ExampleCommand#example`, because 42a isn't a valid `int`. To avoid failing parsing, we can use failsafe optional arguments.
 
-We will have to use invalid instead
-### Invalid
-The symbol for invalid is `!` we will need to use it before parser name for example for int parser that keyword is `int`
-we will do the following `<!int>`
+### Fail-safe optional arguments
+Fail safe optional arguments can be indicated with the `!` operator, for example:
+* `<int>` for normal args
+* `<?int>` for optional args
+* `<!int>` for fail-safe optional args
+* `<?!int>` for a combination of optional and fail safe (more on that later)
 
-Code snippet
 ```java
 @Command("example")
 public class ExampleCommand implements CommandNode {
@@ -69,17 +67,18 @@ public class ExampleCommand implements CommandNode {
 }
 ```
 This time when we run `example` without any args it will not call `ExampleCommand#example` because parser will not be called for no arguments
-and that will not result as invalid parsing.
+and that will not result in invalid parsing.
 
-But when we will try to run `example 45a` it will call `ExampleCommand#example` with optNum `OptionalInt#empty`.
+But when we will try to run `example 45a` the system will call `ExampleCommand#example` with optNum `OptionalInt#empty`.
 Lastly it will give as same result if parser has parser successfully it will just put parser value.
 
-### How can we use both of them
-But what if we will want to use both of them invalid and optional?
+Of course, if we call `example 45` the system will call `ExampleCommand#example` with 45 as argument.  
 
+### How can we use both of them
+Using fail-safe arguments might not make much sense on their one, but we can combine them with optional arguments. 
+It will make the command variation run if either the argument was not specified, or the player specified an invalid argument. 
 We could do it very simply by just using following syntax `?!` or `!?`
 
-Here is another code snippet
 ```java
 @Command("example")
 public class ExampleCommand implements CommandNode {
