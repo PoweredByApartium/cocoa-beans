@@ -12,7 +12,7 @@ dependencies {
     compileOnly(project.project(":commands"))
     api(project.project(":common"))
 
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")
 }

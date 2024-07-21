@@ -10,30 +10,14 @@
 
 package net.apartium.cocoabeans.spigot;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
-import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
-import net.apartium.cocoabeans.commands.spigot.exception.SpigotExceptionArgumentMapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CocoaBeansSpigotLoader extends JavaPlugin {
 
-    private CommandManager commandManager;
+    @Override
+    public void onEnable() {}
 
     @Override
-    public void onEnable() {
-        // Plugin startup logic
-        commandManager = new SpigotCommandManager(this, new SpigotArgumentMapper(), new SpigotExceptionArgumentMapper());
-        commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
-        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
-        commandManager.registerArgumentTypeHandler(new DummyParser());
+    public void onDisable() {}
 
-        commandManager.addCommand(new TestCommand());
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
 }

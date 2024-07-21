@@ -20,6 +20,7 @@ import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 @Command("test")
@@ -149,12 +150,22 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testOptionalLong(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.getAsLong() : "null"));
     }
 
-    @SubCommand("optional meow <??long>")
+    @SubCommand("optional meow <?!long>")
     public void testOptionalLongMeow(Sender sender, Optional<Long> optLong) {
         sender.sendMessage("testOptionalLongMeow(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
     }
 
-    @SubCommand("optional meow <??long> wow")
+    @SubCommand("optional woof <!int>")
+    public void testOptionalWoof(Sender sender, OptionalInt optInt) {
+        if (optInt.isEmpty()) {
+            sender.sendMessage("testOptionalWoof(Sender sender, OptionalInt optInt) got null");
+            return;
+        }
+
+        sender.sendMessage("testOptionalWoof(Sender sender, OptionalInt optInt) got " + optInt.getAsInt());
+    }
+
+    @SubCommand("optional meow <!?long> wow")
     public void testOptionalLongMeow1(Sender sender, Optional<Long> optLong) {
         sender.sendMessage("testOptionalLongMeow1(Sender sender, Optional<Long> num) got " + (optLong.isPresent() ? optLong.get() : "null"));
     }

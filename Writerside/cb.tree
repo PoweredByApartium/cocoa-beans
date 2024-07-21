@@ -12,9 +12,11 @@
             <toc-element topic="Advanced-error-handling.md"/>
             <toc-element topic="Integer-arguments.md"/>
             <toc-element topic="Simple-custom-argument-types.md"/>
+            <toc-element topic="Optional-Argument.md"/>
         </toc-element>
         <toc-element topic="Advanced-reusable-parsers.md"/>
     </toc-element>
+    <toc-element topic="Visibility-Api.md"/>
     <toc-element topic="Collections.md"/>
 
 </instance-profile>
