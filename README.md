@@ -1,3 +1,5 @@
+![main](https://github.com/poweredbyapartium/cocoa-beans/actions/workflows/main.yml/badge.svg)
+![release](https://github.com/poweredbyapartium/cocoa-beans/actions/workflows/release.yml/badge.svg)
 ![GitHub](https://img.shields.io/github/license/PoweredByApartium/cocoa-beans)
 
 ## Welcome to Cocoa beans!
@@ -7,11 +9,11 @@ and a common java module and commands java module and commands spigot module ins
 **Contributions are welcome!**
 
 ### Relevant Links
-* [Spigot javadocs](https://cocoa-beans.apartium.net/spigot/)
-* [Common javadocs](https://cocoa-beans.apartium.net/common/)
-* [Command javadocs](https://cocoa-beans.apartium.net/commands/)
-* [Command Spigot javadocs](https://cocoa-beans.apartium.net/commands-spigot/)
-* [Our wiki](https://github.com/PoweredByApartium/cocoa-beans/wiki)
+* [🚰 Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/spigot/)
+* [📄 Common javadocs](https://cocoa-beans.apartium.net/snapshot/common/)
+* [🖥️ Command javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
+* [🤖 Command Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)
+* [📜 Our wiki](https://cocoa-beans.apartium.net/)
 <br/>
 
 >[!IMPORTANT]
@@ -71,18 +73,8 @@ dependencies {
 }
 ```
 
-## Contributors
-Shout out to our contributors:<br>
-<a href="https://github.com/PoweredByApartium/cocoa-beans/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=PoweredByApartium/cocoa-beans" />
-</a>
-
-| contributor | Profile     | 
-| :-------- | :------- |
-| `Liorsl` | https://github.com/liorsl |
-| `Ikfir` | https://github.com/ikfir |
-| `OfirTim` | https://github.com/ofirtim|
-
 ## Contributing
 This project is at a very early stage right now, with a very minimal set of features included.
 Any contribution of high quality code is welcome. 
+
+[Read more](https://github.com/PoweredByApartium/cocoa-beans/blob/main/CONTRIBUTING.md)
