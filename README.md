@@ -1,3 +1,5 @@
+![main](https://github.com/poweredbyapartium/cocoa-beans/actions/workflows/main.yml/badge.svg)
+![release](https://github.com/poweredbyapartium/cocoa-beans/actions/workflows/release.yml/badge.svg)
 ![GitHub](https://img.shields.io/github/license/PoweredByApartium/cocoa-beans)
 
 ## Welcome to Cocoa beans!
