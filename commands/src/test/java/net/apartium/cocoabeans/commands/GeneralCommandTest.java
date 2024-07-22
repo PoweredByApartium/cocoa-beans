@@ -22,25 +22,17 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class
-
-GeneralCommandTest {
+public class  GeneralCommandTest extends CommandTestBase {
 
     CommandForTest commandForTest;
 
-    TestCommandManager testCommandManager;
 
-    TestSender sender;
-
+    @Override
     @BeforeEach
-    void before() {
+    public void before() {
+        super.before();
         commandForTest = new CommandForTest();
-        testCommandManager = new TestCommandManager();
-
-        testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
         testCommandManager.addCommand(commandForTest);
-
-        sender = new TestSender();
 
     }
 
