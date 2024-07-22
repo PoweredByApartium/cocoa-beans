@@ -8,6 +8,6 @@ Supported versions are currently as follows:
 | ------- | ------------------ |
 | 0.x.x   | :white_check_mark: |
 
-## 🔓 Reporting a Vulnerability
+## 💣 Reporting a Vulnerability
 
 Send me a message at GitHub or e-mail me at security@apartium.net
