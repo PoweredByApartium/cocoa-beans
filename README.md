@@ -71,18 +71,8 @@ dependencies {
 }
 ```
 
-## Contributors
-Shout out to our contributors:<br>
-<a href="https://github.com/PoweredByApartium/cocoa-beans/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=PoweredByApartium/cocoa-beans" />
-</a>
-
-| contributor | Profile     | 
-| :-------- | :------- |
-| `Liorsl` | https://github.com/liorsl |
-| `Ikfir` | https://github.com/ikfir |
-| `OfirTim` | https://github.com/ofirtim|
-
 ## Contributing
 This project is at a very early stage right now, with a very minimal set of features included.
 Any contribution of high quality code is welcome. 
+
+[Read more](https://github.com/PoweredByApartium/cocoa-beans/blob/main/CONTRIBUTING.md)
