@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlayerParser extends ArgumentParser<Player> {
 
@@ -34,6 +35,9 @@ public class PlayerParser extends ArgumentParser<Player> {
 
         Player player = Bukkit.getPlayerExact(args.get(startIndex));
         if (player == null)
+            return Optional.empty();
+
+        if (processingContext.sender() instanceof Player sender && !sender.canSee(player))
             return Optional.empty();
 
         return Optional.of(new ParseResult<>(
@@ -58,11 +62,15 @@ public class PlayerParser extends ArgumentParser<Player> {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
 
-        return Optional.of(new TabCompletionResult(
-                Bukkit.getOnlinePlayers().stream()
-                        .map(Player::getName)
-                        .filter(s -> s.toLowerCase().startsWith(args.get(startIndex).toLowerCase()))
-                        .collect(Collectors.toSet()),
+        Stream<? extends Player> stream = Bukkit.getOnlinePlayers().stream();
+
+        if (processingContext.sender() instanceof Player sender)
+            stream = stream.filter(sender::canSee);
+
+        return Optional.of(new TabCompletionResult(stream
+                .map(Player::getName)
+                .filter(s -> s.toLowerCase().startsWith(args.get(startIndex).toLowerCase()))
+                .collect(Collectors.toSet()),
                 startIndex + 1
         ));
     }
