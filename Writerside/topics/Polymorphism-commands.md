@@ -148,6 +148,58 @@ public class GamemodeModeCommand extends GamemodeCommandBase {
     public void otherSetGamemode(CommandSender sender, Player target, GameMode gamemode) {
         setGamemode(sender, target, gamemode);
     }
+
+    @SourceParser(keyword = "gamemode", clazz = GameMode.class, resultMaxAgeInMills = -1)
+    public Map<String, GameMode> gamemode() {
+        return Arrays.stream(GameMode.values()).collect(Collectors.toMap(
+                value -> value.name().toLowerCase(), value -> value
+        ));
+    }
+
+    @SourceParser(keyword = "gamemode-int-value", clazz = GameMode.class, resultMaxAgeInMills = -1)
+    public Map<String, GameMode> gamemodeAsInt() {
+        return Arrays.stream(GameMode.values()).collect(Collectors.toMap(
+                value -> value.value() + "", value -> value
+        ));
+    }
     
 }
 ```
+
+## More examples
+<tabs>
+<tab title="Minigame">
+
+```java
+public class GameCommandBase implements CommandNode {
+    
+    @SubCommand("start")
+    public abstract void start(Sender sender);
+    
+    @SubCommand("stop")
+    public abstract void stop(Sender sender);
+    
+    @SubCommand("add <player>")
+    public abstract void addPlayer(Sender sender, Player target);
+    
+    @SubCommand("kick <player>")
+    public abstract void kickPlayer(Sender sender, Player target);
+    
+    @SubCommand("set stage <game-stage>")
+    public abstract void setGameStage(Sender sender, GameStage stage);
+    
+}
+
+public enum GameStage {
+    WAITING,
+    STARTING,
+    ON_GOING,
+    ENDING,
+    CLOSED,
+    FAILED,
+    UNKNOWN
+}
+```
+
+</tab>
+</tabs>

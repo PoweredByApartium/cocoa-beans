@@ -1,10 +1,14 @@
 package net.apartium.cocoabeans.commands.multilayered;
 
 import net.apartium.cocoabeans.commands.CommandTestBase;
+import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

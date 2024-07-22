@@ -1,5 +1,9 @@
 # 🔬 Advanced error handling
 
+## Deprecated
+there is new way to work with error handling but this way still work
+we will write about it soon so keep your eyes 👁️ on the wiki
+
 Error handling is done via parser priorities. As a best practice you should specify priority for fallback sub commands as negative integers. In the following example, there are 3 fallbacks:
 
 * One with priority of -5, which is called if more than one param is executed
