@@ -9,3 +9,4 @@ You can find some examples of using the commands system in this page
 * [`Simple custom argument types`](Simple-custom-argument-types.md)
 * [`Optional Argument`](Optional-Argument.md)
 * [`Advanced reusable parsers`](Advanced-reusable-parsers.md)
+* [`Polymorphism Commands`](Polymorphism-commands.md)
