@@ -88,7 +88,12 @@ public class MethodUtils {
         if (clazz.getSuperclass() == null)
             return null;
 
-        return ReflectionCache.getDeclaredMethod(clazz.getSuperclass(), method.getName(), method.getParameterTypes());
+        try {
+            return clazz.getSuperclass().getMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+        //return ReflectionCache.getDeclaredMethod(clazz.getSuperclass(), method.getName(), method.getParameterTypes());
     }
 
     /**
@@ -102,10 +107,14 @@ public class MethodUtils {
         List<Method> methods = new ArrayList<>();
 
         for (Class<?> anInterface : interfaces) {
-            Method declaredMethod = ReflectionCache.getDeclaredMethod(anInterface, method.getName(), method.getParameterTypes());
-            if (declaredMethod != null) {
-                methods.add(declaredMethod);
+            Method declaredMethod;
+            try {
+                declaredMethod = anInterface.getMethod(method.getName(), method.getParameterTypes());
+            } catch (NoSuchMethodException e) {
+                continue;
             }
+            //Method declaredMethod = ReflectionCache.getDeclaredMethod(anInterface, method.getName(), method.getParameterTypes());
+            methods.add(declaredMethod);
         }
 
         return methods.toArray(new Method[0]);

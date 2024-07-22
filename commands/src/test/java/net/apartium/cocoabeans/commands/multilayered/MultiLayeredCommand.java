@@ -1,11 +1,18 @@
 package net.apartium.cocoabeans.commands.multilayered;
 
+import net.apartium.cocoabeans.commands.Command;
+import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.TestSender;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 
-class MultiLayeredCommand extends MultiLayeredCommandBase {
+@Command("multilayered")
+public class MultiLayeredCommand extends MultiLayeredCommandBase {
+
+    @SubCommand("mystery <meow>")
+    public void mystery(TestSender sender, String meow) {
+        sender.sendMessage("Mystery " + meow);
+    }
 
     @Override
     public void greetUser(TestSender sender) {

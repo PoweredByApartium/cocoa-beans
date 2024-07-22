@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.multilayered;
 
 import net.apartium.cocoabeans.commands.CommandTestBase;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MultiLayeredCommandTest extends CommandTestBase {
 
+    @BeforeEach
     @Override
     public void before() {
         super.before();
@@ -27,6 +29,16 @@ public class MultiLayeredCommandTest extends CommandTestBase {
 
         evaluate("multilayered", "greet");
         assertNextMessage("Hello!");
+    }
+
+    @Test
+    public void mysteryTest() {
+        sender.addPermission("cocoa-beans.commands.multilayered");
+
+        evaluate("multilayered", "mystery meow");
+        assertNextMessage("Mystery test0");
+        evaluate("multilayered", "mystery woof");
+        assertNextMessage("Mystery test1");
     }
 
     @Test
@@ -64,16 +76,31 @@ public class MultiLayeredCommandTest extends CommandTestBase {
 
     @Test
     public void shhTest() {
+        sender.addPermission("cocoa-beans.commands.multilayered");
+
         evaluate("multilayered", "shh");
 
         assertNextMessage("Shh!");
     }
 
     // TODO add test for lol both int and string
+    @Test
+    void lolTest() {
+        sender.addPermission("cocoa-beans.commands.multilayered");
+
+        evaluate("multilayered", "lol 21");
+        assertNextMessage("Lol x21");
+
+        evaluate("multilayered", "lol 1a");
+        assertNextMessage("Lol 1a");
+    }
 
     @Test
     public void receivedOnlinePlayersSize() {
         sender.addPermission("cocoa-beans.commands.multilayered");
+
+        evaluate("multilayered", "users");
+
         assertNextMessage("There are 20 users online!");
     }
 

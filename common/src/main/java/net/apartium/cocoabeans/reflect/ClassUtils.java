@@ -32,7 +32,7 @@ public class ClassUtils {
         if (clazz == null || clazz == Object.class)
             return Collections.emptyList();
 
-        Set<Class<? super T>> set = new HashSet<>();
+        Set<Class<? super T>> set = new LinkedHashSet<>();
         set.add(clazz);
 
         if (!clazz.isInterface()) {

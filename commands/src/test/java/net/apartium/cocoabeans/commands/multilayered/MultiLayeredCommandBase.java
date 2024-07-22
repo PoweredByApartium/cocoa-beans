@@ -8,8 +8,10 @@ import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.parsers.IntParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 
+import java.util.Map;
+
 @Permission("cocoa-beans.commands.multilayered")
-public abstract class MultiLayeredCommandBase implements CommandNode, IMeowCommand {
+public abstract class MultiLayeredCommandBase implements CommandNode, IMeowCommand, MySourceParser {
 
     @SubCommand("greet")
     public abstract void greetUser(TestSender sender);
@@ -33,9 +35,7 @@ public abstract class MultiLayeredCommandBase implements CommandNode, IMeowComma
     @WithParser(value = IntParser.class, priority = 10)
     @SubCommand("lol <int>")
     public void lol(TestSender sender, int times) {
-        for (int i = 0; i < times; i++) {
-            sender.sendMessage("lol");
-        }
+        sender.sendMessage("Lol x" + times);
     }
 
     @SubCommand("lol <string>")
@@ -44,5 +44,13 @@ public abstract class MultiLayeredCommandBase implements CommandNode, IMeowComma
     @ExceptionHandle(PermissionException.class)
     public void noPermission(TestSender sender, PermissionException permissionException) {
         sender.sendMessage("You got no permissions to run this command you fool!");
+    }
+
+    @Override
+    public Map<String, String> meow() {
+        return Map.of(
+                "meow", "test0",
+                "woof", "test1"
+        );
     }
 }
