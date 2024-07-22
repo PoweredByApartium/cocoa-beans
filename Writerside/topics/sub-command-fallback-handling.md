@@ -1,4 +1,6 @@
-# 🔬 Advanced error handling
+# 🔬 Sub command fallback handling
+
+NOTE: Fallback can be replaced by using [🪤 Exception handling](sub-command-fallback-handling.md)
 
 ## Deprecated
 there is new way to work with error handling but this way still work

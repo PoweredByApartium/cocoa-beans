@@ -2,16 +2,18 @@
 
 **Table of content:**
 - [Introduction](#introduction)
-- [Explain about argument of source parser](#explain-meow)
+- [What is source parser](#what-is-source-parser)
 - [Usage](#usage)
 - [When to use it](#where-should-you-use-source-parser)
 
 <br id="introduction"/>
 Source parser are simple way to create parser
 
-## Explain meow
-Source parser are above function that return Map of `String` as key and `Object` as value obj could be anything You can just return instead of `Object` an enum value `Map<String, GameMode>`<br/>Also source parser have 4 arguments 2 of them are most have<br/>
-<sub>* is for must have argument</sub>
+## What is source parser
+Source parser are above function that return Map of `String` as key and `Object` as value obj could be anything You can just return instead of `Object` an enum value `Map<String, GameMode>`
+<br/>Source parser are just an simple way to create key value peer parser
+<br/>Also source parser have 4 arguments 2 of them are most have
+<br/><sub>* is for must have argument</sub>
 * `keyword`* The Keyword that triggers the parser
 * `priority` (default 0) Parser priority
 * `clazz`* The return type of the parser

@@ -1,27 +1,19 @@
-# 🧬 Polymorphism commands
-
-**Table of content:**
-- [Introduction](#introduction)
-- [How can we use it](#way-it-can-be-used)
-- [Making gamemode command](#example-of-using-polymorphism-commands)
+# 🧬 Polymorphic command declaration
 
 <br id="introduction"/>
-[🧬 Polymorphism](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) commands are way to make the process of writing commands easier and avoid code duplication.
-At also provide easier way to edit the syntax of group of commands.
+[🧬 Polymorphic](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) command declaration are way to make the process of writing commands easier and avoid code duplication in certain cases.
 
-## Way it can be used
+Polymorphic command declaration allows combining interfaces and classes, which can include sub commands, exception handles, source parsers and more. 
 
-**TODO Voigon Write here**
-points:
- - interfaces
- - abstract class
- - just general polymorphism
+### An Example of creating command with Polymorphic
 
-## Example of using Polymorphism commands
+A good way to showcase the capabilities of this feature is by demonstrating how a /gamemode command can be made. 
+Game mode is an enum value, the player can sets their own gamemode or set it for another player, if they have the permission for it.
+Because gamemode is an enum, we will also make short hand commands to use for each.
 
-**TODO Voigon Write here**
+This is the abstract class that is shared between all game mode commands. 
 ```java
-@Permission("net.apartium.cocoabeans.commands.gamemode.self")
+@Permission("example.commands.gamemode.self")
 /* package-private */ class GamemodeCommandBase implements CommandNode {
     
     protected setGamemode(CommandSender sender, Player target, GameMode gamemode) {
@@ -42,8 +34,7 @@ points:
 }
 ```
 
-**TODO Voigon Write here**
-
+The below example is the superclass for all shorthand commands (eg /gmc, /gms)
 ```java
 /* package-private */ class SpecificGamemodeCommandBase extends GamemodeCommandBase {
     
@@ -67,9 +58,7 @@ points:
     
 }
 ```
-
-**TODO Voigon Write here**
-
+Here is an example of creating short hand commands, note how minimal the class is. 
 <tabs>
 <tab title="Survival">
 
@@ -130,7 +119,7 @@ public class GamemodeSpectatorCommand extends SpecificGamemodeCommandBase {
 </tab>
 </tabs>
 
-**TODO Voigon Write here**
+We would also like to allow players to use the full form of the command, eg /gamemode creative.
 ```java
 @Command(value = "gamemode", aliases = {"gm"})
 public class GamemodeModeCommand extends GamemodeCommandBase {
@@ -166,9 +155,72 @@ public class GamemodeModeCommand extends GamemodeCommandBase {
 }
 ```
 
+Here we have a diagram of everything we have done 
+```plantuml
+@startuml
+left to right direction
+
+Class GamemodeCommandBase implements CommandNode {
+# setGamemode(
+    \tsender: CommandSender,
+    \ttarget: Player,
+    \tgamemode: GameMode
+): void
+---
+- cleanName(gamemode: GameMode): String
+}
+
+Class SpecificGamemodeCommandBase extends GamemodeCommandBase {
+- GameMode gamemode
+---
+@SenderLimit(SenderType.PLAYER)
+@SubCommand
++ selfSetGamemode(sender: Player): void
+
+---
+@SenderLimit(SenderType.PLAYER)
+@SubCommand
++ otherSetGamemode(sender: CommandSender, target: Player): void
+}
+
+
+Class GamemodeSurvivalCommand extends SpecificGamemodeCommandBase {
+
+}
+
+Class GamemodeCreativeCommand extends SpecificGamemodeCommandBase {
+
+}
+
+Class GamemodeAdventureCommand extends SpecificGamemodeCommandBase {
+
+}
+
+Class GamemodeSpectatorCommand extends SpecificGamemodeCommandBase {
+
+}
+
+Class GamemodeModeCommand extends GamemodeCommandBase {
+@SenderLimit(SenderType.PLAYER)
+@SubCommand("<gamemode>")
+@SubCommand("<gamemode-int-value>")
++ selfSetGamemode(sender: Player, gamemode: GameMode): void
+
+@Permission("net.apartium.cocoabeans.commands.gamemode.other")
+@SubCommand("<gamemode> <player>")
+@SubCommand("<gamemode-int-value> <player>")
++ otherSetGamemode(sender: CommandSender, target: Player, gamemode: GameMode)
+
++ gamemode(): Map<String, GameMode>
++ gamemodeAsInt(): Map<String, GameMode>
+}
+
+@enduml
+```
+
 ## More examples
 <tabs>
-<tab title="Minigame">
+<tab title="Minigame command">
 
 ```java
 public class GameCommandBase implements CommandNode {
@@ -203,3 +255,6 @@ public enum GameStage {
 
 </tab>
 </tabs>
+
+## Conclusion 🎉
+By using polymorphic command declaration, we can create a robust and clean command system that is easy to extend and maintain, providing a better developer experience and improving the overall quality of the codebase.

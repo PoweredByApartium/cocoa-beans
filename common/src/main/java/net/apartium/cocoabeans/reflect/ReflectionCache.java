@@ -77,6 +77,13 @@ import java.util.stream.Stream;
         return Stream.of(result.methods);
     }
 
+    /* package-private */ static Method getMethod(Class<?> clazz, String name, Class<?>[] params) {
+        return getMethods(clazz)
+                .filter(method -> method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), params))
+                .findAny()
+                .orElse(null);
+    }
+
     /* package-private */ static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>[] params) {
         return getDeclaredMethods(clazz)
                 .filter(method -> method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), params))
