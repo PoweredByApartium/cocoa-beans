@@ -7,11 +7,11 @@ and a common java module and commands java module and commands spigot module ins
 **Contributions are welcome!**
 
 ### Relevant Links
-* [Spigot javadocs](https://cocoa-beans.apartium.net/spigot/)
-* [Common javadocs](https://cocoa-beans.apartium.net/common/)
-* [Command javadocs](https://cocoa-beans.apartium.net/commands/)
-* [Command Spigot javadocs](https://cocoa-beans.apartium.net/commands-spigot/)
-* [Our wiki](https://github.com/PoweredByApartium/cocoa-beans/wiki)
+* [🚰 Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/spigot/)
+* [📄 Common javadocs](https://cocoa-beans.apartium.net/snapshot/common/)
+* [🖥️ Command javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
+* [🤖 Command Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)
+* [📜 Our wiki](https://cocoa-beans.apartium.net/)
 <br/>
 
 >[!IMPORTANT]
