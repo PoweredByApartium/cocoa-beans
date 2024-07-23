@@ -203,7 +203,7 @@ jobs:
         env:
           version: ${{ github.event.inputs.name }}
         run: |
-          git reset --hard origin
+          git reset --hard
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
