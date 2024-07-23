@@ -60,7 +60,7 @@ class DummiesTest {
         assertFalse(list.add("AA"));
         assertEquals(0, list.size());
         assertFalse(list.remove(""));
-        assertFalse(list.isEmpty());
+        assertTrue(list.isEmpty());
         assertFalse(list.contains("X"));
         assertNull(list.get(0));
         assertFalse(list.containsAll(Arrays.asList("X", "Z")));
@@ -79,7 +79,7 @@ class DummiesTest {
         assertFalse(collection.add("AA"));
         assertEquals(0, collection.size());
         assertFalse(collection.remove(""));
-        assertFalse(collection.isEmpty());
+        assertTrue(collection.isEmpty());
         assertFalse(collection.contains("X"));
         assertFalse(collection.containsAll(Arrays.asList("X", "Z")));
         assertFalse(collection.iterator().hasNext());

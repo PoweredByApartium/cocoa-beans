@@ -71,7 +71,7 @@ public class Dummies {
 
         @Override
         public boolean isEmpty() {
-            return false;
+            return true;
         }
 
         @Override
@@ -144,7 +144,7 @@ public class Dummies {
 
         @Override
         public boolean isEmpty() {
-            return false;
+            return true;
         }
 
         @Override
