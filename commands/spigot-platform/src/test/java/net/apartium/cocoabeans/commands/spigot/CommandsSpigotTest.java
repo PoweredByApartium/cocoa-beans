@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,6 +76,24 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
     void location() {
         execute(ikfir, "test location world 30 60 30");
         assertEquals("Is that your location? world 30.0 60.0 30.0", ikfir.nextMessage());
+    }
+
+    @Test
+    void whoIs() {
+        PlayerMock voigon = server.addPlayer("Voigon");
+
+        execute(ikfir, "test who voigon");
+        assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
+
+        ikfir.hidePlayer(plugin, voigon);
+
+        execute(ikfir, "test who voigon");
+        assertEquals("idk who is voigon", ikfir.nextMessage());
+
+        ikfir.showPlayer(plugin, voigon);
+
+        execute(ikfir, "test who voigon");
+        assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
     }
 
 }

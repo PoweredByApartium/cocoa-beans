@@ -40,7 +40,11 @@ public class PlayerParser extends ArgumentParser<Player> {
         if (processingContext.sender() instanceof Player sender && !sender.canSee(player))
             return Optional.empty();
 
-        return Optional.of(new ParseResult<>(
+        if (processingContext.sender().getSender() != null && processingContext.sender().getSender() instanceof Player sender && !sender.canSee(player))
+            return Optional.empty();
+
+
+            return Optional.of(new ParseResult<>(
                 player,
                 startIndex + 1
         ));
@@ -48,13 +52,7 @@ public class PlayerParser extends ArgumentParser<Player> {
 
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
-        int startIndex = processingContext.index();
-
-        if (Bukkit.getPlayerExact(args.get(startIndex)) == null)
-            return OptionalInt.empty();
-
-        return OptionalInt.of(startIndex + 1);
+        return parse(processingContext).map(ParseResult::newIndex).map(OptionalInt::of).orElse(OptionalInt.empty());
     }
 
     @Override
