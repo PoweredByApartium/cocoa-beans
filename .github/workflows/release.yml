@@ -221,7 +221,7 @@ jobs:
           perv_version: ${{ steps.perv_version.outputs.version }}
         run: |
           git fetch origin
-          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git checkout origin gh-pages || git checkout -b origin gh-pages 
           git pull origin gh-pages || true
           
           if [ -d "$perv_version" ]; then
