@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlayerParser extends ArgumentParser<Player> {
 
@@ -36,7 +37,14 @@ public class PlayerParser extends ArgumentParser<Player> {
         if (player == null)
             return Optional.empty();
 
-        return Optional.of(new ParseResult<>(
+        if (processingContext.sender() instanceof Player sender && !sender.canSee(player))
+            return Optional.empty();
+
+        if (processingContext.sender().getSender() != null && processingContext.sender().getSender() instanceof Player sender && !sender.canSee(player))
+            return Optional.empty();
+
+
+            return Optional.of(new ParseResult<>(
                 player,
                 startIndex + 1
         ));
@@ -44,13 +52,7 @@ public class PlayerParser extends ArgumentParser<Player> {
 
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
-        int startIndex = processingContext.index();
-
-        if (Bukkit.getPlayerExact(args.get(startIndex)) == null)
-            return OptionalInt.empty();
-
-        return OptionalInt.of(startIndex + 1);
+        return parse(processingContext).map(ParseResult::newIndex).map(OptionalInt::of).orElse(OptionalInt.empty());
     }
 
     @Override
@@ -58,11 +60,15 @@ public class PlayerParser extends ArgumentParser<Player> {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
 
-        return Optional.of(new TabCompletionResult(
-                Bukkit.getOnlinePlayers().stream()
-                        .map(Player::getName)
-                        .filter(s -> s.toLowerCase().startsWith(args.get(startIndex).toLowerCase()))
-                        .collect(Collectors.toSet()),
+        Stream<? extends Player> stream = Bukkit.getOnlinePlayers().stream();
+
+        if (processingContext.sender() instanceof Player sender)
+            stream = stream.filter(sender::canSee);
+
+        return Optional.of(new TabCompletionResult(stream
+                .map(Player::getName)
+                .filter(s -> s.toLowerCase().startsWith(args.get(startIndex).toLowerCase()))
+                .collect(Collectors.toSet()),
                 startIndex + 1
         ));
     }

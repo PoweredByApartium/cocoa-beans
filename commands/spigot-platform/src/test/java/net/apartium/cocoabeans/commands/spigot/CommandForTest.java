@@ -1,8 +1,11 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.Command;
+import net.apartium.cocoabeans.commands.CommandContext;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.SubCommand;
+import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
+import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -30,6 +33,11 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("Teleporting " + from.getName() + " to " + to.getName());
     }
 
+    @SubCommand("who <player>")
+    public void whoIs(CommandSender sender, Player target) {
+        sender.sendMessage("Who is " + target.getName() + "? " + target.getUniqueId());
+    }
+
     @SubCommand("give <player> <material> <?int>")
     public void give(CommandSender sender, Player player, Material material, OptionalInt amount) {
         if (amount.isPresent() && amount.getAsInt() <= 0) {
@@ -44,6 +52,16 @@ public class CommandForTest implements CommandNode {
     @SubCommand("location <location>")
     public void location(CommandSender sender, Location location) {
         sender.sendMessage("Is that your location? " + location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ());
+    }
+
+    @ExceptionHandle(value = InvalidUsageResponse.InvalidUsageException.class)
+    public void invalidUsage(CommandSender sender, CommandContext context) {
+        if (context == null || context.args().length != 2 && !context.args()[0].equalsIgnoreCase("who")) {
+            sender.sendMessage("Invalid usage");
+            return;
+        }
+
+        sender.sendMessage("idk who is " + context.args()[1]);
     }
 
 }

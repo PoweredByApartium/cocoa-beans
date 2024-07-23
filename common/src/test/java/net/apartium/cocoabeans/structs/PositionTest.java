@@ -102,7 +102,6 @@ public class PositionTest {
     @Test
     void normalize() {
         Position position = new Position(18, 12, 6);
-        System.out.println(position.normalize());
         assertEquals(new Position(0.8017837257372732, 0.5345224838248488, 0.2672612419124244), position.normalize());
     }
 
