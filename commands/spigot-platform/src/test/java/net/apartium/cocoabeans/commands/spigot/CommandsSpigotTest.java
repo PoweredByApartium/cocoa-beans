@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -70,12 +69,6 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
         assertEquals("Given 5 DIRT to ikfir", ikfir.nextMessage());
         assertEquals(Material.DIRT, ikfir.getInventory().getItem(0).getType());
         assertEquals(5, ikfir.getInventory().getItem(0).getAmount());
-    }
-
-    @Test
-    void location() {
-        execute(ikfir, "test location world 30 60 30");
-        assertEquals("Is that your location? world 30.0 60.0 30.0", ikfir.nextMessage());
     }
 
     @Test

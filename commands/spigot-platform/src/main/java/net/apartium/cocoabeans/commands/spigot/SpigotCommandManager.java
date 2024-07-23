@@ -14,6 +14,7 @@ import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.exception.SpigotExceptionArgumentMapper;
+import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.MaterialParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.OfflinePlayerParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.PlayerParser;
@@ -35,7 +36,8 @@ public class SpigotCommandManager extends CommandManager {
     public static final Set<ArgumentParser<?>> SPIGOT_PARSERS = Set.of(
             new PlayerParser(0),
             new OfflinePlayerParser(0),
-            new MaterialParser(0)
+            new MaterialParser(0),
+            new LocationParser(0)
     );
 
     private final JavaPlugin plugin;
