@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rules SYSTEM "https://resources.jetbrains.com/writerside/1.0/redirection-rules.dtd">
+<rules>
+    <!-- format is as follows
+    <rule id="<unique id>">
+        <accepts>page.html</accepts>
+    </rule>
+    -->
+    <rule id="2378df06">
+        <description>Created after removal of "Examples" from Cocoa Beans</description>
+        <accepts>Examples.html</accepts>
+    </rule>
+    <rule id="24fe31d3">
+        <description>Created after removal of "כ" from Cocoa Beans</description>
+        <accepts>כ.html</accepts>
+    </rule>
+    <rule id="35448d6d">
+        <description>Created after removal of "f" from Cocoa Beans</description>
+        <accepts>f.html</accepts>
+    </rule>
+</rules>

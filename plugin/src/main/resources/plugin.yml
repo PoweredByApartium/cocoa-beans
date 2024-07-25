@@ -1,0 +1,5 @@
+name: CocoaBeans
+version: '${version}'
+main: net.apartium.cocoabeans.spigot.CocoaBeansSpigotLoader
+authors: [Voigon, Thebotgame, OfirTIM]
+website: https://cocoa-beans.apartium.net
