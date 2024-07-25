@@ -186,6 +186,18 @@ jobs:
 
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
+
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: .
+          ssh-key: true
       
       - name: Update html
         env:
