@@ -65,19 +65,6 @@ jobs:
           echo "Input version array: ${INPUT[@]}"
           
           echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ] && echo true || echo false)"
-
-      - name: Update Gradle Version
-        env:
-          branch: ${{ github.GITHUB_REF_NAME }}
-        run: |
-            git pull origin $branch
-            new_version=${{ github.event.inputs.name }}
-            gradle_properties="gradle.properties"
-            sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
-            echo "Updated project.version to $new_version"
-            git add gradle.properties
-            git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
-            git push origin $branch
       
       - uses: actions/setup-java@v3
         with:
