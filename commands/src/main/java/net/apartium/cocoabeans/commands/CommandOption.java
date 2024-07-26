@@ -37,6 +37,7 @@ import java.util.*;
             if (!registeredCommandVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
                 return new CommandContext(
                     sender,
+                    null,
                     this,
                     null,
                     args,
@@ -144,6 +145,7 @@ import java.util.*;
         return new CommandContext(
                 sender,
                 null,
+                null,
                 new InvalidUsageResponse(commandName, args, index),
                 args,
                 commandName,
@@ -169,6 +171,7 @@ import java.util.*;
                 if (!registeredCommandVariants.isEmpty())
                     return new CommandContext(
                             sender,
+                            null,
                             this,
                             null,
                             args,

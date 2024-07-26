@@ -75,6 +75,7 @@ import java.util.List;
 
                 return new CommandContext(
                         sender,
+                        null,
                         entry.value(),
                         null,
                         args,
@@ -104,7 +105,7 @@ import java.util.List;
         }
 
         if (commandError != null)
-            return new CommandContext(sender, null, commandError, args, commandName, new HashMap<>());
+            return new CommandContext(sender, null, null, commandError, args, commandName, new HashMap<>());
 
         return null;
     }

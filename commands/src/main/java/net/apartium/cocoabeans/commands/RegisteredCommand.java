@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
     private final List<RegisteredCommandNode> commands = new ArrayList<>();
     private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
+    private final CommandInfo commandInfo = new CommandInfo();
 
 
     RegisteredCommand(CommandManager commandManager) {
@@ -53,6 +54,9 @@ import java.util.stream.Collectors;
 
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
+
+        commandInfo.serialize(clazz.getAnnotations(), false);
+
         RequirementSet requirementSet = new RequirementSet(findAllRequirements(node, clazz));
 
         Method fallbackHandle;
@@ -220,8 +224,12 @@ import java.util.stream.Collectors;
             methodArgumentTypeHandlerMap.put(entry.getKey(), entry.getValue());
         }
 
+        CommandInfo methodInfo = new CommandInfo();
 
-
+        methodInfo.serialize(method.getAnnotations(), true);
+        for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
+            methodInfo.serialize(targetMethod.getAnnotations(), false);
+        }
 
         RequirementSet methodRequirements = new RequirementSet(
                 findAllRequirements(node, method),
@@ -239,6 +247,7 @@ import java.util.stream.Collectors;
                             publicLookup.unreflect(method),
                             serializeParameters(node, method.getParameters()),
                             node,
+                            methodInfo,
                             subCommand.priority()
                         ),
                         REGISTERED_COMMAND_VARIANT_COMPARATOR
@@ -334,6 +343,7 @@ import java.util.stream.Collectors;
                         publicLookup.unreflect(method),
                         serializeParameters(node, method.getParameters()),
                         node,
+                        methodInfo,
                         subCommand.priority()),
                     REGISTERED_COMMAND_VARIANT_COMPARATOR
             );
@@ -529,6 +539,10 @@ import java.util.stream.Collectors;
             params = new Object[0];
         }
         return (T) constructor.newInstance(params);
+    }
+
+    public CommandInfo getCommandInfo() {
+        return commandInfo;
     }
 
     public List<RegisteredCommandNode> getCommands() {

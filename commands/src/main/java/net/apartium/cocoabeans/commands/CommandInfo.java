@@ -2,7 +2,9 @@ package net.apartium.cocoabeans.commands;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +39,7 @@ public class CommandInfo {
         return Optional.of(usage);
     }
 
-    public Optional<LongDescription> getLongDescriptions() {
+    public Optional<LongDescription> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
 
@@ -45,6 +47,18 @@ public class CommandInfo {
             longDescription = longDescriptions.get(0);
 
         return Optional.of(longDescription);
+    }
+
+    public List<Description> getDescriptions() {
+        return Collections.unmodifiableList(descriptions);
+    }
+
+    public List<Usage> getUsages() {
+        return Collections.unmodifiableList(usages);
+    }
+
+    public List<LongDescription> getLongDescriptions() {
+        return Collections.unmodifiableList(longDescriptions);
     }
 
     public void addDescription(final Description description, boolean first) {
@@ -74,4 +88,22 @@ public class CommandInfo {
         longDescriptions.add(longDescription);
     }
 
+    public void serialize(Annotation[] annotations, boolean first) {
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof Description description) {
+                addDescription(description, first);
+                continue;
+            }
+
+            if (annotation instanceof Usage usage) {
+                addUsage(usage, first);
+                continue;
+            }
+
+            if (annotation instanceof LongDescription longDescription) {
+                addLongDescription(longDescription, first);
+                continue;
+            }
+        }
+    }
 }

@@ -180,6 +180,16 @@ public abstract class CommandManager {
     }
 
     private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
+        context = new CommandContext(
+                context.sender(),
+                registeredCommandVariant.commandInfo(),
+                context.option(),
+                context.error(),
+                context.args(),
+                context.commandName(),
+                context.parsedArgs()
+        );
+
         List<Object> parameters = argumentMapper.map(context, sender, registeredCommandVariant);
 
         for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
@@ -223,6 +233,14 @@ public abstract class CommandManager {
         }
 
         addCommand(commandNode, handler);
+    }
+
+    public CommandInfo getCommandInfo(String commandName) {
+        RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
+        if (registeredCommand == null)
+            return null;
+
+        return registeredCommand.getCommandInfo();
     }
 
     protected abstract void addCommand(CommandNode commandNode, Command command);
