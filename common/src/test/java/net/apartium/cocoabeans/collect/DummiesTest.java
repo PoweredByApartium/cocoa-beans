@@ -52,4 +52,41 @@ class DummiesTest {
         assertFalse(set.retainAll(Arrays.asList("x", "y")));
         assertFalse(set.removeAll(Arrays.asList("x", "y")));
     }
+
+    @Test
+    void dummyList() {
+        var list = Dummies.dummyList();
+        assertEquals(0, list.size());
+        assertFalse(list.add("AA"));
+        assertEquals(0, list.size());
+        assertFalse(list.remove(""));
+        assertTrue(list.isEmpty());
+        assertFalse(list.contains("X"));
+        assertNull(list.get(0));
+        assertFalse(list.containsAll(Arrays.asList("X", "Z")));
+        assertFalse(list.iterator().hasNext());
+        assertEquals(0, list.toArray().length);
+        assertEquals(0, list.toArray(new Object[0]).length);
+        assertFalse(list.addAll(Arrays.asList("x", "y")));
+        assertFalse(list.retainAll(Arrays.asList("x", "y")));
+        assertFalse(list.removeAll(Arrays.asList("x", "y")));
+    }
+
+    @Test
+    void dummyCollection() {
+        var collection = Dummies.dummyCollection();
+        assertEquals(0, collection.size());
+        assertFalse(collection.add("AA"));
+        assertEquals(0, collection.size());
+        assertFalse(collection.remove(""));
+        assertTrue(collection.isEmpty());
+        assertFalse(collection.contains("X"));
+        assertFalse(collection.containsAll(Arrays.asList("X", "Z")));
+        assertFalse(collection.iterator().hasNext());
+        assertEquals(0, collection.toArray().length);
+        assertEquals(0, collection.toArray(new Object[0]).length);
+        assertFalse(collection.addAll(Arrays.asList("x", "y")));
+        assertFalse(collection.retainAll(Arrays.asList("x", "y")));
+        assertFalse(collection.removeAll(Arrays.asList("x", "y")));
+    }
 }

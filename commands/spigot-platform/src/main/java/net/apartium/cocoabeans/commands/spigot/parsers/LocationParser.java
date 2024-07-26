@@ -13,9 +13,12 @@ package net.apartium.cocoabeans.commands.spigot.parsers;
 import net.apartium.cocoabeans.StringHelpers;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.entity.Entity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,29 +31,54 @@ public class LocationParser extends ArgumentParser<Location> {
 
     @Override
     public Optional<ParseResult<Location>> parse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
-        int index = processingContext.index();
-
-        if (args.size() - index < 4)
+        List<String> args = processingContext.args(); // pre 20 20 20 20
+        int index = processingContext.index(); // @SubCommand("pre <location>) 1
+        int leftArgs = args.size() - index;
+        if (leftArgs < 3)
             return Optional.empty();
 
-        String worldName = args.get(index);
+        World world = getSenderWorld(processingContext).orElse(null);
+        OptionalDouble optionalX = StringHelpers.parseDouble(args.get(index));
+        if (optionalX.isEmpty()) {
 
-        OptionalDouble optionalX = StringHelpers.parseDouble(args.get(index + 1));
-        OptionalDouble optionalY = StringHelpers.parseDouble(args.get(index + 2));
-        OptionalDouble optionalZ = StringHelpers.parseDouble(args.get(index + 3));
+            // if first arg is not numeric, x y z fields shift one argument, so the minimum number of args is 4 and not 3
+            if (leftArgs < 4)
+                return Optional.empty();
 
-        if (optionalX.isEmpty() || optionalY.isEmpty() || optionalZ.isEmpty())
+            world = Bukkit.getWorld(args.get(index++));
+            optionalX = StringHelpers.parseDouble(args.get(index));
+        }
+
+        index++;
+        OptionalDouble optionalY = StringHelpers.parseDouble(args.get(index++));
+        OptionalDouble optionalZ = StringHelpers.parseDouble(args.get(index++));
+
+        if (world == null || optionalX.isEmpty() || optionalY.isEmpty() || optionalZ.isEmpty())
             return Optional.empty();
 
-        World world = Bukkit.getWorld(worldName);
-        if (world == null)
-            return Optional.empty();
+        Location location = new Location(world, optionalX.getAsDouble(), optionalY.getAsDouble(), optionalZ.getAsDouble());
+        if ((args.size() - index) < 2)
+            return Optional.of(new ParseResult<>(location, index));
 
-        return Optional.of(new ParseResult<>(
-                new Location(world, optionalX.getAsDouble(), optionalY.getAsDouble(), optionalZ.getAsDouble()),
-                index + 4
-        ));
+        OptionalFloat optionalYaw = StringHelpers.parseFloat(args.get(index++));
+        OptionalFloat optionalPitch = StringHelpers.parseFloat(args.get(index));
+
+        if (optionalYaw.isEmpty() || optionalPitch.isEmpty())
+            return Optional.of(new ParseResult<>(location, index - 1));
+
+        location.setYaw(optionalYaw.getAsFloat());
+        location.setPitch(optionalPitch.getAsFloat());
+        
+        return Optional.of(new ParseResult<>(location, index + 1));
+    }
+
+    private Optional<World> getSenderWorld(CommandProcessingContext processingContext) {
+        if (processingContext.sender().getSender() instanceof BlockCommandSender console)
+            return Optional.of(console.getBlock().getWorld());
+        else if (processingContext.sender().getSender() instanceof Entity entity)
+            return Optional.of(entity.getWorld());
+        else
+            return Optional.empty();
     }
 
     @Override
