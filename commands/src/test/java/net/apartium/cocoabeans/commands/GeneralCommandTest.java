@@ -328,6 +328,19 @@ public class  GeneralCommandTest extends CommandTestBase {
     }
 
     @Test
+    void performanceTime() {
+        long start, end;
+
+        for (int i = 0; i < 16_384; i++) {
+            start = System.currentTimeMillis();
+            evaluate("test", "try random-string 0.3");
+            end = System.currentTimeMillis();
+            assertEquals(List.of("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is 0.3"), sender.getMessages());
+            assertTrue(end - start < 50);
+        }
+    }
+
+    @Test
     void stringsTest() {
         evaluate("test", "send hey");
         assertEquals(List.of("sendMessageToSender(Sender sender, String message) message have been sent: hey"), sender.getMessages());

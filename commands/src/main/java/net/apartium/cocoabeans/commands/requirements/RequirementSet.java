@@ -11,13 +11,12 @@
 package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * Immutable set of command requirements
@@ -26,6 +25,24 @@ import java.util.Set;
  */
 @ApiStatus.Internal
 public class RequirementSet implements Set<Requirement> {
+
+    public static Set<Requirement> createRequirementSet(Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, CommandNode commandNode, Annotation[] annotations) {
+        if (annotations == null || annotations.length == 0)
+            return Collections.emptySet();
+
+        Set<Requirement> requirements = new HashSet<>();
+
+        for (Annotation annotation : annotations) {
+            Requirement requirement = Requirement.createRequirement(requirementFactories, commandNode, annotation);
+            if (requirement == null)
+                continue;
+
+            requirements.add(requirement);
+        }
+
+        return requirements;
+    }
+
 
     private final Requirement[] requirements;
 

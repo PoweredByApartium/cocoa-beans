@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
                 node,
                 new RequirementSet(
                         requirementSet,
-                        createRequirementSet(node, fallbackHandle.getAnnotations())
+                        RequirementSet.createRequirementSet(commandManager.requirementFactories, node, fallbackHandle.getAnnotations())
                 ))
         );
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
@@ -405,58 +405,22 @@ import java.util.stream.Collectors;
         Set<Requirement> requirements = new HashSet<>();
 
         for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
-            requirements.addAll(createRequirementSet(commandNode, c.getAnnotations()));
+            requirements.addAll(RequirementSet.createRequirementSet(commandManager.requirementFactories, commandNode, c.getAnnotations()));
         }
 
         return requirements;
     }
 
     private Set<Requirement> findAllRequirements(CommandNode commandNode, Method method) {
-        Set<Requirement> requirements = new HashSet<>(createRequirementSet(commandNode, method.getAnnotations()));
+        Set<Requirement> requirements = new HashSet<>(RequirementSet.createRequirementSet(commandManager.requirementFactories, commandNode, method.getAnnotations()));
         for (Method target : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-            requirements.addAll(createRequirementSet(commandNode, target.getAnnotations()));
+            requirements.addAll(RequirementSet.createRequirementSet(commandManager.requirementFactories, commandNode, target.getAnnotations()));
         }
 
         return requirements;
     }
 
-    private Requirement getRequirement(CommandNode commandNode, Annotation annotation) {
-        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
-        if (commandRequirementType == null)
-            return null;
-
-        RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
-            try {
-                return commandRequirementType.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                return null;
-            }
-        });
-
-        if (requirementFactory == null)
-            return null;
-
-        return requirementFactory.getRequirement(commandNode, annotation);
-    }
-
-
-    private Set<Requirement> createRequirementSet(CommandNode commandNode, Annotation[] annotations) {
-        if (annotations == null || annotations.length == 0)
-            return Collections.emptySet();
-
-        Set<Requirement> requirements = new HashSet<>();
-
-        for (Annotation annotation : annotations) {
-            Requirement requirement = getRequirement(commandNode, annotation);
-            if (requirement == null)
-                continue;
-
-            requirements.add(requirement);
-        }
-
-        return requirements;
-    }
-
+    // TODO Add this
     private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 

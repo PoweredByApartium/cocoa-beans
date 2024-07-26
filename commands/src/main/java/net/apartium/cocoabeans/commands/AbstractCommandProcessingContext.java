@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @ApiStatus.Internal
-/* package-private */ class AbstractCommandProcessingContext implements CommandProcessingContext {
+public class AbstractCommandProcessingContext implements CommandProcessingContext {
 
     @NotNull
     private final Sender sender;
@@ -30,7 +30,7 @@ import java.util.List;
 
     private final String label;
 
-    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
+    public AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
         this.index = index;
@@ -61,5 +61,6 @@ import java.util.List;
     public RequirementResult senderMeetsRequirement(Requirement requirement) {
         return requirement.meetsRequirement(new RequirementEvaluationContext(sender, label, args.toArray(new String[0]), index));
     }
+
 
 }

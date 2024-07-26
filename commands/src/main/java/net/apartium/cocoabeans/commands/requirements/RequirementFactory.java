@@ -13,6 +13,10 @@ package net.apartium.cocoabeans.commands.requirements;
 import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
 public interface RequirementFactory {
 
     @Nullable

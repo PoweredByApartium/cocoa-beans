@@ -10,11 +10,37 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import net.apartium.cocoabeans.commands.CommandNode;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
 /**
  * Represents a requirement to run a command or a sub command, eg a permission, sender type (player / console etc)
  * @see RequirementFactory
  */
 public interface Requirement {
+
+    static Requirement createRequirement(Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, CommandNode commandNode, Annotation annotation) {
+        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
+        if (commandRequirementType == null)
+            return null;
+
+        RequirementFactory requirementFactory = requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
+            try {
+                return commandRequirementType.value().getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
+        });
+
+        if (requirementFactory == null)
+            return null;
+
+        return requirementFactory.getRequirement(commandNode, annotation);
+    }
+
 
 
     /**
