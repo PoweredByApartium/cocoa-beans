@@ -16,6 +16,7 @@ import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class PermissionFactory implements RequirementFactory {
@@ -29,17 +30,20 @@ public class PermissionFactory implements RequirementFactory {
         return new PermissionImpl(permission, permission.value(), permission.invert());
     }
 
+    // TODO inverted
     private record PermissionImpl(Permission permission, String permissionAsString, boolean invert) implements Requirement {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             Sender sender = context.sender();
-            if (sender == null || !(sender.getSender() instanceof CommandSender commandSender))
+
+            if ((sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))) {
                 return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
                         "You don't have permission to execute this command"
                 ));
+            }
 
             if (!commandSender.hasPermission(permissionAsString))
                 return RequirementResult.error(new UnmetPermissionResponse(

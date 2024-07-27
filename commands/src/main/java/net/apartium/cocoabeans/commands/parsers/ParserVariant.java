@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 public @interface ParserVariant {
 
     String value();
-    int priority();
+    int priority() default 0;
 
 }
