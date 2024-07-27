@@ -225,6 +225,14 @@ public abstract class CommandManager {
         addCommand(commandNode, handler);
     }
 
+    public CommandInfo getCommandInfo(String commandName) {
+        RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
+        if (registeredCommand == null)
+            return null;
+
+        return registeredCommand.getCommandInfo();
+    }
+
     protected abstract void addCommand(CommandNode commandNode, Command command);
 
     public ExceptionArgumentMapper getExceptionArgumentMapper() {
