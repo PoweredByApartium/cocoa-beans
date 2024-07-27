@@ -19,6 +19,10 @@ public class CommandInfo {
     private Usage usage;
     private LongDescription longDescription;
 
+    /**
+     * Get the first description
+     * @return the first description
+     */
     public Optional<Description> getDescription() {
         if (descriptions.isEmpty())
             return Optional.empty();
@@ -29,6 +33,10 @@ public class CommandInfo {
         return Optional.of(description);
     }
 
+    /**
+     * Get the first usage
+     * @return the first usage
+     */
     public Optional<Usage> getUsage() {
         if (usages.isEmpty())
             return Optional.empty();
@@ -39,6 +47,10 @@ public class CommandInfo {
         return Optional.of(usage);
     }
 
+    /**
+     * Get the first long description
+     * @return the first long description
+     */
     public Optional<LongDescription> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
@@ -49,19 +61,31 @@ public class CommandInfo {
         return Optional.of(longDescription);
     }
 
+    /**
+     * Get all descriptions
+     * @return all descriptions
+     */
     public List<Description> getDescriptions() {
         return Collections.unmodifiableList(descriptions);
     }
 
+    /**
+     * Get all usages
+     * @return all usages
+     */
     public List<Usage> getUsages() {
         return Collections.unmodifiableList(usages);
     }
 
+    /**
+     * Get all long descriptions
+     * @return all long descriptions
+     */
     public List<LongDescription> getLongDescriptions() {
         return Collections.unmodifiableList(longDescriptions);
     }
 
-    public void addDescription(final Description description, boolean first) {
+    /* package-private */ void addDescription(final Description description, boolean first) {
         if (first) {
             descriptions.add(0, description);
             return;
@@ -70,7 +94,7 @@ public class CommandInfo {
         descriptions.add(description);
     }
 
-    public void addUsage(final Usage usage, boolean first) {
+    /* package-private */ void addUsage(final Usage usage, boolean first) {
         if (first) {
             usages.add(0, usage);
             return;
@@ -79,7 +103,7 @@ public class CommandInfo {
         usages.add(usage);
     }
 
-    public void addLongDescription(final LongDescription longDescription, boolean first) {
+    /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
         if (first) {
             longDescriptions.add(0, longDescription);
             return;
@@ -88,7 +112,7 @@ public class CommandInfo {
         longDescriptions.add(longDescription);
     }
 
-    public void serialize(Annotation[] annotations, boolean first) {
+    /* package-private */ void serialize(Annotation[] annotations, boolean first) {
         for (Annotation annotation : annotations) {
             if (annotation instanceof Description description) {
                 addDescription(description, first);
