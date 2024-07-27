@@ -112,7 +112,7 @@ public class CommandInfo {
         longDescriptions.add(longDescription);
     }
 
-    /* package-private */ void serialize(Annotation[] annotations, boolean first) {
+    /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {
         for (Annotation annotation : annotations) {
             if (annotation instanceof Description description) {
                 addDescription(description, first);
@@ -129,5 +129,11 @@ public class CommandInfo {
                 continue;
             }
         }
+    }
+
+    /* package-private */ void fromCommandInfo(CommandInfo other) {
+        descriptions.addAll(other.descriptions);
+        usages.addAll(other.usages);
+        longDescriptions.addAll(other.longDescriptions);
     }
 }

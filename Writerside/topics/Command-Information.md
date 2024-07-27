@@ -96,7 +96,7 @@ If we want to get `CommandInfo` for the class itself we should call
 `commandManger.getCommandInfo(commandName);`
 
 ## Managing Multiple Descriptions, Usages, and Long Descriptions
-particularly when dealing with command-line interfaces, there are scenarios where multiple classes might define commands with the same name, or where command classes are extended. The `CommandInfo` class allows for multiple `@Description` annotations to accommodate these situations, ensuring comprehensive and accurate documentation.
+Particularly when dealing with command-line interfaces, there are scenarios where multiple classes might define commands with the same name, or where command classes are extended. The `CommandInfo` class allows for multiple `@Description` annotations to accommodate these situations, ensuring comprehensive and accurate documentation.
 
 ### Why Multiple Descriptions?
 

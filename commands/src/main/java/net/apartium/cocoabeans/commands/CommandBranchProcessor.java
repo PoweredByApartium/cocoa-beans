@@ -75,7 +75,7 @@ import java.util.List;
 
                 return new CommandContext(
                         sender,
-                        null,
+                        entry.value().getCommandInfo(),
                         entry.value(),
                         null,
                         args,

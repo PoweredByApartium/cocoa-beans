@@ -20,15 +20,11 @@ import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*package-private*/ class RegisteredCommand {
 
@@ -55,7 +51,7 @@ import java.util.stream.Collectors;
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
-        commandInfo.serialize(clazz.getAnnotations(), false);
+        commandInfo.fromAnnotations(clazz.getAnnotations(), false);
 
         RequirementSet requirementSet = new RequirementSet(findAllRequirements(node, clazz));
 
@@ -226,9 +222,9 @@ import java.util.stream.Collectors;
 
         CommandInfo methodInfo = new CommandInfo();
 
-        methodInfo.serialize(method.getAnnotations(), true);
+        methodInfo.fromAnnotations(method.getAnnotations(), true);
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-            methodInfo.serialize(targetMethod.getAnnotations(), false);
+            methodInfo.fromAnnotations(targetMethod.getAnnotations(), false);
         }
 
         RequirementSet methodRequirements = new RequirementSet(
@@ -236,9 +232,12 @@ import java.util.stream.Collectors;
                 requirementSet
         );
 
+
         String[] split = subCommand.value().split("\\s+");
         if (split.length == 0 || split.length == 1 && split[0].isEmpty()) {
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor);
+
+            cmdOption.getCommandInfo().fromCommandInfo(methodInfo);
 
             try {
                 CollectionHelpers.addElementSorted(
@@ -247,7 +246,6 @@ import java.util.stream.Collectors;
                             publicLookup.unreflect(method),
                             serializeParameters(node, method.getParameters()),
                             node,
-                            methodInfo,
                             subCommand.priority()
                         ),
                         REGISTERED_COMMAND_VARIANT_COMPARATOR
@@ -336,6 +334,8 @@ import java.util.stream.Collectors;
         }
 
 
+        currentCommandOption.getCommandInfo().fromCommandInfo(methodInfo);
+
         try {
             CollectionHelpers.addElementSorted(
                     currentCommandOption.getRegisteredCommandVariants(),
@@ -343,7 +343,6 @@ import java.util.stream.Collectors;
                         publicLookup.unreflect(method),
                         serializeParameters(node, method.getParameters()),
                         node,
-                        methodInfo,
                         subCommand.priority()),
                     REGISTERED_COMMAND_VARIANT_COMPARATOR
             );

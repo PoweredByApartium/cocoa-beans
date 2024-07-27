@@ -22,6 +22,7 @@ import java.util.*;
     private final CommandManager commandManager;
 
     private final List<RegisteredCommandVariant> registeredCommandVariants = new ArrayList<>();
+    private final CommandInfo commandInfo = new CommandInfo();
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
@@ -37,7 +38,7 @@ import java.util.*;
             if (!registeredCommandVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
                 return new CommandContext(
                     sender,
-                    null,
+                    commandInfo,
                     this,
                     null,
                     args,
@@ -171,7 +172,7 @@ import java.util.*;
                 if (!registeredCommandVariants.isEmpty())
                     return new CommandContext(
                             sender,
-                            null,
+                            commandInfo,
                             this,
                             null,
                             args,
@@ -332,6 +333,10 @@ import java.util.*;
 
     public List<RegisteredCommandVariant> getRegisteredCommandVariants() {
         return registeredCommandVariants;
+    }
+
+    public CommandInfo getCommandInfo() {
+        return commandInfo;
     }
 
     public List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {

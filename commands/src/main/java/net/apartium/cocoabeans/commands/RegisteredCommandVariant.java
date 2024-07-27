@@ -20,7 +20,6 @@ public record RegisteredCommandVariant(
         MethodHandle method,
         Parameter[] parameters,
         CommandNode commandNode,
-        CommandInfo commandInfo,
         int priority
 ) {
 

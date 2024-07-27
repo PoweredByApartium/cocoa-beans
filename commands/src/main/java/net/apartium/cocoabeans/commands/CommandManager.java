@@ -180,16 +180,6 @@ public abstract class CommandManager {
     }
 
     private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        context = new CommandContext(
-                context.sender(),
-                registeredCommandVariant.commandInfo(),
-                context.option(),
-                context.error(),
-                context.args(),
-                context.commandName(),
-                context.parsedArgs()
-        );
-
         List<Object> parameters = argumentMapper.map(context, sender, registeredCommandVariant);
 
         for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
