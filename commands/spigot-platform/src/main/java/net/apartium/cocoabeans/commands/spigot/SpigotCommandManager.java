@@ -64,8 +64,8 @@ public class SpigotCommandManager extends CommandManager {
     protected void addCommand(CommandNode commandNode, Command command) {
         org.bukkit.command.Command cmd = new org.bukkit.command.Command(
                 command.value(),
-                command.description(),
-                command.usage(),
+                Optional.ofNullable(commandNode.getClass().getAnnotation(Description.class)).map(Description::value).orElse(""),
+                Optional.ofNullable(commandNode.getClass().getAnnotation(Usage.class)).map(Usage::value).orElse(""),
                 Arrays.asList(command.aliases())
         ) {
             @Override

@@ -32,14 +32,4 @@ public @interface Command {
      */
     String[] aliases() default {};
 
-    /**
-     * Command description
-     */
-    String description() default "Meow";
-
-    /**
-     * Command usage info
-     */
-    String usage() default "";
-
 }

@@ -20,15 +20,11 @@ import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*package-private*/ class RegisteredCommand {
 
@@ -43,6 +39,7 @@ import java.util.stream.Collectors;
     private final List<RegisteredCommandNode> commands = new ArrayList<>();
     private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
+    private final CommandInfo commandInfo = new CommandInfo();
 
 
     RegisteredCommand(CommandManager commandManager) {
@@ -53,6 +50,9 @@ import java.util.stream.Collectors;
 
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
+
+        commandInfo.fromAnnotations(clazz.getAnnotations(), false);
+
         RequirementSet requirementSet = new RequirementSet(findAllRequirements(node, clazz));
 
         Method fallbackHandle;
@@ -220,17 +220,24 @@ import java.util.stream.Collectors;
             methodArgumentTypeHandlerMap.put(entry.getKey(), entry.getValue());
         }
 
+        CommandInfo methodInfo = new CommandInfo();
 
-
+        methodInfo.fromAnnotations(method.getAnnotations(), true);
+        for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
+            methodInfo.fromAnnotations(targetMethod.getAnnotations(), false);
+        }
 
         RequirementSet methodRequirements = new RequirementSet(
                 findAllRequirements(node, method),
                 requirementSet
         );
 
+
         String[] split = subCommand.value().split("\\s+");
         if (split.length == 0 || split.length == 1 && split[0].isEmpty()) {
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor);
+
+            cmdOption.getCommandInfo().fromCommandInfo(methodInfo);
 
             try {
                 CollectionHelpers.addElementSorted(
@@ -326,6 +333,8 @@ import java.util.stream.Collectors;
             currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
         }
 
+
+        currentCommandOption.getCommandInfo().fromCommandInfo(methodInfo);
 
         try {
             CollectionHelpers.addElementSorted(
@@ -529,6 +538,10 @@ import java.util.stream.Collectors;
             params = new Object[0];
         }
         return (T) constructor.newInstance(params);
+    }
+
+    public CommandInfo getCommandInfo() {
+        return commandInfo;
     }
 
     public List<RegisteredCommandNode> getCommands() {

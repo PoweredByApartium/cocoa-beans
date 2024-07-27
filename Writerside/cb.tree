@@ -17,6 +17,7 @@
             </toc-element>
             <toc-element topic="Polymorphic-command-declaration.md"/>
             <toc-element topic="source-parser.md"/>
+            <toc-element topic="Command-Information.md"/>
         </toc-element>
     </toc-element>
     <toc-element topic="Visibility-Api.md"/>

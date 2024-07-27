@@ -37,6 +37,20 @@ public class  GeneralCommandTest extends CommandTestBase {
     }
 
     @Test
+    void info() {
+        testCommandManager.addCommand(new CommandInfoForTest());
+
+        evaluate("info", "");
+        assertEquals(
+                List.of(
+                        "Description: meow test very cool",
+                        "Usage: just run it"
+                ),
+                sender.getMessages()
+        );
+    }
+
+    @Test
     void noArgs() {
         evaluate("test", "");
         assertEquals(List.of("no args :)"), sender.getMessages());

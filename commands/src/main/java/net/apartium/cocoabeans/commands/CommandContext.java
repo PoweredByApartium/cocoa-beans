@@ -26,6 +26,7 @@ import java.util.Map;
  */
 // TODO change to interface
 public record CommandContext(Sender sender,
+                             CommandInfo commandInfo,
                              @Nullable CommandOption option,
                              @Nullable BadCommandResponse error,
                              String[] args,
