@@ -65,7 +65,7 @@ public abstract class CommandManager {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null) return List.of();
         if (args.length == 0) args = new String[0];
-        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0);
+        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream().toList();
     }
 
 
