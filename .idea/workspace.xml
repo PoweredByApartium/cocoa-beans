@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="83c029b0-2315-4bbb-9da5-b0223135b7d6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Writerside/v.list" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/v.list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/writerside.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/writerside.cfg" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="2jkeIFchDSeNvZxucBTM9ZFnsyA" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="83c029b0-2315-4bbb-9da5-b0223135b7d6" name="Changes" comment="" />
+      <created>1721935423134</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1721935423134</updated>
+    </task>
+    <servers />
+  </component>
+</project>
