@@ -1,4 +1,10 @@
 # CHANGELOG
+## v0.0.30
+- [commands] Add lazy map for map based parser
+- [commands] Add `CommandProcessingContext#report`
+- [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
+- [commands] Fixes duplication of tab completion options
+- [commands] Add ignore case for map based parser
 
 ## v0.0.29
 - [commands] Improve location parser
