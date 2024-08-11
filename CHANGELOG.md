@@ -3,6 +3,7 @@
 - [commands] Add lazy map for map based parser
 - [commands] Add `CommandProcessingContext#report`
 - [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
+
 ## v0.0.29
 - [commands] Improve location parser
 - [common]  Add DummyCollection & DummyList
