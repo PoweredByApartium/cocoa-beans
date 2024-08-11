@@ -182,7 +182,9 @@ import java.util.*;
                     sourceParser.clazz(),
                     sourceParser.priority(),
                     publicLookup.unreflect(method),
-                    sourceParser.resultMaxAgeInMills()
+                    sourceParser.resultMaxAgeInMills(),
+                    sourceParser.ignoreCase(),
+                    sourceParser.lax()
             ));
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

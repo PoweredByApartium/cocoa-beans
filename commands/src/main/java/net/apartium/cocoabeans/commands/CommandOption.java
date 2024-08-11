@@ -75,13 +75,24 @@ import java.util.*;
             commandError = result;
         }
 
+        AbstractCommandProcessingContext context = new AbstractCommandProcessingContext(sender, commandName, args, index);
+
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key().parser();
-            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(new AbstractCommandProcessingContext(sender, commandName, args, index));
+            context.clearReports();
+
+            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(context);
 
             if (parse.isEmpty()) {
-                if (!entry.key().optionalNotMatch())
+                if (!entry.key().optionalNotMatch()) {
+                    if (context.getReport() == null)
+                        continue;
+
+                    if (commandError == null || commandError.error().getDepth() < context.getReport().getDepth())
+                        commandError = new CommandContext(sender, null, null, context.getReport(), args, commandName, new HashMap<>());
+
                     continue;
+                }
 
                 CommandContext result;
 

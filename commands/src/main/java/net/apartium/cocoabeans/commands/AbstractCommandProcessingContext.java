@@ -10,13 +10,16 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ApiStatus.Internal
 /* package-private */ class AbstractCommandProcessingContext implements CommandProcessingContext {
@@ -29,6 +32,8 @@ import java.util.List;
     private final int index;
 
     private final String label;
+
+    private BadCommandResponse error = null;
 
     /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
@@ -60,6 +65,19 @@ import java.util.List;
     @Override
     public RequirementResult senderMeetsRequirement(Requirement requirement) {
         return requirement.meetsRequirement(new RequirementEvaluationContext(sender, label, args.toArray(new String[0]), index));
+    }
+
+    @Override
+    public void report(Object source, @NotNull BadCommandResponse response) {
+        error = response;
+    }
+
+    public BadCommandResponse getReport() {
+        return error;
+    }
+
+    public void clearReports() {
+        error = null;
     }
 
 }

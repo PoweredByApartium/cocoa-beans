@@ -10,8 +10,10 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
+import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -50,5 +52,7 @@ public interface CommandProcessingContext {
      * @return requirement result
      */
     RequirementResult senderMeetsRequirement(Requirement requirement);
+
+    void report(Object source, @NotNull BadCommandResponse response);
 
 }
