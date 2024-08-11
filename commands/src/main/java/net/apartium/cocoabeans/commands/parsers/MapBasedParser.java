@@ -1,17 +1,50 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * Map based parser that map of keyword to value
+ *
+ * @see SourceParser
+ * @param <T> result type
+ */
 public abstract class MapBasedParser<T> extends ArgumentParser<T> {
 
-    public abstract Map<String, T> getMap();
+    private final boolean ignoreCase;
 
+    /**
+     * Constructor
+     * @param keyword keyword
+     * @param clazz result class
+     * @param priority priority
+     */
     public MapBasedParser(String keyword, Class<T> clazz, int priority) {
-        super(keyword, clazz, priority);
+        this(keyword, clazz, priority, false);
     }
+
+    /**
+     * Constructor with ignore case
+     * @param keyword keyword
+     * @param clazz result class
+     * @param priority priority
+     * @param ignoreCase ignore case
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public MapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase) {
+        super(keyword, clazz, priority);
+
+        this.ignoreCase = ignoreCase;
+    }
+
+    /**
+     * If you want to ignore case to be applied don't forgot to lowercase the keyword
+     * @return map of keyword to value
+     */
+    public abstract Map<String, T> getMap();
 
     @Override
     public Optional<ParseResult<T>> parse(CommandProcessingContext commandProcessingContext) {
@@ -26,6 +59,9 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
                 s += " ";
 
             s += args.get(index);
+
+            if (ignoreCase)
+                s = s.toLowerCase();
 
             T value = map.get(s);
             if (value == null)
