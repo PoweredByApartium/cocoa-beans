@@ -4,22 +4,24 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Objects;
+
 /**
  * Rotation is 3D space
  */
 @ApiStatus.AvailableSince("0.0.23")
 public class Rotation {
 
-    private double yaw;
-    private double pitch;
+    private float yaw;
+    private float pitch;
 
     /**
      * Create a new rotation
-     * @param yaw
-     * @param pitch
+     * @param yaw yaw
+     * @param pitch pitch
      */
     @JsonCreator
-    public Rotation(@JsonProperty("yaw") double yaw, @JsonProperty("pitch") double pitch) {
+    public Rotation(@JsonProperty("yaw") float yaw, @JsonProperty("pitch") float pitch) {
         this.yaw = yaw;
         this.pitch = pitch;
     }
@@ -37,7 +39,7 @@ public class Rotation {
      * Returns the yaw
      * @return yaw
      */
-    public double getYaw() {
+    public float getYaw() {
         return yaw;
     }
 
@@ -46,7 +48,7 @@ public class Rotation {
      * @param yaw new yaw
      * @return this
      */
-    public Rotation setYaw(double yaw) {
+    public Rotation setYaw(float yaw) {
         this.yaw = yaw;
         return this;
     }
@@ -55,7 +57,7 @@ public class Rotation {
      * Returns the pitch
      * @return pitch
      */
-    public double getPitch() {
+    public float getPitch() {
         return pitch;
     }
 
@@ -64,7 +66,7 @@ public class Rotation {
      * @param pitch new pitch
      * @return this
      */
-    public Rotation setPitch(double pitch) {
+    public Rotation setPitch(float pitch) {
         this.pitch = pitch;
         return this;
     }
@@ -136,12 +138,15 @@ public class Rotation {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rotation rotation = (Rotation) o;
+        return Float.compare(yaw, rotation.yaw) == 0 && Float.compare(pitch, rotation.pitch) == 0;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(yaw, pitch);
     }
 }

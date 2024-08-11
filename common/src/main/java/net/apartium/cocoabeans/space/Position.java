@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.space;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
@@ -24,7 +27,8 @@ public class Position {
      * @param y
      * @param z
      */
-    public Position(double x, double y, double z) {
+    @JsonCreator
+    public Position(@JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("z") double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -323,6 +327,7 @@ public class Position {
      * check if position is zero
      * @return true if position is zero
      */
+    @JsonIgnore
     public boolean isZero() {
         return x == 0 && y == 0 && z == 0;
     }

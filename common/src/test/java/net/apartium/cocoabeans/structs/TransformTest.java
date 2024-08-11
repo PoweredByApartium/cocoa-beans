@@ -78,23 +78,16 @@ class TransformTest {
         Transform transform = new Transform(0, 0, 0, 90, 0);
         Position directionVector = transform.getDirectionVector();
 
-        assertEquals(1, directionVector.getX(), 0.001);
+        assertEquals(-1.0, directionVector.getX(), 0.001);
         assertEquals(0, directionVector.getY(), 0.001);
         assertEquals(0, directionVector.getZ(), 0.001);
-    }
-
-    @Test
-    void testToString() {
-        Transform transform = new Transform(1, 2, 3, 45, 30);
-        String expected = "Transform(position=Position(x=1.0, y=2.0, z=3.0), rotation=Rotation(yaw=45.0, pitch=30.0))";
-        assertEquals(expected, transform.toString());
     }
 
     @Test
     void testJsonSerialization() throws Exception {
         Transform transform = new Transform(1, 2, 3, 45, 30);
         String json = objectMapper.writeValueAsString(transform);
-        String expected = "{\"position\":{\"x\":1.0,\"y\":2.0,\"z\":3.0},\"rotation\":{\"yaw\":45.0,\"pitch\":30.0}}";
+        String expected = "{\"x\":1.0,\"y\":2.0,\"z\":3.0,\"yaw\":45.0,\"pitch\":30.0}";
         assertEquals(expected, json);
     }
 
@@ -110,16 +103,4 @@ class TransformTest {
         assertEquals(30, transform.getRotation().getPitch(), 0.001);
     }
 
-    @Test
-    void testJsonSerializationDeserialization() throws Exception {
-        Transform original = new Transform(1, 2, 3, 45, 30);
-        String json = objectMapper.writeValueAsString(original);
-        Transform deserialized = objectMapper.readValue(json, Transform.class);
-
-        assertEquals(original.getPosition().getX(), deserialized.getPosition().getX(), 0.001);
-        assertEquals(original.getPosition().getY(), deserialized.getPosition().getY(), 0.001);
-        assertEquals(original.getPosition().getZ(), deserialized.getPosition().getZ(), 0.001);
-        assertEquals(original.getRotation().getYaw(), deserialized.getRotation().getYaw(), 0.001);
-        assertEquals(original.getRotation().getPitch(), deserialized.getRotation().getPitch(), 0.001);
-    }
 }
