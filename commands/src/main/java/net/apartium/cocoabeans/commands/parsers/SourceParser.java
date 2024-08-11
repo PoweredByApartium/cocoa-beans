@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,5 +36,17 @@ public @interface SourceParser {
      * When set to 0 it will always be discarded
      */
     long resultMaxAgeInMills() default 0;
+
+    /**
+     * Whether this variant should ignore case for its label
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    boolean ignoreCase() default false;
+
+    /**
+     * Whether this variant should lazy map for its label
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    boolean lax() default false;
 
 }

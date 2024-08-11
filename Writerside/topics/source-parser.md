@@ -18,6 +18,8 @@ Source parser are above function that return Map of `String` as key and `Object`
 * `priority` (default 0) Parser priority
 * `clazz`* The return type of the parser
 * `resultMaxAgeInMills` (default 0) The max age of the result in milliseconds
+* `ignoreCase` (default false) If it will check if it equalIgnore case instead just equal
+* `lax` (default false) Whether or not it lazy mapping `(Lazy mapping will try to auto complete your label)`
 
 ### More about priority
 If we have multiple parser not with the same keyword but for our example
@@ -29,6 +31,24 @@ When the result is older it will be discarded the next time someone use the pars
 And if you set it to `0` it will always be discarded
 But if you want the result to never be discarded for example enum class
 You just set it to `-1`
+
+### More about lax
+Lax is Lazy mapping but what is Lazy mapping?
+
+Lazy mapping will try to autofill your command for example if you type
+```
+/gamemode c
+```
+And lax is on it will complete it to
+```
+/gamemode creative
+```
+If there is a collision like
+```
+/gamemode s
+```
+It could be both `survival` & `specator`
+So in that case it would ignore it and throw an exception it could be handle with `@ExceptionHandle`
 
 
 ## Usage
