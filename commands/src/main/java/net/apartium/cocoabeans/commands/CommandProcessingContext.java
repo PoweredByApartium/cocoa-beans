@@ -14,6 +14,7 @@ import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
@@ -53,6 +54,12 @@ public interface CommandProcessingContext {
      */
     RequirementResult senderMeetsRequirement(Requirement requirement);
 
+    /**
+     * Report a problem with command parsing, such as invalid arguments
+     * @param source source reporter of the problem
+     * @param response response error description object
+     */
+    @ApiStatus.AvailableSince("0.0.30")
     void report(Object source, @NotNull BadCommandResponse response);
 
 }
