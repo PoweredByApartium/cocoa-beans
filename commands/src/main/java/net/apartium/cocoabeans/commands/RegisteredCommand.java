@@ -14,8 +14,6 @@ import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.parsers.*;
-import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
-import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
@@ -72,25 +70,26 @@ import java.util.*;
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
         MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
 
-        // Add class parsers & source parser
+        // Add class parsers & global parsers
         for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
-            for (var entry : serializeArgumentTypeHandler(node, c.getAnnotations()).entrySet()) {
+            for (var entry : serializeArgumentTypeHandler(node, c.getAnnotations(), c, true).entrySet()) {
                 argumentTypeHandlerMap.putIfAbsent(entry.getKey(), entry.getValue());
             }
-            
+
             for (Method method : clazz.getMethods()) {
                 try {
-                    addSourceParser(
+                    addParsers(
                             node,
                             argumentTypeHandlerMap,
-                            publicLookup,
                             method,
-                            c.getMethod(method.getName(), method.getParameterTypes())
+                            c.getMethod(method.getName(), method.getParameterTypes()),
+                            true
                     );
-                } catch (NoSuchMethodException e) {
-                    continue;
+
+                } catch (NoSuchMethodException ignored) {
                 }
             }
+
         }
 
         for (var entry : commandManager.argumentTypeHandlerMap.entrySet()) {
@@ -167,28 +166,13 @@ import java.util.*;
     }
 
 
-    private void addSourceParser(CommandNode node, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, Method method, Method targetMethod) {
-        SourceParser sourceParser = targetMethod.getAnnotation(SourceParser.class);
-        if (sourceParser == null)
-            return;
+    private void addParsers(CommandNode node, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Method method, Method targetMethod, boolean onlyGlobal) {
+        Annotation[] annotations = targetMethod.getAnnotations();
 
-        if (!method.getReturnType().equals(Map.class))
-            throw new RuntimeException("Wrong return type: " + method.getReturnType());
-
-        try {
-            argumentTypeHandlerMap.putIfAbsent(sourceParser.keyword(), new SourceParserImpl<>(
-                    node,
-                    sourceParser.keyword(),
-                    sourceParser.clazz(),
-                    sourceParser.priority(),
-                    publicLookup.unreflect(method),
-                    sourceParser.resultMaxAgeInMills(),
-                    sourceParser.ignoreCase(),
-                    sourceParser.lax()
-            ));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        for (Annotation annotation : annotations) {
+            handleParserFactories(node, method, argumentTypeHandlerMap, annotation, onlyGlobal);
         }
+
     }
 
     private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption) {
@@ -203,10 +187,10 @@ import java.util.*;
             throw new RuntimeException("Static method " + clazz.getName() + "#" + method.getName() + " is not supported");
 
 
-        Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(serializeArgumentTypeHandler(node, method.getAnnotations()));
+        Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(serializeArgumentTypeHandler(node, method.getAnnotations(), method, false));
 
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-            Map<String, ArgumentParser<?>> withParserMap = serializeArgumentTypeHandler(node, targetMethod.getAnnotations());
+            Map<String, ArgumentParser<?>> withParserMap = serializeArgumentTypeHandler(node, targetMethod.getAnnotations(), targetMethod, false);
             for (var entry : withParserMap.entrySet()) {
                 if (methodArgumentTypeHandlerMap.containsKey(entry.getKey()))
                     continue;
@@ -375,7 +359,14 @@ import java.util.*;
 
             ArgumentRequirementFactory factory = commandManager.argumentRequirementFactories.computeIfAbsent(argumentRequirementType.value(), (clazz) -> {
                 try {
-                    return argumentRequirementType.value().getConstructor().newInstance();
+                    Constructor<? extends ArgumentRequirementFactory> constructor = argumentRequirementType.value().getConstructor();
+                    if (constructor.getParameterCount() == 0)
+                        return constructor.newInstance();
+
+                    if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class))
+                        return constructor.newInstance(commandManager);
+
+                    return null;
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     return null;
                 }
@@ -468,78 +459,46 @@ import java.util.*;
         return requirements;
     }
 
-    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations) {
+    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations, Object obj, boolean onlyGlobal) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
 
-        if (annotations == null || annotations.length == 0) {
+        if (annotations == null) {
             return argumentTypeHandlerMap;
         }
 
-        for (Annotation annotation : annotations) {;
-            if (annotation instanceof WithParser withParser) {
-                ArgumentParser<?> argumentTypeHandler;
-                try {
-                    Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
-                    argumentTypeHandler = newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority());
-                } catch (InstantiationException |  IllegalAccessException | InvocationTargetException e) {
-                    continue;
-                }
-
-                argumentTypeHandlerMap.put(argumentTypeHandler.getKeyword(), argumentTypeHandler);
-                continue;
-            }
-
-            WithParserFactory withParserFactory = annotation.annotationType().getAnnotation(WithParserFactory.class);
-            if (withParserFactory == null)
-                continue;
-
-            ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(withParserFactory.value(), (clazz) -> {
-                try {
-                    return withParserFactory.value().getConstructor().newInstance();
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    return null;
-                }
-            });
-
-            if (parserFactory == null)
-                continue;
-
-
-            ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(commandNode, annotation);
-            if (argumentParser == null)
-                continue;
-
-            argumentTypeHandlerMap.put(argumentParser.getKeyword(), argumentParser);
+        for (Annotation annotation : annotations) {
+            handleParserFactories(commandNode, obj, argumentTypeHandlerMap, annotation, onlyGlobal);
         }
 
         return argumentTypeHandlerMap;
     }
 
-    private static <T> T newInstance(Constructor<T>[] ctors, int priority) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        Constructor<?> constructor = null;
+    private void handleParserFactories(CommandNode commandNode, Object obj, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Annotation annotation, boolean onlyGlobal) {
+        CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
+        if (commandParserFactory == null)
+            return;
 
-        if (ctors.length > 1) {
-            for (Constructor<T> ctor : ctors) {
-                if (ctor.getParameterCount() == 1 && ctor.getParameterTypes()[0].equals(int.class))
-                    constructor = ctor;
+        if (!commandParserFactory.global() && !commandParserFactory.bothGlobalAndLocal() && onlyGlobal)
+            return;
+
+        ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(commandParserFactory.value(), (clazz) -> {
+            try {
+                return commandParserFactory.value().getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
             }
+        });
 
-        }
+        if (parserFactory == null)
+            return;
 
-        if (constructor == null)
-            constructor = ctors[0];
 
-        Object[] params;
-        if (constructor.getParameterCount() == 1) {
-            params = new Object[] {priority};
-        } else {
-            if (priority > 0)
-                SharedSecrets.LOGGER.log(System.Logger.Level.WARNING, "Registered parser {} with priority, but it doesn't support it", constructor.getDeclaringClass().getName());
+        ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(commandNode, annotation, obj);
+        if (argumentParser == null)
+            return;
 
-            params = new Object[0];
-        }
-        return (T) constructor.newInstance(params);
+        argumentTypeHandlerMap.put(argumentParser.getKeyword(), argumentParser);
     }
 
     public CommandInfo getCommandInfo() {

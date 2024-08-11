@@ -15,6 +15,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
+import net.apartium.cocoabeans.commands.parsers.ParserFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,8 +23,8 @@ import java.util.stream.Collectors;
 public class IntRangeParserFactory implements ParserFactory {
 
     @Override
-    public ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object obj) {
-        if (!(obj instanceof IntRangeParser intRangeParser))
+    public ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object annoation, Object obj) {
+        if (!(annoation instanceof IntRangeParser intRangeParser))
             return null;
 
         if (intRangeParser.from() > intRangeParser.to())

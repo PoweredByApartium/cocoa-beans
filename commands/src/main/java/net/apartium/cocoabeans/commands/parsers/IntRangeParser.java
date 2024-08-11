@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.parsers.factory.IntRangeParserFactory;
-import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,7 +19,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@WithParserFactory(IntRangeParserFactory.class)
+@CommandParserFactory(IntRangeParserFactory.class)
 public @interface IntRangeParser {
 
     int from() default 0;

@@ -18,6 +18,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(WithParsers.class)
+@CommandParserFactory(value = WithParserFactory.class, bothGlobalAndLocal = true)
 public @interface WithParser {
     /**
      * Parser to register

@@ -16,7 +16,6 @@ import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
 import net.apartium.cocoabeans.commands.parsers.*;
-import net.apartium.cocoabeans.commands.parsers.factory.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.*;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -223,6 +222,13 @@ public abstract class CommandManager {
         }
 
         addCommand(commandNode, handler);
+    }
+
+    @ApiStatus.AvailableSince("0.0.30")
+    public void clearCache() {
+        parserFactories.clear();
+        argumentRequirementFactories.clear();
+        requirementFactories.clear();
     }
 
     public CommandInfo getCommandInfo(String commandName) {

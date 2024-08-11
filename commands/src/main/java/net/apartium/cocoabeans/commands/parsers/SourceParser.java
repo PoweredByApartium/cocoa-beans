@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@CommandParserFactory(value = SourceParserFactory.class, global = true)
 public @interface SourceParser {
 
     /**
