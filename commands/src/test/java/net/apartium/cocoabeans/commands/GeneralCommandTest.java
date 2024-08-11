@@ -93,7 +93,7 @@ public class  GeneralCommandTest extends CommandTestBase {
         evaluate("test-source", "asd asd");
         assertEquals(List.of("null"), sender.getMessages());
 
-        assertEquals(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
+        assertTrue(CollectionHelpers.equalsList(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""})));
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
         assertEquals(List.of(), evaluateTabCompletion("test-source", "ta"));
 
