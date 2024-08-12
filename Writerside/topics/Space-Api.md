@@ -1,29 +1,5 @@
 # 🚀 Space api
 
-## BoxRegion
-
-The `BoxRegion` class is part of the `net.apartium.cocoabeans.space` package. It implements the `Region` interface and represents a three-dimensional rectangular region in space.
-
-### Usage Example
-
-```java
-// Create a BoxRegion
-BoxRegion region = new BoxRegion(0, 10, 0, 5, 0, 8);
-
-// Check if a position is inside the region
-Position pos = new Position(5, 3, 4);
-boolean isInside = region.contains(pos);
-
-// Calculate distance to a point
-Position outsidePos = new Position(15, 15, 15);
-double distance = region.distance(outsidePos);
-
-// Modify the region
-region.setX(1, 11);
-region.setY(1, 6);
-region.setZ(1, 9);
-```
-
 ## Position
 
 The Position class represents a position in 3D space. It provides various methods for manipulating and querying positions.
@@ -88,4 +64,28 @@ transform.translate(translation).rotate(rotation);
 
 // Get direction vector
 Position direction = transform.getDirectionVector();
+```
+
+## BoxRegion
+
+The `BoxRegion` class is part of the `net.apartium.cocoabeans.space` package. It implements the `Region` interface and represents a three-dimensional rectangular region in space.
+
+### Usage Example
+
+```java
+// Create a BoxRegion
+BoxRegion region = new BoxRegion(0, 10, 0, 5, 0, 8);
+
+// Check if a position is inside the region
+Position pos = new Position(5, 3, 4);
+boolean isInside = region.contains(pos);
+
+// Calculate distance to a point
+Position outsidePos = new Position(15, 15, 15);
+double distance = region.distance(outsidePos);
+
+// Modify the region
+region.setX(1, 11);
+region.setY(1, 6);
+region.setZ(1, 9);
 ```

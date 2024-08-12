@@ -147,8 +147,8 @@ public class Transform {
      * @return position
      */
     @JsonIgnore
-    public Position getPosition() {
-        return position;
+    public ImmutablePosition getPosition() {
+        return new ImmutablePosition(this.position);
     }
 
     /**

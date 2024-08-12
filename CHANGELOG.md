@@ -6,6 +6,7 @@
 - [commands] Fixes duplication of tab completion options
 - [commands] Add ignore case for map based parser
 - [common] Add Rotation and Transform classes
+- [Docs] Add docs talking about region box, transform, region and rotation.
 
 ## v0.0.29
 - [commands] Improve location parser

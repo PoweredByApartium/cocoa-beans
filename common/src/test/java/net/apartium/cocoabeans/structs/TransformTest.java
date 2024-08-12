@@ -23,8 +23,12 @@ class TransformTest {
         Rotation rotation = new Rotation(45, 30);
         Transform transform = new Transform(position, rotation);
 
-        assertEquals(position, transform.getPosition());
-        assertEquals(rotation, transform.getRotation());
+        assertEquals(position.getX(), transform.getPosition().getX());
+        assertEquals(position.getY(), transform.getPosition().getY());
+        assertEquals(position.getZ(), transform.getPosition().getZ());
+
+        assertEquals(rotation.getYaw(), transform.getRotation().getYaw());
+        assertEquals(rotation.getPitch(), transform.getRotation().getPitch());
     }
 
     @Test
@@ -63,8 +67,12 @@ class TransformTest {
                 ).setYaw(newRotation.getYaw())
                 .setPitch(newRotation.getPitch());
 
-        assertEquals(newPosition, transform.getPosition());
-        assertEquals(newRotation, transform.getRotation());
+        assertEquals(newPosition.getX(), transform.getPosition().getX());
+        assertEquals(newPosition.getY(), transform.getPosition().getY());
+        assertEquals(newPosition.getZ(), transform.getPosition().getZ());
+
+        assertEquals(newRotation.getYaw(), transform.getRotation().getYaw());
+        assertEquals(newRotation.getPitch(), transform.getRotation().getPitch());
     }
 
     @Test
