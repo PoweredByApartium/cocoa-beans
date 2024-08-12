@@ -103,4 +103,28 @@ class TransformTest {
         assertEquals(30, transform.getRotation().getPitch(), 0.001);
     }
 
+    @Test
+    void testToString() {
+        Transform transform = new Transform(1, 2, 3, 4, 5);
+        assertEquals("Transform(position=1.0 2.0 3.0, rotation=Rotation(yaw=4.0, pitch=5.0))", transform.toString());
+    }
+
+    @Test
+    void testEquals() {
+        Transform transform1 = new Transform(1, 2, 3, 4, 5);
+        Transform transform2 = new Transform(1, 2, 3, 4, 5);
+        Transform transform3 = new Transform(2, 3, 4, 5, 6);
+
+        assertTrue(transform1.equals(transform2));
+        assertFalse(transform2.equals(transform3));
+    }
+
+    @Test
+    void testHash() {
+        Transform transform1 = new Transform(1, 2, 3, 4, 5);
+        Transform transform2 = new Transform(1, 2, 3, 4, 5);
+
+        assertEquals(transform1.hashCode(), transform2.hashCode());
+    }
+
 }

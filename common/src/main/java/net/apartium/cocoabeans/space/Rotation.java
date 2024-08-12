@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Rotation is 3D space
  */
-@ApiStatus.AvailableSince("0.0.23")
+@ApiStatus.AvailableSince("0.0.30")
 public class Rotation {
 
     private float yaw;

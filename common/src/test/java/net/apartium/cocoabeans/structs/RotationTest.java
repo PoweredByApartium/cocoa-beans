@@ -116,4 +116,22 @@ class RotationTest {
         assertEquals(60.0, rotation.getYaw(), 0.001);
         assertEquals(-15.0, rotation.getPitch(), 0.001);
     }
+
+    @Test
+    void testEquals() {
+        Rotation rotation1 = new Rotation(1.0f, 2.0f);
+        Rotation rotation2 = new Rotation(1.0f, 2.0f);
+        Rotation rotation3 = new Rotation(1.2f, 2.0f);
+
+        assertTrue(rotation1.equals(rotation2));
+        assertFalse(rotation3.equals(rotation2));
+    }
+
+    @Test
+    void testHash() {
+        Rotation rotation1 = new Rotation(1.0f, 2.0f);
+        Rotation rotation2 = new Rotation(1.0f, 2.0f);
+
+        assertEquals(rotation1.hashCode(), rotation2.hashCode());
+    }
 }
