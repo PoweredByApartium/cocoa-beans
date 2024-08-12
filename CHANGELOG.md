@@ -5,6 +5,7 @@
 - [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
 - [commands] Fixes duplication of tab completion options
 - [commands] Add ignore case for map based parser
+- [commands] Add dynamic parser for method/class
 
 ## v0.0.29
 - [commands] Improve location parser
