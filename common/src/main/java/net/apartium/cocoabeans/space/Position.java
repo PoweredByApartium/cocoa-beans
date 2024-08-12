@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.space;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
@@ -24,7 +27,9 @@ public class Position {
      * @param y
      * @param z
      */
-    public Position(double x, double y, double z) {
+    @JsonCreator
+    @ApiStatus.AvailableSince("0.0.30")
+    public Position(@JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("z") double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -323,6 +328,7 @@ public class Position {
      * check if position is zero
      * @return true if position is zero
      */
+    @JsonIgnore
     public boolean isZero() {
         return x == 0 && y == 0 && z == 0;
     }
@@ -333,6 +339,28 @@ public class Position {
      */
     public Position immutable() {
         return new ImmutablePosition(this);
+    }
+
+    /**
+     * Return a rotation based of two positions
+     * @param target position
+     * @see Position
+     * @return Rotation
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public Rotation lookAt(Position target) {
+        double dx = target.x - this.x;
+        double dy = target.y - this.y;
+        double dz = target.z - this.z;
+
+
+        double yaw = Math.atan2(dx, dz);
+        double pitch = Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
+
+        yaw = Math.toDegrees(yaw);
+        pitch = Math.toDegrees(pitch);
+
+        return new Rotation((float) yaw, (float) pitch);
     }
 
     @Override
@@ -372,4 +400,5 @@ public class Position {
         );
 
     }
+
 }
