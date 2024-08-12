@@ -144,11 +144,12 @@ public class Transform {
 
     /**
      * Returns the position
+     * Changes on the returned object will be reflected in this one
      * @return position
      */
     @JsonIgnore
-    public ImmutablePosition getPosition() {
-        return new ImmutablePosition(this.position);
+    public Position getPosition() {
+        return this.position;
     }
 
     /**
@@ -163,6 +164,7 @@ public class Transform {
 
     /**
      * Returns the rotation
+     * Changes on the returned object will be reflected in this one
      * @return rotation
      */
     @JsonIgnore
