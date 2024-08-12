@@ -28,6 +28,7 @@ public class Position {
      * @param z
      */
     @JsonCreator
+    @ApiStatus.AvailableSince("0.0.30")
     public Position(@JsonProperty("x") double x, @JsonProperty("y") double y, @JsonProperty("z") double z) {
         this.x = x;
         this.y = y;
@@ -384,6 +385,7 @@ public class Position {
      * @see Position
      * @return Rotation
      */
+    @ApiStatus.AvailableSince("0.0.30")
     public Rotation lookAt(Position target) {
         double dx = target.x - this.x;
         double dy = target.y - this.y;
