@@ -479,7 +479,7 @@ import java.util.*;
         if (commandParserFactory == null)
             return;
 
-        if (!commandParserFactory.global() && !commandParserFactory.bothGlobalAndLocal() && onlyGlobal)
+        if (commandParserFactory.scope() != Scope.GLOBAL && commandParserFactory.scope() != Scope.LOCAL_AND_GLOBAL && onlyGlobal)
             return;
 
         ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(commandParserFactory.value(), (clazz) -> {

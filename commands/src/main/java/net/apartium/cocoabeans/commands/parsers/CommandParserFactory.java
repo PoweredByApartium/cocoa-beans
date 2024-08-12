@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
 public @interface CommandParserFactory {
 
     Class<? extends ParserFactory> value();
-    boolean global() default false;
-    boolean bothGlobalAndLocal() default false;
+    Scope scope() default Scope.LOCAL;
 
 }
