@@ -21,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
             case 8 -> constructImpl("ItemFactory_1_8_R1");
+            case 18 -> constructImpl("ItemFactory_1_18_2_R1");
             default -> constructImpl("ItemFactory_1_20_R1");
         };
     }
