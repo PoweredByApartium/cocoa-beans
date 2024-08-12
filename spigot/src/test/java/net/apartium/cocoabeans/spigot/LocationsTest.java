@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.Rotation;
 import net.apartium.cocoabeans.space.Transform;
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,5 +109,15 @@ public class LocationsTest extends CocoaBeansTestBase {
         assertEquals(transformLocation.getZ(), transform.getZ(), "Transform -> Location test z");
         assertEquals(transformLocation.getYaw(), transform.getYaw(), "Transform -> Location test yaw");
         assertEquals(transformLocation.getPitch(), transform.getPitch(), "Transform -> Location test pitch");
+
+        Vector positionVector = Locations.toVector(position);
+        assertEquals(positionVector.getX(), position.getX(), "Position -> Vector test x");
+        assertEquals(positionVector.getY(), position.getY(), "Position -> Vector test y");
+        assertEquals(positionVector.getZ(), position.getZ(),"Position -> Vector test z");
+
+        Vector transformVector = Locations.toVector(transform);
+        assertEquals(transformVector.getX(), transform.getX(), "Transform -> Vector test x");
+        assertEquals(transformVector.getY(), transform.getY(), "Transform -> Vector test y");
+        assertEquals(transformVector.getZ(), transform.getZ(),"Transform -> Vector test z");
     }
 }

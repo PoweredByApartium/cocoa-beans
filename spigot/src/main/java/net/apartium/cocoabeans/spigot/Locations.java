@@ -16,6 +16,7 @@ import net.apartium.cocoabeans.space.Rotation;
 import net.apartium.cocoabeans.space.Transform;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashSet;
@@ -142,4 +143,27 @@ public class Locations {
     public static Location toLocation(World world, Transform transform) {
         return new Location(world, transform.getX(), transform.getY(), transform.getZ(), transform.getYaw(), transform.getPitch());
     }
+
+    /**
+     * Convert a transform to a vector
+     * @param transform cocoa beans transform
+     * @see Transform
+     * @return the vector
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static Vector toVector(Transform transform) {
+        return new Vector(transform.getX(), transform.getY(), transform.getZ());
+    }
+
+    /**
+     * Convert a position to a vector
+     * @param position cocoa beans transform
+     * @see Position
+     * @return the vector
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static Vector toVector(Position position) {
+        return new Vector(position.getX(), position.getY(), position.getZ());
+    }
+
 }
