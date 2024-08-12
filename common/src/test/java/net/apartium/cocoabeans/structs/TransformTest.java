@@ -39,12 +39,29 @@ class TransformTest {
     }
 
     @Test
+    void testCopyConstructor() {
+        Transform original =  new Transform(1, 2, 3, 4.0f, 5.0f);
+        Transform copy =  new Transform(original);
+        assertEquals(original.getX(), copy.getX(), 0.001);
+        assertEquals(original.getY(), copy.getY(), 0.001);
+        assertEquals(original.getZ(), copy.getZ(), 0.001);
+        assertEquals(original.getYaw(), copy.getYaw(), 0.001);
+        assertEquals(original.getPitch(), copy.getPitch(), 0.001);
+
+    }
+
+    @Test
     void testSetters() {
         Transform transform = new Transform(0, 0, 0, 0, 0);
         Position newPosition = new Position(1, 2, 3);
         Rotation newRotation = new Rotation(45, 30);
 
         transform.setPosition(newPosition).setRotation(newRotation);
+        transform.setX(newPosition.getX())
+                .setY(newPosition.getY())
+                .setZ(newPosition.getZ()
+                ).setYaw(newRotation.getYaw())
+                .setPitch(newRotation.getPitch());
 
         assertEquals(newPosition, transform.getPosition());
         assertEquals(newRotation, transform.getRotation());
