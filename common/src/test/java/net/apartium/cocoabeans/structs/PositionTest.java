@@ -151,14 +151,6 @@ public class PositionTest {
     }
 
     @Test
-    void testLookAt() {
-        Position position = new Position(1, 2, 3);
-        Rotation rotation = position.lookAt(new Position(position));
-        assertEquals(0, rotation.getYaw());
-        assertEquals(0, rotation.getPitch());
-    }
-
-    @Test
     void immutableTest() {
         Position position = new ImmutablePosition(1, 2, 3);
         assertThrows(UnsupportedOperationException.class, () -> position.setX(0));
@@ -183,6 +175,21 @@ public class PositionTest {
 
         assertEquals("1.0 2.0 3.0", new ImmutablePosition(position).toString());
         assertEquals(Position.class, position.copy().getClass());
+    }
+
+    @Test
+    void testLookAt() {
+        Position target = new Position(0, 0, 0);
+        Rotation result = target.lookAt(target);
+
+        assertEquals(0, result.getYaw(), 0.001);
+        assertEquals(0, result.getPitch(), 0.001);
+
+        Position farTarget = new Position(1000000, 1000000, 1000000);
+        Rotation farResult = target.lookAt(farTarget);
+
+        assertEquals(45, farResult.getYaw(), 0.001);
+        assertEquals(35.264, farResult.getPitch(), 0.001);
     }
 
     @Test

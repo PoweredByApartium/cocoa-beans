@@ -209,26 +209,6 @@ public class Transform {
         return Position.fromDirection(rotation.getYaw(), rotation.getPitch());
     }
 
-    /**
-     * Return a rotation based of two transforms
-     * @param target transform
-     * @see Transform
-     * @return Rotation
-     */
-    public Rotation lookAt(Transform target) {
-        double dx = target.getPosition().getX() - this.position.getX();
-        double dy = target.getPosition().getY() - this.position.getY();
-        double dz = target.getPosition().getZ() - this.position.getZ();
-
-        double yaw = Math.atan2(dx, dz);
-        double pitch = Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
-
-        yaw = Math.toDegrees(yaw);
-        pitch = Math.toDegrees(pitch);
-
-        return new Rotation((float) yaw, (float) pitch);
-    }
-
     @Override
     public String toString() {
         return "Transform(position=" + position + ", rotation=" + rotation + ")";
