@@ -2,6 +2,8 @@ package net.apartium.cocoabeans.structs;
 
 import net.apartium.cocoabeans.space.ImmutablePosition;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.Rotation;
+import net.apartium.cocoabeans.space.Transform;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,6 +148,14 @@ public class PositionTest {
         assertEquals(new Position(1, 2, 3), position.round());
         position = new Position(1.47, 2.42, 3.43);
         assertEquals(new Position(1.5, 2.4, 3.4), position.round(1));
+    }
+
+    @Test
+    void testLookAt() {
+        Position position = new Position(1, 2, 3);
+        Rotation rotation = position.lookAt(new Position(position));
+        assertEquals(0, rotation.getYaw());
+        assertEquals(0, rotation.getPitch());
     }
 
     @Test

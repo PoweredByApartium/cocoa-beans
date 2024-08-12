@@ -377,4 +377,25 @@ public class Position {
         );
 
     }
+
+    /**
+     * Return a rotation based of two positions
+     * @param target position
+     * @see Position
+     * @return Rotation
+     */
+    public Rotation lookAt(Position target) {
+        double dx = target.x - this.x;
+        double dy = target.y - this.y;
+        double dz = target.z - this.z;
+
+
+        double yaw = Math.atan2(dx, dz);
+        double pitch = Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
+
+        yaw = Math.toDegrees(yaw);
+        pitch = Math.toDegrees(pitch);
+
+        return new Rotation((float) yaw, (float) pitch);
+    }
 }

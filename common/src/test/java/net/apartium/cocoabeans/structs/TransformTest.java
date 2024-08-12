@@ -121,6 +121,14 @@ class TransformTest {
     }
 
     @Test
+    void testLookAt() {
+        Transform transform = new Transform(1, 2, 3, 4, 5);
+        Rotation rotation = transform.lookAt(new Transform(transform));
+        assertEquals(0, rotation.getYaw());
+        assertEquals(0, rotation.getPitch());
+    }
+
+    @Test
     void testToString() {
         Transform transform = new Transform(1, 2, 3, 4, 5);
         assertEquals("Transform(position=1.0 2.0 3.0, rotation=Rotation(yaw=4.0, pitch=5.0))", transform.toString());
