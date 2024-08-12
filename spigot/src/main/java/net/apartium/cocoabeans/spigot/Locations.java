@@ -12,6 +12,8 @@ package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.Rotation;
+import net.apartium.cocoabeans.space.Transform;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.ApiStatus;
@@ -98,13 +100,46 @@ public class Locations {
     }
 
     /**
+     * Convert a location to rotation
+     * @param location the location
+     * @return the rotation
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static Rotation toRotation(Location location) {
+        return new Rotation(location.getYaw(), location.getPitch());
+    }
+
+    /**
+     * Convert a location to rotation
+     * @param location the location
+     * @return the transform
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static Transform toTransform(Location location) {
+        return new Transform(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+    }
+
+    /**
      * Convert a position to a location
      * @param world bukkit world
      * @param position cocoa beans position
+     * @see Position
      * @return the location
      */
     @ApiStatus.AvailableSince("0.0.22")
     public static Location toLocation(World world, Position position) {
         return new Location(world, position.getX(), position.getY(), position.getZ());
+    }
+
+    /**
+     * Convert a transform to a location
+     * @param world bukkit world
+     * @param transform cocoa beans transform
+     * @see Transform
+     * @return the location
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static Location toLocation(World world, Transform transform) {
+        return new Location(world, transform.getX(), transform.getY(), transform.getZ(), transform.getYaw(), transform.getPitch());
     }
 }
