@@ -202,10 +202,7 @@ jobs:
           git pull origin gh-pages || true
 
           sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
-         
-          git add index.html
-          git commit -m "Update index.html"
-      
+
       - name: Overide docs
         if: steps.determine_version.outputs.is_minor == 'true'
         env:
@@ -241,9 +238,6 @@ jobs:
               ' "$json_file")
 
             echo "$updated_json" > "$json_file"
-            
-            git add help-versions.json
-            git commit -m "Overide docs in github pages branch" || echo "No changes to commit"
           else
               echo "NOT GOOD"
               exit 1
@@ -274,29 +268,14 @@ jobs:
            ' "$json_file")
           
            echo "$updated_json" > "$json_file"
-           
-           git add $version/
-           git add help-versions.json
-           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
 
       - name: Deploy docs folder 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: ${{ github.event.inputs.name }}
+          folder: |
+            ${{ github.event.inputs.name }}
+            ~/help-versions.json
+            ~/index.html
           target-folder: ${{ github.event.inputs.name }}
-          ssh-key: true
-
-      - name: Deploy help-versions 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: ~/help-versions.json
-          ssh-key: true
-
-      - name: Deploy index 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: ~/index.html
           ssh-key: true
