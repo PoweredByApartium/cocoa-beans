@@ -1,0 +1,12 @@
+[
+  {
+    "version": "snapshot",
+    "url": "/snapshot/",
+    "isCurrent": false
+  },
+  {
+    "version": "v0.0.29",
+    "url": "/v0.0.29/",
+    "isCurrent": true
+  }
+]
