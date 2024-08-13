@@ -27,6 +27,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
+
       - name: Setup git
         run: |
           git remote rm origin
