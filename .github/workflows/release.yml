@@ -275,7 +275,7 @@ jobs:
           branch: gh-pages
           folder: |
             ${{ github.event.inputs.name }}
-            ~/help-versions.json
-            ~/index.html
+            help-versions.json
+            index.html
           target-folder: ${{ github.event.inputs.name }}
           ssh-key: true
