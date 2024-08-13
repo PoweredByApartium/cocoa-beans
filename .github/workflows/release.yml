@@ -244,7 +244,7 @@ jobs:
             
             git add help-versions.json
             git commit -m "Overide docs in github pages branch" || echo "No changes to commit"
-            git push gh-pages
+            git push origin gh-pages
           else
               echo "NOT GOOD"
               exit 1
@@ -279,4 +279,4 @@ jobs:
            git add $version/
            git add help-versions.json
            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-           git push gh-pages
+           git push origin gh-pages
