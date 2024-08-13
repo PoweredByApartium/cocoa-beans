@@ -34,6 +34,7 @@ jobs:
 
       - name: Setup git
         run: |
+          git remote rm
           git remote add origin git@github.com:PoweredByApartium/cocoa-beans
 
       - uses: actions/setup-java@v3
