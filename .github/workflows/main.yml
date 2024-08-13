@@ -100,4 +100,4 @@ jobs:
               git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
           
-          git push gh-pages
+          git push origin gh-pages
