@@ -277,11 +277,9 @@ jobs:
           target-folder: ${{ github.event.inputs.name }}
           ssh-key: true
 
-      - name: Deploy extra files 🚀
+      - name: Deploy versions file 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: |
-            help-versions.json
-            index.html
+          folder: ./help-versions.json
           ssh-key: true
