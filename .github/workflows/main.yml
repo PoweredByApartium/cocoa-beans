@@ -100,4 +100,5 @@ jobs:
               git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
           
+          git remote set-url origin git@github.com:PoweredByApartium/***
           git push origin gh-pages
