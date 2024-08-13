@@ -84,7 +84,7 @@ jobs:
         run: |
           git fetch origin
           git remote rm origin
-          git remote add origin git@github.com:PoweredByApartium/***
+          git remote add origin git@github.com:PoweredByApartium/cocoa-beans
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
           git pull origin gh-pages || true
           
