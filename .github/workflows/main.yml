@@ -36,6 +36,8 @@ jobs:
         run: |
           git remote rm origin
           git remote add origin git@github.com:PoweredByApartium/cocoa-beans
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
 
       - uses: actions/setup-java@v3
         with:
@@ -77,7 +79,7 @@ jobs:
           docs: temp_snapshot
         run: |
           sh build-scripts/prepare-web-output.sh
-      
+
       - name: Generate snapshot docs
         env:
           version: snapshot
