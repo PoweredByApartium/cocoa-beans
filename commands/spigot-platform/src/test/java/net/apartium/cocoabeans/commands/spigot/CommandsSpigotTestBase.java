@@ -12,11 +12,11 @@ import java.util.Arrays;
 
 public class CommandsSpigotTestBase {
 
-    ServerMock server;
+    protected ServerMock server;
 
-    MockPlugin plugin;
+    protected MockPlugin plugin;
 
-    SpigotCommandManager commandManager;
+    protected SpigotCommandManager commandManager;
 
     @BeforeEach
     public void setup() {

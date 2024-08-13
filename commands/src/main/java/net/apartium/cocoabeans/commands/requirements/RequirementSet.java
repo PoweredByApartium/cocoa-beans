@@ -29,6 +29,7 @@ public class RequirementSet implements Set<Requirement> {
 
     private final Requirement[] requirements;
 
+    @SafeVarargs
     public RequirementSet(Collection<Requirement>... requirements) {
         int size = 0;
         for (Collection<Requirement> collection : requirements) {

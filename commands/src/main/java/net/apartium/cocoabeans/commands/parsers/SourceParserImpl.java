@@ -17,8 +17,8 @@ public class SourceParserImpl<T> extends MapBasedParser<T> {
     private Map<String, T> result = null;
 
 
-    public SourceParserImpl(CommandNode node, String keyword, Class<T> clazz, int priority, MethodHandle handle, long resultMaxAgeInMills) {
-        super(keyword, clazz, priority);
+    public SourceParserImpl(CommandNode node, String keyword, Class<T> clazz, int priority, MethodHandle handle, long resultMaxAgeInMills, boolean ignoreCase, boolean lax) {
+        super(keyword, clazz, priority, ignoreCase, lax);
 
         this.node = node;
 

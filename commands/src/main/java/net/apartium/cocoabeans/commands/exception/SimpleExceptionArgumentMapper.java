@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.exception;
 
+import net.apartium.cocoabeans.commands.CommandContext;
 import net.apartium.cocoabeans.commands.Sender;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
 
     @Override
-    public List<Object> map(HandleExceptionVariant handleExceptionVariant, Sender sender, String commandName, String[] args, Throwable throwable) {
+    public List<Object> map(HandleExceptionVariant handleExceptionVariant, CommandContext context, Sender sender, String commandName, String[] args, Throwable throwable) {
         Class<?>[] parameters = handleExceptionVariant.parameters();
         if (parameters.length == 0)
             return List.of(handleExceptionVariant.commandNode());
@@ -21,6 +22,11 @@ public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
         for (Class<?> type : parameters) {
             if (Sender.class.isAssignableFrom(type)) {
                 result.add(sender);
+                continue;
+            }
+
+            if (type == CommandContext.class) {
+                result.add(context);
                 continue;
             }
 
@@ -41,7 +47,7 @@ public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
 
             if (BadCommandResponse.class.isAssignableFrom(type) && throwable instanceof CommandException) {
                 BadCommandResponse commandError = ((CommandException) throwable).getBadCommandResponse();
-                if (commandError.getClass().isAssignableFrom(type)) {
+                if (type.isAssignableFrom(commandError.getClass())) {
                     result.add(commandError);
                     continue;
                 }

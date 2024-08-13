@@ -22,26 +22,32 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class
-
-GeneralCommandTest {
+public class  GeneralCommandTest extends CommandTestBase {
 
     CommandForTest commandForTest;
 
-    TestCommandManager testCommandManager;
 
-    TestSender sender;
-
+    @Override
     @BeforeEach
-    void before() {
+    public void before() {
+        super.before();
         commandForTest = new CommandForTest();
-        testCommandManager = new TestCommandManager();
-
-        testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
         testCommandManager.addCommand(commandForTest);
 
-        sender = new TestSender();
+    }
 
+    @Test
+    void info() {
+        testCommandManager.addCommand(new CommandInfoForTest());
+
+        evaluate("info", "");
+        assertEquals(
+                List.of(
+                        "Description: meow test very cool",
+                        "Usage: just run it"
+                ),
+                sender.getMessages()
+        );
     }
 
     @Test
@@ -87,7 +93,7 @@ GeneralCommandTest {
         evaluate("test-source", "asd asd");
         assertEquals(List.of("null"), sender.getMessages());
 
-        assertEquals(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""}));
+        assertTrue(CollectionHelpers.equalsList(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""})));
         assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
         assertEquals(List.of(), evaluateTabCompletion("test-source", "ta"));
 
@@ -194,6 +200,19 @@ GeneralCommandTest {
 
         evaluate("test", "testing 11");
         assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [testing, 11]"), sender.getMessages());
+    }
+
+    @Test
+    void usingBaseCommand() {
+        testCommandManager.addCommand(new UsingBaseCommandTest());
+
+        evaluate("lol", "test");
+        assertEquals(List.of("runTest: for lol"), sender.getMessages());
+
+        for (int i = 0; i < 10; i++) {
+            evaluate("lol", "testing key" + i);
+            assertEquals(List.of("test: value" + i), sender.getMessages());
+        }
     }
 
     @Test

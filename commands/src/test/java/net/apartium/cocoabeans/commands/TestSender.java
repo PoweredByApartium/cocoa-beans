@@ -10,13 +10,12 @@
 
 package net.apartium.cocoabeans.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class TestSender implements Sender {
 
     List<String> messages = new ArrayList<>();
+    private final Set<String> permissions = new HashSet<>();
 
     @Override
     public Object getSender() {
@@ -37,4 +36,14 @@ public class TestSender implements Sender {
     public List<String> getMessages() {
         return messages;
     }
+
+
+    public boolean hasPermission(String permission) {
+        return permissions.contains(permission);
+    }
+
+    public void addPermission(String permission) {
+        permissions.add(permission);
+    }
+
 }

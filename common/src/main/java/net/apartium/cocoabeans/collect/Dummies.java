@@ -43,7 +43,222 @@ public class Dummies {
      */
     @SuppressWarnings("unchecked")
     public static <E> Set<E> dummySet() { return DummySet.INSTANCE; }
-    
+
+    /**
+     * Returns the dummy list instance
+     * @return the dummy list instance
+     * @param <E> element type
+     */
+    @SuppressWarnings("unchecked")
+    public static <E> List<E> dummyList() { return DummyList.INSTANCE; }
+
+    /**
+     * Returns the dummy collection instance
+     * @return the dummy collection instance
+     * @param <E> element type
+     */
+    @SuppressWarnings("unchecked")
+    public static <E> Collection<E> dummyCollection() { return DummyCollection.INSTANCE; }
+
+    private static final class DummyCollection<E> implements Collection<E> {
+
+        private static final DummyCollection INSTANCE = new DummyCollection<>();
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return false;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<E> iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @NotNull
+        @Override
+        public Object[] toArray() {
+            return new Object[0];
+        }
+
+        @NotNull
+        @Override
+        public <T> T[] toArray(@NotNull T[] ts) {
+            return ts;
+        }
+
+        @Override
+        public boolean add(E e) {
+            return false;
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            return false;
+        }
+
+        @Override
+        public boolean containsAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean addAll(@NotNull Collection<? extends E> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean removeAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean retainAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public void clear() {
+
+        }
+    }
+
+    private static final class DummyList<E> implements List<E> {
+
+        private static final DummyList INSTANCE = new DummyList<>();
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return false;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<E> iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @NotNull
+        @Override
+        public Object[] toArray() {
+            return new Object[0];
+        }
+
+        @NotNull
+        @Override
+        public <T> T[] toArray(@NotNull T[] ts) {
+            return ts;
+        }
+
+        @Override
+        public boolean add(E e) {
+            return false;
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            return false;
+        }
+
+        @Override
+        public boolean containsAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean addAll(@NotNull Collection<? extends E> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean addAll(int i, @NotNull Collection<? extends E> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean removeAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean retainAll(@NotNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @Override
+        public E get(int i) {
+            return null;
+        }
+
+        @Override
+        public E set(int i, E e) {
+            return null;
+        }
+
+        @Override
+        public void add(int i, E e) {
+
+        }
+
+        @Override
+        public E remove(int i) {
+            return null;
+        }
+
+        @Override
+        public int indexOf(Object o) {
+            return 0;
+        }
+
+        @Override
+        public int lastIndexOf(Object o) {
+            return 0;
+        }
+
+        @NotNull
+        @Override
+        public ListIterator<E> listIterator() {
+            return Collections.emptyListIterator();
+        }
+
+        @NotNull
+        @Override
+        public ListIterator<E> listIterator(int i) {
+            return Collections.emptyListIterator();
+        }
+
+        @NotNull
+        @Override
+        public List<E> subList(int i, int i1) {
+            return this;
+        }
+    }
+
     private static final class DummySet<E> implements Set<E> {
 
         private static final DummySet INSTANCE = new DummySet<>();

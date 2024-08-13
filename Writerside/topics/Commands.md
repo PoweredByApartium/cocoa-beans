@@ -59,4 +59,7 @@ This command defines 3 sub commands:
 - command with an integer argument, to reboot in a specified amount of seconds
 - a command to cancel the reboot process
 
-
+## See more
+* [📌 Examples](Examples.md)
+* [Javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
+* [Spigot-Javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)

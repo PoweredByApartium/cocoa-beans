@@ -17,9 +17,7 @@ import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /* package-private */ class CommandBranchProcessor {
 
@@ -75,6 +73,7 @@ import java.util.List;
 
                 return new CommandContext(
                         sender,
+                        entry.value().getCommandInfo(),
                         entry.value(),
                         null,
                         args,
@@ -104,15 +103,15 @@ import java.util.List;
         }
 
         if (commandError != null)
-            return new CommandContext(sender, null, commandError, args, commandName, new HashMap<>());
+            return new CommandContext(sender, null, null, commandError, args, commandName, new HashMap<>());
 
         return null;
     }
 
-    /* package-private */ List<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
-        if (args.length <= index) return List.of();
+    /* package-private */ Set<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
+        if (args.length <= index) return Set.of();
 
-        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
             if (commandOption == null)

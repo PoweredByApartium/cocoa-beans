@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.spigot.exception;
 
+import net.apartium.cocoabeans.commands.CommandContext;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.CommandException;
@@ -15,7 +16,7 @@ import java.util.List;
 public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
 
     @Override
-    public List<Object> map(HandleExceptionVariant handleExceptionVariant, Sender sender, String commandName, String[] args, Throwable throwable) {
+    public List<Object> map(HandleExceptionVariant handleExceptionVariant, CommandContext context, Sender sender, String commandName, String[] args, Throwable throwable) {
         Class<?>[] parameters = handleExceptionVariant.parameters();
         if (parameters.length == 0)
             return List.of(handleExceptionVariant.commandNode());
@@ -39,6 +40,11 @@ public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
                 continue;
             }
 
+            if (type == CommandContext.class) {
+                result.add(context);
+                continue;
+            }
+
             if (type == String[].class) {
                 result.add(args);
                 continue;
@@ -51,7 +57,7 @@ public class SpigotExceptionArgumentMapper implements ExceptionArgumentMapper {
 
             if (BadCommandResponse.class.isAssignableFrom(type) && throwable instanceof CommandException) {
                 BadCommandResponse commandError = ((CommandException) throwable).getBadCommandResponse();
-                if (commandError.getClass().isAssignableFrom(type)) {
+                if (type.isAssignableFrom(commandError.getClass())) {
                     result.add(commandError);
                     continue;
                 }

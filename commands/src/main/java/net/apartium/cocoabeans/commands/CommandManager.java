@@ -65,7 +65,7 @@ public abstract class CommandManager {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null) return List.of();
         if (args.length == 0) args = new String[0];
-        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0);
+        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream().toList();
     }
 
 
@@ -102,7 +102,7 @@ public abstract class CommandManager {
             }
 
             if (badCommandResponse != null) {
-                if (handleError(sender, commandName, args, registeredCommand, context.error().getError()))
+                if (handleError(null, sender, commandName, args, registeredCommand, context.error().getError()))
                     return true;
 
                 context.error().throwError();
@@ -113,7 +113,7 @@ public abstract class CommandManager {
         }
 
         if (context.hasError()) {
-            if (handleError(sender, commandName, args, registeredCommand, context.error().getError()))
+            if (handleError(context, sender, commandName, args, registeredCommand, context.error().getError()))
                 return true;
 
             context.error().throwError();
@@ -126,7 +126,7 @@ public abstract class CommandManager {
                 if (invoke(context, sender, method))
                     return true;
             } catch (Throwable e) {
-                if (handleError(sender, commandName, args, registeredCommand, e)) return true;
+                if (handleError(context, sender, commandName, args, registeredCommand, e)) return true;
 
                 throw e;
             }
@@ -141,9 +141,9 @@ public abstract class CommandManager {
         return false;
     }
 
-    private boolean handleError(Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand, Throwable error) {
+    private boolean handleError(CommandContext context, Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand, Throwable error) {
         for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
-            if (invokeException(handleExceptionVariant, sender, commandName, args, error))
+            if (invokeException(handleExceptionVariant, context, sender, commandName, args, error))
                 return true;
         }
 
@@ -159,8 +159,8 @@ public abstract class CommandManager {
         return false;
     }
 
-    private boolean invokeException(HandleExceptionVariant handleExceptionVariant, Sender sender, String commandName, String[] args, Throwable throwable) {
-        List<Object> parameters = exceptionArgumentMapper.map(handleExceptionVariant, sender, commandName, args, throwable);
+    private boolean invokeException(HandleExceptionVariant handleExceptionVariant, CommandContext context, Sender sender, String commandName, String[] args, Throwable throwable) {
+        List<Object> parameters = exceptionArgumentMapper.map(handleExceptionVariant, context, sender, commandName, args, throwable);
 
         if (parameters == null)
             return false;
@@ -223,6 +223,14 @@ public abstract class CommandManager {
         }
 
         addCommand(commandNode, handler);
+    }
+
+    public CommandInfo getCommandInfo(String commandName) {
+        RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
+        if (registeredCommand == null)
+            return null;
+
+        return registeredCommand.getCommandInfo();
     }
 
     protected abstract void addCommand(CommandNode commandNode, Command command);

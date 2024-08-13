@@ -72,9 +72,21 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
     }
 
     @Test
-    void location() {
-        execute(ikfir, "test location world 30 60 30");
-        assertEquals("Is that your location? world 30.0 60.0 30.0", ikfir.nextMessage());
+    void whoIs() {
+        PlayerMock voigon = server.addPlayer("Voigon");
+
+        execute(ikfir, "test who voigon");
+        assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
+
+        ikfir.hidePlayer(plugin, voigon);
+
+        execute(ikfir, "test who voigon");
+        assertEquals("idk who is voigon", ikfir.nextMessage());
+
+        ikfir.showPlayer(plugin, voigon);
+
+        execute(ikfir, "test who voigon");
+        assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
     }
 
 }
