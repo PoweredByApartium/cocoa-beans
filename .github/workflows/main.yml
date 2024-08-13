@@ -99,11 +99,5 @@ jobs:
               git add snapshot/
               git commit -m "Update docs" || echo "No changes to commit for docs update"
           fi
-
-      - name: Deploy docs folder 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: snapshot
-          target-folder: snapshot
-          ssh-key: true
+          
+          git push gh-pages
