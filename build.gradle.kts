@@ -12,7 +12,7 @@ val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 group = "net.apartium.cocoa-beans"
-version = project.findProperty("project.version").toString() + (if (snapshot) "-SNAPSHOT" else "")
+version = (if (System.getenv("VERSION") == null) "dev" else System.getenv("VERSION")) + (if (snapshot) "-SNAPSHOT" else "")
 
 allprojects {
 

@@ -27,8 +27,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
+
       - name: Setup git
         run: |
+          git remote rm origin
+          git remote add origin git@github.com:${{ github.repository }}
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
 
@@ -72,7 +79,7 @@ jobs:
           docs: temp_snapshot
         run: |
           sh build-scripts/prepare-web-output.sh
-      
+
       - name: Generate snapshot docs
         env:
           version: snapshot
