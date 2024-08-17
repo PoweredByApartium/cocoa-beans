@@ -493,15 +493,16 @@ import java.util.*;
         if (parserFactory == null)
             return;
 
-
-        ParserFactory.ParserResult parseResult = parserFactory.getArgumentParser(commandNode, annotation, obj);
-        if (parseResult == null)
+        Collection<ParserFactory.ParserResult> parserResults = parserFactory.getArgumentParser(commandNode, annotation, obj);
+        if (parserResults.isEmpty())
             return;
 
-        if (!parseResult.scope().isClass() && onlyClassParser)
-            return;
+        for (ParserFactory.ParserResult parseResult : parserResults) {
+            if (!parseResult.scope().isClass() && onlyClassParser)
+                continue;
 
-        argumentTypeHandlerMap.put(parseResult.parser().getKeyword(), parseResult.parser());
+            argumentTypeHandlerMap.put(parseResult.parser().getKeyword(), parseResult.parser());
+        }
     }
 
     public CommandInfo getCommandInfo() {

@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.commands.parsers;
 
+import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -9,23 +11,26 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class SourceParserFactory implements ParserFactory {
 
     @Override
-    public @Nullable ParserResult getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
+    public @NotNull Collection<ParserResult> getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
         if (!(annotation instanceof SourceParser sourceParser))
-            return null;
+            return Collections.emptyList();
 
         if (!(obj instanceof Method method))
-            return null;
+            return Collections.emptyList();
 
         if (!method.getReturnType().equals(Map.class))
             throw new RuntimeException("Wrong return type: " + method.getReturnType());
 
         try {
-            return new ParserResult(new SourceParserImpl<>(
+            return List.of(new ParserResult(new SourceParserImpl<>(
                     commandNode,
                     sourceParser.keyword(),
                     sourceParser.clazz(),
@@ -34,9 +39,10 @@ public class SourceParserFactory implements ParserFactory {
                     sourceParser.resultMaxAgeInMills(),
                     sourceParser.ignoreCase(),
                     sourceParser.lax()
-            ), Scope.CLASS);
+            ), Scope.CLASS));
         } catch (IllegalAccessException e) {
-            return null;
+            Dispensers.dispense(e);
+            return Collections.emptyList();
         }
     }
 

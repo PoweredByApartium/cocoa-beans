@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -8,19 +9,32 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WithParserFactory implements ParserFactory {
 
     @Override
-    public @Nullable ParserResult getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
+    public @NotNull List<ParserResult> getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
+        if (annotation instanceof WithParsers withParsers) {
+            List<ParserResult> result = new ArrayList<>(withParsers.value().length);
+
+            for (WithParser withParser : withParsers.value())
+                result.addAll(getArgumentParser(commandNode, withParser, obj));
+
+            return result;
+
+        }
+
         if (!(annotation instanceof WithParser withParser))
-            return null;
+            return List.of();
+
 
         try {
             Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
-            return new ParserResult(newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority()), obj instanceof Method ? Scope.VARIANT : Scope.CLASS);
+            return List.of(new ParserResult(newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority()), obj instanceof Method ? Scope.VARIANT : Scope.CLASS));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            return null;
+            return List.of();
         }
     }
 

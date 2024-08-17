@@ -4,10 +4,10 @@ import net.apartium.cocoabeans.commands.parsers.IntParser;
 import net.apartium.cocoabeans.commands.parsers.StringParser;
 import net.apartium.cocoabeans.commands.parsers.WithParser;
 
-@WithParser(value = StringParser.class, priority = -1)
 @Command("with-parser-edge")
 public class WithParserEdgeCommand implements CommandNode {
 
+    @WithParser(value = StringParser.class, priority = -1)
     @WithParser(value = IntParser.class, priority = 1)
     @SubCommand("test <string>")
     public void test(Sender sender, String string) {

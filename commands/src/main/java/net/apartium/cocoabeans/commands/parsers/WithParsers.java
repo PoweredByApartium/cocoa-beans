@@ -20,7 +20,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-/* package-private */ @interface WithParsers {
+@CommandParserFactory(value = WithParserFactory.class, scope = Scope.ALL)
+public @interface WithParsers {
 
     /**
      * @see WithParser#value()
