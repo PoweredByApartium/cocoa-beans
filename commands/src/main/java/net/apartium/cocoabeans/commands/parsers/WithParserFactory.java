@@ -3,19 +3,22 @@ package net.apartium.cocoabeans.commands.parsers;
 import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class WithParserFactory implements ParserFactory {
 
     @Override
-    public @Nullable ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object annotation, Object obj) {
+    public @Nullable ParserResult getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
         if (!(annotation instanceof WithParser withParser))
             return null;
 
         try {
             Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
-            return newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority());
+            return new ParserResult(newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority()), obj instanceof Method ? Scope.VARIANT : Scope.CLASS);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             return null;
         }
@@ -29,7 +32,6 @@ public class WithParserFactory implements ParserFactory {
                 if (ctor.getParameterCount() == 1 && ctor.getParameterTypes()[0].equals(int.class))
                     constructor = ctor;
             }
-
         }
 
         if (constructor == null)

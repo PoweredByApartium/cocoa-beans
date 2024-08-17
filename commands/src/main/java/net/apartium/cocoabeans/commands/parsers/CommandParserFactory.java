@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
 public @interface CommandParserFactory {
 
     Class<? extends ParserFactory> value();
-    Scope scope() default Scope.LOCAL;
+    Scope scope() default Scope.VARIANT;
 
 }

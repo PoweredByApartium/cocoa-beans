@@ -3,8 +3,10 @@ package net.apartium.cocoabeans.commands.parsers;
 import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Map;
@@ -12,7 +14,7 @@ import java.util.Map;
 public class SourceParserFactory implements ParserFactory {
 
     @Override
-    public @Nullable ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object annotation, Object obj) {
+    public @Nullable ParserResult getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
         if (!(annotation instanceof SourceParser sourceParser))
             return null;
 
@@ -23,7 +25,7 @@ public class SourceParserFactory implements ParserFactory {
             throw new RuntimeException("Wrong return type: " + method.getReturnType());
 
         try {
-            return new SourceParserImpl<>(
+            return new ParserResult(new SourceParserImpl<>(
                     commandNode,
                     sourceParser.keyword(),
                     sourceParser.clazz(),
@@ -32,7 +34,7 @@ public class SourceParserFactory implements ParserFactory {
                     sourceParser.resultMaxAgeInMills(),
                     sourceParser.ignoreCase(),
                     sourceParser.lax()
-            );
+            ), Scope.CLASS);
         } catch (IllegalAccessException e) {
             return null;
         }
@@ -47,7 +49,6 @@ public class SourceParserFactory implements ParserFactory {
 
         private Instant nextCall = Instant.now();
         private Map<String, T> result = null;
-
 
         public SourceParserImpl(CommandNode node, String keyword, Class<T> clazz, int priority, MethodHandle handle, long resultMaxAgeInMills, boolean ignoreCase, boolean lax) {
             super(keyword, clazz, priority, ignoreCase, lax);

@@ -16,14 +16,18 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 import net.apartium.cocoabeans.commands.parsers.ParserFactory;
+import net.apartium.cocoabeans.commands.parsers.Scope;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class IntRangeParserFactory implements ParserFactory {
 
     @Override
-    public ArgumentParser<?> getArgumentParser(CommandNode commandNode, Object annoation, Object obj) {
+    public ParserResult getArgumentParser(CommandNode commandNode, Annotation annoation, GenericDeclaration obj) {
         if (!(annoation instanceof IntRangeParser intRangeParser))
             return null;
 
@@ -35,7 +39,10 @@ public class IntRangeParserFactory implements ParserFactory {
         if ((intRangeParser.to() - intRangeParser.from()) <= intRangeParser.step())
             throw new RuntimeException("step must be smaller than to - from");
 
-        return new IntRangeParserImpl(intRangeParser.from(), intRangeParser.to(), intRangeParser.step(), intRangeParser.keyword(), intRangeParser.priority());
+        return new ParserResult(
+                new IntRangeParserImpl(intRangeParser.from(), intRangeParser.to(), intRangeParser.step(), intRangeParser.keyword(), intRangeParser.priority()),
+                obj instanceof Method ? Scope.VARIANT : Scope.CLASS
+        );
     }
 
     private class IntRangeParserImpl extends ArgumentParser<Integer> {

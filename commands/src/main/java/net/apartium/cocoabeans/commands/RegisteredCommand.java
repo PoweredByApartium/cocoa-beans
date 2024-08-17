@@ -70,7 +70,7 @@ import java.util.*;
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
         MethodHandles.Lookup publicLookup = MethodHandles.publicLookup();
 
-        // Add class parsers & global parsers
+        // Add class parsers & class parsers
         for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
             for (var entry : serializeArgumentTypeHandler(node, c.getAnnotations(), c, true).entrySet()) {
                 argumentTypeHandlerMap.putIfAbsent(entry.getKey(), entry.getValue());
@@ -166,11 +166,11 @@ import java.util.*;
     }
 
 
-    private void addParsers(CommandNode node, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Method method, Method targetMethod, boolean onlyGlobal) {
+    private void addParsers(CommandNode node, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Method method, Method targetMethod, boolean onlyClassParser) {
         Annotation[] annotations = targetMethod.getAnnotations();
 
         for (Annotation annotation : annotations) {
-            handleParserFactories(node, method, argumentTypeHandlerMap, annotation, onlyGlobal);
+            handleParserFactories(node, method, argumentTypeHandlerMap, annotation, onlyClassParser);
         }
 
     }
@@ -459,7 +459,7 @@ import java.util.*;
         return requirements;
     }
 
-    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations, Object obj, boolean onlyGlobal) {
+    private Map<String, ArgumentParser<?>> serializeArgumentTypeHandler(CommandNode commandNode, Annotation[] annotations, GenericDeclaration obj, boolean onlyClassParser) {
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
 
@@ -468,18 +468,18 @@ import java.util.*;
         }
 
         for (Annotation annotation : annotations) {
-            handleParserFactories(commandNode, obj, argumentTypeHandlerMap, annotation, onlyGlobal);
+            handleParserFactories(commandNode, obj, argumentTypeHandlerMap, annotation, onlyClassParser);
         }
 
         return argumentTypeHandlerMap;
     }
 
-    private void handleParserFactories(CommandNode commandNode, Object obj, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Annotation annotation, boolean onlyGlobal) {
+    private void handleParserFactories(CommandNode commandNode, GenericDeclaration obj, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Annotation annotation, boolean onlyClassParser) {
         CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
         if (commandParserFactory == null)
             return;
 
-        if (commandParserFactory.scope() != Scope.GLOBAL && commandParserFactory.scope() != Scope.LOCAL_AND_GLOBAL && onlyGlobal)
+        if (!commandParserFactory.scope().isClass() && onlyClassParser)
             return;
 
         ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(commandParserFactory.value(), (clazz) -> {
@@ -494,11 +494,14 @@ import java.util.*;
             return;
 
 
-        ArgumentParser<?> argumentParser = parserFactory.getArgumentParser(commandNode, annotation, obj);
-        if (argumentParser == null)
+        ParserFactory.ParserResult parseResult = parserFactory.getArgumentParser(commandNode, annotation, obj);
+        if (parseResult == null)
             return;
 
-        argumentTypeHandlerMap.put(argumentParser.getKeyword(), argumentParser);
+        if (!parseResult.scope().isClass() && onlyClassParser)
+            return;
+
+        argumentTypeHandlerMap.put(parseResult.parser().getKeyword(), parseResult.parser());
     }
 
     public CommandInfo getCommandInfo() {
