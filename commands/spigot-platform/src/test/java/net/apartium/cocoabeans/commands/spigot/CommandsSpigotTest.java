@@ -1,11 +1,14 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,5 +91,15 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
         execute(ikfir, "test who voigon");
         assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
     }
+
+    @Test
+    void tabCompletionMaterial() {
+
+        assertTrue(CollectionHelpers.equalsList(
+                evaluateTabCompletion(ikfir, "test", "give ikfir dirt"),
+                List.of("DIRT", "DIRT_PATH")
+        ));
+    }
+
 
 }

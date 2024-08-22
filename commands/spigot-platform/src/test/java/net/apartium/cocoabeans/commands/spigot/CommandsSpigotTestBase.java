@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CommandsSpigotTestBase {
 
@@ -48,4 +49,9 @@ public class CommandsSpigotTestBase {
             throw new RuntimeException(e);
         }
     }
+
+    List<String> evaluateTabCompletion(CommandSender sender, String label, String args) {
+        return commandManager.handleTabComplete(new SpigotSender<>(sender), label, args.split("\\s+"));
+    }
+
 }
