@@ -51,6 +51,11 @@ public class WithParserFactory implements ParserFactory {
             // otherwise, it should be a class
             Scope scope = obj instanceof Method ? Scope.VARIANT : Scope.CLASS;
             
+            // ParseResult contains two fields:
+            // - the argument parser instance
+            // - the scope of the parser (see relevant section)
+            // this method can return multiple parsers, but in this case we only return one
+            
             return List.of(new ParserResult(ctor.newInstance(), scope));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             return List.of();
