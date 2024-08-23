@@ -7,7 +7,7 @@
 - [commands] Add ignore case for map based parser
 - [commands] Add dynamic parser for method/class
 - [common] Add Rotation and Transform classes
-- [docs] Add docs talking about region box, transform, region and rotation.
+- [docs] Add docs about region box, transform, region and rotation.
 
 ## v0.0.29
 - [commands] Improve location parser
@@ -16,14 +16,3 @@
 - [spigot] visibility manager api
 - [commands] Polymorphic command declaration
 - Introduce new docs based on Writerside
-
-## v129.test
-- Test1
-- Test2
-- Test3
-
-## v186.0.1.test
-THIS IS FOR ONLY TESTING
-
-## v127.test
-THIS IS FOR ONLY TESTING 2
