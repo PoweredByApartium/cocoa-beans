@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
@@ -32,7 +33,7 @@ public class AbstractCommandProcessingContext implements CommandProcessingContex
 
     private BadCommandResponse error = null;
 
-    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
+    public AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
         this.index = index;

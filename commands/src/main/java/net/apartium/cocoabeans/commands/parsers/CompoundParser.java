@@ -5,14 +5,16 @@ import net.apartium.cocoabeans.commands.ArgumentMapper;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.RegisteredCommandVariant;
 import net.apartium.cocoabeans.commands.Sender;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.*;
 
+@ApiStatus.AvailableSince("0.0.30")
 public class  CompoundParser<T> extends ArgumentParser<T> {
 
-    private final CompoundParserBranchProcessor compoundParserBranchProcessor;
+    private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
     private final Class<?> self;
 
     /**
@@ -26,7 +28,7 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
         super(keyword, clazz, priority);
 
         this.self = self;
-        this.compoundParserBranchProcessor = new CompoundParserBranchProcessor();
+        this.compoundParserBranchProcessor = new CompoundParserBranchProcessor<>();
 
         createBranch();
     }
@@ -115,12 +117,12 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
 
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        return OptionalInt.empty();
+        return compoundParserBranchProcessor.tryParse(processingContext);
     }
 
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        return Optional.empty();
+        return compoundParserBranchProcessor.tabCompletion(processingContext);
     }
 
 
