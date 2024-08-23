@@ -39,7 +39,7 @@ public class AmbiguousMappedKeyResponse extends InvalidParserResponse {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public AmbiguousMappedKeyException getError() {
