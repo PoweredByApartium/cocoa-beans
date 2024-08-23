@@ -34,11 +34,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: true
-          ref:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
 
       - name: Setup git
         run: |
+          git remote rm origin
+          git remote add origin git@github.com:${{ github.repository }}
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
 
@@ -65,19 +71,6 @@ jobs:
           echo "Input version array: ${INPUT[@]}"
           
           echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ] && echo true || echo false)"
-
-      - name: Update Gradle Version
-        env:
-          branch: ${{ github.GITHUB_REF_NAME }}
-        run: |
-            git pull origin $branch
-            new_version=${{ github.event.inputs.name }}
-            gradle_properties="gradle.properties"
-            sed -i "s/^project.version=.*/project.version=$new_version/" $gradle_properties
-            echo "Updated project.version to $new_version"
-            git add gradle.properties
-            git commit -m "Update project version to ${{ github.event.inputs.name }}" || "Nothing to commit"
-            git push origin $branch
       
       - uses: actions/setup-java@v3
         with:
@@ -95,6 +88,7 @@ jobs:
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
         env:
+          VERSION: ${{ github.event.inputs.name }}
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
@@ -198,7 +192,7 @@ jobs:
 
       - name: Remove javadoc jars
         run: find . -type f -path "*/build/libs/*.jar" | grep "javadoc" | xargs rm -f
-      
+
       - name: Update html
         env:
           version: ${{ github.event.inputs.name }}
@@ -212,8 +206,7 @@ jobs:
          
           git add index.html
           git commit -m "Update index.html"
-          git push origin gh-pages
-      
+
       - name: Overide docs
         if: steps.determine_version.outputs.is_minor == 'true'
         env:

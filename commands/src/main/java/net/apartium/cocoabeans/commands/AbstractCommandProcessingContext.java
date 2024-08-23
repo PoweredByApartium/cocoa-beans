@@ -30,7 +30,9 @@ public class AbstractCommandProcessingContext implements CommandProcessingContex
 
     private final String label;
 
-    public AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
+    private BadCommandResponse error = null;
+
+    /* package-private */ AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
         this.index = index;
@@ -62,5 +64,17 @@ public class AbstractCommandProcessingContext implements CommandProcessingContex
         return requirement.meetsRequirement(new RequirementEvaluationContext(sender, label, args.toArray(new String[0]), index));
     }
 
+    @Override
+    public void report(Object source, @NotNull BadCommandResponse response) {
+        error = response;
+    }
+
+    public BadCommandResponse getReport() {
+        return error;
+    }
+
+    public void clearReports() {
+        error = null;
+    }
 
 }

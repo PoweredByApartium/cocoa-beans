@@ -75,13 +75,24 @@ import java.util.*;
             commandError = result;
         }
 
+        AbstractCommandProcessingContext context = new AbstractCommandProcessingContext(sender, commandName, args, index);
+
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key().parser();
-            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(new AbstractCommandProcessingContext(sender, commandName, args, index));
+            context.clearReports();
+
+            Optional<? extends ArgumentParser.ParseResult<?>> parse = typeParser.parse(context);
 
             if (parse.isEmpty()) {
-                if (!entry.key().optionalNotMatch())
+                if (!entry.key().optionalNotMatch()) {
+                    if (context.getReport() == null)
+                        continue;
+
+                    if (commandError == null || commandError.error().getDepth() < context.getReport().getDepth())
+                        commandError = new CommandContext(sender, null, null, context.getReport(), args, commandName, new HashMap<>());
+
                     continue;
+                }
 
                 CommandContext result;
 
@@ -201,12 +212,12 @@ import java.util.*;
         return null;
     }
 
-    public List<String> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+    public Set<String> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index)
-            return List.of();
+            return Set.of();
 
         if (args.length - 1 == index) {
-            List<String> result = new ArrayList<>();
+            Set<String> result = new HashSet<>();
 
             for (var entry : keywordMap.entrySet()) {
                 if (!entry.getKey().startsWith(args[index]))
@@ -250,10 +261,10 @@ import java.util.*;
             return result;
         }
 
-        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor != null) {
-            List<String> strings = commandBranchProcessor.handleTabCompletion(
+            Set<String> strings = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
@@ -266,7 +277,7 @@ import java.util.*;
 
         commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
         if (commandBranchProcessor != null) {
-            List<String> strings = commandBranchProcessor.handleTabCompletion(
+            Set<String> strings = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
@@ -321,7 +332,7 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
 
-            List<String> strings = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
+            Set<String> strings = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
             if (strings.isEmpty())
                 continue;
 

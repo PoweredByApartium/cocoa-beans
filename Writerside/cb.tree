@@ -22,5 +22,6 @@
     </toc-element>
     <toc-element topic="Visibility-Api.md"/>
     <toc-element topic="Collections.md"/>
+    <toc-element topic="Space-Api.md"/>
 
 </instance-profile>

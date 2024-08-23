@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.space;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
@@ -9,7 +11,13 @@ public class BoxRegion implements Region {
     private double y0, y1;
     private double z0, z1;
 
-    public BoxRegion(double x0, double x1, double y0, double y1, double z0, double z1) {
+    @JsonCreator
+    public BoxRegion(@JsonProperty("x0") double x0,
+                     @JsonProperty("x1") double x1,
+                     @JsonProperty("y0") double y0,
+                     @JsonProperty("y1") double y1,
+                     @JsonProperty("z0")double z0,
+                     @JsonProperty("z1") double z1) {
         this.x0 = Math.min(x0, x1);
         this.x1 = Math.max(x0, x1);
         this.y0 = Math.min(y0, y1);

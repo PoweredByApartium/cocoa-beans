@@ -43,7 +43,7 @@ public class GameModeCommandTest extends CommandTestBase {
         assertEquals(List.of("Your Gamemode have been set to creative"), sender.getMessages());
 
         evaluate("gamemode", "s");
-        assertEquals(List.of("null"), sender.getMessages());
+        assertEquals(List.of("Did you mean one of the following [survival, spectator]?", "Did you mean one of the following [survival, spectator]?"), sender.getMessages());
 
         evaluate("gamemode", "su");
         assertEquals(List.of("Your Gamemode have been set to survival"), sender.getMessages());
