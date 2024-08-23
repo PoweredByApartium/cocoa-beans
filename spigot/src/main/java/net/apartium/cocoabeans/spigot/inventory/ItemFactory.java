@@ -14,9 +14,14 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.net.URL;
 
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public interface ItemFactory {
 
     ItemBuilder builder(ItemStack itemStack);

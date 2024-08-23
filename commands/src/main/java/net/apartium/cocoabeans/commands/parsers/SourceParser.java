@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@CommandParserFactory(value = SourceParserFactory.class, scope = Scope.CLASS)
+@ApiStatus.AvailableSince("0.0.30")
 public @interface SourceParser {
 
     /**

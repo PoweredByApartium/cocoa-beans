@@ -8,25 +8,54 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.apartium.cocoabeans.spigot.inventory;
+package net.apartium.cocoabeans.spigot;
 
-import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.spigot.inventory.ItemFactory;
+import net.apartium.cocoabeans.spigot.inventory.ItemUtilsHelpers;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
+import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * @hidden
+ */
 @ApiStatus.Internal
-/* package-private */ class ItemFactoryInstantiator {
+public class VersionedImplInstantiator {
 
-    /* package-private */ static ItemFactory create() {
+    public static ItemUtilsHelpers createItemUtilsHelpers() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
-            case 8 -> constructImpl("ItemFactory_1_8_R1");
-            default -> constructImpl("ItemFactory_1_20_R1");
+            case 8 -> createItemUtilsHelper("ItemUtilsHelpers_1_8_R1");
+            default -> createItemUtilsHelper("ItemUtilsHelpers_1_20_R1");
         };
     }
 
-    private static ItemFactory constructImpl(String clazz) {
+    public static ItemFactory createItemFactory() {
+        MinecraftVersion minecraftVersion = ServerUtils.getVersion();
+        return switch (minecraftVersion.update()) {
+            case 8 -> constructItemFactory("ItemFactory_1_8_R1");
+            default -> constructItemFactory("ItemFactory_1_20_R1");
+        };
+    }
+
+    public static Enchantment createGlow() {
+        MinecraftVersion minecraftVersion = ServerUtils.getVersion();
+        return switch (minecraftVersion.update()) {
+            case 8 -> constructEnchantGlow("EnchantGlow_1_8_R1");
+            default -> constructEnchantGlow("EnchantGlow_1_20_R1");
+        };
+    }
+
+    private static ItemFactory constructItemFactory(String clazz) {
         return construct(clazz, ItemFactory.class);
+    }
+
+    private static Enchantment constructEnchantGlow(String clazz) {
+        return construct(clazz, Enchantment.class);
+    }
+
+    private static ItemUtilsHelpers createItemUtilsHelper(String clazz) {
+        return construct(clazz, ItemUtilsHelpers.class);
     }
 
     /* package-private */ static <T> T construct(String name, Class<T> type) {
