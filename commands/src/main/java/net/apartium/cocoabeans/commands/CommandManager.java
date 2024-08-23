@@ -224,13 +224,6 @@ public abstract class CommandManager {
         addCommand(commandNode, handler);
     }
 
-    @ApiStatus.AvailableSince("0.0.30")
-    public void clearCache() {
-        parserFactories.clear();
-        argumentRequirementFactories.clear();
-        requirementFactories.clear();
-    }
-
     public CommandInfo getCommandInfo(String commandName) {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null)

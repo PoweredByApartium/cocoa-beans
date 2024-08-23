@@ -15,7 +15,17 @@ import java.lang.annotation.Target;
 @ApiStatus.AvailableSince("0.0.30")
 public @interface CommandParserFactory {
 
+    /**
+     * @return Parser factory implementation associated with the annotated class
+     */
     Class<? extends ParserFactory> value();
+
+    /**
+     * @return The scope of the parser to be created
+     * @see Scope#VARIANT to apply to a specific sub command
+     * @see Scope#CLASS to apply to the whole declaring class
+     * @see Scope#ALL to apply to both cases mentioned above
+     */
     Scope scope() default Scope.VARIANT;
 
 }

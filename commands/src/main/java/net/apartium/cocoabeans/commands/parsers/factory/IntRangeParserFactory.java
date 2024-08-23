@@ -17,6 +17,7 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
 import net.apartium.cocoabeans.commands.parsers.ParserFactory;
 import net.apartium.cocoabeans.commands.parsers.Scope;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
@@ -25,6 +26,10 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public class IntRangeParserFactory implements ParserFactory {
 
     @Override

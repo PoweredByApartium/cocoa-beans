@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public class WithParserFactory implements ParserFactory {
 
     @Override
