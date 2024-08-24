@@ -115,4 +115,4 @@ When extending a class that defines commands, the subclass may inherit and modif
 - **`CommandInfo#getLongDescriptions`**: Returns a list of `LongDescription` annotations associated with a command.
 
 ## Relevant Links
-* [javadocs](https://cocoa-beans.apartium.net/%version%/commands/net/apartium/cocoabeans/commands/CommandInfo.java)
+* [javadocs](https://cocoa-beans.apartium.net/%version%/commands/net/apartium/cocoabeans/commands/CommandInfo.html)

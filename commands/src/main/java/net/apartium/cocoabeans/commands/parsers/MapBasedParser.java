@@ -1,13 +1,10 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
-import net.apartium.cocoabeans.commands.parsers.exception.InvalidParserResponse;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * Map based parser that map of keyword to value

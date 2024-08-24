@@ -11,23 +11,53 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.parsers.factory.IntRangeParserFactory;
-import net.apartium.cocoabeans.commands.parsers.factory.WithParserFactory;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * A parser that parses an integer range
+ * @see IntParser
+ */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@WithParserFactory(IntRangeParserFactory.class)
+@CommandParserFactory(IntRangeParserFactory.class)
+@ApiStatus.AvailableSince("0.0.30")
 public @interface IntRangeParser {
 
+    /**
+     * Lower bound of the range (excl)
+     * @return the lower bound of the range
+     */
     int from() default 0;
+
+    /**
+     * Upper bound of the range (excl)
+     * @return the upper bound of the range
+     */
     int to();
+
+    /**
+     * Input int must be divisible by this number
+     * @return step
+     */
     int step() default 1;
 
+    /**
+     * Keyword for the parser, default is "range"
+     * @return the keyword for the parser
+     * @see ArgumentParser#getKeyword()
+     */
     String keyword() default "range";
+
+    /**
+     * Parser priority
+     * @return the priority of the parser
+     * @see ArgumentParser#getPriority()
+     */
     int priority() default 0;
 
 }

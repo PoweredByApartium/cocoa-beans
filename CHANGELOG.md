@@ -5,8 +5,9 @@
 - [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
 - [commands] Fixes duplication of tab completion options
 - [commands] Add ignore case for map based parser
+- [commands] Add dynamic parser for method/class
 - [common] Add Rotation and Transform classes
-- [docs] Add docs talking about region box, transform, region and rotation.
+- [docs] Add docs about region box, transform, region and rotation.
 - [commands] Add Compound parser
 
 ## v0.0.29
