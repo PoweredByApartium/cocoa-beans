@@ -16,6 +16,8 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
 
     private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
     private final Class<?> self;
+    private final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
+
 
     /**
      * Constructs a
@@ -40,7 +42,14 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
                 continue;
 
             // TODO Continue here
+            for (ParserVariant parserVariant : parserVariants) {
+
+            }
         }
+    }
+
+    protected void addParser(ArgumentParser<?> parser) {
+        argumentTypeHandlerMap.put(parser.getKeyword(), parser);
     }
 
     @Override
