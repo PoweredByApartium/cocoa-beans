@@ -47,6 +47,11 @@ public class VersionedImplInstantiator {
         };
     }
 
+    /**
+     * Creates player visibility controller by server version
+     * @return player visibility controller by server version
+     */
+    @ApiStatus.AvailableSince("0.0.30")
     public static PlayerVisibilityController createPlayerVisibilityController() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
