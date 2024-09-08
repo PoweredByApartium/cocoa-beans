@@ -1,5 +1,10 @@
 # 🔏 Value Requirement
 
+
+<sup>
+Available Since 0.0.30
+</sup>
+
 **Table of content:**
 - [Introduction](#introduction)
 - [Usage](#example-usage)
