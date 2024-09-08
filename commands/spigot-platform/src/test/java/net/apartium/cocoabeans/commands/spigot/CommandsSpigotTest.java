@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.spigot;
 
+import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
@@ -21,6 +22,7 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
         commandManager.registerArgumentTypeHandler(new LocationParser(0));
 
         commandManager.addCommand(new CommandForTest());
+        commandManager.addCommand(new SenderLimitCommand());
 
         ikfir = server.addPlayer("ikfir");
     }
@@ -90,6 +92,16 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
 
         execute(ikfir, "test who voigon");
         assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
+    }
+
+    @Test
+    void whoAmITest() {
+        execute(ikfir, "senderlimit whoami");
+        assertEquals("I'm a PLAYER", ikfir.nextMessage());
+
+        ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
+        execute(consoleSender, "senderlimit whoami");
+        assertEquals("I'm a CONSOLE", consoleSender.nextMessage());
     }
 
     @Test

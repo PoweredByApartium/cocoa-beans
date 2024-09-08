@@ -40,7 +40,7 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.PLAYER, SenderType.class));
         }
 
     },
@@ -63,7 +63,7 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.BLOCK, SenderType.class));
         }
     },
 
@@ -85,7 +85,7 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.CONSOLE, SenderType.class));
         }
     },
 
@@ -108,7 +108,7 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.ENTITY, SenderType.class));
         }
     }
 

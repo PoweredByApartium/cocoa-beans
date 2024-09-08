@@ -49,8 +49,6 @@ import java.util.*;
             if (!requirementResult.meetRequirement())
                 continue;
 
-
-
             if (args.length <= index) {
                 if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
                     CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
@@ -65,13 +63,14 @@ import java.util.*;
                         continue;
                     }
 
+                    addToParserArgs(requirementResult, commandContext);
                     return commandContext;
                 }
 
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
-                return new CommandContext(
+                CommandContext commandContext = new CommandContext(
                         sender,
                         entry.value().getCommandInfo(),
                         entry.value(),
@@ -80,6 +79,10 @@ import java.util.*;
                         commandName,
                         new HashMap<>()
                 );
+
+                addToParserArgs(requirementResult, commandContext);
+
+                return commandContext;
             }
 
             CommandContext result = commandOption.handle(
@@ -99,6 +102,8 @@ import java.util.*;
                 continue;
             }
 
+            addToParserArgs(requirementResult, result);
+
             return result;
         }
 
@@ -106,6 +111,14 @@ import java.util.*;
             return new CommandContext(sender, null, null, commandError, args, commandName, new HashMap<>());
 
         return null;
+    }
+
+    private void addToParserArgs(RequirementResult requirementResult, CommandContext context) {
+        for (RequirementResult.Value value : requirementResult.getValues()) {
+            context.parsedArgs()
+                    .computeIfAbsent(value.clazz(), (clazz) -> new ArrayList<>())
+                    .add(0, value.value());
+        }
     }
 
     /* package-private */ Set<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
@@ -126,6 +139,15 @@ import java.util.*;
         return result;
     }
 
+    /**
+     * For tab completion only
+     *
+     * @param sender the sender
+     * @param commandName the command name
+     * @param args args
+     * @param depth depth
+     * @return true if meets any requirements, false if not
+     */
     /* package-private */ boolean haveAnyRequirementsMeet(Sender sender, String commandName, String[] args, int depth) {
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
             CommandOption commandOption = entry.value();
