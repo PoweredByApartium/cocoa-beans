@@ -7,6 +7,11 @@
   {
     "version": "v0.0.29",
     "url": "/v0.0.29/",
+    "isCurrent": false
+  },
+  {
+    "version": "0.0.32",
+    "url": "/0.0.32/",
     "isCurrent": true
   }
 ]
