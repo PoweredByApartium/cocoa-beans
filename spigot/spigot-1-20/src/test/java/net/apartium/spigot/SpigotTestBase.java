@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class SpigotTestBase {
 
-    ServerMock server;
+    public ServerMock server;
 
-    MockPlugin plugin;
+    public MockPlugin plugin;
 
     @BeforeEach
     public void setup() {
