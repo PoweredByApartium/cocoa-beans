@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.enchantments.Enchantment;
 
@@ -21,26 +22,6 @@ import java.lang.reflect.Field;
  */
 public class EnchantGlow {
 
-	public static final Enchantment ENCHANT_GLOW = getGlow();
-
-	private static Enchantment getGlow() {
-		try {
-			Field acceptingNew = Enchantment.class.getDeclaredField("acceptingNew");
-			acceptingNew.setAccessible(true);
-			acceptingNew.set(null, true);
-			acceptingNew.setAccessible(false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		MinecraftVersion minecraftVersion = ServerUtils.getVersion();
-		if (minecraftVersion.update() >= 8 && minecraftVersion.update() <= 12) {
-			return ItemFactoryInstantiator.construct("EnchantGlow_1_8_R1", Enchantment.class);
-		} else if (minecraftVersion.update() == 20) {
-			return ItemFactoryInstantiator.construct("EnchantGlow_1_20_R1", Enchantment.class);
-		} else {
-			throw new RuntimeException("Unsupported server version " + minecraftVersion);
-		}
-	}
+	public static final Enchantment ENCHANT_GLOW = VersionedImplInstantiator.createGlow();
 
 }

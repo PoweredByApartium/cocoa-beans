@@ -10,14 +10,18 @@
 
 package net.apartium.cocoabeans.spigot.inventory;
 
+import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Various utils for working with item stacks
  * @author Thebotgame
  */
 public class ItemUtils {
+
+    private static final ItemUtilsHelpers helpers = VersionedImplInstantiator.createItemUtilsHelpers();
 
     /**
      * Check if given item stack is an armor piece
@@ -36,5 +40,18 @@ public class ItemUtils {
     public static boolean isAirOrNull(final ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
     }
+
+    /**
+     * Returns the internal name of the material
+     * For 1.8, it will be {@link Material#name()}
+     * For 1.13+, it will be {@link Material#getKey()}
+     * @param material material to get the internal name of
+     * @return internal name of the material
+     */
+    @ApiStatus.AvailableSince("0.0.30")
+    public static String getInternalName(Material material) {
+        return helpers.name(material);
+    }
+
 
 }

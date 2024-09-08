@@ -11,3 +11,5 @@ You can find some examples of using the commands system in this page
 * [`Advanced reusable parsers`](Advanced-reusable-parsers.md)
 * [`Polymorphic command declaration`](Polymorphic-command-declaration.md)
 * [`Source Parser`](source-parser.md)
+* [`Write information about command`](Command-Information.md)
+* [`Dynamic annotation parser`](Dynamic-annotation-parser.md)

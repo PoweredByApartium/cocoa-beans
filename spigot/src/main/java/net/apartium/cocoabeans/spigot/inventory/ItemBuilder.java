@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.inventory;
 
 import com.google.common.collect.Multimap;
+import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.Color;
@@ -40,7 +41,7 @@ import java.util.List;
  */
 public abstract class ItemBuilder {
 
-    private static final ItemFactory factory = ItemFactoryInstantiator.create();
+    private static final ItemFactory factory = VersionedImplInstantiator.createItemFactory();
 
     /**
      * Create a new item builder instance from given item stack.
