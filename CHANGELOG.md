@@ -1,5 +1,5 @@
 # CHANGELOG
-## 0.0.30
+## 0.0.32
 - [commands] Add lazy map for map based parser
 - [commands] Add `CommandProcessingContext#report`
 - [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
