@@ -67,6 +67,7 @@ public class RequirementResult {
      * @param error the error response to be associated with this result
      * @return a new {@code RequirementResult} instance with the specified error
      */
+    @ApiStatus.AvailableSince("0.0.30")
     public static RequirementResult error(BadCommandResponse error) {
         return new RequirementResult(error, false);
     }
@@ -76,6 +77,7 @@ public class RequirementResult {
      *
      * @return a new {@code RequirementResult} instance indicating the requirement is met
      */
+    @ApiStatus.AvailableSince("0.0.30")
     public static RequirementResult meet() {
         return new RequirementResult(null, true);
     }
