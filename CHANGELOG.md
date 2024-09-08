@@ -10,6 +10,7 @@
 - [docs] Add docs talking about region box, transform, region and rotation.
 - [spigot-commands] `MaterialParser` using namespaced key for tab competition
 - [spigot] Fix visibility API to work on 1.8
+- [commands] Add `ValueRequirement`
 
 ## v0.0.29
 - [commands] Improve location parser

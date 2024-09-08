@@ -14,10 +14,7 @@ import net.apartium.cocoabeans.CollectionHelpers;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Immutable set of command requirements
@@ -174,13 +171,17 @@ public class RequirementSet implements Set<Requirement> {
     }
 
     public RequirementResult meetsRequirements(RequirementEvaluationContext context) {
+        List<RequirementResult.Value> values = new ArrayList<>();
+
         for (Requirement requirement : requirements) {
             RequirementResult requirementResult = requirement.meetsRequirement(context);
             if (!requirementResult.meetRequirement())
                 return requirementResult;
+
+            values.addAll(Arrays.asList(requirementResult.getValues()));
         }
 
-        return RequirementResult.meet();
+        return RequirementResult.meet(values.toArray(new RequirementResult.Value[0]));
     }
 
 }

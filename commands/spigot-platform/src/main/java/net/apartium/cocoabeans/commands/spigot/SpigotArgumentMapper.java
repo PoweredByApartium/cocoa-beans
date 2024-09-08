@@ -132,6 +132,15 @@ public class SpigotArgumentMapper implements ArgumentMapper {
                 continue;
             }
 
+            if (objects == null || objects.isEmpty() || objects.size() <= index) {
+                for (Class<?> clazz : context.parsedArgs().keySet()) {
+                    if (type.isAssignableFrom(clazz)) {
+                        objects = context.parsedArgs().get(clazz);
+                        break;
+                    }
+                }
+            }
+
             if (objects == null || objects.isEmpty() || objects.size() <= index)
                 throw new RuntimeException("No argument found for type " + type);
 
