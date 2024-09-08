@@ -14,10 +14,7 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.bukkit.Material;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MaterialParser extends ArgumentParser<Material> {
@@ -52,6 +49,15 @@ public class MaterialParser extends ArgumentParser<Material> {
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
+
+        Set<String> result = Arrays.stream(Material.values())
+                .map((type) -> {
+                    if (type.isLegacy())
+                        return type.name();
+
+                    return type.getKey().asString();
+                })
+                .collect(Collectors.toSet());
 
         return Optional.of(new TabCompletionResult(
                 Arrays.stream(Material.values())
