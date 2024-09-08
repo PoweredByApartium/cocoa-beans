@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.spigot.inventory.ItemFactory;
 import net.apartium.cocoabeans.spigot.inventory.ItemUtilsHelpers;
+import net.apartium.cocoabeans.spigot.visibility.PlayerVisibilityController;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,24 +26,32 @@ public class VersionedImplInstantiator {
     public static ItemUtilsHelpers createItemUtilsHelpers() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
-            case 8 -> createItemUtilsHelper("ItemUtilsHelpers_1_8_R1");
-            default -> createItemUtilsHelper("ItemUtilsHelpers_1_20_R1");
+            case 8 -> createItemUtilsHelper("inventory.ItemUtilsHelpers_1_8_R1");
+            default -> createItemUtilsHelper("inventory.ItemUtilsHelpers_1_20_R1");
         };
     }
 
     public static ItemFactory createItemFactory() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
-            case 8 -> constructItemFactory("ItemFactory_1_8_R1");
-            default -> constructItemFactory("ItemFactory_1_20_R1");
+            case 8 -> constructItemFactory("inventory.ItemFactory_1_8_R1");
+            default -> constructItemFactory("inventory.ItemFactory_1_20_R1");
         };
     }
 
     public static Enchantment createGlow() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
-            case 8 -> constructEnchantGlow("EnchantGlow_1_8_R1");
-            default -> constructEnchantGlow("EnchantGlow_1_20_R1");
+            case 8 -> constructEnchantGlow("inventory.EnchantGlow_1_8_R1");
+            default -> constructEnchantGlow("inventory.EnchantGlow_1_20_R1");
+        };
+    }
+
+    public static PlayerVisibilityController createPlayerVisibilityController() {
+        MinecraftVersion minecraftVersion = ServerUtils.getVersion();
+        return switch (minecraftVersion.update()) {
+            case 8 -> constructPlayerVisibilityController("visibility.PlayerVisibilityController_1_8_R1");
+            default -> constructPlayerVisibilityController("visibility.PlayerVisibilityController_1_20_R1");
         };
     }
 
@@ -58,9 +67,13 @@ public class VersionedImplInstantiator {
         return construct(clazz, ItemUtilsHelpers.class);
     }
 
+    private static PlayerVisibilityController constructPlayerVisibilityController(String clazz) {
+        return construct(clazz, PlayerVisibilityController.class);
+    }
+
     /* package-private */ static <T> T construct(String name, Class<T> type) {
         try {
-            Class<? extends T> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.inventory.%s", name), true, ItemFactory.class.getClassLoader())
+            Class<? extends T> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.%s", name), true, ItemFactory.class.getClassLoader())
                     .asSubclass(type);
             return cls.getConstructor().newInstance();
         } catch (RuntimeException e) {

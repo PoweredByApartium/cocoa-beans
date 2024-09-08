@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.spigot.visibility.TestPlayerVisibilityController;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityGroup;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityManager;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityPlayerRemoveType;
@@ -40,7 +41,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         plugin.getLogger();
 
-        visibilityManager = new VisibilityManager(plugin);
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
 
         VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
         VisibilityGroup group1 = visibilityManager.getOrCreateGroup("test2");
