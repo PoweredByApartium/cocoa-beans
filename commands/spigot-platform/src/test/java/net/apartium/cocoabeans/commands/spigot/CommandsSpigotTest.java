@@ -1,7 +1,11 @@
 package net.apartium.cocoabeans.commands.spigot;
 
+import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.spigot.game.Stage;
+import net.apartium.cocoabeans.commands.spigot.game.commands.GameCommand;
+import net.apartium.cocoabeans.commands.spigot.game.commands.utils.NotInGameException;
 import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +26,8 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
         commandManager.registerArgumentTypeHandler(new LocationParser(0));
 
         commandManager.addCommand(new CommandForTest());
+        commandManager.addCommand(new SenderLimitCommand());
+        commandManager.addCommand(new GameCommand());
 
         ikfir = server.addPlayer("ikfir");
     }
@@ -68,6 +75,14 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
 
         ikfir.getInventory().clear();
 
+        PlayerMock voigon = server.addPlayer("Voigon");
+        execute(ikfir, "test give Voigon DIAMOND_SWORD");
+        assertEquals("Given 1 DIAMOND_SWORD to Voigon", ikfir.nextMessage());
+
+        assertEquals(Material.DIAMOND_SWORD, voigon.getInventory().getItem(0).getType());
+        assertEquals(1, voigon.getInventory().getItem(0).getAmount());
+
+
         execute(ikfir, "test give ikfir DIRT 5");
         assertEquals("Given 5 DIRT to ikfir", ikfir.nextMessage());
         assertEquals(Material.DIRT, ikfir.getInventory().getItem(0).getType());
@@ -90,6 +105,40 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
 
         execute(ikfir, "test who voigon");
         assertEquals("Who is Voigon? " + voigon.getUniqueId(), ikfir.nextMessage());
+    }
+
+    @Test
+    void whoAmITest() {
+        execute(ikfir, "senderlimit whoami");
+        assertEquals("I'm a PLAYER", ikfir.nextMessage());
+
+        ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
+        execute(consoleSender, "senderlimit whoami");
+        assertEquals("I'm a CONSOLE", consoleSender.nextMessage());
+    }
+
+    @Test
+    void gameCommandTest() {
+        execute(ikfir, "game create");
+        assertEquals("Created game", ikfir.nextMessage());
+
+        UUID gameUniqueId = UUID.fromString(ikfir.nextMessage());
+
+        try {
+            execute(ikfir, "game create");
+            fail("Should have thrown an exception");
+        } catch (RuntimeException e) {
+            assertEquals("net.apartium.cocoabeans.commands.spigot.game.commands.utils.NotInGameException: Player is in game", e.getMessage());
+        }
+
+        execute(ikfir, "game am i playing");
+        assertEquals("Yes", ikfir.nextMessage());
+
+        execute(ikfir, "game start");
+        assertEquals("gamePlayer: " + ikfir.getUniqueId(), ikfir.nextMessage());
+        assertEquals("game: " + gameUniqueId, ikfir.nextMessage());
+
+        assertEquals("Game started in 10 seconds", ikfir.nextMessage());
     }
 
     @Test

@@ -46,7 +46,7 @@ public class CommandForTest implements CommandNode {
         }
 
         player.getInventory().addItem(new ItemStack(material, amount.orElse(1)));
-        player.sendMessage("Given " + amount.orElse(1) + " " + material.name() + " to " + player.getName());
+        sender.sendMessage("Given " + amount.orElse(1) + " " + material.name() + " to " + player.getName());
     }
 
     @SubCommand("location <location>")

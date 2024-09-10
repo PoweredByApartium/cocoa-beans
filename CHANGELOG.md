@@ -2,7 +2,7 @@
 ## v0.0.33
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
 
-## v0.0.30
+## 0.0.32
 - [commands] Add lazy map for map based parser
 - [commands] Add `CommandProcessingContext#report`
 - [commands] Add additional CommandInfo as such `Description` & `Usage` & `LongDescription`
@@ -13,6 +13,7 @@
 - [docs] Add docs talking about region box, transform, region and rotation.
 - [spigot-commands] `MaterialParser` using namespaced key for tab competition
 - [spigot] Fix visibility API to work on 1.8
+- [commands] Add `ValueRequirement`
 
 ## v0.0.29
 - [commands] Improve location parser

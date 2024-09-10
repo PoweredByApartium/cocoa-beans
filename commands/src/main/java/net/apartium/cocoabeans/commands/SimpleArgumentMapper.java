@@ -134,6 +134,15 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 if (objects == null || objects.isEmpty() || objects.size() <= index)
                     objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
 
+                if (objects == null || objects.isEmpty() || objects.size() <= index) {
+                    for (Class<?> clazz : context.parsedArgs().keySet()) {
+                        if (type.isAssignableFrom(clazz)) {
+                            objects = context.parsedArgs().get(clazz);
+                            break;
+                        }
+                    }
+                }
+
                 if (objects == null || objects.isEmpty() || objects.size() <= index)
                     throw new RuntimeException("No argument found for type " + type);
 

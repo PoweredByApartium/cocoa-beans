@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Optional;
 
 /**
  * Requires senders running a command / sub command to be of a certain type, for example players / console only
@@ -49,8 +50,16 @@ public class SenderLimitFactory implements RequirementFactory {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            if (senderTypes.stream().anyMatch(senderType -> senderType.meetsRequirement(context).meetRequirement()) != invert)
-                return RequirementResult.meet();
+            for (SenderType senderType : senderTypes) {
+                RequirementResult requirementResult = senderType.meetsRequirement(context);
+                if (!requirementResult.meetRequirement())
+                    continue;
+
+                if (invert)
+                    continue;
+
+                return requirementResult;
+            }
 
             return RequirementResult.error(new UnmetSenderLimit(
                     this,
