@@ -63,12 +63,19 @@ public class VisibilityGroup {
         if (empty && bukkitPlayer != null) {
             manager.handlePlayerJoin(bukkitPlayer);
         } else if (bukkitPlayer != null) {
-            for (VisibilityPlayer visibilityPlayer : players) {
-                Optional<Player> target = visibilityPlayer.getPlayer();
-                if (target.isEmpty())
-                    continue;
+            Set<VisibilityPlayer> visited = new HashSet<>();
 
-                manager.updateVisiblityForPlayer(target.get());
+            for (VisibilityGroup visibilityGroup : player.getVisibleGroups()) {
+                for (VisibilityPlayer visibilityPlayer : visibilityGroup.getPlayers()) {
+                    if (!visited.add(visibilityPlayer))
+                        continue;
+
+                    Optional<Player> target = visibilityPlayer.getPlayer();
+                    if (target.isEmpty())
+                        continue;
+
+                    manager.updateVisiblityForPlayer(target.get());
+                }
             }
         }
 
@@ -97,13 +104,18 @@ public class VisibilityGroup {
         if (player.getPlayer().isEmpty())
             return true;
 
-        manager.updateVisiblityForPlayer(player.getPlayer().get());
-        for (VisibilityPlayer visibilityPlayer : players) {
-            Player bukkitPlayer = visibilityPlayer.getPlayer().orElse(null);
-            if (bukkitPlayer == null)
-                continue;
+        Set<VisibilityPlayer> visited = new HashSet<>();
+        for (VisibilityGroup visibilityGroup : player.getVisibleGroups()) {
+            for (VisibilityPlayer visibilityPlayer : visibilityGroup.getPlayers()) {
+                if (!visited.add(visibilityPlayer))
+                    continue;
 
-            manager.updateVisiblityForPlayer(bukkitPlayer);
+                Optional<Player> target = visibilityPlayer.getPlayer();
+                if (target.isEmpty())
+                    continue;
+
+                manager.updateVisiblityForPlayer(target.get());
+            }
         }
 
         return true;
