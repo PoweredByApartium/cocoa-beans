@@ -1,4 +1,7 @@
 # CHANGELOG
+## v0.0.33
+- [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
+
 ## v0.0.30
 - [commands] Add lazy map for map based parser
 - [commands] Add `CommandProcessingContext#report`
