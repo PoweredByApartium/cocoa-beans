@@ -178,6 +178,39 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
     }
 
+    @Test
+    void gameVisibleTest() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        spectator.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.removePlayer(ikfir);
+
+        assertCanSeeOneSide(voigon, ikfir);
+        assertCantSeeOneSide(ikfir, voigon);
+
+        spectator.removePlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+    }
+
     void assertCanSeeOneSide(PlayerMock player, PlayerMock target) {
         assertTrue(player.canSee(target));
         assertTrue(visibilityManager.canSee(player, target));

@@ -1,6 +1,5 @@
-package net.apartium.cocoabeans.spigot.spigot.visibility;
+package net.apartium.cocoabeans.spigot.visibility;
 
-import net.apartium.cocoabeans.spigot.visibility.PlayerVisibilityController;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
