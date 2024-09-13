@@ -1,5 +1,5 @@
 # CHANGELOG
-## 0.0.34
+## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
 - [spigot] **hotfix** Hidden groups don't always update (Added test to make sure it doesn't happen again)
 - [spigot] **hotfix** Fixes reload when leave all groups
