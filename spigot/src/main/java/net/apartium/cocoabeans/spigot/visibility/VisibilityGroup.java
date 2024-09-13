@@ -105,6 +105,21 @@ public class VisibilityGroup {
             return true;
 
         Set<VisibilityPlayer> visited = new HashSet<>();
+
+        visited.add(player);
+        manager.updateVisiblityForPlayer(player.getPlayer().get());
+
+        for (VisibilityPlayer visibilityPlayer : getPlayers()) {
+            if (!visited.add(visibilityPlayer))
+                continue;
+
+            Optional<Player> target = visibilityPlayer.getPlayer();
+            if (target.isEmpty())
+                continue;
+
+            manager.updateVisiblityForPlayer(target.get());
+        }
+
         for (VisibilityGroup visibilityGroup : player.getVisibleGroups()) {
             for (VisibilityPlayer visibilityPlayer : visibilityGroup.getPlayers()) {
                 if (!visited.add(visibilityPlayer))
