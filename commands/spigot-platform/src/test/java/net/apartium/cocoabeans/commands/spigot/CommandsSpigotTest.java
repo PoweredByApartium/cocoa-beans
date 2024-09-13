@@ -118,6 +118,16 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
     }
 
     @Test
+    void onlyPlayerAndNoPlayerTest() {
+        execute(ikfir, "senderlimit meow");
+        assertEquals("I'm a player", ikfir.nextMessage());
+
+        ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
+        execute(consoleSender, "senderlimit meow");
+        assertEquals("I'm not a player", consoleSender.nextMessage());
+    }
+
+    @Test
     void gameCommandTest() {
         execute(ikfir, "game create");
         assertEquals("Created game", ikfir.nextMessage());
