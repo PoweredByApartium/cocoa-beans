@@ -52,19 +52,30 @@ public class SenderLimitFactory implements RequirementFactory {
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
             for (SenderType senderType : senderTypes) {
                 RequirementResult requirementResult = senderType.meetsRequirement(context);
-                if (!requirementResult.meetRequirement())
-                    continue;
+                if (invert) {
+                    if (requirementResult.meetRequirement())
+                        return RequirementResult.error(new UnmetSenderLimit(
+                                this,
+                                context,
+                                "This command can not be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                        ));
 
-                if (invert)
+                    continue;
+                }
+
+                if (!requirementResult.meetRequirement())
                     continue;
 
                 return requirementResult;
             }
 
+            if (invert)
+                return RequirementResult.meet();
+
             return RequirementResult.error(new UnmetSenderLimit(
                     this,
                     context,
-                    "This command can " + (invert ? "not" : "only") + " be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                    "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
             ));
         }
 
