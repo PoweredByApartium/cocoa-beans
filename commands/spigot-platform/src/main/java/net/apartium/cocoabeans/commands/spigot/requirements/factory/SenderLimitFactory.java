@@ -57,7 +57,7 @@ public class SenderLimitFactory implements RequirementFactory {
                         return RequirementResult.error(new UnmetSenderLimit(
                                 this,
                                 context,
-                                "This command can " + "not" + " be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                                "This command can not be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
                         ));
 
                     continue;
@@ -75,7 +75,7 @@ public class SenderLimitFactory implements RequirementFactory {
             return RequirementResult.error(new UnmetSenderLimit(
                     this,
                     context,
-                    "This command can " + "only" + " be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                    "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
             ));
         }
 
