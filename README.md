@@ -78,3 +78,13 @@ This project is at a very early stage right now, with a very minimal set of feat
 Any contribution of high quality code is welcome. 
 
 [Read more](https://github.com/PoweredByApartium/cocoa-beans/blob/main/CONTRIBUTING.md)
+
+## Star History
+
+<a href="https://star-history.com/#PoweredByApartium/cocoa-beans&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=PoweredByApartium/cocoa-beans&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=PoweredByApartium/cocoa-beans&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=PoweredByApartium/cocoa-beans&type=Date" />
+ </picture>
+</a>
