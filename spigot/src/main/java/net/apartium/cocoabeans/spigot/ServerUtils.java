@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -36,13 +37,24 @@ public class ServerUtils {
         return version;
     }
 
+    @ApiStatus.Internal
     private static MinecraftVersion detectVersion() {
         String version = extractVersionNumber(Bukkit.getBukkitVersion());
         if (version == null) {
             return MinecraftVersion.UNKNOWN;
         } else {
             String[] split = version.split("\\.");
-            return new MinecraftVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]));
+            return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), getProtocolVersion());
+        }
+    }
+
+    @ApiStatus.Internal
+    private static int getProtocolVersion() {
+        try {
+            Class<?> constants = Class.forName("net.minecraft.SharedConstants");
+            return (int) constants.getMethod("getProtocolVersion").invoke(null);
+        } catch (Exception e) {
+            return -1;
         }
     }
 
