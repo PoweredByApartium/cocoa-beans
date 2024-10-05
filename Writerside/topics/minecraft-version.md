@@ -1,8 +1,7 @@
 # 📜 Minecraft Version
 
 There are some cases when we want to know the version of the server because we make our plugin for multiple versions
-Cocoabeans provide us an easier way to do it.
-
+Cocoabeans provides us with an easier way to do it.
 We could just call `ServerUtils#getVersion`
 ```java
 MinecraftVersion myServerVersion = ServerUtils.getVersion();
