@@ -15,7 +15,7 @@ package net.apartium.cocoabeans.structs;
  * Format: major.update.minor, ex 1.8.3
  * @param major major version, currently only 1
  * @param update, update version
- * @param minor minor version, if not explictly specified defaults to 0
+ * @param minor minor version, if not explicitly specified defaults to 0
  */
 public record MinecraftVersion(
         int major,
