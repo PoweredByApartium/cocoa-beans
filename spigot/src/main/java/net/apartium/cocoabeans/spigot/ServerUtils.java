@@ -15,6 +15,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +46,12 @@ public class ServerUtils {
             return MinecraftVersion.UNKNOWN;
         } else {
             String[] split = version.split("\\.");
-            return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), getProtocolVersion());
+            try {
+                return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), getProtocolVersion());
+            } catch (NumberFormatException e) {
+                Bukkit.getLogger().log(Level.SEVERE, "An error occurred while parsing version string: " + version, e);
+                return MinecraftVersion.UNKNOWN;
+            }
         }
     }
 
@@ -53,7 +60,8 @@ public class ServerUtils {
         try {
             Class<?> constants = Class.forName("net.minecraft.SharedConstants");
             return (int) constants.getMethod("getProtocolVersion").invoke(null);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "An error occurred while trying to get protocol version (defaulting to -1)", e);
             return -1;
         }
     }

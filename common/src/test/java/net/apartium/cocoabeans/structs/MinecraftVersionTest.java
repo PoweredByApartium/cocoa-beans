@@ -95,8 +95,8 @@ class MinecraftVersionTest {
         assertFalse(mySeverVersion.isLowerThan(MinecraftVersion.V1_12_1));
         assertFalse(mySeverVersion.isLowerThan(MinecraftVersion.V1_12));
         assertFalse(mySeverVersion.isLowerThan(MinecraftVersion.V1_9_4));
-        assertFalse(mySeverVersion.isLowerThan(MinecraftVersion.V1_12_2))
-        ;
+        assertFalse(mySeverVersion.isLowerThan(MinecraftVersion.V1_12_2));
+
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13));
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13_1));
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13_2));

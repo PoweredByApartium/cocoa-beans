@@ -21,7 +21,8 @@ import java.util.Objects;
  * @param major major version, currently only 1
  * @param update, update version
  * @param minor minor version, if not explicitly specified defaults to 0
- * @param protocol protocol version {@see https://minecraft.wiki/w/Protocol_version}
+ * @param protocol protocol version
+ * @see <a href="https://minecraft.wiki/w/Protocol_version">Protocol version</a>
  */
 public record MinecraftVersion(
         int major,
@@ -47,8 +48,8 @@ public record MinecraftVersion(
     public static final MinecraftVersion V1_9 = new MinecraftVersion(1, 9, 0, 107);
     public static final MinecraftVersion V1_9_1 = new MinecraftVersion(1, 9, 1, 108);
     public static final MinecraftVersion V1_9_2 = new MinecraftVersion(1, 9, 2, 109);
-    public static final MinecraftVersion V1_9_3 = new MinecraftVersion(1, 9, 2, 110);
-    public static final MinecraftVersion V1_9_4 = new MinecraftVersion(1, 9, 2, 110);
+    public static final MinecraftVersion V1_9_3 = new MinecraftVersion(1, 9, 3, 110);
+    public static final MinecraftVersion V1_9_4 = new MinecraftVersion(1, 9, 4, 110);
 
     public static final MinecraftVersion V1_10 = new MinecraftVersion(1, 10, 0, 210);
     public static final MinecraftVersion V1_10_1 = new MinecraftVersion(1, 10, 1, 210);
