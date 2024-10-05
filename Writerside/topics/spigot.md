@@ -1,6 +1,6 @@
 # 🚰 Spigot
 
-**Cocoabeans** has many utility for spigot that will help you to make your plugin faster and easier
+**Cocoabeans** has many utilities for Spigot that will help you make your plugin development faster and easier
 
 ## Relevant Links
 * [Spigot javadocs](https://cocoa-beans.apartium.net/%version%/spigot/)
@@ -14,7 +14,7 @@
 <repositories>
     <repository>
         <id>apartium-releases</id>
-        <url>https://mvn.apartiumservices.com/repository/apartium-releases</url>
+        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
     </repository>
 </repositories>
 
@@ -22,7 +22,7 @@
     <dependency>
         <groupId>net.apartium.cocoa-beans</groupId>
         <artifactId>spigot</artifactId>
-        <version>[VERSION]</version>
+        <version>%version%</version>
     </dependency>
 </dependencies>
 ```
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'net.apartium.cocoa-beans:spigot:[VERSION]'
+    compileOnly 'net.apartium.cocoa-beans:spigot:%version%'
 }
 ```
 
@@ -51,13 +51,13 @@ dependencies {
 ```kotlin
 repositories {
     maven {
-        name = "ApartiumNexus"
-        url = uri("https://nexus.voigon.dev/repository/apartium")
+        name = "apartium-releases"
+        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
     }
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:spigot:[VERSION]")
+    compileOnly("net.apartium.cocoa-beans:spigot:%version%")
 }
 ```
 
