@@ -204,7 +204,7 @@ public record MinecraftVersion(
      * @param major major version
      * @param update update version
      * @param minor minor version
-     * @return cached minecraft version or create new without a protocol version
+     * @return cached minecraft version or create a new one without any protocol version
      */
     @ApiStatus.AvailableSince("0.0.36")
     public static MinecraftVersion getVersion(int major, int update, int minor) {
@@ -216,7 +216,7 @@ public record MinecraftVersion(
      * @param major major version
      * @param update update version
      * @param minor minor version
-     * @return cached minecraft version or create new with desire protocol version
+     * @return cached minecraft version or create a new one with desired protocol version
      */
     @ApiStatus.AvailableSince("0.0.36")
     public static MinecraftVersion getVersion(int major, int update, int minor, int protocol) {
@@ -235,17 +235,11 @@ public record MinecraftVersion(
      */
     @ApiStatus.AvailableSince("0.0.36")
     public boolean isHigherThanOrEqual(MinecraftVersion other) {
-        if (major > other.major)
-            return true;
+        if (major != other.major)
+            return major > other.major;
 
-        if (major < other.major)
-            return false;
-
-        if (update > other.update)
-            return true;
-
-        if (update < other.update)
-            return false;
+        if (update != other.update)
+            return update > other.update;
 
         return minor >= other.minor;
     }
@@ -257,17 +251,11 @@ public record MinecraftVersion(
      */
     @ApiStatus.AvailableSince("0.0.36")
     public boolean isHigherThan(MinecraftVersion other) {
-        if (major > other.major)
-            return true;
+        if (major != other.major)
+            return major > other.major;
 
-        if (major < other.major)
-            return false;
-
-        if (update > other.update)
-            return true;
-
-        if (update < other.update)
-            return false;
+        if (update != other.update)
+            return update > other.update;
 
         return minor > other.minor;
     }
