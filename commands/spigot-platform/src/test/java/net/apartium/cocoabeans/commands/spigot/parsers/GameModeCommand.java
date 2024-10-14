@@ -22,13 +22,17 @@ public class GameModeCommand implements CommandNode {
         if (!(invalidParserResponse instanceof AmbiguousMappedKeyResponse ambiguousMappedKeyResponse))
             return false;
 
-        sender.sendMessage("Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?");
+        sender.sendMessage(getDidMeanMessage(ambiguousMappedKeyResponse));
         return true;
+    }
+
+    private String getDidMeanMessage(AmbiguousMappedKeyResponse ambiguousMappedKeyResponse) {
+        return "Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?";
     }
 
     @ExceptionHandle(AmbiguousMappedKeyResponse.AmbiguousMappedKeyException.class)
     public void gamemodeCollision(Sender sender, AmbiguousMappedKeyResponse ambiguousMappedKeyResponse) {
-        sender.sendMessage("Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?");
+        sender.sendMessage(getDidMeanMessage(ambiguousMappedKeyResponse));
     }
 
 }
