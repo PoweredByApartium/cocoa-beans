@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.commands.spigot.parsers;
+package net.apartium.cocoabeans.commands.spigot.parser;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.commands.Command;
@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
+import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

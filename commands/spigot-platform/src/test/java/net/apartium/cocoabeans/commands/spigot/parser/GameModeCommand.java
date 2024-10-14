@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.commands.parser;
+package net.apartium.cocoabeans.commands.spigot.parser;
 
 import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandNode;
@@ -7,6 +7,7 @@ import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
 import net.apartium.cocoabeans.commands.parsers.exception.InvalidParserResponse;
+import org.bukkit.GameMode;
 
 @Command(value = "gamemode", aliases = "gm")
 public class GameModeCommand implements CommandNode {
@@ -18,12 +19,10 @@ public class GameModeCommand implements CommandNode {
 
     @ExceptionHandle(value = InvalidParserResponse.InvalidParserException.class, priority = 1)
     public boolean invalidParser(Sender sender, InvalidParserResponse invalidParserResponse) {
-        if (invalidParserResponse instanceof AmbiguousMappedKeyResponse ambiguousMappedKeyResponse) {
-            sender.sendMessage("Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?");
+        if (!(invalidParserResponse instanceof AmbiguousMappedKeyResponse ambiguousMappedKeyResponse))
             return false;
-        }
 
-        sender.sendMessage("oh no");
+        sender.sendMessage("Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?");
         return true;
     }
 
