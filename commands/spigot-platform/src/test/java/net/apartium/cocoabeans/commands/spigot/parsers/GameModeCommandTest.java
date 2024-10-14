@@ -1,9 +1,8 @@
-package net.apartium.cocoabeans.commands.spigot.parser;
+package net.apartium.cocoabeans.commands.spigot.parsers;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
-import net.apartium.cocoabeans.commands.spigot.parsers.GameModeParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

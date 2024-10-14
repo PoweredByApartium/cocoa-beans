@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.commands.spigot.parser;
+package net.apartium.cocoabeans.commands.spigot.parsers;
 
 import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandNode;
