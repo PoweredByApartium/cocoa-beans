@@ -47,8 +47,10 @@ public class GameModeCommandTest extends CommandsSpigotTestBase {
         execute(sender, "gamemode", "CreaTive");
         assertEquals("Your Gamemode have been set to creative", sender.nextMessage());
 
-        execute(sender, "gamemode", "s");
-        assertEquals("Did you mean one of the following [survival, spectator]?", sender.nextMessage());
+        for (int i = 0; i < 100; i++) {
+            execute(sender, "gamemode", "s");
+            assertEquals("Did you mean one of the following [spectator, survival]?", sender.nextMessage());
+        }
 
         execute(sender, "gamemode", "su");
         assertEquals("Your Gamemode have been set to survival", sender.nextMessage());

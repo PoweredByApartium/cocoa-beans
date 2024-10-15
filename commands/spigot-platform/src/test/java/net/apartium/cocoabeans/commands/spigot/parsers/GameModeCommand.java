@@ -27,7 +27,7 @@ public class GameModeCommand implements CommandNode {
     }
 
     private String getDidMeanMessage(AmbiguousMappedKeyResponse ambiguousMappedKeyResponse) {
-        return "Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys()) + "]?";
+        return "Did you mean one of the following [" + String.join(", ", ambiguousMappedKeyResponse.getKeys().stream().sorted().toList()) + "]?";
     }
 
     @ExceptionHandle(AmbiguousMappedKeyResponse.AmbiguousMappedKeyException.class)
