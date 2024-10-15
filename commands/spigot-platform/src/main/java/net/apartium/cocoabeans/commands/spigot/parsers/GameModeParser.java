@@ -31,7 +31,7 @@ public class GameModeParser extends MapBasedParser<GameMode> {
             gameModeMap.put(gameMode.getValue() + "", gameMode);
         }
 
-        this.gameModeMap = Collections.unmodifiableMap(gameModeMap);
+        this.gameModeMap = Map.copyOf(gameModeMap);
     }
 
     /**
