@@ -1,7 +1,7 @@
 # CHANGELOG
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
-- [command] Add GameMode parser with lazy mapping
+- [commands] Add GameMode parser with lazy mapping
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
