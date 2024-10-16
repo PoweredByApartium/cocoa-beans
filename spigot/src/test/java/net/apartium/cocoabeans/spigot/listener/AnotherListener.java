@@ -10,7 +10,7 @@ public class AnotherListener implements Listener {
 
     public AnotherListener(JavaPlugin plugin) {
         if (plugin == null)
-            throw new NullPointerException();
+            throw new NullPointerException("plugin cannot be null");
     }
 
 }
