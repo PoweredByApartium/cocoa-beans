@@ -55,7 +55,9 @@ public class ListenerRegisterTest extends SpigotTestBase {
 
         Bukkit.getLogger().addHandler(handler);
 
-        assertDoesNotThrow(() -> listenerAutoRegistration.register(getClass().getPackageName(), false, List.of(myManager), Set.of(FailedListener.class)));
+        listenerAutoRegistration.addInjectableObject(myManager);
+
+        assertDoesNotThrow(() -> listenerAutoRegistration.register(getClass().getPackageName(), false, Set.of(FailedListener.class)));
 
         Bukkit.getLogger().removeHandler(handler);
 

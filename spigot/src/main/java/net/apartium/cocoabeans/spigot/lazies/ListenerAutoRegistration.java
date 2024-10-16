@@ -27,16 +27,16 @@ import java.util.*;
 
 /**
  * Listener auto registration for spigot.
- * @author Voigon
+ * @author Voigon, Thebotgame
  * @see Listener
  */
 public class ListenerAutoRegistration {
 
-    final JavaPlugin
-            plugin;
+    private final JavaPlugin plugin;
 
-    final boolean
-            loadDevListeners;
+    private final boolean loadDevListeners;
+
+    private final List<Object> injectableObjects;
 
     /**
      * Creates a new instance of listener auto registration
@@ -48,6 +48,17 @@ public class ListenerAutoRegistration {
         this.plugin = plugin;
         this.loadDevListeners = loadDevListeners;
 
+        this.injectableObjects = new ArrayList<>();
+        this.injectableObjects.add(plugin);
+    }
+
+    /**
+     * Add injectable object that will be used to create listeners
+     * @param injectableObject injectable object
+     * @see ListenerAutoRegistration#register(String, boolean, Set)
+     */
+    public void addInjectableObject(Object injectableObject) {
+        injectableObjects.add(injectableObject);
     }
 
     /**
@@ -65,17 +76,16 @@ public class ListenerAutoRegistration {
      * @param deep whether sub packages of given package should also be queried
      */
     public void register(String packageName, boolean deep) {
-        register(packageName, deep, List.of(), Set.of());
+        register(packageName, deep, Set.of());
     }
 
     /**
      * Auto discovers listeners in given package name
      * @param packageName package name
      * @param deep whether sub packages of given package should also be queried
-     * @param filler filler are object that could be provided in constructor of listeners
      * @param ignore ignored classes
      */
-    public void register(String packageName, boolean deep, List<Object> filler, Set<Class<?>> ignore) {
+    public void register(String packageName, boolean deep, Set<Class<?>> ignore) {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
         ClassPath classPath;
         try {
@@ -83,9 +93,6 @@ public class ListenerAutoRegistration {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        filler = new ArrayList<>(filler);
-        filler.add(plugin);
 
         for (ClassPath.ClassInfo classInfo : deep ? classPath.getTopLevelClassesRecursive(packageName) : classPath.getTopLevelClasses(packageName)) {
             try {
@@ -101,7 +108,7 @@ public class ListenerAutoRegistration {
                     continue;
 
                 Constructor<?> constructor = clazz.getConstructors()[0];
-                Listener instance = createInstance(constructor, filler);
+                Listener instance = createInstance(constructor, this.injectableObjects);
 
                 if (instance == null) {
                     Bukkit.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
@@ -119,8 +126,7 @@ public class ListenerAutoRegistration {
 
     }
 
-    private Listener createInstance(Constructor<?> constructor, List<Object> filler) {
-
+    private Listener createInstance(Constructor<?> constructor, List<Object> injectableObjects) {
         if (constructor.getParameterCount() == 0) {
             try {
                 return (Listener) constructor.newInstance();
@@ -129,7 +135,7 @@ public class ListenerAutoRegistration {
             }
         }
 
-        filler = new ArrayList<>(filler);
+        injectableObjects = new ArrayList<>(injectableObjects);
 
         Object[] objects = new Object[constructor.getParameterCount()];
         for (int i = 0; i < constructor.getParameterCount(); i++) {
@@ -137,7 +143,7 @@ public class ListenerAutoRegistration {
 
             Object value = null;
 
-            for (Object o : filler) {
+            for (Object o : injectableObjects) {
                 if (target.isInstance(o)) {
                     value = o;
                     break;
@@ -147,7 +153,7 @@ public class ListenerAutoRegistration {
             if (value == null)
                 return null;
 
-            filler.remove(value);
+            injectableObjects.remove(value);
             objects[i] = value;
         }
 
