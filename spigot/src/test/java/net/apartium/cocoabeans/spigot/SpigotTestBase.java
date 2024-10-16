@@ -10,7 +10,7 @@ public abstract class SpigotTestBase {
 
     ServerMock server;
 
-    MockPlugin plugin;
+    public MockPlugin plugin;
 
     @BeforeEach
     public void setup() {

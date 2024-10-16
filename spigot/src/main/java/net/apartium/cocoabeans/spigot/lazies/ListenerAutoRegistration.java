@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.lazies;
 
 import com.google.common.reflect.ClassPath;
+import net.apartium.cocoabeans.Dispensers;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.util.*;
 
 /**
  * Listener auto registration for spigot.
@@ -62,6 +64,17 @@ public class ListenerAutoRegistration {
      * @param deep whether sub packages of given package should also be queried
      */
     public void register(String packageName, boolean deep) {
+        register(packageName, deep, List.of(), Set.of());
+    }
+
+    /**
+     * Auto discovers listeners in given package name
+     * @param packageName package name
+     * @param deep whether sub packages of given package should also be queried
+     * @param filler filler are object that could be provided in constructor of listeners
+     * @param ignore ignored classes
+     */
+    public void register(String packageName, boolean deep, List<Object> filler, Set<Class<?>> ignore) {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
         ClassPath classPath;
         try {
@@ -70,10 +83,16 @@ public class ListenerAutoRegistration {
             throw new RuntimeException(e);
         }
 
+        filler = new ArrayList<>(filler);
+        filler.add(plugin);
+
         for (ClassPath.ClassInfo classInfo : deep ? classPath.getTopLevelClassesRecursive(packageName) : classPath.getTopLevelClasses(packageName)) {
             try {
                 Class<?> clazz = classLoader.loadClass(classInfo.getName());
                 if (!Listener.class.isAssignableFrom(clazz))
+                    continue;
+
+                if (ignore.contains(clazz))
                     continue;
 
                 boolean devListener = clazz.isAnnotationPresent(DevServerListener.class);
@@ -81,16 +100,58 @@ public class ListenerAutoRegistration {
                     continue;
 
                 Constructor<?> constructor = clazz.getConstructors()[0];
-                Listener instance = (Listener) constructor.newInstance(constructor.getParameterCount() == 0 ? new Object[0] : new Object[] {plugin});
+                Listener instance = null;
+
+                if (constructor.getParameterCount() == 0) {
+                    instance = (Listener) constructor.newInstance();
+                }
+
+                instance = createInstance(constructor, filler);
+
+                if (instance == null) {
+                    Bukkit.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
+                    return;
+                }
+
                 Bukkit.getPluginManager().registerEvents(instance, plugin);
 
-                plugin.getLogger().info("Loaded " + (devListener ? "dev" : "") + " listener " + clazz.getSimpleName() + "!");
+                Bukkit.getLogger().info("Loaded " + (devListener ? "dev " : "") + "listener " + clazz.getSimpleName() + "!");
 
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                Dispensers.dispense(throwable);
             }
         }
 
+    }
+
+    private Listener createInstance(Constructor<?> constructor, List<Object> filler) {
+        filler = new ArrayList<>(filler);
+
+        Object[] objects = new Object[constructor.getParameterCount()];
+        for (int i = 0; i < constructor.getParameterCount(); i++) {
+            Class<?> target = constructor.getParameterTypes()[i];
+
+            Object value = null;
+
+            for (Object o : filler) {
+                if (target.isInstance(o)) {
+                    value = o;
+                    break;
+                }
+            }
+
+            if (value == null)
+                return null;
+
+            filler.remove(value);
+            objects[i] = value;
+        }
+
+        try {
+            return (Listener) constructor.newInstance(objects);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
