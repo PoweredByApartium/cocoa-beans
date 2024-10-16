@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.listener;
 
+import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.spigot.SpigotTestBase;
 import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
 import org.bukkit.Bukkit;
@@ -59,7 +60,7 @@ public class ListenerRegisterTest extends SpigotTestBase {
         Bukkit.getLogger().removeHandler(handler);
 
         assertTrue(myManager.hasBeenCreated());
-        assertEquals(List.of("Loaded listener MyListener!", "Loaded listener AnotherListener!", "Loaded listener JustListener!"), logs);
+        assertTrue(CollectionHelpers.equalsList(List.of("Loaded listener MyListener!", "Loaded listener AnotherListener!", "Loaded listener JustListener!"), logs));
     }
 
     @Override
