@@ -30,25 +30,33 @@ public class ListenerRegisterTest extends SpigotTestBase {
         assertFalse(myManager.hasBeenCreated());
 
         List<String> logs = new ArrayList();
-        Bukkit.getLogger().addHandler(new Handler() {
+
+        Handler handler = new Handler() {
 
 
-                @Override
-                public void publish(LogRecord logRecord) {
-                    logs.add(logRecord.getMessage());
-                }
+            @Override
+            public void publish(LogRecord logRecord) {
+                if (!logRecord.getMessage().startsWith("Loaded listener "))
+                    return;
 
-                @Override
-                public void flush() {
-                }
+                logs.add(logRecord.getMessage());
+            }
 
-                @Override
-                public void close() throws SecurityException {
+            @Override
+            public void flush() {
+            }
 
-                }
-        });
+            @Override
+            public void close() throws SecurityException {
+
+            }
+        };
+
+        Bukkit.getLogger().addHandler(handler);
 
         assertDoesNotThrow(() -> listenerAutoRegistration.register(getClass().getPackageName(), false, List.of(myManager), Set.of(FailedListener.class)));
+
+        Bukkit.getLogger().removeHandler(handler);
 
         assertTrue(myManager.hasBeenCreated());
         assertEquals(List.of("Loaded listener MyListener!", "Loaded listener AnotherListener!", "Loaded listener JustListener!"), logs);
