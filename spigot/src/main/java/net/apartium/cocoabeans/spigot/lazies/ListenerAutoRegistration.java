@@ -112,7 +112,7 @@ public class ListenerAutoRegistration {
 
                 if (instance == null) {
                     Bukkit.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
-                    return;
+                    continue;
                 }
 
                 Bukkit.getPluginManager().registerEvents(instance, plugin);
@@ -135,8 +135,6 @@ public class ListenerAutoRegistration {
             }
         }
 
-        injectableObjects = new ArrayList<>(injectableObjects);
-
         Object[] objects = new Object[constructor.getParameterCount()];
         for (int i = 0; i < constructor.getParameterCount(); i++) {
             Class<?> target = constructor.getParameterTypes()[i];
@@ -153,7 +151,6 @@ public class ListenerAutoRegistration {
             if (value == null)
                 return null;
 
-            injectableObjects.remove(value);
             objects[i] = value;
         }
 
