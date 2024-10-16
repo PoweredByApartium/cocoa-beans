@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -100,13 +101,7 @@ public class ListenerAutoRegistration {
                     continue;
 
                 Constructor<?> constructor = clazz.getConstructors()[0];
-                Listener instance = null;
-
-                if (constructor.getParameterCount() == 0) {
-                    instance = (Listener) constructor.newInstance();
-                }
-
-                instance = createInstance(constructor, filler);
+                Listener instance = createInstance(constructor, filler);
 
                 if (instance == null) {
                     Bukkit.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
@@ -117,14 +112,23 @@ public class ListenerAutoRegistration {
 
                 Bukkit.getLogger().info("Loaded " + (devListener ? "dev " : "") + "listener " + clazz.getSimpleName() + "!");
 
-            } catch (Throwable throwable) {
-                Dispensers.dispense(throwable);
+            } catch (Exception e) {
+                Dispensers.dispense(e);
             }
         }
 
     }
 
     private Listener createInstance(Constructor<?> constructor, List<Object> filler) {
+
+        if (constructor.getParameterCount() == 0) {
+            try {
+                return (Listener) constructor.newInstance();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         filler = new ArrayList<>(filler);
 
         Object[] objects = new Object[constructor.getParameterCount()];
