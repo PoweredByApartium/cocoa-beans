@@ -6,6 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
     id("apartium-maven-publish")
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
@@ -64,6 +65,13 @@ allprojects {
     tasks {
         test {
             useJUnitPlatform()
+        }
+    }
+
+    sonar {
+        properties {
+            property("sonar.projectKey", "PoweredByApartium_cocoa-beans_323780ff-4d56-4f0c-8ad6-d383a7c42a80")
+            property("sonar.projectName", "cocoa-beans")
         }
     }
 
