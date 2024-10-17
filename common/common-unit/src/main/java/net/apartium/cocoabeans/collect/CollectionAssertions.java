@@ -32,33 +32,7 @@ public class CollectionAssertions {
             return;
         }
 
-        if (expected.size() != actual.size()) {
-            fail("Expected: " + expected + ", actual: " + actual + "\n" + "Expected size: " + expected.size() + ", actual size: " + actual.size());
-            return;
-        }
-
-        if (expected.isEmpty())
-            return;
-
-        assertEquals(expected.size(), actual.size());
-
-        List<Integer> leftIndex = range(0, expected.size(), 1);
-
-        forLoop: for (Object object : expected) {
-            Iterator<Integer> iterator = leftIndex.iterator();
-            while (iterator.hasNext()) {
-                int index = iterator.next();
-                if (object.equals(actual.get(index))) {
-                    iterator.remove();
-                    continue forLoop;
-                }
-            }
-
-            fail("Expected: " + expected + ", actual: " + actual);
-            return;
-        }
-
-        if (!leftIndex.isEmpty()) {
+        if (!CollectionHelpers.equalsList(expected, actual)) {
             fail("Expected: " + expected + ", actual: " + actual);
         }
     }
