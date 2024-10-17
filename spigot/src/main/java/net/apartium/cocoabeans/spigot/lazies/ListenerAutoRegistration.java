@@ -83,7 +83,7 @@ public class ListenerAutoRegistration {
      * Auto discovers listeners in given package name
      * @param packageName package name
      * @param deep whether sub packages of given package should also be queried
-     * @param ignore ignored classes
+     * @param ignore classes that should be ignored and not be registered by this method
      */
     public void register(String packageName, boolean deep, Set<Class<?>> ignore) {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
@@ -111,13 +111,13 @@ public class ListenerAutoRegistration {
                 Listener instance = createInstance(constructor, this.injectableObjects);
 
                 if (instance == null) {
-                    Bukkit.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
+                    plugin.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
                     continue;
                 }
 
                 Bukkit.getPluginManager().registerEvents(instance, plugin);
 
-                Bukkit.getLogger().info("Loaded " + (devListener ? "dev " : "") + "listener " + clazz.getSimpleName() + "!");
+                plugin.getLogger().info("Loaded " + (devListener ? "dev " : "") + "listener " + clazz.getSimpleName() + "!");
 
             } catch (Exception e) {
                 Dispensers.dispense(e);
@@ -127,15 +127,6 @@ public class ListenerAutoRegistration {
     }
 
     private Listener createInstance(Constructor<?> constructor, List<Object> injectableObjects) {
-        if (constructor.getParameterCount() == 0) {
-            try {
-                return (Listener) constructor.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
         Object[] objects = new Object[constructor.getParameterCount()];
         for (int i = 0; i < constructor.getParameterCount(); i++) {
             Class<?> target = constructor.getParameterTypes()[i];
@@ -150,7 +141,7 @@ public class ListenerAutoRegistration {
             }
 
             if (value == null) {
-                Bukkit.getLogger().warning("No injectable object found for " + target.getName() + "!");
+                plugin.getLogger().warning("No injectable object found for " + target.getName() + "!");
                 return null;
             }
 
@@ -160,7 +151,7 @@ public class ListenerAutoRegistration {
         try {
             return (Listener) constructor.newInstance(objects);
         } catch (Exception e) {
-            e.printStackTrace();
+            Dispensers.dispense(e);
             return null;
         }
     }

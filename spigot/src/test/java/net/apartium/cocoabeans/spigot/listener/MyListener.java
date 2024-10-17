@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.spigot.listener;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.Assertions;
 
@@ -14,5 +16,11 @@ public class MyListener implements Listener {
 
         manager.updateHasBeenCreated();
     }
+
+    @EventHandler
+    public void on(PlayerJoinEvent event) {
+
+    }
+
 
 }
