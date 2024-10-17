@@ -19,7 +19,7 @@ jobs:
         - name: Setup Gradle
           uses: gradle/actions/setup-gradle@v3
         - name: Run integration tests
-          run: ./gradlew check sonar -Dsonar.host.url=https://sq.voigon.dev -Dsonar.verbose=true
+          run: ./gradlew check sonar -Dsonar.host.url=https://sq.voigon.dev -Dsonar.verbose=true --info
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
