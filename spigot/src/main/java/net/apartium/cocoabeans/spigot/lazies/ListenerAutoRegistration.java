@@ -131,6 +131,7 @@ public class ListenerAutoRegistration {
             try {
                 return (Listener) constructor.newInstance();
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -148,8 +149,10 @@ public class ListenerAutoRegistration {
                 }
             }
 
-            if (value == null)
+            if (value == null) {
+                Bukkit.getLogger().warning("No injectable object found for " + target.getName() + "!");
                 return null;
+            }
 
             objects[i] = value;
         }
@@ -157,6 +160,7 @@ public class ListenerAutoRegistration {
         try {
             return (Listener) constructor.newInstance(objects);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
