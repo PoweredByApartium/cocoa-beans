@@ -32,11 +32,13 @@ jobs:
            check_name: |
                 commands
                 commands-spigot
+                commands-assertions
                 common
                 spigot
            report_paths: |
                 **/commands/build/test-results/test/TEST-*.xml
                 **/commands/spigot-platform/build/test-results/test/TEST-*.xml
+                **/commands/commands-assertions/build/test-results/test/TEST-*.xml
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
 
@@ -47,5 +49,6 @@ jobs:
             paths: |
               **/commands/build/test-results/test/TEST-*.xml
               **/commands/spigot-platform/build/test-results/test/TEST-*.xml
+              **/commands/commands-assertions/build/test-results/test/TEST-*.xml
               **/common/build/test-results/test/TEST-*.xml
               **/spigot/build/test-results/test/TEST-*.xml

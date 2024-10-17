@@ -63,3 +63,5 @@ This command defines 3 sub commands:
 * [📌 Examples](Examples.md)
 * [Javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
 * [Spigot-Javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)
+* [Assertions javadocs](https://cocoa-beans.apartium.net/%version%/commands-assertions/)
+
