@@ -57,13 +57,13 @@ public class ParserAssertions {
         assertParserResult(parser, new TestCommandProcessingContext(sender, label, List.of(args), startIndex), expected, message);
     }
 
-        /**
-         * Checks if the parser result is as expected without any report of errors parsing
-         * @param parser the parser itself
-         * @param processingContext the context of the command
-         * @param expected the expected result with expected index
-         * @param message the message to report
-         */
+    /**
+     * Checks if the parser result is as expected without any report of errors parsing
+     * @param parser the parser itself
+     * @param processingContext the context of the command
+     * @param expected the expected result with expected index
+     * @param message the message to report
+     */
     public static void assertParserResult(ArgumentParser<?> parser, CommandProcessingContext processingContext, ArgumentParser.ParseResult<?> expected, String message) {
         TestCommandProcessingContext context = new TestCommandProcessingContext(processingContext.sender(), processingContext.label(), processingContext.args(), processingContext.index());
 
@@ -71,18 +71,18 @@ public class ParserAssertions {
 
         if (parse.isEmpty()) {
             if (!context.hasAnyReports()) {
-                failMessage("Expected parser fail didn't have any result or report of errors", message, expected, null);
+                failMessage("Parser did not return a result or report any errors", message, expected, null);
                 return;
             }
 
             List<BadCommandResponse> reports = context.getReports();
-            failMessage("Expected parser fail had " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
+            failMessage("Parser failed with " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
             return;
         }
 
         if (context.hasAnyReports()) {
             List<BadCommandResponse> reports = context.getReports();
-            failMessage("Expected parser fail had " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
+            failMessage("Parser produced unexpected error reports", message, expected, reports);
             return;
         }
 
@@ -144,7 +144,7 @@ public class ParserAssertions {
         if (parse.isPresent()) {
             if (context.hasAnyReports()) {
                 List<BadCommandResponse> reports = context.getReports();
-                failMessage("Expected parser fail had " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
+                failMessage("Parser produced unexpected error reports", message, expected, reports);
                 return;
             }
 
