@@ -14,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Represents version in the game.
@@ -208,7 +209,7 @@ public record MinecraftVersion(
      */
     @ApiStatus.AvailableSince("0.0.36")
     public static MinecraftVersion getVersion(int major, int update, int minor) {
-        return getVersion(major, update, minor, -1);
+        return getVersion(major, update, minor, () -> -1);
     }
 
     /**
@@ -219,13 +220,13 @@ public record MinecraftVersion(
      * @return cached minecraft version or create a new one with desired protocol version
      */
     @ApiStatus.AvailableSince("0.0.36")
-    public static MinecraftVersion getVersion(int major, int update, int minor, int protocol) {
+    public static MinecraftVersion getVersion(int major, int update, int minor, Supplier<Integer> protocol) {
         for (MinecraftVersion version : KNOWN_VERSIONS) {
             if (version.major == major && version.update == update && version.minor == minor) {
                 return version;
             }
         }
-        return new MinecraftVersion(major, update, minor, protocol);
+        return new MinecraftVersion(major, update, minor, protocol.get());
     }
 
     /**

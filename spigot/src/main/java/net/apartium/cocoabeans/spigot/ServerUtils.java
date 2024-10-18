@@ -47,7 +47,7 @@ public class ServerUtils {
         } else {
             String[] split = version.split("\\.");
             try {
-                return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), getProtocolVersion());
+                return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), ServerUtils::getProtocolVersion);
             } catch (NumberFormatException e) {
                 Bukkit.getLogger().log(Level.SEVERE, "An error occurred while parsing version string: " + version, e);
                 return MinecraftVersion.UNKNOWN;
