@@ -83,11 +83,9 @@ allprojects {
         dependsOn(tasks.jacocoTestReport)
     }
 
-}
-
-subprojects {
     sonar {
         properties {
+            property("sonar.token", System.getenv("SONAR_PROP_TOKEN") ?: project.findProperty("sonar.token").toString())
         }
     }
 
