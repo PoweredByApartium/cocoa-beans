@@ -87,6 +87,9 @@ allprojects {
         properties {
             if (isCi) {
                 val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
+                if (tokenFromEnv.isEmpty())
+                    throw RuntimeException("sonar.token cannot be empty")
+
                 property("sonar.token", tokenFromEnv)
             } else {
                 property("sonar.token", project.findProperty("apartium.sonar.token").toString())
