@@ -3,6 +3,7 @@
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
 - [commands] Add UUIDParser
 - [commands] Add GameMode parser with lazy mapping
+- [commands] Add ParserAssertions class for parser testing
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`

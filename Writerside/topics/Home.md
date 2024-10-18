@@ -8,6 +8,7 @@ Cocoa beans is a toolkit for you to take with you to every new project. Instead 
 * [Common javadocs](https://cocoa-beans.apartium.net/%version%/common/)
 * [Commands javadocs](https://cocoa-beans.apartium.net/%version%/commands/)
 * [Commands Spigot javadocs](https://cocoa-beans.apartium.net/%version%/commands-spigot/)
+* [Commands assertions javadocs](https://cocoa-beans.apartium.net/%version%/commands-assertions/)
 
 ## Including in your project
 
