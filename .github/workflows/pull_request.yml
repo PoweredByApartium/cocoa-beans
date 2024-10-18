@@ -6,6 +6,7 @@ on:
 jobs:
   unit_test:
     uses: ./.github/workflows/callable.test.yml
+    secrets: inherit
 
   writerside_test:
     uses: ./.github/workflows/callable.writerside.yml
