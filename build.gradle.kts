@@ -1,4 +1,5 @@
 import io.papermc.hangarpublishplugin.model.Platforms
+import org.sonarqube.gradle.SonarTask
 
 plugins {
     id("java-library")
@@ -7,6 +8,7 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
+    jacoco
 }
 
 val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
@@ -20,6 +22,7 @@ allprojects {
 
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
+    apply<JacocoPlugin>()
 
     publishing {
         repositories {
@@ -68,6 +71,18 @@ allprojects {
         }
     }
 
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.test)
+        reports {
+            xml.required = true
+        }
+    }
+
+    tasks.withType<SonarTask> {
+        dependsOn(tasks.test)
+        dependsOn(tasks.jacocoTestReport)
+    }
+
 }
 
 subprojects {
@@ -75,6 +90,7 @@ subprojects {
         properties {
         }
     }
+
 }
 
 hangarPublish {

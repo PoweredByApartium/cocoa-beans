@@ -21,7 +21,8 @@ jobs:
         - name: Run integration tests
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: ./gradlew check sonar -Dsonar.verbose=true
+            SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
+          run: ./gradlew check sonar -Dsonar.verbose=true -Dsonar.token=${SONAR_PROP_TOKEN}
         - name: Publish Test Report
           uses: mikepenz/action-junit-report@v4
           if: success() || failure()
