@@ -4,6 +4,7 @@
 - [commands] Add UUIDParser
 - [commands] Add GameMode parser with lazy mapping
 - [spigot] Fix getting protocol version before checking if server version is known
+- [spigot] Add simple dependency injection capabilities to ListenerAutoRegistration
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
