@@ -73,18 +73,6 @@ allprojects {
 subprojects {
     sonar {
         properties {
-            //property("sonar.projectKey", "PoweredByApartium_cocoa-beans_323780ff-4d56-4f0c-8ad6-d383a7c42a80")
-            //property("sonar.projectName", "cocoa-beans")
-            //property("sonar.token", "sqp_52b8613bdf8d31bd5f69b797c66b1559b5ab8a90")
-            /*property("sonar.token", System.getenv("SONAR_TOKEN"))
-            if (System.getenv("SONAR_TOKEN") == null) {
-                throw RuntimeException("sonar token not set")
-            }
-
-            if (System.getenv("SONAR_TOKEN").isEmpty()) {
-                throw RuntimeException("sonar token is empty")
-            } */
-
         }
     }
 }
