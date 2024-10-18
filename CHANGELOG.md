@@ -3,6 +3,7 @@
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
 - [commands] Add UUIDParser
 - [commands] Add GameMode parser with lazy mapping
+- [spigot] Fix getting protocol version before checking if server version is known
 - [spigot] Add simple dependency injection capabilities to ListenerAutoRegistration
 
 ## 0.0.35
