@@ -48,7 +48,10 @@ public class ListenerRegisterTest extends SpigotTestBase {
                 .<Class<? extends Listener>>map(Listener::getClass)
                 .toList();
 
+        assertEquals(3, list.size());
+
         assertFalse(list.contains(FailedListener.class));
+
         assertTrue(list.contains(AnotherListener.class));
         assertTrue(list.contains(JustListener.class));
         assertTrue(list.contains(MyListener.class));
