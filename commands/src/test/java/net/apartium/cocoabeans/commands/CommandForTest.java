@@ -175,7 +175,8 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testOptionalStringMeow(Sender sender, Optional<String> optString) got " + (optString.orElse("null")));
     }
 
-    @SubCommand("config get <string>")
+    @WithParser(value = StringParser.class, keyword = "config-key")
+    @SubCommand("config get <config-key>")
     public void getConfigValue(Sender sender, String s) {
         sender.sendMessage("getConfigValue(Sender sender, String s) " + s + " = true");
     }
