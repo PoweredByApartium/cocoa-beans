@@ -1,6 +1,9 @@
-package net.apartium.cocoabeans.commands;
+package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.commands.TestCommandProcessingContext;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;

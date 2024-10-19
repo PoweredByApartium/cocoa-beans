@@ -4,9 +4,11 @@ import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+@ApiStatus.Internal
 public class TestCommandProcessingContext implements CommandProcessingContext {
 
     private final List<BadCommandResponse> reports = new ArrayList<>();

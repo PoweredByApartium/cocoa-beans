@@ -1,19 +1,16 @@
-package net.apartium.cocoabeans.coomands;
+package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.commands.ParserAssertions;
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
-import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 import java.util.List;
 import java.util.Map;
 
-import static net.apartium.cocoabeans.commands.ParserAssertions.assertParserResult;
-import static net.apartium.cocoabeans.commands.ParserAssertions.assertParserThrowsReport;
+import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.assertParserResult;
+import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.assertParserThrowsReport;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MapBasedParserTest {
 
