@@ -6,6 +6,7 @@
 - [spigot] Fix getting protocol version before checking if server version is known
 - [spigot] Add simple dependency injection capabilities to ListenerAutoRegistration
 - [commands] Add ParserAssertions class for parser testing
+- [commands-spigot] Add GameModeParser to `SpigotCommandManager.SPIGOT_PARSERS`
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
