@@ -22,11 +22,20 @@ public class StringsParser extends ArgumentParser<String> {
 
     public static final String DEFAULT_KEYWORD = "strings";
 
+    /**
+     * Creates a new strings parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public StringsParser(int priority, String keyword) {
         super(keyword, String.class, priority);
     }
 
+    /**
+     * Creates a new strings parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public StringsParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }

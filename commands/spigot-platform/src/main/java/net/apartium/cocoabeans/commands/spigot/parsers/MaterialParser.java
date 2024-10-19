@@ -22,11 +22,20 @@ public class MaterialParser extends ArgumentParser<Material> {
 
     public static final String DEFAULT_KEYWORD = "material";
 
+    /**
+     * Creates a new MaterialParser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public MaterialParser(int priority, String keyword) {
         super(keyword, Material.class, priority);
     }
 
+    /**
+     * Creates a new MaterialParser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public MaterialParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }

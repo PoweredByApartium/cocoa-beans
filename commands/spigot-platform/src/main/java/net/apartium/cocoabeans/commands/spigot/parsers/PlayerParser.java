@@ -27,11 +27,20 @@ public class PlayerParser extends ArgumentParser<Player> {
 
     public static final String DEFAULT_KEYWORD = "player";
 
+    /**
+     * Creates new player parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public PlayerParser(int priority, String keyword) {
         super(keyword, Player.class, priority);
     }
 
+    /**
+     * Creates new player parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public PlayerParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }

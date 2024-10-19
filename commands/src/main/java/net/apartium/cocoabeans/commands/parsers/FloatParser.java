@@ -21,11 +21,20 @@ public class FloatParser extends ArgumentParser<Float> {
 
     public static final String DEFAULT_KEYWORD = "float";
 
+    /**
+     * Creates new float parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public FloatParser(int priority, String keyword) {
         super(keyword, float.class, priority);
     }
 
+    /**
+     * Creates new float parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public FloatParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }

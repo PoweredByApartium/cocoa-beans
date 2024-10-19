@@ -25,10 +25,19 @@ public class BooleanParser extends ArgumentParser<Boolean> {
     private final Set<String> falseSet;
     private final Set<String> joinedSet;
 
+    /**
+     * Creates a new boolean parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public BooleanParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }
 
+    /**
+     * Creates a new boolean parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public BooleanParser(int priority, String keyword) {
         this(priority, keyword, Set.of("true"), Set.of("false"));

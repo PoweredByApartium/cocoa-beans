@@ -20,11 +20,20 @@ public class LongParser extends ArgumentParser<Long> {
 
     public static final String DEFAULT_KEYWORD = "long";
 
+    /**
+     * Creates a new long parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
     @ApiStatus.AvailableSince("0.0.36")
     public LongParser(int priority, String keyword) {
         super(keyword, long.class, priority);
     }
 
+    /**
+     * Creates a new long parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public LongParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }
