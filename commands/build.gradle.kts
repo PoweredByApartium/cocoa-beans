@@ -1,6 +1,6 @@
 plugins {
-    id("apartium-maven-publish")
     id("java-test-fixtures")
+    id("apartium-maven-publish")
 }
 
 group = parent!!.project.group
