@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -18,16 +19,23 @@ import java.util.stream.Collectors;
 
 public class BooleanParser extends ArgumentParser<Boolean> {
 
+    public static final String DEFAULT_KEYWORD = "boolean";
+
     private final Set<String> trueSet;
     private final Set<String> falseSet;
     private final Set<String> joinedSet;
 
     public BooleanParser(int priority) {
-        this(priority, Set.of("true"), Set.of("false"));
+        this(priority, DEFAULT_KEYWORD);
     }
 
-    public BooleanParser(int priority, @NotNull Set<String> trueSet, @NotNull Set<String> falseSet) {
-        super("boolean", boolean.class, priority);
+    @ApiStatus.AvailableSince("0.0.36")
+    public BooleanParser(int priority, String keyword) {
+        this(priority, keyword, Set.of("true"), Set.of("false"));
+    }
+
+    public BooleanParser(int priority, String keyword, @NotNull Set<String> trueSet, @NotNull Set<String> falseSet) {
+        super(keyword, boolean.class, priority);
 
         if (trueSet.isEmpty()) throw new RuntimeException("True set can't be empty");
         if (falseSet.isEmpty()) throw new RuntimeException("False set can't be empty");

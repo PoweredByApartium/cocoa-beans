@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.parsers;
 
+import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -36,35 +37,73 @@ public class WithParserFactory implements ParserFactory {
 
 
         try {
-            Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getDeclaredConstructors();
-            return List.of(new ParserResult(newInstance((Constructor<ArgumentParser<?>>[]) ctors, withParser.priority()), obj instanceof Method ? Scope.VARIANT : Scope.CLASS));
+            Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getConstructors();
+
+            ArgumentParser<?> argumentParser = newInstance(
+                    (Constructor<ArgumentParser<?>>[]) ctors,
+                    withParser.priority(),
+                    withParser.keyword()
+            );
+
+            if (argumentParser == null)
+                return List.of();
+
+            return List.of(new ParserResult(
+                    argumentParser,
+                    obj instanceof Method ? Scope.VARIANT : Scope.CLASS
+            ));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             return List.of();
         }
     }
 
-    private static <T> T newInstance(Constructor<T>[] ctors, int priority) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        Constructor<?> constructor = null;
+    private static <T> T newInstance(Constructor<T>[] constructors, int priority, String keyword) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        Constructor<?> matchingConstructor = null;
 
-        if (ctors.length > 1) {
-            for (Constructor<T> ctor : ctors) {
-                if (ctor.getParameterCount() == 1 && ctor.getParameterTypes()[0].equals(int.class))
-                    constructor = ctor;
+        boolean keywordBlank = keyword.isBlank();
+        Class<?>[] paramTypes = null;
+        for (Constructor<T> constructor : constructors) {
+            int paramCount = constructor.getParameterCount();
+            paramTypes = constructor.getParameterTypes();
+
+            if (keywordBlank && paramCount == 1 && paramTypes[0].equals(int.class)) {
+                matchingConstructor = constructor;
+                break;
+            }
+
+            if (!keywordBlank && paramCount == 2) {
+                if (paramTypes[0].equals(int.class) && paramTypes[1].equals(String.class)) {
+                    matchingConstructor = constructor;
+                    break;
+                }
+
+                if (paramTypes[0].equals(String.class) && paramTypes[1].equals(int.class)) {
+                    matchingConstructor = constructor;
+                    break;
+                }
             }
         }
 
-        if (constructor == null)
-            constructor = ctors[0];
+        if (matchingConstructor == null) {
+            SharedSecrets.LOGGER.log(System.Logger.Level.WARNING,
+                    "No constructor found for WithParser with priority {} and keyword {}",
+                    priority, keyword
+            );
+            return null;
+        }
 
         Object[] params;
-        if (constructor.getParameterCount() == 1) {
-            params = new Object[] {priority};
-        } else {
-            if (priority > 0)
-                SharedSecrets.LOGGER.log(System.Logger.Level.WARNING, "Registered parser {} with priority, but it doesn't support it", constructor.getDeclaringClass().getName());
 
-            params = new Object[0];
+        if (!keywordBlank) {
+            if (paramTypes[0] == int.class)
+                params = new Object[] {priority, keyword};
+            else
+                params = new Object[]{keyword, priority};
+        } else {
+            params = new Object[] {priority};
         }
-        return (T) constructor.newInstance(params);
+
+        return (T) matchingConstructor.newInstance(params);
     }
+
 }

@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +20,15 @@ import java.util.Set;
 
 public class StringParser extends ArgumentParser<String> {
 
+    public static final String DEFAULT_KEYWORD = "string";
+
+    @ApiStatus.AvailableSince("0.0.36")
+    public StringParser(int priority, String keyword) {
+        super(keyword, String.class, priority);
+    }
+
     public StringParser(int priority) {
-        super("string", String.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

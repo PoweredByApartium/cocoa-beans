@@ -14,6 +14,8 @@ import java.util.Map;
 @ApiStatus.AvailableSince("0.0.36")
 public class GameModeParser extends MapBasedParser<GameMode> {
 
+    public static final String DEFAULT_KEYWORD = "gamemode";
+
     private final Map<String, GameMode> gameModeMap;
 
     /**
@@ -39,7 +41,7 @@ public class GameModeParser extends MapBasedParser<GameMode> {
      * @param priority parser priority
      */
     public GameModeParser(int priority) {
-        this("gamemode", priority);
+        this(DEFAULT_KEYWORD, priority);
     }
 
     /**

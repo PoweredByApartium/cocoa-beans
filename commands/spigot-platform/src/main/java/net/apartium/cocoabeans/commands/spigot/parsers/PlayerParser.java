@@ -15,6 +15,7 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,15 @@ import java.util.stream.Stream;
 
 public class PlayerParser extends ArgumentParser<Player> {
 
+    public static final String DEFAULT_KEYWORD = "player";
+
+    @ApiStatus.AvailableSince("0.0.36")
+    public PlayerParser(int priority, String keyword) {
+        super(keyword, Player.class, priority);
+    }
+
     public PlayerParser(int priority) {
-        super("player", Player.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

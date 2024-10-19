@@ -18,12 +18,14 @@ import java.util.Set;
 
 public class DummyParser extends ArgumentParser<Object> {
 
+    public static final String DEFAULT_KEYWORD = "ignore";
+
     public DummyParser() {
         this(-10);
     }
 
     public DummyParser(int priority) {
-        this("ignore", priority);
+        this(DEFAULT_KEYWORD, priority);
     }
 
     public DummyParser(String keyword, int priority) {

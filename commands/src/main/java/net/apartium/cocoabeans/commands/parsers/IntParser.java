@@ -12,13 +12,21 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.StringHelpers;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
 public class IntParser extends ArgumentParser<Integer> {
 
+    public static final String DEFAULT_KEYWORD = "int";
+
+    @ApiStatus.AvailableSince("0.0.36")
+    public IntParser(int priority, String keyword) {
+        super(keyword, int.class, priority);
+    }
+
     public IntParser(int priority) {
-        super("int", int.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override
