@@ -17,8 +17,16 @@ import java.util.*;
 
 public class ExampleParser extends ArgumentParser<ExampleParser.PersonInfo> {
 
+    public ExampleParser(String keyword, int priority) {
+        super(keyword, PersonInfo.class, priority);
+    }
+
+    public ExampleParser(int priority) {
+        this("example", priority);
+    }
+
     public ExampleParser() {
-        super("example", PersonInfo.class, 0);
+        this(0);
     }
 
     @Override
