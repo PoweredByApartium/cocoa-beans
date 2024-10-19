@@ -53,6 +53,11 @@ if (!root) {
 
                 artifact(tasks.getByName("packageJavadoc"))
                 artifact(tasks.jar)
+                tasks.findByName("testFixturesJar")?.let {
+                    artifact(it, {
+                        classifier = "test-fixtures"
+                    })
+                }
 
                 pom.withXml {
                     val dependenciesNode = asNode().appendNode("dependencies")
