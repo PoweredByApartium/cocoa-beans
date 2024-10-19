@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Passer assertions is a collection of assertions for parsers
+ * Parser assertions is a collection of assertions for parsers
  * @see ParserAssertions#assertParserResult(ArgumentParser, Sender, String, String[], ArgumentParser.ParseResult)
  */
 @ApiStatus.AvailableSince("0.0.36")
@@ -162,7 +162,7 @@ public class ParserAssertions {
 
         if (context.hasAnyReports()) {
             List<BadCommandResponse> reports = context.getReports();
-            failMessage("Expected parser fail had " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
+            failMessage("Parser unexpectedly failed with " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
             return;
         }
     }
@@ -211,7 +211,7 @@ public class ParserAssertions {
         parser.parse(context);
 
         if (!context.hasAnyReports()) {
-            failMessage("Expected parser fail not report has been provided", message, expected, null);
+            failMessage("Expected parser to fail but no error report has been provided", message, expected, null);
             return;
         }
 
