@@ -1,10 +1,9 @@
 package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.reflect.ConstructorUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -12,7 +11,9 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @hidden
@@ -29,7 +30,6 @@ public class WithParserFactory implements ParserFactory {
                 result.addAll(getArgumentParser(commandNode, withParser, obj));
 
             return result;
-
         }
 
         if (!(annotation instanceof WithParser withParser))
@@ -37,10 +37,8 @@ public class WithParserFactory implements ParserFactory {
 
 
         try {
-            Constructor<? extends ArgumentParser<?>>[] ctors = (Constructor<? extends ArgumentParser<?>>[]) withParser.value().getConstructors();
-
             ArgumentParser<?> argumentParser = newInstance(
-                    (Constructor<ArgumentParser<?>>[]) ctors,
+                    ConstructorUtils.getDeclaredConstructors(withParser.value()),
                     withParser.priority(),
                     withParser.keyword()
             );
@@ -53,17 +51,22 @@ public class WithParserFactory implements ParserFactory {
                     obj instanceof Method ? Scope.VARIANT : Scope.CLASS
             ));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            SharedSecrets.LOGGER.log(System.Logger.Level.WARNING, "Failed to create WithParser", e);
             return List.of();
         }
     }
 
-    private static <T> T newInstance(Constructor<T>[] constructors, int priority, String keyword) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        Constructor<?> matchingConstructor = null;
+    private static <T extends ArgumentParser<?>> T newInstance(Collection<Constructor<T>> constructors, int priority, String keyword) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        Constructor<T> matchingConstructor = null;
 
         boolean keywordBlank = keyword.isBlank();
         Class<?>[] paramTypes = null;
         for (Constructor<T> constructor : constructors) {
             int paramCount = constructor.getParameterCount();
+
+            if (paramCount != 1 && paramCount != 2)
+                continue;
+
             paramTypes = constructor.getParameterTypes();
 
             if (keywordBlank && paramCount == 1 && paramTypes[0].equals(int.class)) {
@@ -90,13 +93,13 @@ public class WithParserFactory implements ParserFactory {
                         "No constructor found for WithParser with priority {}",
                         priority
                 );
-                return null;
+            } else {
+                SharedSecrets.LOGGER.log(System.Logger.Level.WARNING,
+                        "No constructor found for WithParser with priority {} and keyword {}",
+                        priority, keyword
+                );
             }
 
-            SharedSecrets.LOGGER.log(System.Logger.Level.WARNING,
-                    "No constructor found for WithParser with priority {} and keyword {}",
-                    priority, keyword
-            );
             return null;
         }
 
@@ -104,14 +107,14 @@ public class WithParserFactory implements ParserFactory {
 
         if (!keywordBlank) {
             if (paramTypes[0] == int.class)
-                params = new Object[] {priority, keyword};
+                params = new Object[] { priority, keyword };
             else
-                params = new Object[]{keyword, priority};
+                params = new Object[] { keyword, priority };
         } else {
-            params = new Object[] {priority};
+            params = new Object[] { priority };
         }
 
-        return (T) matchingConstructor.newInstance(params);
+        return matchingConstructor.newInstance(params);
     }
 
 }
