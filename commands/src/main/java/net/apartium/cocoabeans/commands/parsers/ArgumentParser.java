@@ -23,18 +23,30 @@ import java.util.Set;
  * @see net.apartium.cocoabeans.commands.parsers.IntParser
  * @see net.apartium.cocoabeans.commands.parsers.StringParser
  * @param <T>
+ * <b>Note</b>: That all parsers should have at least those 2 constructors <code>Parser(int priority)</code>, <code>Parser(int priority, String keyword)</code> so we can use @WithParser on them
  */
 public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>> {
 
+    /**
+     * Keyword of the parser that will be used to know which parser to use
+     */
     private final String keyword;
+    /**
+     * The output class
+     */
     private final Class<T> clazz;
+
+    /**
+     * The priority of the parser,
+     * if we have multiple parser to know which one to try first
+     */
     private final int priority;
 
     /**
-     * Constructs a
-     * @param keyword
-     * @param clazz
-     * @param priority
+     * Constructs a new parser
+     * @param keyword keyword of the parser
+     * @param clazz output class
+     * @param priority priority
      */
     protected ArgumentParser(String keyword, Class<T> clazz, int priority) {
         this.keyword = keyword;
