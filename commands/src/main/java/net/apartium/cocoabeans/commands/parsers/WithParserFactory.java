@@ -85,6 +85,14 @@ public class WithParserFactory implements ParserFactory {
         }
 
         if (matchingConstructor == null) {
+            if (keywordBlank) {
+                SharedSecrets.LOGGER.log(System.Logger.Level.WARNING,
+                        "No constructor found for WithParser with priority {}",
+                        priority
+                );
+                return null;
+            }
+
             SharedSecrets.LOGGER.log(System.Logger.Level.WARNING,
                     "No constructor found for WithParser with priority {} and keyword {}",
                     priority, keyword
