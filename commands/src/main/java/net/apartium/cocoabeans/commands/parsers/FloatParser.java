@@ -13,13 +13,30 @@ package net.apartium.cocoabeans.commands.parsers;
 import net.apartium.cocoabeans.StringHelpers;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.utils.OptionalFloat;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
 public class FloatParser extends ArgumentParser<Float> {
 
+    public static final String DEFAULT_KEYWORD = "float";
+
+    /**
+     * Creates new float parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public FloatParser(int priority, String keyword) {
+        super(keyword, float.class, priority);
+    }
+
+    /**
+     * Creates new float parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public FloatParser(int priority) {
-        super("float", float.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

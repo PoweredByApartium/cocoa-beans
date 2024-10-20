@@ -14,14 +14,31 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class OfflinePlayerParser extends ArgumentParser<OfflinePlayer> {
 
+    public static final String DEFAULT_KEYWORD = "offlineplayer";
+
+    /**
+     * Creates a new offline player parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public OfflinePlayerParser(int priority, String keyword) {
+        super(keyword, OfflinePlayer.class, priority);
+    }
+
+    /**
+     * Creates a new offline player parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public OfflinePlayerParser(int priority) {
-        super("offlineplayer", OfflinePlayer.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

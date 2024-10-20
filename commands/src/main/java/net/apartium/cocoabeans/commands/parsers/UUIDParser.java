@@ -9,6 +9,8 @@ import java.util.*;
 @ApiStatus.AvailableSince("0.0.36")
 public class UUIDParser extends ArgumentParser<UUID> {
 
+    public static final String DEFAULT_KEYWORD = "uuid";
+
     /**
      * Creates new UUID parser
      * @param keyword parser keyword
@@ -24,7 +26,7 @@ public class UUIDParser extends ArgumentParser<UUID> {
      * @see #UUIDParser(String, int)
      */
     public UUIDParser(int priority) {
-        this("uuid", priority);
+        this(DEFAULT_KEYWORD, priority);
     }
 
     /**

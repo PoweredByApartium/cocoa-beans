@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.commands.parsers;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.lang.annotation.*;
 
 /**
@@ -22,11 +24,21 @@ import java.lang.annotation.*;
 public @interface WithParser {
     /**
      * Parser to register
+     * @return parser
      */
     Class<? extends ArgumentParser<?>> value();
 
     /**
      * Parser priority
+     * @return priority
      */
     int priority() default 0;
+
+    /**
+     * Parser keyword
+     * If empty it will use the default keyword of the parser
+     * @return keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    String keyword() default "";
 }

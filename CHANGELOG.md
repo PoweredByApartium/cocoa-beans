@@ -7,6 +7,8 @@
 - [spigot] Add simple dependency injection capabilities to ListenerAutoRegistration
 - [commands] Add ParserAssertions class for parser testing
 - [commands-spigot] Add GameModeParser to `SpigotCommandManager.SPIGOT_PARSERS`
+- [commands] WithParser support keyword change
+- [commands] Add new constructor to every `ArgumentParser` with those two arguments `int, String`
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
