@@ -22,7 +22,11 @@ import java.util.Set;
  * Base class for all parsers
  * @see net.apartium.cocoabeans.commands.parsers.IntParser
  * @see net.apartium.cocoabeans.commands.parsers.StringParser
- * @param <T>
+ * @param <T> output type
+ *
+ * <p>It's recommended that each implementing of ArgumentParser class should define its own {@code DEFAULT_KEYWORD}
+ * to represent the default keyword</p>
+ *
  * <b>Note</b>: That all parsers should have at least those 2 constructors <code>Parser(int priority)</code>, <code>Parser(int priority, String keyword)</code> so we can use @WithParser on them
  */
 public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>> {
