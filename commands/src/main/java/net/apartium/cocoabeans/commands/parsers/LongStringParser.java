@@ -13,7 +13,7 @@ import java.util.*;
  * @see ParagraphParser
  */
 @ApiStatus.AvailableSince("0.0.36")
-public class LongStringParser extends ArgumentParser<String> {
+/* package-private */ class LongStringParser extends ArgumentParser<String> {
 
     public static final String DEFAULT_KEYWORD = "long-string";
 

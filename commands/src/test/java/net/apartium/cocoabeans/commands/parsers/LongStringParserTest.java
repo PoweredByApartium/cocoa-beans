@@ -10,7 +10,7 @@ public class LongStringParserTest {
 
     @Test
     void testNotParagraph() {
-        LongStringParser parser = new LongStringParser(0);
+        QuotedStringParser parser = new QuotedStringParser(0);
 
         assertParserResult(parser, null, null, new String[]{"hello"}, new ArgumentParser.ParseResult<>("hello", 1));
         assertParserResult(parser, null, null, new String[]{"hello", "WORLD"}, new ArgumentParser.ParseResult<>("hello", 1));
@@ -27,7 +27,7 @@ public class LongStringParserTest {
 
     @Test
     void testWithParagraph() {
-        LongStringParser parser = new LongStringParser(0, true);
+        ParagraphParser parser = new ParagraphParser(0);
 
         assertParserResult(parser, null, null, new String[]{"hello"}, new ArgumentParser.ParseResult<>("hello", 1));
         assertParserResult(parser, null, null, new String[]{"hello", "WORLD"}, new ArgumentParser.ParseResult<>("hello", 1));
