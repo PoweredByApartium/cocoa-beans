@@ -4,10 +4,7 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Long string parser
@@ -71,12 +68,12 @@ public class LongStringParser extends ArgumentParser<String> {
 
         StringBuilder sb = new StringBuilder();
         boolean quoted = args.get(index).charAt(0) == '"';
+        Stack<Character> stack = new Stack<>();
 
-        for (int i = index; i < args.size(); i++) {
+        outerLoop: for (int i = index; i < args.size(); i++) {
             if (!quoted && i != index)
                 break;
 
-            Stack<Character> stack = new Stack<>();
             String s = args.get(i);
             lastIndex = i;
 
@@ -99,7 +96,7 @@ public class LongStringParser extends ArgumentParser<String> {
 
                     if (stack.peek() == '"') {
                         stack.pop();
-                        if (stack.isEmpty()) {
+                        if (!stack.isEmpty()) {
                             processingContext.report(
                                     this,
                                     new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
@@ -147,6 +144,9 @@ public class LongStringParser extends ArgumentParser<String> {
                     if (!stack.isEmpty() && stack.peek() == '\\') {
                         stack.pop();
                         sb.append('\n');
+                        if (j == (s.length() - 1))
+                            continue outerLoop;
+
                         continue;
                     }
                 }
@@ -157,6 +157,14 @@ public class LongStringParser extends ArgumentParser<String> {
             sb.append(' ');
         }
 
+        if (!stack.isEmpty()) {
+            processingContext.report(
+                    this,
+                    new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
+            );
+            return Optional.empty();
+        }
+
         return Optional.of(new ParseResult<>(
             sb.substring(0, sb.length() - 1),
             lastIndex + 1
@@ -165,11 +173,22 @@ public class LongStringParser extends ArgumentParser<String> {
 
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        return OptionalInt.empty();
+        return parse(processingContext)
+                .map(ParseResult::newIndex)
+                .map(OptionalInt::of)
+                .orElse(OptionalInt.empty());
     }
 
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        return Optional.empty();
+        OptionalInt optionalInt = tryParse(processingContext);
+
+        if (optionalInt.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new TabCompletionResult(
+                Set.of(),
+                optionalInt.getAsInt()
+        ));
     }
 }
