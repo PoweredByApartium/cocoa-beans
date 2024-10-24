@@ -106,7 +106,13 @@ import java.util.*;
             return Optional.empty();
         }
 
-        String result = resultBuilder.isEmpty() ? "" : resultBuilder.charAt(resultBuilder.length() - 1) == ' ' ? resultBuilder.substring(0, resultBuilder.length() - 1) : resultBuilder.toString();
+        String result;
+        if (resultBuilder.isEmpty())
+            result = "";
+        else if (resultBuilder.charAt(resultBuilder.length() - 1) == ' ')
+            result = resultBuilder.substring(0, resultBuilder.length() - 1);
+        else
+            result = resultBuilder.toString();
 
         return Optional.of(new ParseResult<>(
                 result,
