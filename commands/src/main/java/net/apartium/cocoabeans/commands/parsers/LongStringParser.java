@@ -59,7 +59,7 @@ import java.util.*;
 
     @Override
     public Optional<ParseResult<String>> parse(CommandProcessingContext processingContext) {
-        List<String> args = new ArrayList<>(processingContext.args());
+        List<String> args = processingContext.args();
         int index = processingContext.index();
 
         if (index >= args.size())
@@ -75,19 +75,22 @@ import java.util.*;
         int lastIndex = index;
 
         StringBuilder resultBuilder = new StringBuilder();
-        boolean quoted = args.get(index).charAt(0) == '"';
+        String firstArg = args.get(index);
+        boolean quoted = firstArg.charAt(0) == '"';
 
         Deque<Character> escapeCharacters = new ArrayDeque<>();
+
+
         if (quoted) {
             escapeCharacters.addLast('"');
-            args.set(index, args.get(index).substring(1));
+            firstArg = firstArg.substring(1);
         }
 
         for (int i = index; i < args.size(); i++) {
             if (!quoted && i != index)
                 break;
 
-            String arg = args.get(i);
+            String arg = i == index ? firstArg : args.get(i);
             lastIndex = i;
 
             ProcessResult processResult = processArg(processingContext, arg, resultBuilder, escapeCharacters);
