@@ -68,7 +68,7 @@ import java.util.*;
 
         StringBuilder sb = new StringBuilder();
         boolean quoted = args.get(index).charAt(0) == '"';
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> characters = new ArrayDeque<>();
 
         outerLoop: for (int i = index; i < args.size(); i++) {
             if (!quoted && i != index)
@@ -80,12 +80,12 @@ import java.util.*;
             for (int j = 0; j < s.length(); j++) {
                 char c = s.charAt(j);
                 if (c == '"' && i == index && j == 0) {
-                    stack.push('"');
+                    characters.addLast('"');
                     continue;
                 }
 
                 if (c == '"') {
-                    if (stack.isEmpty()) {
+                    if (characters.isEmpty()) {
                         processingContext.report(
                                 this,
                                 new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
@@ -94,9 +94,9 @@ import java.util.*;
                         return Optional.empty();
                     }
 
-                    if (stack.peek() == '"') {
-                        stack.pop();
-                        if (!stack.isEmpty()) {
+                    if (characters.peekLast() == '"') {
+                        characters.removeLast();
+                        if (!characters.isEmpty()) {
                             processingContext.report(
                                     this,
                                     new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
@@ -115,8 +115,8 @@ import java.util.*;
                         break;
                     }
 
-                    if (stack.peek() == '\\') {
-                        stack.pop();
+                    if (characters.peekLast() == '\\') {
+                        characters.removeLast();
                         sb.append(c);
                         continue;
                     }
@@ -130,19 +130,19 @@ import java.util.*;
                 }
 
                 if (c == '\\') {
-                    if (!stack.isEmpty() && stack.peek() == '\\') {
-                        stack.pop();
+                    if (!characters.isEmpty() && characters.peekLast() == '\\') {
+                        characters.removeLast();
                         sb.append(c);
                         continue;
                     }
 
-                    stack.push(c);
+                    characters.addLast(c);
                     continue;
                 }
 
                 if (paragraphMode && c == 'n') {
-                    if (!stack.isEmpty() && stack.peek() == '\\') {
-                        stack.pop();
+                    if (!characters.isEmpty() && characters.peekLast() == '\\') {
+                        characters.removeLast();
                         sb.append('\n');
                         if (j == (s.length() - 1))
                             continue outerLoop;
@@ -157,7 +157,7 @@ import java.util.*;
             sb.append(' ');
         }
 
-        if (!stack.isEmpty()) {
+        if (!characters.isEmpty()) {
             processingContext.report(
                     this,
                     new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
