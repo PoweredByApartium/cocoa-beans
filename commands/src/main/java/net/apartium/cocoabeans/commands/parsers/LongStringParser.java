@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * Long string parser
- * Parsers that let you press string that is more than one word and has a limit by using quotation marks
+ * Parsers that let you press strings that are more than one word and are limited by using quotation marks
  * @see QuotedStringParser
  * @see ParagraphParser
  */
