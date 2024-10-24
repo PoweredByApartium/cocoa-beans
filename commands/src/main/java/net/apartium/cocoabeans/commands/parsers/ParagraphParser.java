@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.commands.parsers;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Parser that let you press string that is more than one word and has a limit by using quotation marks also has support for new lines
+ * Parsers that let you press strings that are more than one word and are limited by using quotation marks and has support for new lines
  * <br/><b>Example</b><br/>
  * Input <code>/test Hello\nWorld </code>
  * <br/>Output
