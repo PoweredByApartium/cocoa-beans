@@ -77,13 +77,13 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
     /**
      * Retrieves available options for tab completion of this argument
      * @param processingContext cmd processing context
-     * @return tab completetion result if success, otherwise empty optiona
+     * @return tab completion result if success, otherwise empty option
      */
     public abstract Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext);
 
     /**
      * Get argument type
-     * @return
+     * @return argument type
      */
     public Class<T> getArgumentType() {
         return clazz;
@@ -91,17 +91,28 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
 
     /**
      * Get priority
-     * @return
+     * @return priority
      */
     public int getPriority() {
         return priority;
     }
 
+    /**
+     * Parse Result is the content of the parsing
+     * @param result the result of the parsing
+     * @param newIndex new index to change to
+     * @param <T> type
+     */
     public record ParseResult<T>(
             T result,
             int newIndex
     ) { }
 
+    /**
+     * Tsb completion result is the content of the tab completion
+     * @param result the result of the tab completion
+     * @param newIndex new index to change to
+     */
     public record TabCompletionResult(
             Set<String> result,
             int newIndex

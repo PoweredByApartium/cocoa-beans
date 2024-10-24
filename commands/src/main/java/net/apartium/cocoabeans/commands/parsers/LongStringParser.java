@@ -57,6 +57,11 @@ import java.util.*;
     }
 
 
+    /**
+     * Tries to parse next argument in the context
+     * @param processingContext cmd processing context
+     * @return empty if failed, otherwise result
+     */
     @Override
     public Optional<ParseResult<String>> parse(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
@@ -120,6 +125,7 @@ import java.util.*;
         ));
     }
 
+    @ApiStatus.Internal
     private ProcessResult processArg(CommandProcessingContext processingContext, String arg, StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
         for (int i = 0; i < arg.length(); i++) {
             char currentChar = arg.charAt(i);
@@ -154,6 +160,7 @@ import java.util.*;
         return ProcessResult.CONTINUE;
     }
 
+    @ApiStatus.Internal
     private ProcessResult handleQuote(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, String arg, int currentIndex) {
         if (escapeCharacters.isEmpty()) {
             reportError(processingContext, "Invalid quoted string");
@@ -190,6 +197,7 @@ import java.util.*;
         };
     }
 
+    @ApiStatus.Internal
     private void handleBackSlash(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
         if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
             escapeCharacters.removeLast();
@@ -200,6 +208,7 @@ import java.util.*;
         escapeCharacters.addLast('\\');
     }
 
+    @ApiStatus.Internal
     private ProcessResult handleNewLine(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
         if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
             escapeCharacters.removeLast();
@@ -210,6 +219,7 @@ import java.util.*;
         return ProcessResult.IGNORE;
     }
 
+    @ApiStatus.Internal
     private void reportError(CommandProcessingContext processingContext, String message) {
         processingContext.report(
                 this,
@@ -217,6 +227,7 @@ import java.util.*;
         );
     }
 
+    @ApiStatus.Internal
     private enum ProcessResult {
         FAILED,
         IGNORE,
@@ -224,6 +235,11 @@ import java.util.*;
         FINISHED
     }
 
+    /**
+     * Tries to lazily parse next argument in the context
+     * @param processingContext cmd processing context
+     * @return new index int if success, empty if not
+     */
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
         return parse(processingContext)
@@ -232,6 +248,11 @@ import java.util.*;
                 .orElse(OptionalInt.empty());
     }
 
+    /**
+     * Retrieves available options for tab completion of this argument
+     * @param processingContext cmd processing context
+     * @return tab completion result if success, otherwise empty option
+     */
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         OptionalInt optionalInt = tryParse(processingContext);
