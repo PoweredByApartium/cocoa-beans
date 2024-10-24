@@ -13,7 +13,10 @@ public class LongStringParserTest {
         QuotedStringParser parser = new QuotedStringParser(0);
 
         assertParserResult(parser, null, null, args("hello"), new ArgumentParser.ParseResult<>("hello", 1));
+        assertParserResult(parser, null, null, args("just a test \"wow very cool\""), 3, new ArgumentParser.ParseResult<>("wow very cool", 6));
+        assertParserResult(parser, null, null, args("just a test \"wow very cool\" wtf this is a test"), 3, new ArgumentParser.ParseResult<>("wow very cool", 6));
         assertParserResult(parser, null, null, args("hello WORLD"), new ArgumentParser.ParseResult<>("hello", 1));
+        assertParserResult(parser, null, null, args("\"new test a very new test\""), new ArgumentParser.ParseResult<>("new test a very new test", 6));
         assertParserResult(parser, null, null, args("\"hello\" WORLD wtf"), new ArgumentParser.ParseResult<>("hello", 1));
         assertParserResult(parser, null, null, args("\"hello WORLD\" wtf"), new ArgumentParser.ParseResult<>("hello WORLD", 2));
         assertParserResult(parser, null, null, args("\"hello WORLD\""), new ArgumentParser.ParseResult<>("hello WORLD", 2));
