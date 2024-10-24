@@ -14,6 +14,8 @@ public class LongStringParserTest {
 
         assertParserResult(parser, null, null, args("hello"), new ArgumentParser.ParseResult<>("hello", 1));
         assertParserResult(parser, null, null, args("hello WORLD"), new ArgumentParser.ParseResult<>("hello", 1));
+        assertParserResult(parser, null, null, args("\"hello\" WORLD wtf"), new ArgumentParser.ParseResult<>("hello", 1));
+        assertParserResult(parser, null, null, args("\"hello WORLD\" wtf"), new ArgumentParser.ParseResult<>("hello WORLD", 2));
         assertParserResult(parser, null, null, args("\"hello WORLD\""), new ArgumentParser.ParseResult<>("hello WORLD", 2));
         assertParserResult(parser, null, null, args("\"hello \\\"WORLD\""), new ArgumentParser.ParseResult<>("hello \"WORLD", 2));
         assertParserResult(parser, null, null, args("\"hello \\\"WO\\\\RLD\""), new ArgumentParser.ParseResult<>("hello \"WO\\RLD", 2));
@@ -41,7 +43,12 @@ public class LongStringParserTest {
         assertParserResult(parser, null, null, args("\"te\\nst cool\\n\"") , new ArgumentParser.ParseResult<>("te\nst cool\n", 2));
         assertParserResult(parser, null, null, args("\"te\\nst \\ncool\\n\"") , new ArgumentParser.ParseResult<>("te\nst \ncool\n", 2));
         assertParserResult(parser, null, null, args("\"te\\nst\\n cool\\n\"") , new ArgumentParser.ParseResult<>("te\nst\ncool\n", 2));
+        assertParserResult(parser, null, null, args("\"\\n test very cool\\n\"") , new ArgumentParser.ParseResult<>("\ntest very cool\n", 4));
+        assertParserResult(parser, null, null, args("\\n") , new ArgumentParser.ParseResult<>("\n", 1));
+        assertParserResult(parser, null, null, args("\"\\n\"") , new ArgumentParser.ParseResult<>("\n", 1));
+        assertParserResult(parser, null, null, args("n"), new ArgumentParser.ParseResult<>("n", 1));
 
+        assertParserResult(parser, null, null, args("") , new ArgumentParser.ParseResult<>("", 1));
         assertParserThrowsReport(parser, null, null, args("\"Hello world"), BadCommandResponse.class);
         assertParserThrowsReport(parser, null, null, args("Hello\"world"), BadCommandResponse.class);
         assertParserThrowsReport(parser, null, null, args("\"Hello wor\"ld"), BadCommandResponse.class);

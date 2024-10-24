@@ -59,116 +59,160 @@ import java.util.*;
 
     @Override
     public Optional<ParseResult<String>> parse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
+        List<String> args = new ArrayList<>(processingContext.args());
         int index = processingContext.index();
 
-        int lastIndex = index;
-        if (index >= args.size() || args.get(index).isEmpty())
+        if (index >= args.size())
             return Optional.empty();
 
-        StringBuilder sb = new StringBuilder();
-        boolean quoted = args.get(index).charAt(0) == '"';
-        Deque<Character> characters = new ArrayDeque<>();
 
-        outerLoop: for (int i = index; i < args.size(); i++) {
+        if (args.get(index).isEmpty())
+            return Optional.of(new ParseResult<>(
+                    "",
+                    index + 1
+            ));
+
+        int lastIndex = index;
+
+        StringBuilder resultBuilder = new StringBuilder();
+        boolean quoted = args.get(index).charAt(0) == '"';
+
+        Deque<Character> escapeCharacters = new ArrayDeque<>();
+        if (quoted) {
+            escapeCharacters.addLast('"');
+            args.set(index, args.get(index).substring(1));
+        }
+
+        for (int i = index; i < args.size(); i++) {
             if (!quoted && i != index)
                 break;
 
-            String s = args.get(i);
+            String arg = args.get(i);
             lastIndex = i;
 
-            for (int j = 0; j < s.length(); j++) {
-                char c = s.charAt(j);
-                if (c == '"' && i == index && j == 0) {
-                    characters.addLast('"');
-                    continue;
-                }
+            ProcessResult processResult = processArg(processingContext, arg, resultBuilder, escapeCharacters);
+            if (processResult == ProcessResult.FAILED)
+                return Optional.empty();
 
-                if (c == '"') {
-                    if (characters.isEmpty()) {
-                        processingContext.report(
-                                this,
-                                new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
-                        );
-
-                        return Optional.empty();
-                    }
-
-                    if (characters.peekLast() == '"') {
-                        characters.removeLast();
-                        if (!characters.isEmpty()) {
-                            processingContext.report(
-                                    this,
-                                    new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
-                            );
-                            return Optional.empty();
-                        }
-
-                        if ((s.length() - 1) != j) {
-                            processingContext.report(
-                                    this,
-                                    new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string in the middle")
-                            );
-                            return Optional.empty();
-                        }
-
-                        break;
-                    }
-
-                    if (characters.peekLast() == '\\') {
-                        characters.removeLast();
-                        sb.append(c);
-                        continue;
-                    }
-
-                    processingContext.report(
-                            this,
-                            new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string\nCharacter: " + c)
-                    );
-                    return Optional.empty();
-
-                }
-
-                if (c == '\\') {
-                    if (!characters.isEmpty() && characters.peekLast() == '\\') {
-                        characters.removeLast();
-                        sb.append(c);
-                        continue;
-                    }
-
-                    characters.addLast(c);
-                    continue;
-                }
-
-                if (paragraphMode && c == 'n') {
-                    if (!characters.isEmpty() && characters.peekLast() == '\\') {
-                        characters.removeLast();
-                        sb.append('\n');
-                        if (j == (s.length() - 1))
-                            continue outerLoop;
-
-                        continue;
-                    }
-                }
-
-                sb.append(c);
-            }
-
-            sb.append(' ');
+            if (processResult == ProcessResult.FINISHED)
+                break;
         }
 
-        if (!characters.isEmpty()) {
-            processingContext.report(
-                    this,
-                    new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), index, "Invalid quoted string")
-            );
+        if (!escapeCharacters.isEmpty()) {
+            reportError(processingContext, "Invalid quoted string");
             return Optional.empty();
         }
 
+        String result = resultBuilder.isEmpty() ? "" : resultBuilder.charAt(resultBuilder.length() - 1) == ' ' ? resultBuilder.substring(0, resultBuilder.length() - 1) : resultBuilder.toString();
+
         return Optional.of(new ParseResult<>(
-            sb.substring(0, sb.length() - 1),
+                result,
             lastIndex + 1
         ));
+    }
+
+    private ProcessResult processArg(CommandProcessingContext processingContext, String arg, StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
+        for (int i = 0; i < arg.length(); i++) {
+            char currentChar = arg.charAt(i);
+
+            if (currentChar == '"') {
+                ProcessResult processResult = handleQuote(processingContext, resultBuilder, escapeCharacters, arg, i);
+                if (processResult == ProcessResult.CONTINUE)
+                    continue;
+
+                return processResult;
+            }
+
+            if (currentChar == '\\') {
+                handleBackSlash(resultBuilder, escapeCharacters);
+                continue;
+            }
+
+            if (paragraphMode && currentChar == 'n') {
+                ProcessResult processResult = handleNewLine(resultBuilder, escapeCharacters);
+                if (processResult != ProcessResult.IGNORE) {
+                    if ((arg.length() - 1) == i)
+                        return ProcessResult.CONTINUE;
+
+                    continue;
+                }
+            }
+
+            resultBuilder.append(currentChar);
+        }
+
+        resultBuilder.append(" ");
+        return ProcessResult.CONTINUE;
+    }
+
+    private ProcessResult handleQuote(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, String arg, int currentIndex) {
+        if (escapeCharacters.isEmpty()) {
+            reportError(processingContext, "Invalid quoted string");
+            return ProcessResult.FAILED;
+        }
+
+        return switch (escapeCharacters.peekLast()) {
+            case '"' -> {
+                escapeCharacters.removeLast();
+                if (!escapeCharacters.isEmpty()) {
+                    reportError(processingContext, "Invalid quoted string");
+                    yield ProcessResult.FAILED;
+                }
+
+                if ((arg.length() - 1) != currentIndex) {
+                    reportError(processingContext, "Invalid quoted string in the middle");
+                    yield ProcessResult.FAILED;
+                }
+
+                resultBuilder.append(" ");
+                yield ProcessResult.FINISHED;
+            }
+
+            case '\\' -> {
+                escapeCharacters.removeLast();
+                resultBuilder.append('"');
+                yield ProcessResult.CONTINUE;
+            }
+
+            default -> {
+                reportError(processingContext, "Invalid quoted string");
+                yield ProcessResult.FAILED;
+            }
+        };
+    }
+
+    private void handleBackSlash(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
+        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
+            escapeCharacters.removeLast();
+            resultBuilder.append('\\');
+            return;
+        }
+
+        escapeCharacters.addLast('\\');
+    }
+
+    private ProcessResult handleNewLine(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
+        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
+            escapeCharacters.removeLast();
+            resultBuilder.append("\n");
+            return ProcessResult.CONTINUE;
+        }
+
+        return ProcessResult.IGNORE;
+    }
+
+    private void reportError(CommandProcessingContext processingContext, String message) {
+        processingContext.report(
+                this,
+                new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index(), message)
+        );
+    }
+
+    private enum ProcessResult {
+        FAILED,
+        IGNORE,
+        CONTINUE,
+        FINISHED
     }
 
     @Override
