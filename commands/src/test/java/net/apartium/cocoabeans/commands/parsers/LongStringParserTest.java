@@ -3,8 +3,9 @@ package net.apartium.cocoabeans.commands.parsers;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import org.junit.jupiter.api.Test;
 
-import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.assertParserResult;
-import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.assertParserThrowsReport;
+import java.util.OptionalInt;
+
+import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.*;
 
 public class LongStringParserTest {
 
@@ -28,6 +29,10 @@ public class LongStringParserTest {
         assertParserThrowsReport(parser, null, null, args("Hello\"world"), BadCommandResponse.class);
         assertParserThrowsReport(parser, null, null, args("\"Hello wor\"ld"), BadCommandResponse.class);
         assertParserThrowsReport(parser, null, null, args("\"Hello wor\\nld"), BadCommandResponse.class);
+
+        assertTryParseResult(parser, null, null, args("hello"), OptionalInt.of(1));
+        assertTryParseResult(parser, null, null, args("\"hello testing\""), OptionalInt.of(2));
+        assertTryParseResult(parser, null, null, args("\"hello\" testing"), OptionalInt.of(1));
     }
 
     @Test
