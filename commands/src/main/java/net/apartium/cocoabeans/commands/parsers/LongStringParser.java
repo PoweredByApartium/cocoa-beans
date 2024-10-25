@@ -16,6 +16,10 @@ import java.util.*;
 /* package-private */ class LongStringParser extends ArgumentParser<String> {
 
     public static final String DEFAULT_KEYWORD = "long-string";
+    public static final char ESCAPE_CHARACTER = '\\';
+    public static final char QUOTATION_CHARACTER = '"';
+
+    public static final char NEW_LINE_CHARACTER = 'n';
 
     private final boolean paragraphMode;
 
@@ -81,13 +85,13 @@ import java.util.*;
 
         StringBuilder resultBuilder = new StringBuilder();
         String firstArg = args.get(index);
-        boolean quoted = firstArg.charAt(0) == '"';
+        boolean quoted = firstArg.charAt(0) == QUOTATION_CHARACTER;
 
         Deque<Character> escapeCharacters = new ArrayDeque<>();
 
 
         if (quoted) {
-            escapeCharacters.addLast('"');
+            escapeCharacters.addLast(QUOTATION_CHARACTER);
             firstArg = firstArg.substring(1);
         }
 
@@ -130,7 +134,7 @@ import java.util.*;
         for (int i = 0; i < arg.length(); i++) {
             char currentChar = arg.charAt(i);
 
-            if (currentChar == '"') {
+            if (currentChar == QUOTATION_CHARACTER) {
                 ProcessResult processResult = handleQuote(processingContext, resultBuilder, escapeCharacters, arg, i);
                 if (processResult == ProcessResult.CONTINUE)
                     continue;
@@ -138,12 +142,12 @@ import java.util.*;
                 return processResult;
             }
 
-            if (currentChar == '\\') {
+            if (currentChar == ESCAPE_CHARACTER) {
                 handleBackSlash(resultBuilder, escapeCharacters);
                 continue;
             }
 
-            if (paragraphMode && currentChar == 'n') {
+            if (paragraphMode && currentChar == NEW_LINE_CHARACTER) {
                 ProcessResult processResult = handleNewLine(resultBuilder, escapeCharacters);
                 if (processResult != ProcessResult.IGNORE) {
                     if ((arg.length() - 1) == i)
@@ -168,7 +172,7 @@ import java.util.*;
         }
 
         return switch (escapeCharacters.peekLast()) {
-            case '"' -> {
+            case QUOTATION_CHARACTER -> {
                 escapeCharacters.removeLast();
                 if (!escapeCharacters.isEmpty()) {
                     reportError(processingContext, "Invalid quoted string");
@@ -184,9 +188,9 @@ import java.util.*;
                 yield ProcessResult.FINISHED;
             }
 
-            case '\\' -> {
+            case ESCAPE_CHARACTER -> {
                 escapeCharacters.removeLast();
-                resultBuilder.append('"');
+                resultBuilder.append(QUOTATION_CHARACTER);
                 yield ProcessResult.CONTINUE;
             }
 
@@ -199,18 +203,18 @@ import java.util.*;
 
     @ApiStatus.Internal
     private void handleBackSlash(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
-        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
+        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == ESCAPE_CHARACTER) {
             escapeCharacters.removeLast();
-            resultBuilder.append('\\');
+            resultBuilder.append(ESCAPE_CHARACTER);
             return;
         }
 
-        escapeCharacters.addLast('\\');
+        escapeCharacters.addLast(ESCAPE_CHARACTER);
     }
 
     @ApiStatus.Internal
     private ProcessResult handleNewLine(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
-        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == '\\') {
+        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == ESCAPE_CHARACTER) {
             escapeCharacters.removeLast();
             resultBuilder.append("\n");
             return ProcessResult.CONTINUE;
