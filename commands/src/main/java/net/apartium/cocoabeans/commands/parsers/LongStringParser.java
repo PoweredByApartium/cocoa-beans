@@ -21,13 +21,15 @@ import java.util.*;
 
     public static final char NEW_LINE_CHARACTER = 'n';
 
+    public static final String INVALID_QUOTATION_MESSAGE = "Invalid quoted string";
+
     private final boolean paragraphMode;
 
     /**
      * Creates new LongStringParser
      * @param priority priority of the parser
      * @param keyword keyword that should be used
-     * @param paragraphMode paragraph mode is whether should string have next line or not
+     * @param paragraphMode paragraph mode is whether it should have next line or not
      */
     public LongStringParser(int priority, String keyword, boolean paragraphMode) {
         super(keyword, String.class, priority);
@@ -95,10 +97,8 @@ import java.util.*;
             firstArg = firstArg.substring(1);
         }
 
-        for (int i = index; i < args.size(); i++) {
-            if (!quoted && i != index)
-                break;
-
+        int length = !quoted ? index + 1 : args.size();
+        for (int i = index; i < length; i++) {
             String arg = i == index ? firstArg : args.get(i);
             lastIndex = i;
 
@@ -111,23 +111,28 @@ import java.util.*;
         }
 
         if (!escapeCharacters.isEmpty()) {
-            reportError(processingContext, "Invalid quoted string");
+            reportError(processingContext, INVALID_QUOTATION_MESSAGE);
             return Optional.empty();
         }
 
-        String result;
-        if (resultBuilder.isEmpty())
-            result = "";
-        else if (resultBuilder.charAt(resultBuilder.length() - 1) == ' ')
-            result = resultBuilder.substring(0, resultBuilder.length() - 1);
-        else
-            result = resultBuilder.toString();
 
         return Optional.of(new ParseResult<>(
-                result,
+                toString(resultBuilder),
             lastIndex + 1
         ));
     }
+
+    @ApiStatus.Internal
+    private String toString(StringBuilder resultBuilder) {
+        if (resultBuilder.isEmpty())
+            return "";
+
+        if (resultBuilder.charAt(resultBuilder.length() - 1) == ' ')
+            return resultBuilder.substring(0, resultBuilder.length() - 1);
+
+        return resultBuilder.toString();
+    }
+
 
     @ApiStatus.Internal
     private ProcessResult processArg(CommandProcessingContext processingContext, String arg, StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
@@ -167,7 +172,7 @@ import java.util.*;
     @ApiStatus.Internal
     private ProcessResult handleQuote(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, String arg, int currentIndex) {
         if (escapeCharacters.isEmpty()) {
-            reportError(processingContext, "Invalid quoted string");
+            reportError(processingContext, INVALID_QUOTATION_MESSAGE);
             return ProcessResult.FAILED;
         }
 
@@ -175,7 +180,7 @@ import java.util.*;
             case QUOTATION_CHARACTER -> {
                 escapeCharacters.removeLast();
                 if (!escapeCharacters.isEmpty()) {
-                    reportError(processingContext, "Invalid quoted string");
+                    reportError(processingContext, INVALID_QUOTATION_MESSAGE);
                     yield ProcessResult.FAILED;
                 }
 
@@ -195,7 +200,7 @@ import java.util.*;
             }
 
             default -> {
-                reportError(processingContext, "Invalid quoted string");
+                reportError(processingContext, INVALID_QUOTATION_MESSAGE);
                 yield ProcessResult.FAILED;
             }
         };
