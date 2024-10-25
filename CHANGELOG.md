@@ -9,6 +9,7 @@
 - [commands-spigot] Add GameModeParser to `SpigotCommandManager.SPIGOT_PARSERS`
 - [commands] WithParser support keyword change
 - [commands] Add new constructor to every `ArgumentParser` with those two arguments `int, String`
+- [commands] Add QuotedStringParser & ParagraphParser
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`

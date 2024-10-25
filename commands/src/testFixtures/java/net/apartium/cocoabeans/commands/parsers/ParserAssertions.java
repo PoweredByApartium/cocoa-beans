@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AssertionFailureBuilder;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Parser assertions is a collection of assertions for parsers
@@ -100,6 +101,93 @@ public class ParserAssertions {
 
         if (!Objects.equals(expected.result(), actual)) {
             failMessage("Expected different result", message, expected.result(), actual);
+            return;
+        }
+    }
+
+    /**
+     * Checks if the try parse is as expected without any report of errors try parsing
+     * @param parser the parser itself
+     * @param sender the sender who sent the command
+     * @param label the label of the command
+     * @param args the args of the command
+     * @param expected the expected result
+     */
+    public static void assertTryParseResult(ArgumentParser<?> parser, Sender sender, String label, String[] args, OptionalInt expected) {
+        assertTryParseResult(parser, sender, label, args, 0, expected);
+    }
+
+    /**
+     * Checks if the try parse is as expected without any report of errors try parsing
+     * @param parser the parser itself
+     * @param sender the sender who sent the command
+     * @param label the label of the command
+     * @param args the args of the command
+     * @param startIndex where the parser should start trying to parse
+     * @param expected the expected result
+     */
+    public static void assertTryParseResult(ArgumentParser<?> parser, Sender sender, String label, String[] args, int startIndex, OptionalInt expected) {
+        assertTryParseResult(parser, sender, label, args, startIndex, expected, null);
+    }
+
+    /**
+     * Checks if the try parse is as expected without any report of errors try parsing
+     * @param parser the parser itself
+     * @param sender the sender who sent the command
+     * @param label the label of the command
+     * @param args the args of the command
+     * @param startIndex where the parser should start trying to parse
+     * @param expected the expected result
+     * @param message the message to report
+     */
+    public static void assertTryParseResult(ArgumentParser<?> parser, Sender sender, String label, String[] args, int startIndex, OptionalInt expected, String message) {
+        assertTryParseResult(parser, new TestCommandProcessingContext(sender, label, List.of(args), startIndex), expected, message);
+    }
+
+    /**
+     * Check if the try parse is as expected without any report of errors try parsing
+     * @param parser the parser itself
+     * @param processingContext the context of the command
+     * @param expected the expected result
+     * @param message the message to report
+     */
+    public static void assertTryParseResult(ArgumentParser<?> parser, CommandProcessingContext processingContext, OptionalInt expected, String message) {
+        TestCommandProcessingContext context;
+        if (!(processingContext instanceof TestCommandProcessingContext)) {
+            context = new TestCommandProcessingContext(processingContext.sender(), processingContext.label(), processingContext.args(), processingContext.index());
+        } else {
+            context = (TestCommandProcessingContext) processingContext;
+        }
+
+        OptionalInt result = parser.tryParse(processingContext);
+
+        if (result.isEmpty()) {
+            if (expected.isEmpty())
+                return; // success
+
+            List<BadCommandResponse> reports = context.getReports();
+            if (reports.isEmpty()) {
+                failMessage("Parser did not return a result or report any errors", message, expected, null);
+                return;
+            }
+
+            failMessage("Parser failed with " + reports.size() + " report" + (reports.size() == 1 ? "" : "s"), message, expected, reports);
+            return;
+        }
+
+        if (expected.isEmpty()) {
+            List<BadCommandResponse> reports = context.getReports();
+            if (!reports.isEmpty()) {
+                failMessage("Parser produced unexpected error reports", message, expected, reports);
+                return;
+            }
+
+            failMessage("Parser returned unexpected result", message, expected, result);
+            return;
+        }
+
+        if (expected.getAsInt() != result.getAsInt()) {
+            failMessage("Expected different result", message, expected.getAsInt(), result.getAsInt());
             return;
         }
     }
