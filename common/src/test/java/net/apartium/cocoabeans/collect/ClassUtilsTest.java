@@ -8,7 +8,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ClassUtilsTest {
+class ClassUtilsTest {
 
     @Test
     void getSuperClassAndInterfacesNull() {

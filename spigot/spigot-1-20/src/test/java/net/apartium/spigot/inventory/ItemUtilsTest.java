@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ItemUtilsTest extends SpigotTestBase {
+class ItemUtilsTest extends SpigotTestBase {
 
     @Override
     public void initialize() {
-
+        // nothing needed here
     }
 
     @Test
