@@ -45,6 +45,7 @@ public class ClassUtils {
         return set;
     }
 
+    @SuppressWarnings("unchecked")
     private static <IKFIR> IKFIR cast(Object object) {
         return (IKFIR) object;
     }
