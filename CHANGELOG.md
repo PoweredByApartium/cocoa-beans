@@ -10,7 +10,7 @@
 - [commands] WithParser support keyword change
 - [commands] Add new constructor to every `ArgumentParser` with those two arguments `int, String`
 - [commands] Add QuotedStringParser & ParagraphParser
-- [commands] Improve ObjectMapper to pre calculate all possible parsers
+- [commands] Improve ObjectMapper performance by pre-calculating parsers during initialization instead of at runtime
 
 ## 0.0.35
 - [spigot] **hotfix** Wrong package for `PlayerVisibilityController_1_8_R1`
