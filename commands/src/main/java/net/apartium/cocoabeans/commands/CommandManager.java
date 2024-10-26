@@ -179,7 +179,13 @@ public abstract class CommandManager {
     }
 
     private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        List<Object> parameters = argumentMapper.map(context, sender, registeredCommandVariant);
+        context.parsedArgs().put(CommandContext.class, List.of(context));
+
+        List<Object> parameters = new ArrayList<>(registeredCommandVariant.argumentIndexList().stream()
+                .<Object>map((argumentIndex -> argumentIndex.get(context.toArgumentContext())))
+                .toList());
+
+        parameters.add(0, registeredCommandVariant.commandNode());
 
         for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
             Object obj = parameters.get(i + 1); // first element is class instance
@@ -233,6 +239,10 @@ public abstract class CommandManager {
     }
 
     protected abstract void addCommand(CommandNode commandNode, Command command);
+
+    public ArgumentMapper getArgumentMapper() {
+        return argumentMapper;
+    }
 
     public ExceptionArgumentMapper getExceptionArgumentMapper() {
         return exceptionArgumentMapper;

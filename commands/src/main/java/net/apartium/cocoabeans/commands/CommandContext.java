@@ -11,10 +11,10 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents the context of a command after it has been processed
@@ -38,4 +38,30 @@ public record CommandContext(Sender sender,
         return error != null;
     }
 
+    @ApiStatus.AvailableSince("0.0.36")
+    ArgumentContext toArgumentContext() {
+        return new ArgumentContext(
+                commandName,
+                args,
+                sender,
+                parsedArgs
+        );
+    }
+
+    @Override
+    public String toString() {
+
+        Map<Class<?>, List<Object>> classListMap = new HashMap<>(parsedArgs);
+        classListMap.remove(CommandContext.class);
+
+        return "CommandContext{" +
+                "sender=" + sender +
+                ", commandInfo=" + commandInfo +
+                ", option=" + option +
+                ", error=" + error +
+                ", args=" + Arrays.toString(args) +
+                ", commandName='" + commandName + '\'' +
+                ", parsedArgs=" + classListMap +
+                '}';
+    }
 }

@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
 import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
@@ -408,7 +409,7 @@ public class  GeneralCommandTest extends CommandTestBase {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "evil", "optional")
+                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "optional")
                 )
         );
 
@@ -699,6 +700,8 @@ public class  GeneralCommandTest extends CommandTestBase {
         testCommandManager.addCommand(new AnotherEvilCommandTest());
         evaluate("evil-brother", "private");
         assertEquals(List.of("Invalid usage"), sender.getMessages());
+
+        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
     }
 
 

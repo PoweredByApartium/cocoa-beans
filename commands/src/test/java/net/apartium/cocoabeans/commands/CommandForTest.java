@@ -92,11 +92,6 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("testingFailedArg(Sender sender, @Range(to = 10) String s) how?");
     }
 
-    @SubCommand("evil")
-    public void evilMethod(CommandContext context, Sender sender, double num) {
-        sender.sendMessage("evilMethod(Sender sender, double num) " + num);
-    }
-
     @WallRequirement
     @SubCommand("no-one")
     public void noOne(Sender sender) {
