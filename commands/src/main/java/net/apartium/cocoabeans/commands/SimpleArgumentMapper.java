@@ -178,7 +178,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         }
 
         if (arguments == null || arguments.size() <= index)
-            throw new RuntimeException("No argument found for type " + type + " at index " + index);
+            throw new NoSuchElementException("No argument found for type " + type + " at index " + index);
 
 
         return arguments.get(index);
