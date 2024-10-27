@@ -227,6 +227,9 @@ public class  GeneralCommandTest extends CommandTestBase {
     void testing3() {
         evaluate("test", "testing3");
         assertEquals(List.of("testing3(TestSender sender) cool"), sender.getMessages());
+
+        evaluate("test", "testing3 2.5");
+        assertEquals(List.of("testingDouble(Sender sender, Double num) 2.5"), sender.getMessages());
     }
 
     @Test
@@ -454,7 +457,7 @@ public class  GeneralCommandTest extends CommandTestBase {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"testing3", ""}),
-                        List.of("-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
+                        List.of("-", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
                 )
         );
 

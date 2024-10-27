@@ -12,10 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.RequirementException;
-import net.apartium.cocoabeans.commands.parsers.DummyParser;
-import net.apartium.cocoabeans.commands.parsers.IntRangeParser;
-import net.apartium.cocoabeans.commands.parsers.StringParser;
-import net.apartium.cocoabeans.commands.parsers.WithParser;
+import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
 import net.apartium.cocoabeans.commands.requirements.argument.Range;
 
@@ -46,6 +43,12 @@ public class CommandForTest implements CommandNode {
     @SubCommand("testing3 <int>")
     public void testingInteger(Sender sender, int num) {
         sender.sendMessage("testingInteger(Sender sender, int num) " + num);
+    }
+
+    @WithParser(value = DoubleParser.class, priority = -1)
+    @SubCommand("testing3 <double>")
+    public void testingDouble(Sender sender, Double num) {
+        sender.sendMessage("testingDouble(Sender sender, Double num) " + num);
     }
 
     @SubCommand("testing3 <boolean>")

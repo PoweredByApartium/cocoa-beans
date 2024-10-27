@@ -173,9 +173,9 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             arguments = mapOfArguments.get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
 
         if (arguments == null || arguments.size() <= index) {
-            for (Class<?> clazz : mapOfArguments.keySet()) {
-                if (type.isAssignableFrom(clazz)) {
-                    arguments = mapOfArguments.get(clazz);
+            for (var entry : mapOfArguments.entrySet()) {
+                if (type.isAssignableFrom(entry.getKey())) {
+                    arguments = entry.getValue();
                     break;
                 }
             }
