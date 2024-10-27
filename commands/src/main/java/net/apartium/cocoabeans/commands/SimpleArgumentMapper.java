@@ -151,7 +151,11 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     private ArgumentIndex<?> wrapInOptionalPrimitive(ArgumentIndex<?> argumentIndex, Class<?> type) {
         return (context) -> {
             Object obj = argumentIndex.get(context);
-            if (obj == null || obj instanceof Optional<?> opt && opt.isEmpty())
+
+            if (obj instanceof Optional<?> opt)
+                obj = opt.orElse(null);
+
+            if (obj == null)
                 return EMPTY_OPTIONAL.get(type);
 
             return OF_OPTIONAL.get(PRIMITIVE_TO_OPTIMAL.get(type)).apply(obj);
@@ -190,7 +194,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
         if (CommandContext.class.equals(type)) {
             if (index != 0)
-                throw new RuntimeException("Can't use index " + index + " for CommandContext");
+                throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
 
             return (context) -> context.parsedArgs().get(CommandContext.class).get(0);
         }

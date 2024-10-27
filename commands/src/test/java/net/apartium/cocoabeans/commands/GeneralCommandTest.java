@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -701,7 +702,7 @@ public class  GeneralCommandTest extends CommandTestBase {
         evaluate("evil-brother", "private");
         assertEquals(List.of("Invalid usage"), sender.getMessages());
 
-        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
+        assertThrowsExactly(NoSuchElementException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
     }
 
 
