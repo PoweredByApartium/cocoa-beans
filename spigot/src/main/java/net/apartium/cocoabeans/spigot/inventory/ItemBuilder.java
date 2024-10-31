@@ -37,8 +37,14 @@ import java.util.List;
  * Chained class used to modify and create item stacks.
  * via the building structure and allows easy and flexible ways to create ItemStacks.
  *
+ * UPDATE 0.0.36:
+ * We do know this class implements deprecated code, however, it is crucial to understand
+ * this code has been marked for removal since 1.13 flattening and we are already at 1.21,
+ * yet this code hasn't been removed, so far we are convinced this code is still valid to use.
+ *
  * @author Thebotgame, ofirtim
  */
+@SuppressWarnings({"deprecated"})
 public abstract class ItemBuilder {
 
     private static final ItemFactory factory = VersionedImplInstantiator.createItemFactory();
