@@ -17,7 +17,7 @@ public class SimpleCommandTest extends CommandTestBase {
     }
 
     @Test
-    public void test() {
+    void test() {
         execute("123");
         assertEquals(List.of("Amount: 123"), sender.getMessages());
 
@@ -28,7 +28,7 @@ public class SimpleCommandTest extends CommandTestBase {
         assertEquals(List.of("Another: 32.5"), sender.getMessages());
     }
 
-    public void execute(String args) {
+    void execute(String args) {
         sender.getMessages().clear();
         testCommandManager.handle(sender, "simple", args.split("\\s+"));
     }
