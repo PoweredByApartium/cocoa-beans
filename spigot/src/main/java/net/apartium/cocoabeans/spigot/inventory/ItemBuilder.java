@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author Thebotgame, ofirtim
  */
-@SuppressWarnings({"deprecated"})
+@SuppressWarnings({"deprecation"})
 public abstract class ItemBuilder {
 
     private static final ItemFactory factory = VersionedImplInstantiator.createItemFactory();
