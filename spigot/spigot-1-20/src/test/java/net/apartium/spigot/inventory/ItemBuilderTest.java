@@ -1,11 +1,12 @@
 package net.apartium.spigot.inventory;
 
-import net.apartium.spigot.SpigotTestBase;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
+import net.apartium.spigot.SpigotTestBase;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -98,6 +99,38 @@ public class ItemBuilderTest extends SpigotTestBase {
                 .build();
 
         assertFalse(item.getItemMeta().isUnbreakable());
+    }
+
+    @Test
+    public void addLore() {
+        ItemStack item = ItemBuilder.builder(Material.DIAMOND)
+                .addLoreLine("This is lore addition test")
+                .addLoreLine(Component.text("This is lore addition test for component"))
+                .addLoreLines(
+                        "This is lore addition to multiply texts test.",
+                        "This is another test line to the first multiply lines.")
+                .addLoreLines(
+                        Component.text("This is lore addition to multiply texts test with components"),
+                        Component.text("This is another test line to the first multiply lines with components."))
+                .build();
+
+        assertEquals(6, item.getItemMeta().getLore().size());
+
+        //Testing Legacy code
+        assertEquals("This is lore addition test", item.getItemMeta().getLore().get(0));
+        assertEquals("This is lore addition test for component", item.getItemMeta().getLore().get(1));
+        assertEquals("This is lore addition to multiply texts test.", item.getItemMeta().getLore().get(2));
+        assertEquals("This is another test line to the first multiply lines.", item.getItemMeta().getLore().get(3));
+        assertEquals("This is lore addition to multiply texts test with components", item.getItemMeta().getLore().get(4));
+        assertEquals("This is another test line to the first multiply lines with components.", item.getItemMeta().getLore().get(5));
+
+        //Testing Kyori Code
+        assertEquals(Component.text("This is lore addition test"), item.getItemMeta().lore().get(0));
+        assertEquals(Component.text("This is lore addition test for component"), item.getItemMeta().lore().get(1));
+        assertEquals(Component.text("This is lore addition to multiply texts test."), item.getItemMeta().lore().get(2));
+        assertEquals(Component.text("This is another test line to the first multiply lines."), item.getItemMeta().lore().get(3));
+        assertEquals(Component.text("This is lore addition to multiply texts test with components"), item.getItemMeta().lore().get(4));
+        assertEquals(Component.text("This is another test line to the first multiply lines with components."), item.getItemMeta().lore().get(5));
     }
 
     public void assertItem(ItemStack item, Material type, int amount, String name, List<String> lore) {
