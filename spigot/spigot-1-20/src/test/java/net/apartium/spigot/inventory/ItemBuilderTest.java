@@ -3,9 +3,7 @@ package net.apartium.spigot.inventory;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.spigot.SpigotTestBase;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
