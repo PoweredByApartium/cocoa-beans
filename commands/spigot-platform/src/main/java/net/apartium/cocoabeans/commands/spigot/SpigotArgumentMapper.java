@@ -43,7 +43,12 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
         if (type == Player.class && !hasSender) {
             counterMap.put(CommandSender.class, 1);
             counterMap.put(Player.class, -1);
-            return context -> ((Player) context.sender().getSender());
+            return context -> {
+                if (!(context.sender().getSender() instanceof Player player))
+                    throw new IllegalArgumentException("Sender is not a player");
+
+                return player;
+            };
         }
 
         return mapOfArguments.get(type).get(index);

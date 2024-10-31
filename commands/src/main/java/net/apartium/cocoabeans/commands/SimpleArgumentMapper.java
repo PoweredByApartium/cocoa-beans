@@ -169,23 +169,34 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
         List<ArgumentIndex<?>> arguments = mapOfArguments.get(type);
 
-        if (arguments == null || arguments.size() <= index)
-            arguments = mapOfArguments.get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+        if (isInvalidArguments(arguments, index))
+            arguments = findArgumentsByWrapperType(type, mapOfArguments);
 
-        if (arguments == null || arguments.size() <= index) {
-            for (var entry : mapOfArguments.entrySet()) {
-                if (type.isAssignableFrom(entry.getKey())) {
-                    arguments = entry.getValue();
-                    break;
-                }
-            }
-        }
+        if (isInvalidArguments(arguments, index))
+            arguments = findArgumentsByAssignableType(type, mapOfArguments);
 
-        if (arguments == null || arguments.size() <= index)
+
+        if (isInvalidArguments(arguments, index))
             throw new NoSuchElementException("No argument found for type " + type + " at index " + index);
 
 
         return arguments.get(index);
+    }
+
+    private boolean isInvalidArguments(List<ArgumentIndex<?>> arguments, int index) {
+        return arguments == null || arguments.size() <= index;
+    }
+
+    private List<ArgumentIndex<?>> findArgumentsByWrapperType(Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments) {
+        return mapOfArguments.get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+    }
+
+    private List<ArgumentIndex<?>> findArgumentsByAssignableType(Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments) {
+        return mapOfArguments.entrySet().stream()
+                .filter(entry -> type.isAssignableFrom(entry.getKey()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElse(null);
     }
 
     protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
