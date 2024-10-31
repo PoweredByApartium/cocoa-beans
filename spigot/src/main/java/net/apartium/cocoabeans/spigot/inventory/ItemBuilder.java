@@ -192,6 +192,7 @@ public abstract class ItemBuilder {
      * @param lore set lore
      * @return current instance
      */
+    @ApiStatus.AvailableSince("0.0.36")
     public ItemBuilder setLore(Component lore) {
         meta.lore(Collections.singletonList(lore));
         return this;
@@ -281,6 +282,7 @@ public abstract class ItemBuilder {
      * @param lines add lines to lore
      * @return current instance
      */
+    @ApiStatus.AvailableSince("0.0.36")
     public ItemBuilder addLoreLines(String... lines) {
         if (!meta.hasLore()) {
             meta.setLore(Arrays.asList(lines));
@@ -297,6 +299,7 @@ public abstract class ItemBuilder {
      * @param line add lines to lore
      * @return current instance
      */
+    @ApiStatus.AvailableSince("0.0.36")
     public ItemBuilder addLoreLine(String line) {
         if (!meta.hasLore()) {
             meta.setLore(Collections.singletonList(line));
@@ -313,6 +316,7 @@ public abstract class ItemBuilder {
      * @param components add lines to lore
      * @return current instance
      */
+    @ApiStatus.AvailableSince("0.0.36")
     public ItemBuilder addLoreLines(Component... components) {
         if (!meta.hasLore()) {
             meta.lore(Arrays.asList(components));
@@ -329,6 +333,7 @@ public abstract class ItemBuilder {
      * @param component add lines to lore
      * @return current instance
      */
+    @ApiStatus.AvailableSince("0.0.36")
     public ItemBuilder addLoreLine(Component component) {
         if (!meta.hasLore()) {
             meta.lore(Collections.singletonList(component));
