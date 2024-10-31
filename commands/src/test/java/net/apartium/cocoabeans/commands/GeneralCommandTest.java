@@ -408,22 +408,7 @@ public class  GeneralCommandTest extends CommandTestBase {
     }
 
     @Test
-    void tabCompletionTest() {
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", ""),
-                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "optional")
-                )
-        );
-
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "0002"),
-                        List.of("00020", "00021", "00022", "00023", "00024", "00025", "00026", "00027", "00028", "00029")
-                )
-        );
-
+    void tabCompletionSendTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"send", ""}),
@@ -445,28 +430,57 @@ public class  GeneralCommandTest extends CommandTestBase {
                         List.of()
                 )
         );
+    }
 
-        assertTrue(
-                CollectionHelpers.equalsList(
-                    evaluateTabCompletion("test", "te"),
-                    List.of("test", "testing", "testing-arg", "testing2", "testing3")
-                )
-        );
-
+    @Test
+    void testing3TabCompletionTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"testing3", ""}),
                         List.of("-", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9", "true", "false")
                 )
         );
+    }
 
+    @Test
+    void setSpeedTabCompletetionTest() {
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed 0"),
+                        Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                                .map(s -> 0 + s)
+                                .toList()
+                )
+        );
 
         assertTrue(
                 CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "asd"),
+                        evaluateTabCompletion("test", "set speed 0.253.1"),
                         List.of()
                 )
         );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "set speed ++0.52"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.253.1"),
+                        List.of()
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed ++0.52"),
+                        List.of()
+                )
+        );
+
 
         assertTrue(
                 CollectionHelpers.equalsList(
@@ -474,6 +488,25 @@ public class  GeneralCommandTest extends CommandTestBase {
                         List.of("speed")
                 )
         );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.3"),
+                        List.of("0.30", "0.31" ,"0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "try speed 0.3 a"),
+                        List.of()
+                )
+        );
+
+    }
+
+    @Test
+    void configTabCompletionTest() {
 
         assertTrue(
                 CollectionHelpers.equalsList(
@@ -496,12 +529,53 @@ public class  GeneralCommandTest extends CommandTestBase {
                 )
         );
 
+    }
+
+    @Test
+    void optionalTabCompletionTest() {
         assertTrue(
                 CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "set speed 0"),
-                        Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-                                .map(s -> 0 + s)
-                                .toList()
+                        evaluateTabCompletion("test", new String[]{"optional", "meow", ""}),
+                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "-")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", new String[]{"optional", "meow", "21", ""}),
+                        List.of("wow")
+                )
+        );
+    }
+
+    @Test
+    void tabCompletionTest() {
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", ""),
+                        List.of("arg", "diff-arg", "one", "-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "no", "rm", "yes", "test", "testing", "testing-arg", "testing2", "testing3", "set", "send", "config", "try", "optional")
+                )
+        );
+
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "0002"),
+                        List.of("00020", "00021", "00022", "00023", "00024", "00025", "00026", "00027", "00028", "00029")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                    evaluateTabCompletion("test", "te"),
+                    List.of("test", "testing", "testing-arg", "testing2", "testing3")
+                )
+        );
+
+        assertTrue(
+                CollectionHelpers.equalsList(
+                        evaluateTabCompletion("test", "asd"),
+                        List.of()
                 )
         );
 
@@ -549,34 +623,6 @@ public class  GeneralCommandTest extends CommandTestBase {
 
         assertTrue(
                 CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "set speed 0.253.1"),
-                        List.of()
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "set speed ++0.52"),
-                        List.of()
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "try speed 0.253.1"),
-                        List.of()
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "try speed ++0.52"),
-                        List.of()
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"test", ""}),
                         List.of("-", "1", "2", "3", "4", "5", "6", "7", "8", "9")
                 )
@@ -593,20 +639,6 @@ public class  GeneralCommandTest extends CommandTestBase {
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", new String[]{"test", "712"}),
                         List.of("7120", "7121", "7122", "7123", "7124", "7125", "7126", "7127", "7128", "7129")
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "try speed 0.3"),
-                        List.of("0.30", "0.31" ,"0.32", "0.33", "0.34", "0.35", "0.36", "0.37", "0.38", "0.39")
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", "try speed 0.3 a"),
-                        List.of()
                 )
         );
 
@@ -677,20 +709,6 @@ public class  GeneralCommandTest extends CommandTestBase {
                 CollectionHelpers.equalsList(
                         evaluateTabCompletion("test", "yes mE"),
                         List.of()
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", new String[]{"optional", "meow", ""}),
-                        List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "-")
-                )
-        );
-
-        assertTrue(
-                CollectionHelpers.equalsList(
-                        evaluateTabCompletion("test", new String[]{"optional", "meow", "21", ""}),
-                        List.of("wow")
                 )
         );
 
