@@ -192,6 +192,15 @@ public abstract class ItemBuilder {
      * @param lore set lore
      * @return current instance
      */
+    public ItemBuilder setLore(Component lore) {
+        meta.lore(Collections.singletonList(lore));
+        return this;
+    }
+
+    /**
+     * @param lore set lore
+     * @return current instance
+     */
     public ItemBuilder setLoreAsText(List<String> lore) {
         meta.setLore(lore);
         return this;
@@ -273,8 +282,49 @@ public abstract class ItemBuilder {
      * @return current instance
      */
     public ItemBuilder addLine(String... lines) {
-        if (meta.getLore() == null) meta.setLore(Arrays.asList(lines));
-        meta.getLore().addAll(List.of(lines));
+        if (!meta.hasLore()) meta.setLore(Arrays.asList(lines));
+        List<String> existingLore = new ArrayList<>(meta.getLore());
+        existingLore.addAll(Arrays.asList(lines));
+        meta.setLore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add line to lore of the item
+     * @param line add lines to lore
+     * @return current instance
+     */
+    public ItemBuilder addLine(String line) {
+        if (!meta.hasLore()) meta.setLore(Collections.singletonList(line));
+        List<String> existingLore = new ArrayList<>(meta.getLore());
+        existingLore.add(line);
+        meta.setLore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add lines to lore of the item
+     * @param components add lines to lore
+     * @return current instance
+     */
+    public ItemBuilder addLine(Component... components) {
+        if (!meta.hasLore()) meta.lore(Arrays.asList(components));
+        List<Component> existingLore = new ArrayList<>(meta.lore());
+        existingLore.addAll(Arrays.asList(components));
+        meta.lore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add line to lore of the item
+     * @param component add lines to lore
+     * @return current instance
+     */
+    public ItemBuilder addLine(Component component) {
+        if (!meta.hasLore()) meta.lore(Collections.singletonList(component));
+        List<Component> existingLore = new ArrayList<>(meta.lore());
+        existingLore.add(component);
+        meta.lore(existingLore);
         return this;
     }
 
