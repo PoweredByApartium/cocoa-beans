@@ -115,7 +115,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 optionalPrimitive = true;
             }
 
-            int index = counterMap.computeIfAbsent(type, (k) -> 0);
+            int index = counterMap.computeIfAbsent(type, k -> 0);
             ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, counterMap, mapOfArguments, index);
 
             if (optional)
@@ -136,7 +136,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     private ArgumentIndex<Optional<?>> wrapInOptional(ArgumentIndex<?> argumentIndex) {
-        return (context) -> {
+        return context -> {
             Object obj = argumentIndex.get(context);
             if (obj == null)
                 return Optional.empty();
@@ -149,7 +149,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     private ArgumentIndex<?> wrapInOptionalPrimitive(ArgumentIndex<?> argumentIndex, Class<?> type) {
-        return (context) -> {
+        return context -> {
             Object obj = argumentIndex.get(context);
 
             if (obj instanceof Optional<?> opt)
@@ -196,7 +196,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             if (index != 0)
                 throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
 
-            return (context) -> context.parsedArgs().get(CommandContext.class).get(0);
+            return context -> context.parsedArgs().get(CommandContext.class).get(0);
         }
 
         return null;
@@ -231,8 +231,8 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         int countIndex = counterMap.getOrDefault(type, 0);
         counterMap.put(type, countIndex + 1);
 
-        resultMap.computeIfAbsent(type, (k) -> new ArrayList<>())
-                .add((context) -> context.parsedArgs().get(type).get(countIndex));
+        resultMap.computeIfAbsent(type, k -> new ArrayList<>())
+                .add(context -> context.parsedArgs().get(type).get(countIndex));
     }
 
 }

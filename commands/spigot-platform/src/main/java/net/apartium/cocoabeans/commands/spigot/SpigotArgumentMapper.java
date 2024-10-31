@@ -36,14 +36,14 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
 
     protected ArgumentIndex<?> getSpigotSenderIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
         if (type == CommandSender.class && index == 0)
-            return (context) -> ((CommandSender) context.sender().getSender());
+            return context -> ((CommandSender) context.sender().getSender());
 
         boolean hasSender = counterMap.getOrDefault(CommandSender.class, 0) != 0;
 
         if (type == Player.class && !hasSender) {
             counterMap.put(CommandSender.class, 1);
             counterMap.put(Player.class, -1);
-            return (context) -> ((Player) context.sender().getSender());
+            return context -> ((Player) context.sender().getSender());
         }
 
         return mapOfArguments.get(type).get(index);

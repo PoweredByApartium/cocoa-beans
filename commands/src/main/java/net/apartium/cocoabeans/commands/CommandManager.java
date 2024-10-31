@@ -179,8 +179,6 @@ public abstract class CommandManager {
     }
 
     private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        context.parsedArgs().put(CommandContext.class, List.of(context));
-
         List<Object> parameters = new ArrayList<>(registeredCommandVariant.argumentIndexList().stream()
                 .<Object>map((argumentIndex -> argumentIndex.get(context.toArgumentContext())))
                 .toList());

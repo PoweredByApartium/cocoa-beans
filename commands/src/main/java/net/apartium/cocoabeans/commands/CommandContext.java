@@ -40,20 +40,20 @@ public record CommandContext(Sender sender,
 
     @ApiStatus.AvailableSince("0.0.36")
     ArgumentContext toArgumentContext() {
+        Map<Class<?>, List<Object>> map = new HashMap<>(parsedArgs);
+
+        map.put(CommandContext.class, List.of(this));
+
         return new ArgumentContext(
                 commandName,
                 args,
                 sender,
-                parsedArgs
+                map
         );
     }
 
     @Override
     public String toString() {
-
-        Map<Class<?>, List<Object>> classListMap = new HashMap<>(parsedArgs);
-        classListMap.remove(CommandContext.class);
-
         return "CommandContext{" +
                 "sender=" + sender +
                 ", commandInfo=" + commandInfo +
@@ -61,7 +61,7 @@ public record CommandContext(Sender sender,
                 ", error=" + error +
                 ", args=" + Arrays.toString(args) +
                 ", commandName='" + commandName + '\'' +
-                ", parsedArgs=" + classListMap +
+                ", parsedArgs=" + parsedArgs +
                 '}';
     }
 }
