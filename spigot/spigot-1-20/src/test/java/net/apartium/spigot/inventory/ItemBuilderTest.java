@@ -100,36 +100,92 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void addLore() {
+    public void addSingleLoreLine() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .addLoreLine("This is lore addition test")
-                .addLoreLine(Component.text("This is lore addition test for component"))
-                .addLoreLines(
-                        "This is lore addition to multiply texts test.",
-                        "This is another test line to the first multiply lines.")
-                .addLoreLines(
-                        Component.text("This is lore addition to multiply texts test with components"),
-                        Component.text("This is another test line to the first multiply lines with components."))
                 .build();
 
-        assertEquals(6, item.getItemMeta().getLore().size());
-
-        //Testing Legacy code
+        assertEquals(1, item.getItemMeta().getLore().size());
         assertEquals("This is lore addition test", item.getItemMeta().getLore().get(0));
-        assertEquals("This is lore addition test for component", item.getItemMeta().getLore().get(1));
-        assertEquals("This is lore addition to multiply texts test.", item.getItemMeta().getLore().get(2));
-        assertEquals("This is another test line to the first multiply lines.", item.getItemMeta().getLore().get(3));
-        assertEquals("This is lore addition to multiply texts test with components", item.getItemMeta().getLore().get(4));
-        assertEquals("This is another test line to the first multiply lines with components.", item.getItemMeta().getLore().get(5));
 
-        //Testing Kyori Code
-        assertEquals(Component.text("This is lore addition test"), item.getItemMeta().lore().get(0));
-        assertEquals(Component.text("This is lore addition test for component"), item.getItemMeta().lore().get(1));
-        assertEquals(Component.text("This is lore addition to multiply texts test."), item.getItemMeta().lore().get(2));
-        assertEquals(Component.text("This is another test line to the first multiply lines."), item.getItemMeta().lore().get(3));
-        assertEquals(Component.text("This is lore addition to multiply texts test with components"), item.getItemMeta().lore().get(4));
-        assertEquals(Component.text("This is another test line to the first multiply lines with components."), item.getItemMeta().lore().get(5));
+        ItemStack itemEdit = ItemBuilder.builder(item)
+                .addLoreLine("This is lore addition test #2!")
+                .build();
+
+        assertEquals(2, itemEdit.getItemMeta().getLore().size());
+        assertEquals("This is lore addition test", itemEdit.getItemMeta().getLore().get(0));
+        assertEquals("This is lore addition test #2!", itemEdit.getItemMeta().getLore().get(1));
+
     }
+
+    @Test
+    public void addMultiplyStringLoreLines() {
+        ItemStack item = ItemBuilder.builder(Material.DIAMOND)
+                .addLoreLines(
+                        "This is lore addition test with multiply lines",
+                        "This lore line is a test!")
+                .build();
+
+        assertEquals(2, item.getItemMeta().getLore().size());
+        assertEquals("This is lore addition test with multiply lines", item.getItemMeta().getLore().get(0));
+        assertEquals("This lore line is a test!", item.getItemMeta().getLore().get(1));
+
+        ItemStack itemEdit = ItemBuilder.builder(item)
+                .addLoreLines(
+                        "This is lore addition test #3!",
+                        "This is lore addition test #4!")
+                .build();
+
+        assertEquals(4, itemEdit.getItemMeta().getLore().size());
+        assertEquals("This is lore addition test with multiply lines", itemEdit.getItemMeta().getLore().get(0));
+        assertEquals("This lore line is a test!", itemEdit.getItemMeta().getLore().get(1));
+        assertEquals("This is lore addition test #3!", itemEdit.getItemMeta().getLore().get(2));
+        assertEquals("This is lore addition test #4!", itemEdit.getItemMeta().getLore().get(3));
+    }
+
+    @Test
+    public void addSingleComponentLoreLine() {
+        ItemStack item = ItemBuilder.builder(Material.DIAMOND)
+                .addLoreLine(Component.text("This is lore addition test for component"))
+                .build();
+
+        assertEquals(1, item.getItemMeta().lore().size());
+        assertEquals(Component.text("This is lore addition test for component"), item.getItemMeta().lore().get(0));
+
+        ItemStack itemEdit = ItemBuilder.builder(item)
+                .addLoreLine(Component.text("This is lore addition test 2!"))
+                .build();
+
+        assertEquals(2, itemEdit.getItemMeta().lore().size());
+        assertEquals(Component.text("This is lore addition test for component"), itemEdit.getItemMeta().lore().get(0));
+        assertEquals(Component.text("This is lore addition test 2!"), itemEdit.getItemMeta().lore().get(1));
+    }
+
+    @Test
+    public void addMultiplyComponentLoreLine() {
+        ItemStack item = ItemBuilder.builder(Material.DIAMOND)
+                .addLoreLines(
+                        Component.text("This lore line #1"),
+                        Component.text("This lore line #2"))
+                .build();
+
+        assertEquals(2, item.getItemMeta().lore().size());
+        assertEquals(Component.text("This lore line #1"), item.getItemMeta().lore().get(0));
+        assertEquals(Component.text("This lore line #2"), item.getItemMeta().lore().get(1));
+
+        ItemStack itemEdit = ItemBuilder.builder(item)
+                .addLoreLine(Component.text("This lore line #3"))
+                .addLoreLine(Component.text("This lore line #4"))
+                .build();
+
+        assertEquals(4, itemEdit.getItemMeta().lore().size());
+        assertEquals(Component.text("This lore line #1"), itemEdit.getItemMeta().lore().get(0));
+        assertEquals(Component.text("This lore line #2"), itemEdit.getItemMeta().lore().get(1));
+        assertEquals(Component.text("This lore line #3"), itemEdit.getItemMeta().lore().get(2));
+        assertEquals(Component.text("This lore line #4"), itemEdit.getItemMeta().lore().get(3));
+    }
+
+
 
     public void assertItem(ItemStack item, Material type, int amount, String name, List<String> lore) {
         assertEquals(type, item.getType());
