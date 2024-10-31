@@ -55,6 +55,13 @@ public class ItemBuilderTest extends SpigotTestBase {
                         )).build();
 
         assertItem(item, Material.DIAMOND, 1, null, List.of(Component.text("Lore test"), Component.empty(), Component.empty(), Component.text("Made by kfir")));
+
+        item = ItemBuilder.builder(Material.DIAMOND)
+                .setLore(Component.text("lore test again"))
+                .build();
+
+        assertEquals(1, item.getItemMeta().lore().size());
+        assertEquals(Component.text("lore test again"), item.lore().get(0));
     }
 
     @Test
