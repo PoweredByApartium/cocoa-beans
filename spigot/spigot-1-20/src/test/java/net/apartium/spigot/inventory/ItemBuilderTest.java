@@ -11,15 +11,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ItemBuilderTest extends SpigotTestBase {
+@SuppressWarnings("deprecation")
+class ItemBuilderTest extends SpigotTestBase {
 
     @Override
     public void initialize() {
-
+        // nothing to do here
     }
 
     @Test
-    public void buildTest() {
+    void buildTest() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND).build();
 
         assertItem(item, Material.DIAMOND, 1, (String) null, null);
@@ -27,7 +28,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void setDisplayName() {
+    void setDisplayName() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .setDisplayName("Diamond test").build();
 
@@ -40,7 +41,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void setLore() {
+    void setLore() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .setLore("Lore test", "", "", "Made by kfir").build();
 
@@ -65,7 +66,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void setAmount() {
+    void setAmount() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .setAmount(5)
                 .build();
@@ -80,7 +81,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void setDurability() {
+    void setDurability() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .setDurability((short) 5)
                 .build();
@@ -92,7 +93,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void unbreakable() {
+    void unbreakable() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .setUnbreakable(true)
                 .build();
@@ -107,7 +108,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void addSingleLoreLine() {
+    void addSingleLoreLine() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .addLoreLine("This is lore addition test")
                 .build();
@@ -126,7 +127,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void addMultiplyStringLoreLines() {
+    void addMultiplyStringLoreLines() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .addLoreLines(
                         "This is lore addition test with multiply lines",
@@ -151,7 +152,7 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void addSingleComponentLoreLine() {
+    void addSingleComponentLoreLine() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
                 .addLoreLine(Component.text("This is lore addition test for component"))
                 .build();
@@ -169,11 +170,10 @@ public class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    public void addMultiplyComponentLoreLine() {
+    void addMultiplyComponentLoreLine() {
         ItemStack item = ItemBuilder.builder(Material.DIAMOND)
-                .addLoreLines(
-                        Component.text("This lore line #1"),
-                        Component.text("This lore line #2"))
+                .addLoreLines(Component.text("This lore line #1"))
+                .addLoreLines(Component.text("This lore line #2"))
                 .build();
 
         assertEquals(2, item.getItemMeta().lore().size());
@@ -192,16 +192,14 @@ public class ItemBuilderTest extends SpigotTestBase {
         assertEquals(Component.text("This lore line #4"), itemEdit.getItemMeta().lore().get(3));
     }
 
-
-
-    public void assertItem(ItemStack item, Material type, int amount, String name, List<String> lore) {
+    private void assertItem(ItemStack item, Material type, int amount, String name, List<String> lore) {
         assertEquals(type, item.getType());
         assertEquals(amount, item.getAmount());
         assertEquals(name, item.getItemMeta().getDisplayName());
         assertEquals(lore, item.getItemMeta().getLore());
     }
 
-    public void assertItem(ItemStack item, Material type, int amount, Component name, List<Component> lore) {
+    private void assertItem(ItemStack item, Material type, int amount, Component name, List<Component> lore) {
         assertEquals(type, item.getType());
         assertEquals(amount, item.getAmount());
         assertEquals(name, item.getItemMeta().displayName());
