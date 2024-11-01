@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  * Argument context is general context for all arguments
- * Used for all commands & other system like Flag system & compound parser
+ * Used for all commands and other system like Flag system & compound parser
  * @param commandName command name
  * @param args args
  * @param sender sender
