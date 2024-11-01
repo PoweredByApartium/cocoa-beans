@@ -97,13 +97,14 @@ import java.util.*;
         }
 
 
-        CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor);
+        List<Requirement> classRequirementsResult = new ArrayList<>();
+        CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor, classRequirementsResult);
 
         for (Method method : clazz.getMethods()) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
-                parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
+                parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
             }
 
             ExceptionHandle exceptionHandle = method.getAnnotation(ExceptionHandle.class);
@@ -126,14 +127,14 @@ import java.util.*;
 
 
             for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-                handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod);
+                handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
             }
 
         }
 
     }
 
-    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod) {
+    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) {
         ExceptionHandle exceptionHandle;
         if (targetMethod == null)
             return;
@@ -143,7 +144,7 @@ import java.util.*;
         SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
 
         for (SubCommand subCommand : superSubCommands) {
-            parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption);
+            parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
         }
 
         exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
@@ -175,7 +176,7 @@ import java.util.*;
 
     }
 
-    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption) {
+    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<ArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
         if (subCommand == null)
             return;
 
@@ -221,17 +222,19 @@ import java.util.*;
 
         String[] split = subCommand.value().split("\\s+");
         if (split.length == 0 || split.length == 1 && split[0].isEmpty()) {
-            CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor);
+            CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor, requirementsResult);
 
             cmdOption.getCommandInfo().fromCommandInfo(methodInfo);
+            RegisteredCommandVariant.Parameter[] parameters = serializeParameters(node, method.getParameters());
 
             try {
                 CollectionHelpers.addElementSorted(
                         cmdOption.getRegisteredCommandVariants(),
                         new RegisteredCommandVariant(
                             publicLookup.unreflect(method),
-                            serializeParameters(node, method.getParameters()),
+                            parameters,
                             node,
+                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
                             subCommand.priority()
                         ),
                         REGISTERED_COMMAND_VARIANT_COMPARATOR
@@ -268,11 +271,12 @@ import java.util.*;
                         isOptional
                 );
 
-                CommandBranchProcessor commandBranchProcessor = currentCommandOption.getArgumentTypeHandlerMap().stream()
+                Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
                         .filter(entry -> entry.key().equals(finalTypeParser))
                         .findAny()
-                        .map(Entry::value)
                         .orElse(null);
+
+                CommandBranchProcessor commandBranchProcessor = entryArgument == null ? null : entryArgument.value();
 
                 if (commandBranchProcessor == null) {
                     commandBranchProcessor = new CommandBranchProcessor(commandManager);
@@ -285,6 +289,8 @@ import java.util.*;
                             (a, b) -> b.key().compareTo(a.key())
                     );
                 }
+
+                parsersResult.add(entryArgument == null ? finalTypeParser : entryArgument.key());
 
                 if (finalTypeParser.isOptional()) {
                     CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
@@ -306,7 +312,7 @@ import java.util.*;
                     }
                 }
 
-                currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
+                currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
                 continue;
 
             }
@@ -316,19 +322,22 @@ import java.util.*;
                     : currentCommandOption.getKeywordMap();
 
             CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(subCommand.ignoreCase() ? cmd.toLowerCase() : cmd, key -> new CommandBranchProcessor(commandManager));
-            currentCommandOption = createCommandOption(requirements, commandBranchProcessor);
+            currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
         }
 
 
         currentCommandOption.getCommandInfo().fromCommandInfo(methodInfo);
+
+        RegisteredCommandVariant.Parameter[] parameters = serializeParameters(node, method.getParameters());
 
         try {
             CollectionHelpers.addElementSorted(
                     currentCommandOption.getRegisteredCommandVariants(),
                     new RegisteredCommandVariant(
                         publicLookup.unreflect(method),
-                        serializeParameters(node, method.getParameters()),
+                        parameters,
                         node,
+                        commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
                         subCommand.priority()),
                     REGISTERED_COMMAND_VARIANT_COMPARATOR
             );
@@ -385,7 +394,7 @@ import java.util.*;
         return result.toArray(new ArgumentRequirement[0]);
     }
 
-    private CommandOption createCommandOption(RequirementSet requirements, CommandBranchProcessor commandBranchProcessor) {
+    private CommandOption createCommandOption(RequirementSet requirements, CommandBranchProcessor commandBranchProcessor, List<Requirement> requirementsResult) {
         CommandOption cmdOption = commandBranchProcessor.objectMap.stream()
                 .filter(entry -> entry.key().equals(requirements))
                 .findAny()
@@ -399,6 +408,8 @@ import java.util.*;
                     cmdOption
             ));
         }
+
+        requirementsResult.addAll(requirements);
 
         return cmdOption;
     }

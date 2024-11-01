@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
+import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,13 @@ public class CommandForTest implements CommandNode {
     public void teleportToOther(CommandSender sender, Player from, Player to) {
         from.teleport(to.getLocation());
         sender.sendMessage("Teleporting " + from.getName() + " to " + to.getName());
+    }
+
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("tp <player>")
+    public void teleport(Player player, Player target) {
+        player.teleport(target.getLocation());
+        player.sendMessage("Teleporting " + player.getName() + " to " + target.getName());
     }
 
     @SubCommand("who <player>")

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -77,6 +78,11 @@ public class SenderLimitFactory implements RequirementFactory {
                     context,
                     "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
             ));
+        }
+
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
         }
 
         private class UnmetSenderLimit extends UnmetRequirementResponse {

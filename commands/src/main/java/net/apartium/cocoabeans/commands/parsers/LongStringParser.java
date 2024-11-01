@@ -138,39 +138,44 @@ import java.util.*;
     private ProcessResult processArg(CommandProcessingContext processingContext, String arg, StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
         for (int i = 0; i < arg.length(); i++) {
             char currentChar = arg.charAt(i);
+            boolean isLastChar = i == arg.length() - 1;
+            ProcessResult processResult = processChar(processingContext, resultBuilder, escapeCharacters, currentChar, isLastChar);
+            if (processResult == ProcessResult.CONTINUE_NO_SPACE)
+                return ProcessResult.CONTINUE;
 
-            if (currentChar == QUOTATION_CHARACTER) {
-                ProcessResult processResult = handleQuote(processingContext, resultBuilder, escapeCharacters, arg, i);
-                if (processResult == ProcessResult.CONTINUE)
-                    continue;
+            if (processResult == ProcessResult.FAILED)
+                return ProcessResult.FAILED;
 
-                return processResult;
-            }
-
-            if (currentChar == ESCAPE_CHARACTER) {
-                handleBackSlash(resultBuilder, escapeCharacters);
-                continue;
-            }
-
-            if (paragraphMode && currentChar == NEW_LINE_CHARACTER) {
-                ProcessResult processResult = handleNewLine(resultBuilder, escapeCharacters);
-                if (processResult != ProcessResult.IGNORE) {
-                    if ((arg.length() - 1) == i)
-                        return ProcessResult.CONTINUE;
-
-                    continue;
-                }
-            }
-
-            resultBuilder.append(currentChar);
+            if (processResult == ProcessResult.FINISHED)
+                return ProcessResult.FINISHED;
         }
 
         resultBuilder.append(" ");
         return ProcessResult.CONTINUE;
     }
 
+    private ProcessResult processChar(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, char currentChar, boolean isLastChar) {
+
+        if (currentChar == QUOTATION_CHARACTER)
+            return handleQuote(processingContext, resultBuilder, escapeCharacters, isLastChar);
+
+        if (currentChar == ESCAPE_CHARACTER) {
+            handleBackSlash(resultBuilder, escapeCharacters);
+            return ProcessResult.CONTINUE;
+        }
+
+        if (paragraphMode && currentChar == NEW_LINE_CHARACTER) {
+            ProcessResult processResult = handleNewLine(resultBuilder, escapeCharacters, isLastChar);
+            if (processResult != ProcessResult.IGNORE)
+                return processResult;
+        }
+
+        resultBuilder.append(currentChar);
+        return ProcessResult.CONTINUE;
+    }
+
     @ApiStatus.Internal
-    private ProcessResult handleQuote(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, String arg, int currentIndex) {
+    private ProcessResult handleQuote(CommandProcessingContext processingContext, StringBuilder resultBuilder, Deque<Character> escapeCharacters, boolean isLastChar) {
         if (escapeCharacters.isEmpty()) {
             reportError(processingContext, INVALID_QUOTATION_MESSAGE);
             return ProcessResult.FAILED;
@@ -184,7 +189,7 @@ import java.util.*;
                     yield ProcessResult.FAILED;
                 }
 
-                if ((arg.length() - 1) != currentIndex) {
+                if (!isLastChar) {
                     reportError(processingContext, "Invalid quoted string in the middle");
                     yield ProcessResult.FAILED;
                 }
@@ -218,14 +223,21 @@ import java.util.*;
     }
 
     @ApiStatus.Internal
-    private ProcessResult handleNewLine(StringBuilder resultBuilder, Deque<Character> escapeCharacters) {
-        if (!escapeCharacters.isEmpty() && escapeCharacters.peekLast() == ESCAPE_CHARACTER) {
-            escapeCharacters.removeLast();
-            resultBuilder.append("\n");
-            return ProcessResult.CONTINUE;
-        }
+    private ProcessResult handleNewLine(StringBuilder resultBuilder, Deque<Character> escapeCharacters, boolean isLastChar) {
+        if (escapeCharacters.isEmpty())
+            return ProcessResult.IGNORE;
 
-        return ProcessResult.IGNORE;
+        if (escapeCharacters.peekLast() != ESCAPE_CHARACTER)
+            return ProcessResult.IGNORE;
+
+
+        escapeCharacters.removeLast();
+        resultBuilder.append("\n");
+
+        if (isLastChar)
+            return ProcessResult.CONTINUE_NO_SPACE;
+
+        return ProcessResult.CONTINUE;
     }
 
     @ApiStatus.Internal
@@ -240,6 +252,7 @@ import java.util.*;
     private enum ProcessResult {
         FAILED,
         IGNORE,
+        CONTINUE_NO_SPACE,
         CONTINUE,
         FINISHED
     }

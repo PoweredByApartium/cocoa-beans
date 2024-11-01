@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.utils.OptionalFloat;
 
 import java.lang.reflect.ParameterizedType;
@@ -78,96 +80,170 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 return OptionalLong.of((Long) obj);
             },
             OptionalDouble.class, (obj) -> {
-                if (obj == null)
+                if (obj == null || Double.isNaN((Double) obj))
                     return OptionalDouble.empty();
                 return OptionalDouble.of((Double) obj);
             },
             OptionalFloat.class, (obj) -> {
-                if (obj == null)
+                if (obj == null || Float.isNaN((Float) obj))
                     return OptionalFloat.empty();
                 return OptionalFloat.of((Float) obj);
             }
     );
 
-
     @Override
-    public List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        RegisteredCommandVariant.Parameter[] parameters = registeredCommandVariant.parameters();
+    public List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<ArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
         if (parameters.length == 0)
-            return List.of(registeredCommandVariant.commandNode());
+            return List.of();
 
-        List<Object> result = new ArrayList<>(parameters.length + 1);
-        result.add(registeredCommandVariant.commandNode());
+        List<ArgumentIndex<?>> result = new ArrayList<>(parameters.length);
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
-        Map<Class<?>, List<Object>> mapOfObjects = context.parsedArgs();
+        Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments = createParsedArgs(argumentParsers, requirements);
 
-        for (int i = 1; i < parameters.length + 1; i++) {
-            Class<?> type = parameters[i - 1].type();
+        for (RegisteredCommandVariant.Parameter parameter : parameters) {
+            Class<?> type = parameter.type();
+
             boolean optional = false;
             boolean optionalPrimitive = false;
 
             if (type == Optional.class) {
                 optional = true;
-                Type parameterizedType = parameters[i - 1].parameterizedType();
-                Type[] actualTypeArguments = ((ParameterizedType) parameterizedType).getActualTypeArguments();
-                type = (Class<?>) actualTypeArguments[0];
+                type = getGenericType(parameter.parameterizedType());
             } else if (OPTIONAL_TO_PRIMITIVE_MAP.containsKey(type)) {
                 type = OPTIONAL_TO_PRIMITIVE_MAP.get(type);
                 optionalPrimitive = true;
             }
 
-            int index = counterMap.computeIfAbsent(type, (k) -> 0);
+            int index = counterMap.computeIfAbsent(type, k -> 0);
+            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, counterMap, mapOfArguments, index);
 
-            if (Sender.class.isAssignableFrom(type)) {
-                if (index != 0 && mapOfObjects.get(type) != null) {
-                    result.add(mapOfObjects.get(type).get(index - 1));
-                } else {
-                    result.add(sender);
-                }
-            } else if (type.equals(CommandContext.class)) {
-                if (index == 1) throw new RuntimeException("Shouldn't have two command context");
-                result.add(context);
-            } else {
-                List<Object> objects = context.parsedArgs().get(type);
+            if (optional)
+                argumentIndex = wrapInOptional(argumentIndex);
 
-                if (objects == null || objects.isEmpty() || objects.size() <= index)
-                    objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+            if (optionalPrimitive)
+                argumentIndex = wrapInOptionalPrimitive(argumentIndex, type);
 
-                if (objects == null || objects.isEmpty() || objects.size() <= index) {
-                    for (Class<?> clazz : context.parsedArgs().keySet()) {
-                        if (type.isAssignableFrom(clazz)) {
-                            objects = context.parsedArgs().get(clazz);
-                            break;
-                        }
-                    }
-                }
-
-                if (objects == null || objects.isEmpty() || objects.size() <= index)
-                    throw new RuntimeException("No argument found for type " + type);
-
-                Object obj = objects.get(index);
-                if (optional) {
-                    if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()))
-                        obj = Optional.empty();
-                    else
-                        obj = Optional.of(obj);
-                }
-
-                if (optionalPrimitive) {
-                    if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()))
-                        obj = EMPTY_OPTIONAL.get(type);
-                    else
-                        obj = OF_OPTIONAL.get(PRIMITIVE_TO_OPTIMAL.get(type)).apply(obj);
-                }
-
-                result.add(obj);
-            }
-
-            counterMap.put(type, index + 1);
+            result.add(argumentIndex);
+            counterMap.put(type, counterMap.get(type) + 1);
         }
 
         return result;
+    }
+
+    private Class<?> getGenericType(Type parameterizedType) {
+        return (Class<?>) ((ParameterizedType) parameterizedType).getActualTypeArguments()[0];
+    }
+
+    private ArgumentIndex<Optional<?>> wrapInOptional(ArgumentIndex<?> argumentIndex) {
+        return context -> {
+            Object obj = argumentIndex.get(context);
+            if (obj == null)
+                return Optional.empty();
+
+            if (obj instanceof Optional<?>)
+                return (Optional<?>) obj;
+
+            return Optional.of(obj);
+        };
+    }
+
+    private ArgumentIndex<?> wrapInOptionalPrimitive(ArgumentIndex<?> argumentIndex, Class<?> type) {
+        return context -> {
+            Object obj = argumentIndex.get(context);
+
+            if (obj instanceof Optional<?> opt)
+                obj = opt.orElse(null);
+
+            if (obj == null)
+                return EMPTY_OPTIONAL.get(type);
+
+            return OF_OPTIONAL.get(PRIMITIVE_TO_OPTIMAL.get(type)).apply(obj);
+        };
+    }
+
+    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        ArgumentIndex<?> argumentIndex = resolveBuiltInArgumentIndex(type, counterMap, mapOfArguments, index);
+        if (argumentIndex != null)
+            return argumentIndex;
+
+        List<ArgumentIndex<?>> arguments = mapOfArguments.get(type);
+
+        if (isInvalidArguments(arguments, index))
+            arguments = findArgumentsByWrapperType(type, mapOfArguments);
+
+        if (isInvalidArguments(arguments, index))
+            arguments = findArgumentsByAssignableType(type, mapOfArguments);
+
+
+        if (isInvalidArguments(arguments, index))
+            throw new NoSuchElementException("No argument found for type " + type + " at index " + index);
+
+
+        return arguments.get(index);
+    }
+
+    private boolean isInvalidArguments(List<ArgumentIndex<?>> arguments, int index) {
+        return arguments == null || arguments.size() <= index;
+    }
+
+    private List<ArgumentIndex<?>> findArgumentsByWrapperType(Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments) {
+        return mapOfArguments.get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
+    }
+
+    private List<ArgumentIndex<?>> findArgumentsByAssignableType(Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments) {
+        return mapOfArguments.entrySet().stream()
+                .filter(entry -> type.isAssignableFrom(entry.getKey()))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElse(null);
+    }
+
+    protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        if (Sender.class.isAssignableFrom(type))
+            return getSenderIndex(mapOfArguments, index);
+
+        if (CommandContext.class.equals(type)) {
+            if (index != 0)
+                throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
+
+            return context -> context.parsedArgs().get(CommandContext.class).get(0);
+        }
+
+        return null;
+    }
+
+    private ArgumentIndex<?> getSenderIndex(Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        if (index == 0)
+            return ArgumentContext::sender;
+
+        return mapOfArguments.get(Sender.class).get(index - 1);
+    }
+
+    private Map<Class<?>, List<ArgumentIndex<?>>> createParsedArgs(List<ArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+        Map<Class<?>, List<ArgumentIndex<?>>> resultMap = new HashMap<>();
+
+        Map<Class<?>, Integer> counterMap = new HashMap<>();
+
+        for (ArgumentParser<?> argumentParser : argumentParsers) {
+            serializesArgumentIndex(argumentParser.getArgumentType(), counterMap, resultMap);
+        }
+
+        for (Requirement requirement : requirements) {
+            for (Class<?> type : requirement.getTypes()) {
+                serializesArgumentIndex(type, counterMap, resultMap);
+            }
+        }
+
+        return resultMap;
+    }
+
+    private void serializesArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> resultMap) {
+        int countIndex = counterMap.getOrDefault(type, 0);
+        counterMap.put(type, countIndex + 1);
+
+        resultMap.computeIfAbsent(type, k -> new ArrayList<>())
+                .add(context -> context.parsedArgs().get(type).get(countIndex));
     }
 
 }
