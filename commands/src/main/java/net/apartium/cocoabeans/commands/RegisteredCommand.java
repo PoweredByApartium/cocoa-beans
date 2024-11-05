@@ -13,6 +13,8 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
+import net.apartium.cocoabeans.commands.lexer.CommandLexer;
+import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
@@ -246,7 +248,17 @@ import java.util.*;
             return;
         }
 
+        // TODO split it to methods
         CommandOption currentCommandOption = commandOption;
+        // TODO temp
+        List<CommandToken> tokens = CommandLexer.tokenization(subCommand.value());
+
+        for (int i = 0; i < tokens.size(); i++) {
+            CommandToken token = tokens.get(i);
+
+
+        }
+        System.out.println(tokens);
         for (int index = 0; index < split.length; index++) {
             String cmd = split[index];
 

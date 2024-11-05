@@ -13,7 +13,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
     private final boolean isOptional;
     private final Optional<String> parameterName;
 
-    RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional, Optional<String> parameterName) {
+    public RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional, Optional<String> parameterName) {
         super(parser.getKeyword(), parser.getArgumentType(), parser.getPriority());
         this.parser = parser;
         this.optionalNotMatch = optionalNotMatch;
