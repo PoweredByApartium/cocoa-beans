@@ -92,7 +92,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     );
 
     @Override
-    public List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<ArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    public List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
         if (parameters.length == 0)
             return List.of();
 
@@ -220,12 +220,12 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return mapOfArguments.get(Sender.class).get(index - 1);
     }
 
-    private Map<Class<?>, List<ArgumentIndex<?>>> createParsedArgs(List<ArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    private Map<Class<?>, List<ArgumentIndex<?>>> createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
         Map<Class<?>, List<ArgumentIndex<?>>> resultMap = new HashMap<>();
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
 
-        for (ArgumentParser<?> argumentParser : argumentParsers) {
+        for (RegisterArgumentParser<?> argumentParser : argumentParsers) {
             serializesArgumentIndex(argumentParser.getArgumentType(), counterMap, resultMap);
         }
 

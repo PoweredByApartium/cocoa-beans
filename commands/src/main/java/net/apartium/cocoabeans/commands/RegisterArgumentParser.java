@@ -6,17 +6,19 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-/* package-private */ class RegisterArgumentParser<T> extends ArgumentParser<T> {
+public class RegisterArgumentParser<T> extends ArgumentParser<T> {
 
     private final ArgumentParser<T> parser;
     private final boolean optionalNotMatch;
     private final boolean isOptional;
+    private final Optional<String> parameterName;
 
-    RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional) {
+    RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional, Optional<String> parameterName) {
         super(parser.getKeyword(), parser.getArgumentType(), parser.getPriority());
         this.parser = parser;
         this.optionalNotMatch = optionalNotMatch;
         this.isOptional = isOptional;
+        this.parameterName = parameterName;
     }
 
     public ArgumentParser<T> parser() {

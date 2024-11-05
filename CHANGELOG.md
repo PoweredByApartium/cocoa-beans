@@ -1,4 +1,8 @@
 # CHANGELOG
+## 0.0.37
+- [commands] Improve SubCommand serialization with Command Lexer
+- [commands] Add Parameter names for argument parsers
+
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
 - [commands] Add UUIDParser

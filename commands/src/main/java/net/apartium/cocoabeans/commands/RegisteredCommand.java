@@ -176,7 +176,7 @@ import java.util.*;
 
     }
 
-    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<ArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
+    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
         if (subCommand == null)
             return;
 
@@ -268,7 +268,8 @@ import java.util.*;
                 RegisterArgumentParser<?> finalTypeParser = new RegisterArgumentParser<> (
                         typeParser,
                         isInvalid,
-                        isOptional
+                        isOptional,
+                        Optional.empty() // Temp
                 );
 
                 Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
