@@ -36,7 +36,7 @@ public class SimpleKeywordToken extends KeywordToken {
 
     @Override
     public String toString() {
-        return "KeywordToken{" +
+        return "SimpleKeywordToken{" +
                 "keyword='" + keyword + '\'' +
                 ", from=" + from +
                 ", to=" + to +

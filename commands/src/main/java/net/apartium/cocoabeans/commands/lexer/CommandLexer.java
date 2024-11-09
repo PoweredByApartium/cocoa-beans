@@ -11,7 +11,6 @@ import java.util.List;
  */
 @ApiStatus.AvailableSince("0.0.37")
 public interface CommandLexer {
-
     /**
      * Tokenize the command into tokens
      * @param command the command to tokenize

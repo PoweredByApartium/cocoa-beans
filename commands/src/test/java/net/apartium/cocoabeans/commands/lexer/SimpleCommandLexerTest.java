@@ -1,13 +1,12 @@
 package net.apartium.cocoabeans.commands.lexer;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleCommandLexerTest {
 
@@ -26,6 +25,10 @@ public class SimpleCommandLexerTest {
         tokens = lexer.tokenization("test command parser");
 
         assertEquals(List.of(new TestKeywordToken(0, 4, "test"), new TestKeywordToken(5, 12, "command"), new TestKeywordToken(13, 19, "parser")), tokens);
+
+        assertEquals(CommandTokenType.KEYWORD, tokens.get(0).getType());
+        assertEquals(0, tokens.get(0).from());
+        assertEquals(4, tokens.get(0).to());
     }
 
     @Test
@@ -34,6 +37,11 @@ public class SimpleCommandLexerTest {
 
         List<CommandToken> tokens = lexer.tokenization("<int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 5, "int", Optional.empty(), false, false)), tokens);
+
+        assertEquals(
+                "SimpleArgumentParserToken{parameterName=Optional.empty, from=0, to=5, text='<int>', parserKeyword='int', optionalNotMatch=false, isOptional=false}",
+                tokens.get(0).toString()
+        );
 
         tokens = lexer.tokenization("<amount: int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 13, "int", Optional.of("amount"), false, false)), tokens);
@@ -63,6 +71,18 @@ public class SimpleCommandLexerTest {
                 new TestArgumentParserToken(23, 28, "int", Optional.empty(), false, false)
         ), tokens);
 
+        assertEquals(CommandTokenType.ARGUMENT_PARSER, tokens.get(0).getType());
+        assertEquals(
+                Objects.hash(
+                        0,
+                        8,
+                        "<string> <amount: int> <int>",
+                        "string",
+                        Optional.empty()
+                ),
+                tokens.get(0).hashCode()
+        );
+
     }
 
     @Test
@@ -87,7 +107,8 @@ public class SimpleCommandLexerTest {
         assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test<int>"));
         assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test>"));
         assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test: test wtf>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("lol$: int>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<test: test wtf>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<lol$: int>"));
     }
 
 }
