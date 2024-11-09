@@ -13,8 +13,10 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
+import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandLexer;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
+import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
@@ -251,41 +253,34 @@ import java.util.*;
         // TODO split it to methods
         CommandOption currentCommandOption = commandOption;
         // TODO temp
-        List<CommandToken> tokens = CommandLexer.tokenization(subCommand.value());
+        List<CommandToken> tokens = commandManager.getCommandLexer().tokenization(subCommand.value());
 
         for (int i = 0; i < tokens.size(); i++) {
             CommandToken token = tokens.get(i);
 
-
-        }
-        System.out.println(tokens);
-        for (int index = 0; index < split.length; index++) {
-            String cmd = split[index];
-
             //  TODO may need to split requirements so it will be faster and joined stuff
-            RequirementSet requirements = index == 0 ? methodRequirements : new RequirementSet();
+            RequirementSet requirements = i == 0 ? methodRequirements : new RequirementSet();
 
-            if (cmd.startsWith("<") && cmd.endsWith(">")) {
-                // TODO may need to check that can be parser before doing all calculation
+            // TODO move to 2 methods
+            if (token instanceof KeywordToken keywordToken) {
+                Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
+                        ? currentCommandOption.getKeywordIgnoreCaseMap()
+                        : currentCommandOption.getKeywordMap();
 
-                boolean isOptional = cmd.startsWith("<?") || cmd.startsWith("<!?");
-                boolean isInvalid = cmd.startsWith("<!") || cmd.startsWith("<?!");
+                String keyword = subCommand.ignoreCase()
+                        ? keywordToken.getKeyword().toLowerCase()
+                        : keywordToken.getKeyword();
 
-                ArgumentParser<?> typeParser = methodArgumentTypeHandlerMap.get(cmd.substring(1 + (isInvalid ? 1 : 0) + (isOptional ? 1 : 0), cmd.length() - 1));
+                CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(keyword, key -> new CommandBranchProcessor(commandManager));
+                currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+                continue;
+            }
 
-                if (typeParser == null)
-                    throw new RuntimeException("Couldn't resolve " + clazz.getName() + "#" + method.getName() + " parser: " + cmd.substring(1, cmd.length() - 1));
-
-
-                RegisterArgumentParser<?> finalTypeParser = new RegisterArgumentParser<> (
-                        typeParser,
-                        isInvalid,
-                        isOptional,
-                        Optional.empty() // Temp
-                );
+            if (token instanceof ArgumentParserToken argumentParserToken) {
+                RegisterArgumentParser<?> parser = argumentParserToken.getParser(argumentTypeHandlerMap);
 
                 Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                        .filter(entry -> entry.key().equals(finalTypeParser))
+                        .filter(entry -> entry.key().equals(parser))
                         .findAny()
                         .orElse(null);
 
@@ -296,18 +291,18 @@ import java.util.*;
                     CollectionHelpers.addElementSorted(
                             currentCommandOption.getArgumentTypeHandlerMap(),
                             new Entry<>(
-                                    finalTypeParser,
+                                    parser,
                                     commandBranchProcessor
                             ),
                             (a, b) -> b.key().compareTo(a.key())
                     );
                 }
 
-                parsersResult.add(entryArgument == null ? finalTypeParser : entryArgument.key());
+                parsersResult.add(entryArgument == null ? parser : entryArgument.key());
 
-                if (finalTypeParser.isOptional()) {
+                if (parser.isOptional()) {
                     CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
-                            .filter(entry -> entry.key().equals(finalTypeParser))
+                            .filter(entry -> entry.key().equals(parser))
                             .findAny()
                             .map(Entry::value)
                             .orElse(null);
@@ -317,8 +312,8 @@ import java.util.*;
                         CollectionHelpers.addElementSorted(
                                 currentCommandOption.getOptionalArgumentTypeHandlerMap(),
                                 new Entry<>(
-                                    finalTypeParser,
-                                    branchProcessor
+                                        parser,
+                                        branchProcessor
                                 ),
                                 (a, b) -> b.key().compareTo(a.key())
                         );
@@ -327,15 +322,9 @@ import java.util.*;
 
                 currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
                 continue;
-
             }
 
-            Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
-                    ? currentCommandOption.getKeywordIgnoreCaseMap()
-                    : currentCommandOption.getKeywordMap();
-
-            CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(subCommand.ignoreCase() ? cmd.toLowerCase() : cmd, key -> new CommandBranchProcessor(commandManager));
-            currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+            throw new RuntimeException("Unknown token while parsing " + token);
         }
 
 

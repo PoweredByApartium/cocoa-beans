@@ -52,7 +52,7 @@ public class ArgumentParserToken extends CommandToken {
         this.optionalNotMatch = keyword.startsWith("!") || keyword.startsWith("?!");
         this.isOptional = keyword.startsWith("?") || keyword.startsWith("!?");
 
-        this.parserKeyword = keyword.substring(0, keyword.length() - (optionalNotMatch ? 1 : 0) - (isOptional ? 1 : 0));
+        this.parserKeyword = keyword.substring((optionalNotMatch ? 1 : 0) + (isOptional ? 1 : 0));
     }
 
     private void setKeywordAndParameterName(String actualData) {
