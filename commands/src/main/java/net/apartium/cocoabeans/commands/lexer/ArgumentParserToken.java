@@ -54,4 +54,16 @@ public abstract class ArgumentParserToken extends CommandToken {
      */
     public abstract Optional<String> getParameterName();
 
+    /**
+     * Gets if the argument parser is optional
+     * @return true if the argument parser is optional
+     */
+    public abstract boolean isOptional();
+
+    /**
+     * Gets if the argument parser is optional but does not match
+     * @return true if the argument parser is optional but does not match
+     */
+    public abstract boolean optionalNotMatch();
+
 }

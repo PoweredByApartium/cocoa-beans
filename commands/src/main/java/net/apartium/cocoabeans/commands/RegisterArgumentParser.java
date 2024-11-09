@@ -55,10 +55,15 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
         if (o == null)
             return false;
 
-        if (getClass() == o.getClass()) {
-            return parser.equals(((RegisterArgumentParser<?>) o).parser());
-        }
-        return parser.equals(o);
+        if (getClass() != o.getClass())
+            return parser.equals(o);
+
+        RegisterArgumentParser<?> other = (RegisterArgumentParser<?>) o;
+
+        return this.isOptional == other.isOptional
+                && this.optionalNotMatch == other.optionalNotMatch
+                && this.parameterName.equals(other.parameterName)
+                && this.parser.equals(other.parser);
     }
 
     @Override

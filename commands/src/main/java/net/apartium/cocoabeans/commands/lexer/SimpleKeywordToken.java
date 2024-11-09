@@ -47,7 +47,10 @@ public class SimpleKeywordToken extends KeywordToken {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            if (o instanceof KeywordToken keywordToken)
+                return keywordToken.getKeyword().equals(keyword) && keywordToken.from() == from && keywordToken.to() == to;
+        }
         SimpleKeywordToken that = (SimpleKeywordToken) o;
         return Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(text, that.text) && Objects.equals(keyword, that.keyword);
     }

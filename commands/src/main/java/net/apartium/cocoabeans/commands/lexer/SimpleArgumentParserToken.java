@@ -46,6 +46,26 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
     }
 
     /**
+     * Gets if the argument parser is optional
+     *
+     * @return true if the argument parser is optional
+     */
+    @Override
+    public boolean isOptional() {
+        return isOptional;
+    }
+
+    /**
+     * Gets if the argument parser is optional but does not match
+     *
+     * @return true if the argument parser is optional but does not match
+     */
+    @Override
+    public boolean optionalNotMatch() {
+        return optionalNotMatch;
+    }
+
+    /**
      * Gets the argument parser from the given parsers map
      * @param parsers parser map that represents all argument parsers we have
      * @return the argument parser
