@@ -59,6 +59,15 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
     }
 
+    /**
+     * Gets the argument parser name
+     * @return the argument parser name
+     */
+    @Override
+    public String getParserName() {
+        return parserKeyword;
+    }
+
     private void setKeywordAndOptionals(String keyword) {
         this.optionalNotMatch = keyword.startsWith("!") || keyword.startsWith("?!");
         this.isOptional = keyword.startsWith("?") || keyword.startsWith("!?");

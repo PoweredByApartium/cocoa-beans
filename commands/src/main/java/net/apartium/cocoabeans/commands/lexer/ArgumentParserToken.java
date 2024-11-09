@@ -43,6 +43,12 @@ public abstract class ArgumentParserToken extends CommandToken {
     public abstract RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers);
 
     /**
+     * Gets the argument parser name
+     * @return the argument parser name
+     */
+    public abstract String getParserName();
+
+    /**
      * Gets the parameter name of the argument parser if it has one
      * @return the parameter name
      */

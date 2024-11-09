@@ -13,6 +13,7 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
+import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.SimpleArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
@@ -249,9 +250,7 @@ import java.util.*;
             return;
         }
 
-        // TODO split it to methods
         CommandOption currentCommandOption = commandOption;
-        // TODO temp
         List<CommandToken> tokens = commandManager.getCommandLexer().tokenization(subCommand.value());
 
         for (int i = 0; i < tokens.size(); i++) {
@@ -260,66 +259,13 @@ import java.util.*;
             //  TODO may need to split requirements so it will be faster and joined stuff
             RequirementSet requirements = i == 0 ? methodRequirements : new RequirementSet();
 
-            // TODO move to 2 methods
             if (token instanceof KeywordToken keywordToken) {
-                Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
-                        ? currentCommandOption.getKeywordIgnoreCaseMap()
-                        : currentCommandOption.getKeywordMap();
-
-                String keyword = subCommand.ignoreCase()
-                        ? keywordToken.getKeyword().toLowerCase()
-                        : keywordToken.getKeyword();
-
-                CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(keyword, key -> new CommandBranchProcessor(commandManager));
-                currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+                currentCommandOption = createKeywordOption(currentCommandOption, subCommand, keywordToken, requirements, requirementsResult);
                 continue;
             }
 
             if (token instanceof SimpleArgumentParserToken argumentParserToken) {
-                RegisterArgumentParser<?> parser = argumentParserToken.getParser(methodArgumentTypeHandlerMap);
-
-                Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                        .filter(entry -> entry.key().equals(parser))
-                        .findAny()
-                        .orElse(null);
-
-                CommandBranchProcessor commandBranchProcessor = entryArgument == null ? null : entryArgument.value();
-
-                if (commandBranchProcessor == null) {
-                    commandBranchProcessor = new CommandBranchProcessor(commandManager);
-                    CollectionHelpers.addElementSorted(
-                            currentCommandOption.getArgumentTypeHandlerMap(),
-                            new Entry<>(
-                                    parser,
-                                    commandBranchProcessor
-                            ),
-                            (a, b) -> b.key().compareTo(a.key())
-                    );
-                }
-
-                parsersResult.add(entryArgument == null ? parser : entryArgument.key());
-
-                if (parser.isOptional()) {
-                    CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
-                            .filter(entry -> entry.key().equals(parser))
-                            .findAny()
-                            .map(Entry::value)
-                            .orElse(null);
-
-                    if (branchProcessor == null) {
-                        branchProcessor = commandBranchProcessor;
-                        CollectionHelpers.addElementSorted(
-                                currentCommandOption.getOptionalArgumentTypeHandlerMap(),
-                                new Entry<>(
-                                        parser,
-                                        branchProcessor
-                                ),
-                                (a, b) -> b.key().compareTo(a.key())
-                        );
-                    }
-                }
-
-                currentCommandOption = createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+                currentCommandOption = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult);
                 continue;
             }
 
@@ -345,6 +291,68 @@ import java.util.*;
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error accessing method", e);
         }
+    }
+
+    private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
+        Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
+                ? currentCommandOption.getKeywordIgnoreCaseMap()
+                : currentCommandOption.getKeywordMap();
+
+        String keyword = subCommand.ignoreCase()
+                ? keywordToken.getKeyword().toLowerCase()
+                : keywordToken.getKeyword();
+
+        CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(keyword, key -> new CommandBranchProcessor(commandManager));
+        return createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+    }
+
+    private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
+        RegisterArgumentParser<?> parser = argumentParserToken.getParser(parserMap);
+        if (parser == null)
+            throw new RuntimeException("Parser not found: " + argumentParserToken.getParserName());
+
+        Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
+                .filter(entry -> entry.key().equals(parser))
+                .findAny()
+                .orElse(null);
+
+        CommandBranchProcessor commandBranchProcessor = entryArgument == null ? null : entryArgument.value();
+
+        if (commandBranchProcessor == null) {
+            commandBranchProcessor = new CommandBranchProcessor(commandManager);
+            CollectionHelpers.addElementSorted(
+                    currentCommandOption.getArgumentTypeHandlerMap(),
+                    new Entry<>(
+                            parser,
+                            commandBranchProcessor
+                    ),
+                    (a, b) -> b.key().compareTo(a.key())
+            );
+        }
+
+        parsersResult.add(entryArgument == null ? parser : entryArgument.key());
+
+        if (parser.isOptional()) {
+            CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
+                    .filter(entry -> entry.key().equals(parser))
+                    .findAny()
+                    .map(Entry::value)
+                    .orElse(null);
+
+            if (branchProcessor == null) {
+                branchProcessor = commandBranchProcessor;
+                CollectionHelpers.addElementSorted(
+                        currentCommandOption.getOptionalArgumentTypeHandlerMap(),
+                        new Entry<>(
+                                parser,
+                                branchProcessor
+                        ),
+                        (a, b) -> b.key().compareTo(a.key())
+                );
+            }
+        }
+
+        return createCommandOption(requirements, commandBranchProcessor, requirementsResult);
     }
 
     private RegisteredCommandVariant.Parameter[] serializeParameters(CommandNode commandNode, Parameter[] parameters) {
