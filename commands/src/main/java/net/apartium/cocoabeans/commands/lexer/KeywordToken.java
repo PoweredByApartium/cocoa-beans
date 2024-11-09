@@ -2,50 +2,35 @@ package net.apartium.cocoabeans.commands.lexer;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Objects;
-
+/**
+ * A Keyword token that represents an keyword
+ */
 @ApiStatus.AvailableSince("0.0.37")
-public class KeywordToken extends CommandToken {
+public abstract class KeywordToken extends CommandToken {
 
-    private final String keyword;
-
+    /**
+     * Create a new keyword token
+     * @param from starting index
+     * @param to ending index
+     * @param text the entire text of command
+     */
     protected KeywordToken(int from, int to, String text) {
         super(from, to, text);
-
-        this.keyword = text.substring(from, to);
     }
 
-
-    public String getKeyword() {
-        return keyword;
-    }
-
+    /**
+     * Get the type of the token
+     * @return CommandTokenType.KEYWORD
+     */
     @Override
     public CommandTokenType getType() {
         return CommandTokenType.KEYWORD;
     }
 
+    /**
+     * Get the keyword
+     * @return the keyword
+     */
+    public abstract String getKeyword();
 
-    @Override
-    public String toString() {
-        return "KeywordToken{" +
-                "keyword='" + keyword + '\'' +
-                ", from=" + from +
-                ", to=" + to +
-                ", text='" + text + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        KeywordToken that = (KeywordToken) o;
-        return Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(text, that.text) && Objects.equals(keyword, that.keyword);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(from, to, text, keyword);
-    }
 }

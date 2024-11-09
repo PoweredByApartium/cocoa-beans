@@ -3,16 +3,37 @@ package net.apartium.cocoabeans.commands.lexer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple command lexer tokenize commands, and then we could use it to parse the command
+ * @see CommandLexer
+ */
 public class SimpleCommandLexer implements CommandLexer {
 
-    private static CommandLexer instance;
+    private final CommandTokenSupplier<ArgumentParserToken> argumentSupplier;
+    private final CommandTokenSupplier<KeywordToken> keywordSupplier;
 
-    public static CommandLexer getInstance() {
-        return (instance == null ? instance = new SimpleCommandLexer() : instance);
+    /**
+     * Create a new simple command lexer with SimpleArgumentParserToken and SimpleKeywordToken
+     */
+    public SimpleCommandLexer() {
+        this(SimpleArgumentParserToken::new, SimpleKeywordToken::new);
     }
 
-    private SimpleCommandLexer() { }
+    /**
+     * Create a new simple command lexer
+     * @param argumentSupplier the argument supplier to create argument parser tokens
+     * @param keywordSupplier the keyword supplier to create keyword tokens
+     */
+    public SimpleCommandLexer(CommandTokenSupplier<ArgumentParserToken> argumentSupplier, CommandTokenSupplier<KeywordToken> keywordSupplier) {
+        this.argumentSupplier = argumentSupplier;
+        this.keywordSupplier = keywordSupplier;
+    }
 
+    /**
+     * Tokenize the command into tokens
+     * @param command the command to tokenize
+     * @return the tokens after tokenization
+     */
     @Override
     public List<CommandToken> tokenization(String command) {
         List<CommandToken> tokens = new ArrayList<>();
@@ -28,13 +49,7 @@ public class SimpleCommandLexer implements CommandLexer {
                 if (argumentParser)
                     continue;
 
-                if (from == i) {
-                    from = i + 1;
-                    hasData = false;
-                    continue;
-                }
-
-                tokens.add(new KeywordToken(from, i, command));
+                handleKeyword(tokens, from, i, command);
 
                 from = i + 1;
                 hasData = false;
@@ -42,26 +57,15 @@ public class SimpleCommandLexer implements CommandLexer {
             }
 
             if (c == '<') {
-                if (argumentParser)
-                    throw new IllegalArgumentException("Nested argument parsers are not allowed");
-
-                if (hasData)
-                    throw new IllegalArgumentException("Missing keyword in argument parser");
-
+                ensureCouldOpenArgument(argumentParser, hasData);
                 argumentParser = true;
                 continue;
             }
 
             if (c == '>') {
-                if (!argumentParser)
-                    throw new IllegalArgumentException("Missing argument parser");
-
-                if (from == i - 1)
-                    throw new IllegalArgumentException("Empty argument parser");
+                handleClosingArgument(tokens, from, i, command, argumentParser);
 
                 argumentParser = false;
-                tokens.add(new ArgumentParserToken(from, i + 1, command));
-
                 from = i + 1;
                 hasData = false;
                 continue;
@@ -70,14 +74,43 @@ public class SimpleCommandLexer implements CommandLexer {
             hasData = true;
         }
 
-        if (hasData) {
-            if (argumentParser)
-                throw new IllegalArgumentException("Missing argument parser");
-            else if (from != command.length() - 1)
-                tokens.add(new KeywordToken(from, command.length(), command));
-        }
+        if (hasData)
+            handleFinalArgument(tokens, from, command, argumentParser);
 
         return tokens;
+    }
+
+    private void ensureCouldOpenArgument(boolean argumentParser, boolean hasData) {
+        if (argumentParser)
+            throw new IllegalArgumentException("Nested argument parsers are not allowed");
+
+        if (hasData)
+            throw new IllegalArgumentException("Missing keyword in argument parser");
+    }
+
+    private void handleKeyword(List<CommandToken> tokens, int from, int to, String command) {
+        if (from == to)
+            return;
+
+        tokens.add(keywordSupplier.apply(from, to, command));
+    }
+
+    private void handleClosingArgument(List<CommandToken> tokens, int from, int to, String command, boolean argumentParser) {
+        if (!argumentParser)
+            throw new IllegalArgumentException("Missing argument parser");
+
+        if (from == to - 1)
+            throw new IllegalArgumentException("Empty argument parser");
+
+        tokens.add(argumentSupplier.apply(from, to + 1, command));
+    }
+
+    private void handleFinalArgument(List<CommandToken> tokens, int from, String command, boolean argumentParser) {
+        if (argumentParser)
+            throw new IllegalArgumentException("Missing argument parser");
+
+        if (from != command.length() - 1)
+            tokens.add(keywordSupplier.apply(from, command.length(), command));
     }
 
 }

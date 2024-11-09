@@ -13,8 +13,7 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
-import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
-import net.apartium.cocoabeans.commands.lexer.CommandLexer;
+import net.apartium.cocoabeans.commands.lexer.SimpleArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.*;
@@ -276,7 +275,7 @@ import java.util.*;
                 continue;
             }
 
-            if (token instanceof ArgumentParserToken argumentParserToken) {
+            if (token instanceof SimpleArgumentParserToken argumentParserToken) {
                 RegisterArgumentParser<?> parser = argumentParserToken.getParser(methodArgumentTypeHandlerMap);
 
                 Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
