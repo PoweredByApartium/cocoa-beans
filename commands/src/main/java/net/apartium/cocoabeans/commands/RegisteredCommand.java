@@ -277,7 +277,7 @@ import java.util.*;
             }
 
             if (token instanceof ArgumentParserToken argumentParserToken) {
-                RegisterArgumentParser<?> parser = argumentParserToken.getParser(argumentTypeHandlerMap);
+                RegisterArgumentParser<?> parser = argumentParserToken.getParser(methodArgumentTypeHandlerMap);
 
                 Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
                         .filter(entry -> entry.key().equals(parser))

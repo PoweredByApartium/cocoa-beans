@@ -28,6 +28,12 @@ public class SimpleCommandLexer implements CommandLexer {
                 if (argumentParser)
                     continue;
 
+                if (from == i) {
+                    from = i + 1;
+                    hasData = false;
+                    continue;
+                }
+
                 tokens.add(new KeywordToken(from, i, command));
 
                 from = i + 1;
@@ -67,7 +73,7 @@ public class SimpleCommandLexer implements CommandLexer {
         if (hasData) {
             if (argumentParser)
                 throw new IllegalArgumentException("Missing argument parser");
-            else
+            else if (from != command.length() - 1)
                 tokens.add(new KeywordToken(from, command.length(), command));
         }
 
