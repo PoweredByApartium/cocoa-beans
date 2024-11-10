@@ -38,7 +38,7 @@ public class SimpleCommandLexer implements CommandLexer {
      * @return the tokens after tokenization
      */
     @Override
-    public List<CommandToken> tokenization(String command) {
+    public List<CommandToken> tokenize(String command) {
         List<CommandToken> tokens = new ArrayList<>();
 
         int from = 0;

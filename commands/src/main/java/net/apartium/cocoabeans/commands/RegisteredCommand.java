@@ -13,6 +13,7 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
+import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.SimpleArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
@@ -251,7 +252,7 @@ import java.util.*;
         }
 
         CommandOption currentCommandOption = commandOption;
-        List<CommandToken> tokens = commandManager.getCommandLexer().tokenization(subCommand.value());
+        List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(subCommand.value());
 
         for (int i = 0; i < tokens.size(); i++) {
             CommandToken token = tokens.get(i);
@@ -269,7 +270,7 @@ import java.util.*;
                 continue;
             }
 
-            throw new RuntimeException("Unknown token while parsing " + token);
+            throw new UnknownTokenException(token);
         }
 
 
@@ -309,7 +310,7 @@ import java.util.*;
     private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
         RegisterArgumentParser<?> parser = argumentParserToken.getParser(parserMap);
         if (parser == null)
-            throw new RuntimeException("Parser not found: " + argumentParserToken.getParserName());
+            throw new IllegalArgumentException("Parser not found: " + argumentParserToken.getParserName());
 
         Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
                 .filter(entry -> entry.key().equals(parser))

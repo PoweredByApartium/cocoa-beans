@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.commands.lexer;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +15,6 @@ public interface CommandLexer {
      * @param command the command to tokenize
      * @return the tokens after tokenization
      */
-    List<CommandToken> tokenization(String command);
+    List<CommandToken> tokenize(String command);
 
 }

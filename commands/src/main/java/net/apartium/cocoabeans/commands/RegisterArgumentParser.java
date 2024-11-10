@@ -68,7 +68,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(parser, optionalNotMatch);
+        return Objects.hash(parser, optionalNotMatch, isOptional, parameterName);
     }
 
 }

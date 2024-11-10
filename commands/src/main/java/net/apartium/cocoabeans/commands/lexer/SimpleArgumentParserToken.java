@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple argument parser token is a token that represents an argument parser
@@ -15,6 +16,8 @@ import java.util.regex.Matcher;
  */
 @ApiStatus.AvailableSince("0.0.37")
 public class SimpleArgumentParserToken extends ArgumentParserToken {
+
+    private static final Pattern PARAMETER_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9_\\-]+:");
 
     private String parserKeyword;
     private Optional<String> parameterName;
@@ -133,11 +136,17 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimpleArgumentParserToken that = (SimpleArgumentParserToken) o;
-        return Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(text, that.text) && Objects.equals(parserKeyword, that.parserKeyword) && Objects.equals(parameterName, that.parameterName);
+        return Objects.equals(from, that.from)
+                && Objects.equals(to, that.to)
+                && optionalNotMatch == that.optionalNotMatch
+                && isOptional == that.isOptional
+                && Objects.equals(text, that.text)
+                && Objects.equals(parserKeyword, that.parserKeyword)
+                && Objects.equals(parameterName, that.parameterName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, text, parserKeyword, parameterName);
+        return Objects.hash(from, to, text, isOptional, optionalNotMatch, parserKeyword, parameterName);
     }
 }

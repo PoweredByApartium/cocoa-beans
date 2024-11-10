@@ -6,15 +6,12 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * A token that represents an argument parser.
  */
 @ApiStatus.AvailableSince("0.0.37")
 public abstract class ArgumentParserToken extends CommandToken {
-
-    public static final Pattern PARAMETER_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9_\\-]+:");
 
     /**
      * Create a new argument parser token

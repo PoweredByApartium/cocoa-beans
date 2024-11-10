@@ -14,7 +14,7 @@ public class SimpleCommandLexerTest {
     void justKeyword() {
         SimpleCommandLexer lexer = new SimpleCommandLexer();
 
-        List<CommandToken> tokens = lexer.tokenization("hello");
+        List<CommandToken> tokens = lexer.tokenize("hello");
 
         assertEquals(List.of(new TestKeywordToken(0, 5, "hello")), tokens);
         assertTrue(tokens.get(0).equals(new TestKeywordToken(0, 5, "hello")));
@@ -22,11 +22,11 @@ public class SimpleCommandLexerTest {
         assertEquals(Objects.hash(0, 5, "hello", "hello"), tokens.get(0).hashCode());
         assertEquals("SimpleKeywordToken{keyword='hello', from=0, to=5, text='hello'}", tokens.get(0).toString());
 
-        tokens = lexer.tokenization("hello world");
+        tokens = lexer.tokenize("hello world");
 
         assertEquals(List.of(new TestKeywordToken(0, 5, "hello"), new TestKeywordToken(6, 11, "world")), tokens);
 
-        tokens = lexer.tokenization("test command parser");
+        tokens = lexer.tokenize("test command parser");
 
         assertEquals(List.of(new TestKeywordToken(0, 4, "test"), new TestKeywordToken(5, 12, "command"), new TestKeywordToken(13, 19, "parser")), tokens);
 
@@ -39,7 +39,7 @@ public class SimpleCommandLexerTest {
     void justArgumentParser() {
         SimpleCommandLexer lexer = new SimpleCommandLexer();
 
-        List<CommandToken> tokens = lexer.tokenization("<int>");
+        List<CommandToken> tokens = lexer.tokenize("<int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 5, "int", Optional.empty(), false, false)), tokens);
 
         assertEquals(
@@ -51,28 +51,28 @@ public class SimpleCommandLexerTest {
                 tokens.get(0)
         );
 
-        tokens = lexer.tokenization("<amount: int>");
+        tokens = lexer.tokenize("<amount: int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 13, "int", Optional.of("amount"), false, false)), tokens);
 
-        tokens = lexer.tokenization("<amount: ?int>");
+        tokens = lexer.tokenize("<amount: ?int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 14, "int", Optional.of("amount"), false, true)), tokens);
 
-        tokens = lexer.tokenization("<amount: !int>");
+        tokens = lexer.tokenize("<amount: !int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 14, "int", Optional.of("amount"), true, false)), tokens);
 
-        tokens = lexer.tokenization("<amount: !?int>");
+        tokens = lexer.tokenize("<amount: !?int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 15, "int", Optional.of("amount"), true, true)), tokens);
 
-        tokens = lexer.tokenization("<amount: ?!int>");
+        tokens = lexer.tokenize("<amount: ?!int>");
         assertEquals(List.of(new TestArgumentParserToken(0, 15, "int", Optional.of("amount"), true, true)), tokens);
 
-        tokens = lexer.tokenization("<string> <amount: ?int>");
+        tokens = lexer.tokenize("<string> <amount: ?int>");
         assertEquals(List.of(
                 new TestArgumentParserToken(0, 8, "string", Optional.empty(), false, false),
                 new TestArgumentParserToken(9, 23, "int", Optional.of("amount"), false, true)
         ), tokens);
 
-        tokens = lexer.tokenization("<string> <amount: int> <int>");
+        tokens = lexer.tokenize("<string> <amount: int> <int>");
         assertEquals(List.of(
                 new TestArgumentParserToken(0, 8, "string", Optional.empty(), false, false),
                 new TestArgumentParserToken(9, 22, "int", Optional.of("amount"), false, false),
@@ -85,6 +85,8 @@ public class SimpleCommandLexerTest {
                         0,
                         8,
                         "<string> <amount: int> <int>",
+                        false,
+                        false,
                         "string",
                         Optional.empty()
                 ),
@@ -97,7 +99,7 @@ public class SimpleCommandLexerTest {
     void combined() {
         SimpleCommandLexer lexer = new SimpleCommandLexer();
 
-        List<CommandToken> tokens = lexer.tokenization("meow <int>");
+        List<CommandToken> tokens = lexer.tokenize("meow <int>");
 
         assertEquals(List.of(
                 new TestKeywordToken(0, 4, "meow"),
@@ -109,14 +111,14 @@ public class SimpleCommandLexerTest {
     void errorTest() {
         SimpleCommandLexer lexer = new SimpleCommandLexer();
 
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<int"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<int<>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test<int>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("test: test wtf>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<test: test wtf>"));
-        assertThrows(IllegalArgumentException.class, () -> lexer.tokenization("<lol$: int>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("<int"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("<int<>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("<>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("test<int>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("test>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("test: test wtf>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("<test: test wtf>"));
+        assertThrows(IllegalArgumentException.class, () -> lexer.tokenize("<lol$: int>"));
     }
 
 }
