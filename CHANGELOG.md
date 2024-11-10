@@ -1,4 +1,10 @@
 # CHANGELOG
+## 0.0.37
+- [commands] Enhanced command handling with improved serialization of subcommands
+- [commands] Introduced a new CommandLexer interface for better command tokenization
+- [commands] Added infrastructure for parameter names in argument parsers, for future improving clarity
+- [commands] Updated exception handling in command tests for more precise error reporting
+
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
 - [commands] Add UUIDParser
