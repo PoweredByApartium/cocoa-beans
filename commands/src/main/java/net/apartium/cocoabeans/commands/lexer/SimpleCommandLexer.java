@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.commands.lexer;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,7 @@ import java.util.List;
  * A simple command lexer tokenize commands, and then we could use it to parse the command
  * @see CommandLexer
  */
+@ApiStatus.AvailableSince("0.0.37")
 public class SimpleCommandLexer implements CommandLexer {
 
     private final CommandTokenSupplier<ArgumentParserToken> argumentSupplier;
