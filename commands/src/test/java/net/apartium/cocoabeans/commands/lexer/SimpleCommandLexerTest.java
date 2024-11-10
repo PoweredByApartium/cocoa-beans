@@ -17,6 +17,10 @@ public class SimpleCommandLexerTest {
         List<CommandToken> tokens = lexer.tokenization("hello");
 
         assertEquals(List.of(new TestKeywordToken(0, 5, "hello")), tokens);
+        assertTrue(tokens.get(0).equals(new TestKeywordToken(0, 5, "hello")));
+        assertEquals(new SimpleKeywordToken(0, 5, "hello"), tokens.get(0));
+        assertEquals(Objects.hash(0, 5, "hello", "hello"), tokens.get(0).hashCode());
+        assertEquals("SimpleKeywordToken{keyword='hello', from=0, to=5, text='hello'}", tokens.get(0).toString());
 
         tokens = lexer.tokenization("hello world");
 
@@ -41,6 +45,10 @@ public class SimpleCommandLexerTest {
         assertEquals(
                 "SimpleArgumentParserToken{parameterName=Optional.empty, from=0, to=5, text='<int>', parserKeyword='int', optionalNotMatch=false, isOptional=false}",
                 tokens.get(0).toString()
+        );
+        assertEquals(
+                new SimpleArgumentParserToken(0, 5, "<int>"),
+                tokens.get(0)
         );
 
         tokens = lexer.tokenization("<amount: int>");
