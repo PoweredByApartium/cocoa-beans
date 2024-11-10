@@ -28,6 +28,6 @@ public interface ArgumentMapper {
      * @param requirements requirements
      * @return list of argument indexes
      */
-    List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<ArgumentParser<?>> argumentParsers, List<Requirement> requirements);
+    List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements);
 
 }
