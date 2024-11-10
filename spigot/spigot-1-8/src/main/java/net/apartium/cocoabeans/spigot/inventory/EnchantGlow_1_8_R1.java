@@ -34,7 +34,7 @@ public class EnchantGlow_1_8_R1 extends Enchantment {
 
     @Override
     public String getName() {
-        return "Glow";
+        return "CocoaGlow";
     }
 
     @Override

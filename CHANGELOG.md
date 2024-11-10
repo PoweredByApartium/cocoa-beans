@@ -4,6 +4,7 @@
 - [commands] Introduced a new CommandLexer interface for better command tokenization
 - [commands] Added infrastructure for parameter names in argument parsers, for future improving clarity
 - [commands] Updated exception handling in command tests for more precise error reporting
+- [spigot] Change EnchantGlow's key and name so it wouldn't collide with other plugins
 
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
