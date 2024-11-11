@@ -15,6 +15,7 @@ import java.util.OptionalInt;
  *
  * @param <T> result type of the parser
  */
+@ApiStatus.AvailableSince("0.0.37")
 public class RegisterArgumentParser<T> extends ArgumentParser<T> {
 
     private final ArgumentParser<T> parser;
@@ -59,6 +60,14 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
      */
     public boolean isOptional() {
         return isOptional;
+    }
+
+    /**
+     * Get the parameter name
+     * @return the parameter name
+     */
+    public Optional<String> getParameterName() {
+        return parameterName;
     }
 
     /**

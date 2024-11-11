@@ -27,9 +27,9 @@ public record RegisteredCommandVariant(
     public record Parameter(
             Class<?> type,
             Type parameterizedType,
-            ArgumentRequirement[] argumentRequirements
+            ArgumentRequirement[] argumentRequirements,
+            String parameterName
     ) {
-
     }
 
 }

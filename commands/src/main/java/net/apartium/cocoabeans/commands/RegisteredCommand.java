@@ -362,7 +362,10 @@ import java.util.*;
             result[i] = new RegisteredCommandVariant.Parameter(
                     parameters[i].getType(),
                     parameters[i].getParameterizedType(),
-                    serializeArgumentRequirement(commandNode, parameters[i].getAnnotations())
+                    serializeArgumentRequirement(commandNode, parameters[i].getAnnotations()),
+                    Optional.ofNullable(parameters[i].getAnnotation(Param.class))
+                            .map(Param::value)
+                            .orElse(null)
             );
         }
         return result;
