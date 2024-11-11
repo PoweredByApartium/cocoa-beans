@@ -116,7 +116,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             }
 
             int index = counterMap.computeIfAbsent(type, k -> 0);
-            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, Optional.ofNullable(parameter.parameterName()), counterMap, resultMap, index);
+            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
 
             if (optional)
                 argumentIndex = wrapInOptional(argumentIndex);
@@ -178,10 +178,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         };
     }
 
-    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, Optional<String> name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
-        if (name.isPresent() && resultMap.mapOfArgumentsByParameterName.containsKey(name.get())) {
+    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
+        if (name != null && resultMap.mapOfArgumentsByParameterName.containsKey(name)) {
             counterMap.put(type, counterMap.get(type) - 1);
-            return resultMap.mapOfArgumentsByParameterName.get(name.get());
+            return resultMap.mapOfArgumentsByParameterName.get(name);
         }
 
         ArgumentIndex<?> argumentIndex = resolveBuiltInArgumentIndex(type, counterMap, resultMap.mapOfArgumentsByType, index);
@@ -247,28 +247,43 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
 
+        checkDuplicateArgumentParsersName(argumentParsers);
+
         for (RegisterArgumentParser<?> argumentParser : argumentParsers) {
-            serializesArgumentIndex(argumentParser.getArgumentType(), argumentParser.getParameterName(), lookupParametersNames, counterMap, resultMap, resultParameterName);
+            serializesArgumentIndex(argumentParser.getArgumentType(), argumentParser.getParameterName().orElse(null), lookupParametersNames, counterMap, resultMap, resultParameterName);
         }
 
         for (Requirement requirement : requirements) {
             for (Class<?> type : requirement.getTypes()) {
-                serializesArgumentIndex(type, Optional.empty(), lookupParametersNames, counterMap, resultMap, resultParameterName);
+                serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
             }
         }
 
         return new ResultMap(resultMap, resultParameterName);
     }
 
-    private void serializesArgumentIndex(Class<?> type, Optional<String> parameterName, Map<String, Class<?>> lookupParametersNames, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> resultMap, Map<String, ArgumentIndex<?>> resultParameterName) {
+    private void checkDuplicateArgumentParsersName(List<RegisterArgumentParser<?>> argumentParsers) {
+        Set<String> visitedNames = new HashSet<>();
+
+        for (RegisterArgumentParser<?> argumentParser : argumentParsers) {
+            String name = argumentParser.getParameterName().orElse(null);
+            if (name == null)
+                continue;
+
+            if (!visitedNames.add(name))
+                throw new IllegalArgumentException("Duplicate parameter name " + name);
+        }
+    }
+
+    private void serializesArgumentIndex(Class<?> type, String parameterName, Map<String, Class<?>> lookupParametersNames, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> resultMap, Map<String, ArgumentIndex<?>> resultParameterName) {
         int countIndex = counterMap.getOrDefault(type, 0);
         counterMap.put(type, countIndex + 1);
 
-        if (parameterName.isPresent() && lookupParametersNames.containsKey(parameterName.get())) {
-            if (!lookupParametersNames.get(parameterName.get()).isAssignableFrom(type))
-                throw new IllegalArgumentException("Parameter name " + parameterName.get() + " is not assignable from type " + type);
+        if (parameterName != null && lookupParametersNames.containsKey(parameterName)) {
+            if (!lookupParametersNames.get(parameterName).isAssignableFrom(type))
+                throw new IllegalArgumentException("Parameter name " + parameterName + " is not assignable from type " + type);
 
-            resultParameterName.put(parameterName.get(), context -> context.parsedArgs().get(type).get(countIndex));
+            resultParameterName.put(parameterName, context -> context.parsedArgs().get(type).get(countIndex));
             return;
         }
 

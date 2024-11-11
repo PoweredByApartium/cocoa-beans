@@ -11,14 +11,10 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.*;
-import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
-
-import static net.apartium.cocoabeans.commands.SimpleArgumentMapper.PRIMITIVE_TO_WRAPPER_MAP;
 
 public class SpigotArgumentMapper extends SimpleArgumentMapper {
 

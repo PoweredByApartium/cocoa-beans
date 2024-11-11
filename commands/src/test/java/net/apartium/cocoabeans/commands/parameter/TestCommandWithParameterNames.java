@@ -60,6 +60,16 @@ public class TestCommandWithParameterNames extends CommandTestBase {
         assertEquals(List.of("sending message to jeff: Could you write more test for me jeff?"), sender.getMessages());
     }
 
+    @Test
+    void testDuplicateParameterNameInSubCommand() {
+        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(new DuplicateParameterNameInSubCommand()));
+    }
+
+    @Test
+    void testDuplicateParameterNameInMethod() {
+        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(new DuplicateParameterNameInMethod()));
+    }
+
     void evaluate(String label, String args) {
         sender.getMessages().clear();
         testCommandManager.handle(sender, label, args.isEmpty() ? new String[0] : args.split("\\s+"));

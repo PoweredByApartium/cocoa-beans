@@ -363,15 +363,27 @@ import java.util.*;
                     parameters[i].getType(),
                     parameters[i].getParameterizedType(),
                     serializeArgumentRequirement(commandNode, parameters[i].getAnnotations()),
-                    Optional.ofNullable(parameters[i].getAnnotation(Param.class))
-                            .map(Param::value)
-                            .orElse(null)
+                    serializeParameterName(parameters[i])
             );
         }
         return result;
     }
 
-    private ArgumentRequirement[] serializeArgumentRequirement(CommandNode commandNode, Annotation[] annotations) {
+    private String serializeParameterName(Parameter parameter) {
+        String name = Optional.ofNullable(parameter.getAnnotation(Param.class))
+                .map(Param::value)
+                .orElse(null);
+
+        if (name == null)
+            return null;
+
+        if (name.isEmpty())
+            throw new IllegalArgumentException("Parameter name cannot be empty");
+
+        return name;
+    }
+
+        private ArgumentRequirement[] serializeArgumentRequirement(CommandNode commandNode, Annotation[] annotations) {
         List<ArgumentRequirement> result = new ArrayList<>();
 
         for (Annotation annotation : annotations) {
