@@ -5,7 +5,7 @@
 - [commands] Added infrastructure for parameter names in argument parsers, for future improving clarity
 - [commands] Updated exception handling in command tests for more precise error reporting
 - [spigot] Change EnchantGlow's key and name so it wouldn't collide with other plugins
-- [commands] Allow specifying names for command arguments
+- [commands] Add support for named command arguments
 
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
