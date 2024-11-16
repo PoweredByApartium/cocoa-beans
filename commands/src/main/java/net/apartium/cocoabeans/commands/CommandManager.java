@@ -48,11 +48,11 @@ public abstract class CommandManager {
 
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-    public CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper) {
+    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper) {
         this(argumentMapper, exceptionArgumentMapper, new SimpleCommandLexer());
     }
 
-    public CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper, CommandLexer commandLexer) {
+    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper, CommandLexer commandLexer) {
         this.argumentMapper = argumentMapper;
         this.exceptionArgumentMapper = exceptionArgumentMapper;
         this.commandLexer = commandLexer;
@@ -216,13 +216,13 @@ public abstract class CommandManager {
     }
 
     public void addCommand(CommandNode commandNode) {
-        if (commandNode == null) return;
+        if (commandNode == null)
+            return;
 
-        Class<?> c = commandNode.getClass();
-        if (c.isAnnotation()) return;
-
+        Class<? extends CommandNode> c = commandNode.getClass();
         Command handler = c.getAnnotation(Command.class);
-        if (handler == null)  return;
+        if (handler == null)
+            return;
 
 
         RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
@@ -231,6 +231,7 @@ public abstract class CommandManager {
         for (String alias : handler.aliases()) {
             commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
                     .addNode(commandNode);
+
         }
 
         addCommand(commandNode, handler);

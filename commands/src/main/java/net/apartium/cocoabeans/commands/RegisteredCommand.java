@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
@@ -109,7 +110,12 @@ import java.util.*;
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
-                parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+                try {
+                    parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+                } catch (IllegalAccessException e) {
+                    Dispensers.dispense(e);
+                    return;
+                }
             }
 
             ExceptionHandle exceptionHandle = method.getAnnotation(ExceptionHandle.class);
@@ -126,20 +132,26 @@ import java.util.*;
                             HANDLE_EXCEPTION_VARIANT_COMPARATOR
                     );
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    Dispensers.dispense(e);
+                    return;
                 }
             }
 
 
             for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-                handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
+                try {
+                    handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
+                } catch (IllegalAccessException e) {
+                    Dispensers.dispense(e);
+                    return;
+                }
             }
 
         }
 
     }
 
-    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) {
+    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
         ExceptionHandle exceptionHandle;
         if (targetMethod == null)
             return;
@@ -181,7 +193,7 @@ import java.util.*;
 
     }
 
-    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
+    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) throws IllegalAccessException {
         if (subCommand == null)
             return;
 
@@ -278,20 +290,17 @@ import java.util.*;
 
         RegisteredCommandVariant.Parameter[] parameters = serializeParameters(node, method.getParameters());
 
-        try {
-            CollectionHelpers.addElementSorted(
-                    currentCommandOption.getRegisteredCommandVariants(),
-                    new RegisteredCommandVariant(
+        CollectionHelpers.addElementSorted(
+                currentCommandOption.getRegisteredCommandVariants(),
+                new RegisteredCommandVariant(
                         publicLookup.unreflect(method),
                         parameters,
                         node,
                         commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
-                        subCommand.priority()),
-                    REGISTERED_COMMAND_VARIANT_COMPARATOR
-            );
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error accessing method", e);
-        }
+                        subCommand.priority()
+                ),
+                REGISTERED_COMMAND_VARIANT_COMPARATOR
+        );
     }
 
     private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
@@ -362,13 +371,28 @@ import java.util.*;
             result[i] = new RegisteredCommandVariant.Parameter(
                     parameters[i].getType(),
                     parameters[i].getParameterizedType(),
-                    serializeArgumentRequirement(commandNode, parameters[i].getAnnotations())
+                    serializeArgumentRequirement(commandNode, parameters[i].getAnnotations()),
+                    serializeParameterName(parameters[i])
             );
         }
         return result;
     }
 
-    private ArgumentRequirement[] serializeArgumentRequirement(CommandNode commandNode, Annotation[] annotations) {
+    private String serializeParameterName(Parameter parameter) {
+        String name = Optional.ofNullable(parameter.getAnnotation(Param.class))
+                .map(Param::value)
+                .orElse(null);
+
+        if (name == null)
+            return null;
+
+        if (name.isEmpty())
+            throw new IllegalArgumentException("Parameter name cannot be empty");
+
+        return name;
+    }
+
+        private ArgumentRequirement[] serializeArgumentRequirement(CommandNode commandNode, Annotation[] annotations) {
         List<ArgumentRequirement> result = new ArrayList<>();
 
         for (Annotation annotation : annotations) {

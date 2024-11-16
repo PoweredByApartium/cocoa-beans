@@ -14,7 +14,9 @@ import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public record RegisteredCommandVariant(
         MethodHandle method,
@@ -27,9 +29,39 @@ public record RegisteredCommandVariant(
     public record Parameter(
             Class<?> type,
             Type parameterizedType,
-            ArgumentRequirement[] argumentRequirements
+            ArgumentRequirement[] argumentRequirements,
+            String parameterName
     ) {
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Parameter parameter)) return false;
+            return Objects.equals(type, parameter.type)
+                    && Objects.equals(parameterName, parameter.parameterName)
+                    && Objects.equals(parameterizedType, parameter.parameterizedType)
+                    && Objects.deepEquals(argumentRequirements, parameter.argumentRequirements);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(
+                    type,
+                    parameterizedType,
+                    Arrays.hashCode(argumentRequirements),
+                    parameterName
+            );
+        }
+
+        @Override
+        public String toString() {
+            return "Parameter{" +
+                    "type=" + type +
+                    ", parameterizedType=" + parameterizedType +
+                    ", argumentRequirements=" + Arrays.toString(argumentRequirements) +
+                    ", parameterName='" + parameterName + '\'' +
+                    '}';
+        }
     }
 
 }

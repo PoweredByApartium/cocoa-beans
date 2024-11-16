@@ -10,9 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.utils.OptionalFloat;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -99,7 +99,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         List<ArgumentIndex<?>> result = new ArrayList<>(parameters.length);
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
-        Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments = createParsedArgs(argumentParsers, requirements);
+        ResultMap resultMap = createParsedArgs(argumentParsers, requirements, getParametersNames(parameters));
 
         for (RegisteredCommandVariant.Parameter parameter : parameters) {
             Class<?> type = parameter.type();
@@ -116,7 +116,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             }
 
             int index = counterMap.computeIfAbsent(type, k -> 0);
-            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, counterMap, mapOfArguments, index);
+            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
 
             if (optional)
                 argumentIndex = wrapInOptional(argumentIndex);
@@ -126,6 +126,22 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
             result.add(argumentIndex);
             counterMap.put(type, counterMap.get(type) + 1);
+        }
+
+        return result;
+    }
+
+    private Map<String, Class<?>> getParametersNames(RegisteredCommandVariant.Parameter[] parameters) {
+        Map<String, Class<?>> result = new HashMap<>();
+
+        for (RegisteredCommandVariant.Parameter parameter : parameters) {
+            if (parameter.parameterName() == null)
+                continue;
+
+            if (result.containsKey(parameter.parameterName()))
+                throw new IllegalArgumentException("Duplicate parameter name " + parameter.parameterName());
+
+            result.put(parameter.parameterName(), parameter.type());
         }
 
         return result;
@@ -162,18 +178,23 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         };
     }
 
-    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
-        ArgumentIndex<?> argumentIndex = resolveBuiltInArgumentIndex(type, counterMap, mapOfArguments, index);
+    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
+        if (name != null && resultMap.mapOfArgumentsByParameterName.containsKey(name)) {
+            counterMap.put(type, counterMap.get(type) - 1);
+            return resultMap.mapOfArgumentsByParameterName.get(name);
+        }
+
+        ArgumentIndex<?> argumentIndex = resolveBuiltInArgumentIndex(type, counterMap, resultMap.mapOfArgumentsByType, index);
         if (argumentIndex != null)
             return argumentIndex;
 
-        List<ArgumentIndex<?>> arguments = mapOfArguments.get(type);
+        List<ArgumentIndex<?>> arguments = resultMap.mapOfArgumentsByType.get(type);
 
         if (isInvalidArguments(arguments, index))
-            arguments = findArgumentsByWrapperType(type, mapOfArguments);
+            arguments = findArgumentsByWrapperType(type, resultMap.mapOfArgumentsByType);
 
         if (isInvalidArguments(arguments, index))
-            arguments = findArgumentsByAssignableType(type, mapOfArguments);
+            arguments = findArgumentsByAssignableType(type, resultMap.mapOfArgumentsByType);
 
 
         if (isInvalidArguments(arguments, index))
@@ -220,30 +241,66 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return mapOfArguments.get(Sender.class).get(index - 1);
     }
 
-    private Map<Class<?>, List<ArgumentIndex<?>>> createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    private ResultMap createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, Map<String, Class<?>> lookupParametersNames) {
         Map<Class<?>, List<ArgumentIndex<?>>> resultMap = new HashMap<>();
+        Map<String, ArgumentIndex<?>> resultParameterName = new HashMap<>();
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
 
+        checkDuplicateArgumentParsersName(argumentParsers);
+
         for (RegisterArgumentParser<?> argumentParser : argumentParsers) {
-            serializesArgumentIndex(argumentParser.getArgumentType(), counterMap, resultMap);
+            serializesArgumentIndex(argumentParser.getArgumentType(), argumentParser.getParameterName().orElse(null), lookupParametersNames, counterMap, resultMap, resultParameterName);
         }
 
         for (Requirement requirement : requirements) {
             for (Class<?> type : requirement.getTypes()) {
-                serializesArgumentIndex(type, counterMap, resultMap);
+                serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
             }
         }
 
-        return resultMap;
+        return new ResultMap(resultMap, resultParameterName);
     }
 
-    private void serializesArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> resultMap) {
+    private void checkDuplicateArgumentParsersName(List<RegisterArgumentParser<?>> argumentParsers) {
+        Set<String> visitedNames = new HashSet<>();
+
+        for (RegisterArgumentParser<?> argumentParser : argumentParsers) {
+            String name = argumentParser.getParameterName().orElse(null);
+            if (name == null)
+                continue;
+
+            if (!visitedNames.add(name))
+                throw new IllegalArgumentException("Duplicate parameter name " + name);
+        }
+    }
+
+    private void serializesArgumentIndex(Class<?> type, String parameterName, Map<String, Class<?>> lookupParametersNames, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> resultMap, Map<String, ArgumentIndex<?>> resultParameterName) {
         int countIndex = counterMap.getOrDefault(type, 0);
         counterMap.put(type, countIndex + 1);
+
+        if (parameterName != null && lookupParametersNames.containsKey(parameterName)) {
+            if (!lookupParametersNames.get(parameterName).isAssignableFrom(type))
+                throw new IllegalArgumentException("Parameter name " + parameterName + " is not assignable from type " + type);
+
+            resultParameterName.put(parameterName, context -> context.parsedArgs().get(type).get(countIndex));
+            return;
+        }
 
         resultMap.computeIfAbsent(type, k -> new ArrayList<>())
                 .add(context -> context.parsedArgs().get(type).get(countIndex));
     }
+
+
+    /**
+     * Result of mapping arguments to index
+     * @param mapOfArgumentsByType map of arguments by type
+     * @param mapOfArgumentsByParameterName map of arguments by parameter name
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    public record ResultMap(
+            Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType,
+            Map<String, ArgumentIndex<?>> mapOfArgumentsByParameterName
+    ) { }
 
 }

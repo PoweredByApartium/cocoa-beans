@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -32,6 +34,7 @@ public interface Requirement {
      * Note: By default returns an empty list
      * @return list of classes that will be return if requirement is met
      */
+    @ApiStatus.AvailableSince("0.0.36")
     default List<Class<?>> getTypes() {
         return Collections.emptyList();
     }

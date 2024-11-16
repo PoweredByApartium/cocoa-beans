@@ -10,7 +10,7 @@ import java.util.Optional;
 public class TestArgumentParserToken extends ArgumentParserToken {
 
     private final String parserKeyword;
-    private final Optional<String> parameterName;
+    private final String parameterName;
     private final boolean optionalNotMatch;
     private final boolean isOptional;
 
@@ -25,7 +25,7 @@ public class TestArgumentParserToken extends ArgumentParserToken {
         super(from, to, "");
 
         this.parserKeyword = parserKeyword;
-        this.parameterName = parameterName;
+        this.parameterName = parameterName.orElse(null);
 
         this.optionalNotMatch = optionalNotMatch;
         this.isOptional = isOptional;
@@ -47,7 +47,7 @@ public class TestArgumentParserToken extends ArgumentParserToken {
 
     @Override
     public Optional<String> getParameterName() {
-        return parameterName;
+        return Optional.ofNullable(parameterName);
     }
 
     /**
@@ -74,7 +74,7 @@ public class TestArgumentParserToken extends ArgumentParserToken {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ArgumentParserToken that)) return false;
-        return from == that.from && to == that.to && optionalNotMatch == that.optionalNotMatch() && isOptional == that.isOptional() && Objects.equals(parserKeyword, that.getParserName()) && Objects.equals(parameterName, that.getParameterName());
+        return from == that.from && to == that.to && optionalNotMatch == that.optionalNotMatch() && isOptional == that.isOptional() && Objects.equals(parserKeyword, that.getParserName()) && Objects.equals(parameterName, that.getParameterName().orElse(null));
     }
 
     @Override
