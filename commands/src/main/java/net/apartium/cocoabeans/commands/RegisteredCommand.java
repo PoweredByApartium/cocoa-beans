@@ -142,7 +142,8 @@ import java.util.*;
                 try {
                     handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    Dispensers.dispense(e);
+                    return;
                 }
             }
 
