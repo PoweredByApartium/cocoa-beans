@@ -181,7 +181,7 @@ import java.util.*;
 
     }
 
-    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
+    private void parseSubCommand(Method method, SubCommand subCommand, Class<?> clazz, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirementSet, MethodHandles.Lookup publicLookup, CommandNode node, CommandOption commandOption, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) throws IllegalAccessException {
         if (subCommand == null)
             return;
 
@@ -290,7 +290,7 @@ import java.util.*;
                     REGISTERED_COMMAND_VARIANT_COMPARATOR
             );
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error accessing method", e);
+            throw new IllegalAccessException("Error accessing method: " + method.getName() + "\nMessage: " + e.getMessage());
         }
     }
 
