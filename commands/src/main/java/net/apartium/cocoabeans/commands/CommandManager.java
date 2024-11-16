@@ -216,20 +216,24 @@ public abstract class CommandManager {
     }
 
     public void addCommand(CommandNode commandNode) {
-        if (commandNode == null) return;
+        if (commandNode == null)
+            return;
 
         Class<?> c = commandNode.getClass();
-        if (c.isAnnotation()) return;
+        if (c.isAnnotation())
+            return;
 
         Command handler = c.getAnnotation(Command.class);
-        if (handler == null)  return;
+        if (handler == null)
+            return;
 
 
         RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
         try {
             registeredCommand.addNode(commandNode);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return;
         }
 
         for (String alias : handler.aliases()) {
@@ -237,7 +241,8 @@ public abstract class CommandManager {
                 commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
                         .addNode(commandNode);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                return;
             }
         }
 
