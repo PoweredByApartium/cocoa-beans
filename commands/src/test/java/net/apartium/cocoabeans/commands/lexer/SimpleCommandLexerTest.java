@@ -43,7 +43,7 @@ class SimpleCommandLexerTest {
         assertEquals(List.of(new TestArgumentParserToken(0, 5, "int", Optional.empty(), false, false)), tokens);
 
         assertEquals(
-                "SimpleArgumentParserToken{parameterName=Optional.empty, from=0, to=5, text='<int>', parserKeyword='int', optionalNotMatch=false, isOptional=false}",
+                "SimpleArgumentParserToken{parameterName=null, from=0, to=5, text='<int>', parserKeyword='int', optionalNotMatch=false, isOptional=false}",
                 tokens.get(0).toString()
         );
         assertEquals(
@@ -88,7 +88,7 @@ class SimpleCommandLexerTest {
                         false,
                         false,
                         "string",
-                        Optional.empty()
+                        null
                 ),
                 tokens.get(0).hashCode()
         );

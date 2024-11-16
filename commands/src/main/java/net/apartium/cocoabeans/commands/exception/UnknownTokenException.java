@@ -4,7 +4,7 @@ import net.apartium.cocoabeans.commands.lexer.CommandToken;
 
 public class UnknownTokenException extends IllegalArgumentException {
 
-    private transient final CommandToken token;
+    private final transient CommandToken token;
 
     public UnknownTokenException(CommandToken token) {
         super("Unknown token while parsing: " + token);

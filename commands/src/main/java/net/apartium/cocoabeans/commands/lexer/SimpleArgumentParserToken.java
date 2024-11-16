@@ -20,7 +20,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
     private static final Pattern PARAMETER_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9_\\-]+:");
 
     private String parserKeyword;
-    private Optional<String> parameterName;
+    private String parameterName;
     private boolean optionalNotMatch;
     private boolean isOptional;
 
@@ -45,7 +45,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
      */
     @Override
     public Optional<String> getParameterName() {
-        return parameterName;
+        return Optional.ofNullable(parameterName);
     }
 
     /**
@@ -79,7 +79,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         if (argumentParser == null)
             throw new IllegalArgumentException("Parser not found: " + parserKeyword);
 
-        return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
+        return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, Optional.ofNullable(parameterName));
     }
 
     /**
@@ -103,7 +103,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         if (split.length == 1) {
             setKeywordAndOptionals(split[0]);
 
-            this.parameterName = Optional.empty();
+            this.parameterName = null;
             return;
         }
 
@@ -115,7 +115,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
             throw new IllegalArgumentException("Invalid parameter name: " + actualData);
 
         setKeywordAndOptionals(split[1]);
-        this.parameterName = Optional.of(split[0].substring(0, split[0].length() - 1));
+        this.parameterName = split[0].substring(0, split[0].length() - 1);
     }
 
     @Override
