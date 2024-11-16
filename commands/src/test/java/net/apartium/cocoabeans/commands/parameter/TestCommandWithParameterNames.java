@@ -48,7 +48,8 @@ class TestCommandWithParameterNames extends CommandTestBase {
 
     @Test
     void testWrongType() {
-        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(new WrongTypeParameterNames()));
+        WrongTypeParameterNames wrongTypeCommand = new WrongTypeParameterNames();
+        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(wrongTypeCommand));
     }
 
     @Test
@@ -62,12 +63,14 @@ class TestCommandWithParameterNames extends CommandTestBase {
 
     @Test
     void testDuplicateParameterNameInSubCommand() {
-        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(new DuplicateParameterNameInSubCommand()));
+        DuplicateParameterNameInSubCommand command = new DuplicateParameterNameInSubCommand();
+        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(command));
     }
 
     @Test
     void testDuplicateParameterNameInMethod() {
-        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(new DuplicateParameterNameInMethod()));
+        DuplicateParameterNameInMethod command = new DuplicateParameterNameInMethod();
+        assertThrows(IllegalArgumentException.class, () -> testCommandManager.addCommand(command));
     }
 
     void evaluate(String label, String args) {
