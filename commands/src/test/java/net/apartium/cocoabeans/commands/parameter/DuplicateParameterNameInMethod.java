@@ -10,7 +10,8 @@ public class DuplicateParameterNameInMethod implements CommandNode {
 
     @SubCommand("meow")
     public void test(@Param("name") String name, @Param("name") String otherName) {
-
+        // Method shouldn't be able to serialize because of the duplicate parameter name
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 

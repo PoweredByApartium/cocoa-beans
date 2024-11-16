@@ -2,12 +2,18 @@ package net.apartium.cocoabeans.commands.lexer;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Command token for parsing commands
  * @see CommandLexer
  */
 @ApiStatus.AvailableSince("0.0.37")
-public abstract class CommandToken {
+public abstract class CommandToken implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1997193817846920361L;
 
     protected final int from;
     protected final int to;

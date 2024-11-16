@@ -32,7 +32,7 @@ public class PlayerSender implements Sender {
      */
     @Override
     public void sendMessage(String text) {
-
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     /**
@@ -42,6 +42,6 @@ public class PlayerSender implements Sender {
      */
     @Override
     public void sendMessage(String... args) {
-
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

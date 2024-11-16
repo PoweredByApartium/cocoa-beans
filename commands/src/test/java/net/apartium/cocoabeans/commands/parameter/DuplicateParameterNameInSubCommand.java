@@ -9,7 +9,8 @@ public class DuplicateParameterNameInSubCommand implements CommandNode {
 
     @SubCommand("<name: string> <name: string>")
     public void test(String name, String otherName) {
-
+        // Method shouldn't be able to serialize because of the duplicate parameter name
+        throw new UnsupportedOperationException("Not implemented");
     }
 
 
