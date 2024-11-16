@@ -51,7 +51,7 @@ import java.util.*;
         commandBranchProcessor = new CommandBranchProcessor(commandManager);
     }
 
-    public void addNode(CommandNode node) throws IllegalAccessException {
+    public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
         commandInfo.fromAnnotations(clazz.getAnnotations(), false);
@@ -109,7 +109,11 @@ import java.util.*;
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
-                parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+                try {
+                    parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             ExceptionHandle exceptionHandle = method.getAnnotation(ExceptionHandle.class);
@@ -132,7 +136,11 @@ import java.util.*;
 
 
             for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-                handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
+                try {
+                    handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }

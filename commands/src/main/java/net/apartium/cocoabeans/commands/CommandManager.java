@@ -229,21 +229,12 @@ public abstract class CommandManager {
 
 
         RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
-        try {
-            registeredCommand.addNode(commandNode);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return;
-        }
+        registeredCommand.addNode(commandNode);
 
         for (String alias : handler.aliases()) {
-            try {
-                commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
-                        .addNode(commandNode);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                return;
-            }
+            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
+                    .addNode(commandNode);
+
         }
 
         addCommand(commandNode, handler);
