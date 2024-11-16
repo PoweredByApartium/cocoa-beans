@@ -219,10 +219,7 @@ public abstract class CommandManager {
         if (commandNode == null)
             return;
 
-        Class<?> c = commandNode.getClass();
-        if (c.isAnnotation())
-            return;
-
+        Class<? extends CommandNode> c = commandNode.getClass();
         Command handler = c.getAnnotation(Command.class);
         if (handler == null)
             return;

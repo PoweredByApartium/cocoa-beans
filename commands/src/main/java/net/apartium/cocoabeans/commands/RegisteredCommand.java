@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
+import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
@@ -112,7 +113,8 @@ import java.util.*;
                 try {
                     parseSubCommand(method, subCommand, clazz, argumentTypeHandlerMap, requirementSet, publicLookup, node, commandOption, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    Dispensers.dispense(e);
+                    return;
                 }
             }
 
@@ -130,7 +132,8 @@ import java.util.*;
                             HANDLE_EXCEPTION_VARIANT_COMPARATOR
                     );
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    Dispensers.dispense(e);
+                    return;
                 }
             }
 
@@ -286,20 +289,17 @@ import java.util.*;
 
         RegisteredCommandVariant.Parameter[] parameters = serializeParameters(node, method.getParameters());
 
-        try {
-            CollectionHelpers.addElementSorted(
-                    currentCommandOption.getRegisteredCommandVariants(),
-                    new RegisteredCommandVariant(
+        CollectionHelpers.addElementSorted(
+                currentCommandOption.getRegisteredCommandVariants(),
+                new RegisteredCommandVariant(
                         publicLookup.unreflect(method),
                         parameters,
                         node,
                         commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
-                        subCommand.priority()),
-                    REGISTERED_COMMAND_VARIANT_COMPARATOR
-            );
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessException("Error accessing method: " + method.getName() + "\nMessage: " + e.getMessage());
-        }
+                        subCommand.priority()
+                ),
+                REGISTERED_COMMAND_VARIANT_COMPARATOR
+        );
     }
 
     private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {

@@ -79,7 +79,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         if (argumentParser == null)
             throw new IllegalArgumentException("Parser not found: " + parserKeyword);
 
-        return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, Optional.ofNullable(parameterName));
+        return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
     }
 
     /**

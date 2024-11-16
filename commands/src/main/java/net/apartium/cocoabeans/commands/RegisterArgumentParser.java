@@ -21,7 +21,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
     private final ArgumentParser<T> parser;
     private final boolean optionalNotMatch;
     private final boolean isOptional;
-    private final Optional<String> parameterName;
+    private final String parameterName;
 
     /**
      * A constructor for a register argument parser
@@ -30,7 +30,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
      * @param isOptional could we don't use the parser and return optional
      * @param parameterName parameter name will be used for better parameter control
      */
-    public RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional, Optional<String> parameterName) {
+    public RegisterArgumentParser(ArgumentParser<T> parser, boolean optionalNotMatch, boolean isOptional, String parameterName) {
         super(parser.getKeyword(), parser.getArgumentType(), parser.getPriority());
         this.parser = parser;
         this.optionalNotMatch = optionalNotMatch;
@@ -67,7 +67,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
      * @return the parameter name
      */
     public Optional<String> getParameterName() {
-        return parameterName;
+        return Optional.ofNullable(parameterName);
     }
 
     /**
@@ -114,7 +114,7 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
 
         return this.isOptional == other.isOptional
                 && this.optionalNotMatch == other.optionalNotMatch
-                && this.parameterName.equals(other.parameterName)
+                && Objects.equals(this.parameterName, other.parameterName)
                 && this.parser.equals(other.parser);
     }
 
