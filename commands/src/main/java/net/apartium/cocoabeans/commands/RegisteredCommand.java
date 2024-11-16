@@ -51,7 +51,7 @@ import java.util.*;
         commandBranchProcessor = new CommandBranchProcessor(commandManager);
     }
 
-    public void addNode(CommandNode node) {
+    public void addNode(CommandNode node) throws IllegalAccessException {
         Class<?> clazz = node.getClass();
 
         commandInfo.fromAnnotations(clazz.getAnnotations(), false);
@@ -139,7 +139,7 @@ import java.util.*;
 
     }
 
-    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) {
+    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
         ExceptionHandle exceptionHandle;
         if (targetMethod == null)
             return;
