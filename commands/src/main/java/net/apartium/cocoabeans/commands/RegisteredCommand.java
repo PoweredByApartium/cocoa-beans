@@ -161,6 +161,7 @@ import java.util.stream.Stream;
                     );
 
                 } catch (NoSuchMethodException ignored) {
+                    // ignored
                 }
             }
 
@@ -232,12 +233,7 @@ import java.util.stream.Stream;
                 context.argumentTypeHandlerMap
         );
 
-        CommandInfo methodInfo = new CommandInfo();
-
-        methodInfo.fromAnnotations(context.method.getAnnotations(), true);
-        for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(context.method)) {
-            methodInfo.fromAnnotations(targetMethod.getAnnotations(), false);
-        }
+        CommandInfo methodInfo = generateCommandInfo(context.method);
 
         RequirementSet methodRequirements = new RequirementSet(
                 findAllRequirements(context.commandNode, context.method),
@@ -246,7 +242,7 @@ import java.util.stream.Stream;
 
 
         String[] split = context.subCommand.value().split("\\s+");
-        if (split.length == 0 || split.length == 1 && split[0].isEmpty()) {
+        if (isEmptyArgs(split)) {
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor, requirementsResult);
 
             cmdOption.getCommandInfo().fromCommandInfo(methodInfo);
@@ -311,6 +307,20 @@ import java.util.stream.Stream;
         );
     }
 
+    private boolean isEmptyArgs(String[] split) {
+        return split.length == 0 || split.length == 1 && split[0].isEmpty();
+    }
+
+    private CommandInfo generateCommandInfo(Method method) {
+        CommandInfo info = new CommandInfo();
+
+        info.fromAnnotations(method.getAnnotations(), true);
+        for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method))
+            info.fromAnnotations(targetMethod.getAnnotations(), false);
+
+        return info;
+    }
+
     private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
         Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
                 ? currentCommandOption.getKeywordIgnoreCaseMap()
@@ -320,8 +330,8 @@ import java.util.stream.Stream;
                 ? keywordToken.getKeyword().toLowerCase()
                 : keywordToken.getKeyword();
 
-        CommandBranchProcessor commandBranchProcessor = keywordMap.computeIfAbsent(keyword, key -> new CommandBranchProcessor(commandManager));
-        return createCommandOption(requirements, commandBranchProcessor, requirementsResult);
+        CommandBranchProcessor branchProcessor = keywordMap.computeIfAbsent(keyword, key -> new CommandBranchProcessor(commandManager));
+        return createCommandOption(requirements, branchProcessor, requirementsResult);
     }
 
     private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
@@ -436,8 +446,8 @@ import java.util.stream.Stream;
         return result.toArray(new ArgumentRequirement[0]);
     }
 
-    private CommandOption createCommandOption(RequirementSet requirements, CommandBranchProcessor commandBranchProcessor, List<Requirement> requirementsResult) {
-        CommandOption cmdOption = commandBranchProcessor.objectMap.stream()
+    private CommandOption createCommandOption(RequirementSet requirements, CommandBranchProcessor branchProcessor, List<Requirement> requirementsResult) {
+        CommandOption cmdOption = branchProcessor.objectMap.stream()
                 .filter(entry -> entry.key().equals(requirements))
                 .findAny()
                 .map(Entry::value)
@@ -445,7 +455,7 @@ import java.util.stream.Stream;
 
         if (cmdOption == null) {
             cmdOption = new CommandOption(commandManager);
-            commandBranchProcessor.objectMap.add(new Entry<>(
+            branchProcessor.objectMap.add(new Entry<>(
                     requirements,
                     cmdOption
             ));
