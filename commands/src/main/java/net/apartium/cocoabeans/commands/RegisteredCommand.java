@@ -16,7 +16,6 @@ import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
 import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
-import net.apartium.cocoabeans.commands.lexer.SimpleArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.*;
@@ -281,7 +280,7 @@ import java.util.stream.Stream;
                 continue;
             }
 
-            if (token instanceof SimpleArgumentParserToken argumentParserToken) {
+            if (token instanceof ArgumentParserToken argumentParserToken) {
                 currentCommandOption = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult);
                 continue;
             }
