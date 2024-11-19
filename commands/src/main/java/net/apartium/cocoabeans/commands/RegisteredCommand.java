@@ -149,13 +149,13 @@ import java.util.stream.Stream;
                 argumentTypeHandlerMap.putIfAbsent(entry.getKey(), entry.getValue());
             }
 
-            for (Method method : clazz.getMethods()) {
+            for (Method method : c.getMethods()) {
                 try {
                     findParsers(
                             node,
                             argumentTypeHandlerMap,
+                            clazz.getMethod(method.getName(), method.getParameterTypes()),
                             method,
-                            c.getMethod(method.getName(), method.getParameterTypes()),
                             true
                     );
 
