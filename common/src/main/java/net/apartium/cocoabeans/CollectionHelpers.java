@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans;
 
 import net.apartium.cocoabeans.collect.WeightSet;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -155,6 +156,20 @@ public class CollectionHelpers {
         int index = Collections.binarySearch(list, element, comparator);
         if (index < 0) index = -index - 1;
         list.add(index, element);
+    }
+
+    /**
+     * Put all entries from other map into map if key is not present
+     * @param map map to put into
+     * @param other map to get entries from
+     * @param <K> key type
+     * @param <V> value type
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    public static <K, V> void putAllIfAbsent(Map<K, V> map, Map<K, V> other) {
+        for (Map.Entry<K, V> entry : other.entrySet()) {
+            map.putIfAbsent(entry.getKey(), entry.getValue());
+        }
     }
 
 
