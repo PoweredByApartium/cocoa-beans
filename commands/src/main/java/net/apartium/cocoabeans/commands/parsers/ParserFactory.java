@@ -37,6 +37,9 @@ public interface ParserFactory {
      */
     @ApiStatus.AvailableSince("0.0.37")
     static ParserFactory createFromAnnotation(Annotation annotation, boolean onlyClassParser) {
+        if (annotation == null)
+            return null;
+
         CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
         if (commandParserFactory == null)
             return null;
@@ -47,7 +50,7 @@ public interface ParserFactory {
         try {
             return commandParserFactory.value().getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            return null;
+            throw new IllegalStateException("Failed to instantiate parser factory: " + commandParserFactory.value(), e);
         }
     }
 

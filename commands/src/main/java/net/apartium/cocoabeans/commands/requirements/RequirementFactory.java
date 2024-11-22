@@ -37,6 +37,9 @@ public interface RequirementFactory {
      */
     @ApiStatus.AvailableSince("0.0.37")
     static RequirementFactory createFromAnnotation(Annotation annotation) {
+        if (annotation == null)
+            return null;
+
         CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
         if (commandRequirementType == null)
             return null;
@@ -44,7 +47,7 @@ public interface RequirementFactory {
         try {
             return commandRequirementType.value().getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            return null;
+            throw new IllegalStateException("Failed to instantiate parser factory: " + commandRequirementType.value(), e);
         }
     }
 

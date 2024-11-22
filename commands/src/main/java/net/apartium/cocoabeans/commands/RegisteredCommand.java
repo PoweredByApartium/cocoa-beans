@@ -413,13 +413,14 @@ import java.util.stream.Stream;
         List<ArgumentRequirement> result = new ArrayList<>();
 
         for (Annotation annotation : annotations) {
-            ArgumentRequirementType argumentRequirementType = annotation.annotationType().getAnnotation(ArgumentRequirementType.class);
+            Class<? extends ArgumentRequirementFactory> argumentRequirementType = ArgumentRequirementFactory.getArgumentRequirementFactoryClass(annotation);
+
             if (argumentRequirementType == null)
                 continue;
 
             ArgumentRequirement argumentRequirement = Optional.ofNullable(commandManager.argumentRequirementFactories.computeIfAbsent(
-                            argumentRequirementType.value(),
-                            (clazz) -> ArgumentRequirementFactory.create(clazz, commandManager)
+                            argumentRequirementType,
+                            (clazz) -> ArgumentRequirementFactory.createFromAnnotation(annotation, commandManager)
                     ))
                     .map(factory -> factory.getArgumentRequirement(commandNode, annotation))
                     .orElse(null);
