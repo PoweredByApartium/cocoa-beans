@@ -56,12 +56,15 @@ public interface ArgumentRequirementFactory {
             if (constructor.getParameterCount() == 0)
                 return constructor.newInstance();
 
-            if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class))
+            if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class)) {
+                if (commandManager == null)
+                    throw new IllegalArgumentException("Command manager cannot be null");
                 return constructor.newInstance(commandManager);
+            }
 
             return null;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Failed to instantiate parser factory: " + clazz, e);
+            throw new IllegalStateException("Failed to instantiate argument requirement factory: " + clazz, e);
         }
     }
 

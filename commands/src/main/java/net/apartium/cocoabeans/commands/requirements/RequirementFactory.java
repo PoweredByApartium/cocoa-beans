@@ -26,6 +26,9 @@ public interface RequirementFactory {
      */
     @ApiStatus.AvailableSince("0.0.37")
     static Class<? extends RequirementFactory> getRequirementFactoryClass(Annotation annotation) {
+        if (annotation == null)
+            return null;
+
         CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
         return commandRequirementType == null ? null : commandRequirementType.value();
     }
@@ -40,14 +43,12 @@ public interface RequirementFactory {
         if (annotation == null)
             return null;
 
-        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
-        if (commandRequirementType == null)
-            return null;
+        Class<? extends RequirementFactory> requirementFactoryClass = getRequirementFactoryClass(annotation);
 
         try {
-            return commandRequirementType.value().getConstructor().newInstance();
+            return requirementFactoryClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Failed to instantiate parser factory: " + commandRequirementType.value(), e);
+            throw new IllegalStateException("Failed to instantiate requirement factory: " + requirementFactoryClass, e);
         }
     }
 
