@@ -10,11 +10,44 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public interface ArgumentRequirementFactory {
 
+    /**
+     * Create an argument requirement factory
+     * @param clazz class
+     * @param commandManager command manager
+     * @return argument requirement factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static ArgumentRequirementFactory create(Class<? extends ArgumentRequirementFactory> clazz, CommandManager commandManager) {
+        try {
+            Constructor<? extends ArgumentRequirementFactory> constructor = clazz.getConstructor();
+            if (constructor.getParameterCount() == 0)
+                return constructor.newInstance();
+
+            if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class))
+                return constructor.newInstance(commandManager);
+
+            return null;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Create an argument requirement from the given object
+     * @param commandNode command node
+     * @param obj object
+     * @return argument requirement or null
+     */
     @Nullable
     ArgumentRequirement getArgumentRequirement(CommandNode commandNode, Object obj);
 

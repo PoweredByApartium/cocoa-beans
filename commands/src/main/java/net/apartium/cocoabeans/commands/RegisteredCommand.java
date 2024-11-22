@@ -417,25 +417,13 @@ import java.util.stream.Stream;
             if (argumentRequirementType == null)
                 continue;
 
-            ArgumentRequirementFactory factory = commandManager.argumentRequirementFactories.computeIfAbsent(argumentRequirementType.value(), (clazz) -> {
-                try {
-                    Constructor<? extends ArgumentRequirementFactory> constructor = argumentRequirementType.value().getConstructor();
-                    if (constructor.getParameterCount() == 0)
-                        return constructor.newInstance();
+            ArgumentRequirement argumentRequirement = Optional.ofNullable(commandManager.argumentRequirementFactories.computeIfAbsent(
+                            argumentRequirementType.value(),
+                            (clazz) -> ArgumentRequirementFactory.create(clazz, commandManager)
+                    ))
+                    .map(factory -> factory.getArgumentRequirement(commandNode, annotation))
+                    .orElse(null);
 
-                    if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class))
-                        return constructor.newInstance(commandManager);
-
-                    return null;
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    return null;
-                }
-            });
-
-            if (factory == null)
-                continue;
-
-            ArgumentRequirement argumentRequirement = factory.getArgumentRequirement(commandNode, annotation);
             if (argumentRequirement == null)
                 continue;
 
@@ -485,17 +473,15 @@ import java.util.stream.Stream;
     }
 
     private Requirement getRequirement(CommandNode commandNode, Annotation annotation) {
-        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
-        if (commandRequirementType == null)
+        Class<? extends RequirementFactory> requirementFactoryClass = RequirementFactory.getRequirementFactoryClass(annotation);
+
+        if (requirementFactoryClass == null)
             return null;
 
-        RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(commandRequirementType.value(), (clazz) -> {
-            try {
-                return commandRequirementType.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                return null;
-            }
-        });
+        RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(
+                requirementFactoryClass,
+                (clazz) -> RequirementFactory.createFromAnnotation(annotation)
+        );
 
         if (requirementFactory == null)
             return null;
@@ -537,20 +523,15 @@ import java.util.stream.Stream;
     }
 
     private void handleParserFactories(CommandNode commandNode, GenericDeclaration obj, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, Annotation annotation, boolean onlyClassParser) {
-        CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
-        if (commandParserFactory == null)
+        Class<? extends ParserFactory> parserFactoryClass = ParserFactory.getParserFactoryClass(annotation);
+
+        if (parserFactoryClass == null)
             return;
 
-        if (!commandParserFactory.scope().isClass() && onlyClassParser)
-            return;
-
-        ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(commandParserFactory.value(), (clazz) -> {
-            try {
-                return commandParserFactory.value().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                return null;
-            }
-        });
+        ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(
+                parserFactoryClass,
+                (clazz) -> ParserFactory.createFromAnnotation(annotation, onlyClassParser)
+        );
 
         if (parserFactory == null)
             return;
