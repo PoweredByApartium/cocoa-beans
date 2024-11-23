@@ -10,169 +10,44 @@
 
 package net.apartium.cocoabeans.commands.spigot;
 
-import net.apartium.cocoabeans.commands.CommandContext;
-import net.apartium.cocoabeans.commands.ArgumentMapper;
-import net.apartium.cocoabeans.commands.RegisteredCommandVariant;
-import net.apartium.cocoabeans.commands.Sender;
-import net.apartium.cocoabeans.utils.OptionalFloat;
+import net.apartium.cocoabeans.commands.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
-import static net.apartium.cocoabeans.commands.SimpleArgumentMapper.PRIMITIVE_TO_WRAPPER_MAP;
-
-public class SpigotArgumentMapper implements ArgumentMapper {
+public class SpigotArgumentMapper extends SimpleArgumentMapper {
 
     @Override
-    public List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        // TODO merge with SimpleArgumentMapper
-        RegisteredCommandVariant.Parameter[] parameters = registeredCommandVariant.parameters();
-        if (parameters.length == 0)
-            return List.of();
+    protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        ArgumentIndex<?> argumentIndex = super.resolveBuiltInArgumentIndex(type, counterMap, mapOfArguments, index);
+        if (argumentIndex != null)
+            return argumentIndex;
 
-        List<Object> result = new ArrayList<>(parameters.length + 1);
-        result.add(registeredCommandVariant.commandNode());
+        if (CommandSender.class.isAssignableFrom(type))
+            return getSpigotSenderIndex(type, counterMap, mapOfArguments, index);
 
-        Map<Class<?>, Integer> counterMap = new HashMap<>();
-        Map<Class<?>, List<Object>> mapOfObjects = context.parsedArgs();
+        return null;
+    }
 
-        for (int i = 1; i < parameters.length + 1; i++) {
-            Class<?> type = parameters[i - 1].type();
-            int index = counterMap.computeIfAbsent(type, (k) -> 0);
+    protected ArgumentIndex<?> getSpigotSenderIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        if (type == CommandSender.class && index == 0)
+            return context -> ((CommandSender) context.sender().getSender());
 
-            if (handleResult(counterMap, result, get(type, counterMap, mapOfObjects, sender, Sender.class, -1)))
-                continue;
+        boolean hasSender = counterMap.getOrDefault(CommandSender.class, 0) != 0;
 
-            if (handleResult(counterMap, result, get(type, counterMap, mapOfObjects, sender.getSender(), CommandSender.class, -1)))
-                continue;
+        if (type == Player.class && !hasSender) {
+            counterMap.put(CommandSender.class, 1);
+            counterMap.put(Player.class, -1);
+            return context -> {
+                if (!(context.sender().getSender() instanceof Player player))
+                    throw new IllegalArgumentException("Sender is not a player");
 
-            if (type.equals(CommandContext.class)) {
-                if (index == 1) throw new RuntimeException("Shouldn't have two command context");
-                result.add(context);
-                counterMap.put(type, index + 1);
-                continue;
-            }
-
-            List<Object> objects = context.parsedArgs().get(type);
-
-            if (objects == null || objects.isEmpty() || objects.size() <= index)
-                objects = context.parsedArgs().get(PRIMITIVE_TO_WRAPPER_MAP.getOrDefault(type, type));
-
-            if (type == Optional.class) {
-                type = (Class<?>) ((ParameterizedType) parameters[i - 1].parameterizedType()).getActualTypeArguments()[0];
-
-                if (objects == null)
-                    objects = context.parsedArgs().get(type);
-
-                if (objects == null || objects.isEmpty() || objects.size() <= index)
-                    throw new RuntimeException("No argument found for type " + type);
-
-                Object obj = objects.get(index);
-
-                if (obj == null || (obj instanceof Optional<?> && ((Optional<?>) obj).isEmpty()) ) {
-                    result.add(Optional.empty());
-                    counterMap.put(type, index + 1);
-                    continue;
-                }
-
-                result.add(Optional.of(obj));
-                counterMap.put(type, index + 1);
-                continue;
-            }
-
-            if (
-                    type == OptionalInt.class ||
-                    type == OptionalLong.class ||
-                    type == OptionalDouble.class ||
-                    type == OptionalFloat.class
-            ) {
-                type = type == OptionalInt.class ? int.class : type == OptionalLong.class ? long.class : type == OptionalDouble.class ? double.class : float.class;
-
-                if (objects == null)
-                    objects = context.parsedArgs().get(type);
-
-                if (objects == null || objects.isEmpty() || objects.size() <= index)
-                    throw new RuntimeException("No argument found for type " + type);
-
-                Object obj = objects.get(index);
-
-                if (obj instanceof Optional<?> opt)
-                    obj = opt.orElse(null);
-
-
-                if (type == OptionalFloat.class) {
-                    if (obj == null)
-                        result.add(OptionalFloat.empty());
-                    else
-                        result.add(OptionalFloat.of((float) obj));
-
-                    type = float.class;
-                } else if (type == OptionalDouble.class) {
-                    if (obj == null)
-                        result.add(OptionalDouble.empty());
-                    else
-                        result.add(OptionalDouble.of((double) obj));
-                    type = double.class;
-                } else if (type == OptionalLong.class) {
-                    if (obj == null)
-                        result.add(OptionalLong.empty());
-                    else
-                        result.add(OptionalLong.of((long) obj));
-                    type = long.class;
-                } else {
-                    if (obj == null)
-                        result.add(OptionalInt.empty());
-                    else
-                        result.add(OptionalInt.of((int) obj));
-                    type = int.class;
-                }
-
-                counterMap.put(type, index + 1);
-                continue;
-            }
-
-            if (objects == null || objects.isEmpty() || objects.size() <= index)
-                throw new RuntimeException("No argument found for type " + type);
-
-            Object obj = objects.get(index);
-
-            result.add(obj);
-            counterMap.put(type, index + 1);
+                return player;
+            };
         }
 
-        return result;
-    }
-
-    public boolean handleResult(Map<Class<?>, Integer> counterMap, List<Object> result, Result resultObj) {
-        if (resultObj == null)
-            return false;
-
-        result.add(resultObj.result);
-        counterMap.put(resultObj.clazz, counterMap.computeIfAbsent(resultObj.clazz, (k) -> 0) + 1);
-        return true;
-    }
-
-    public Result get(Class<?> type, Map<Class<?>, Integer> counterMap,  Map<Class<?>, List<Object>> mapOfObjects, Object obj, Class<?> resultType, int indexOffset) {
-        int index = counterMap.computeIfAbsent(type, (k) -> 0);
-
-        if (type.isAssignableFrom(obj.getClass()) && index == 0 && counterMap.getOrDefault(type, -1) == 0)
-            return new Result(resultType, obj);
-
-        indexOffset =  counterMap.getOrDefault(type, -1) == 0 ? -1 : 0;
-
-        List<Object> objects = mapOfObjects.get(type);
-        if (objects == null || objects.size() <= (index + indexOffset))
-            return null;
-
-        return new Result(type, objects.get(Math.max(0, index + indexOffset)));
-    }
-
-    public record Result(
-            Class<?> clazz,
-            Object result
-    ) {
-
+        return mapOfArguments.get(type).get(index);
     }
 
 }

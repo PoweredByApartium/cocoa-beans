@@ -20,21 +20,39 @@ import java.util.Set;
 
 /**
  * Base class for all parsers
+ * <br/>
+ * <p>It's recommended that each implementing of ArgumentParser class should define its own {@code DEFAULT_KEYWORD}
+ * to represent the default keyword</p>
+ * <br/>
+ * <b>Note</b>: That all parsers should have at least those 2 constructors <br/>
+ * <code>Parser(int priority)</code>/<code>Parser(int priority, String keyword)</code>so we can use @WithParser on them
  * @see net.apartium.cocoabeans.commands.parsers.IntParser
  * @see net.apartium.cocoabeans.commands.parsers.StringParser
- * @param <T>
+ * @see WithParser
+ * @param <T> output type
  */
 public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>> {
 
+    /**
+     * Keyword of the parser that will be used to know which parser to use
+     */
     private final String keyword;
+    /**
+     * The output class
+     */
     private final Class<T> clazz;
+
+    /**
+     * The priority of the parser,
+     * if we have multiple parser to know which one to try first
+     */
     private final int priority;
 
     /**
-     * Constructs a
-     * @param keyword
-     * @param clazz
-     * @param priority
+     * Constructs a new parser
+     * @param keyword keyword of the parser
+     * @param clazz output class
+     * @param priority priority
      */
     protected ArgumentParser(String keyword, Class<T> clazz, int priority) {
         this.keyword = keyword;
@@ -59,13 +77,13 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
     /**
      * Retrieves available options for tab completion of this argument
      * @param processingContext cmd processing context
-     * @return tab completetion result if success, otherwise empty optiona
+     * @return tab completion result if success, otherwise empty option
      */
     public abstract Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext);
 
     /**
      * Get argument type
-     * @return
+     * @return argument type
      */
     public Class<T> getArgumentType() {
         return clazz;
@@ -73,17 +91,28 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
 
     /**
      * Get priority
-     * @return
+     * @return priority
      */
     public int getPriority() {
         return priority;
     }
 
+    /**
+     * Parse Result is the content of the parsing
+     * @param result the result of the parsing
+     * @param newIndex new index to change to
+     * @param <T> type
+     */
     public record ParseResult<T>(
             T result,
             int newIndex
     ) { }
 
+    /**
+     * Tsb completion result is the content of the tab completion
+     * @param result the result of the tab completion
+     * @param newIndex new index to change to
+     */
     public record TabCompletionResult(
             Set<String> result,
             int newIndex

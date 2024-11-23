@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
+import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,13 @@ public class CommandForTest implements CommandNode {
         sender.sendMessage("Teleporting " + from.getName() + " to " + to.getName());
     }
 
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("tp <player>")
+    public void teleport(Player player, Player target) {
+        player.teleport(target.getLocation());
+        player.sendMessage("Teleporting " + player.getName() + " to " + target.getName());
+    }
+
     @SubCommand("who <player>")
     public void whoIs(CommandSender sender, Player target) {
         sender.sendMessage("Who is " + target.getName() + "? " + target.getUniqueId());
@@ -46,7 +54,7 @@ public class CommandForTest implements CommandNode {
         }
 
         player.getInventory().addItem(new ItemStack(material, amount.orElse(1)));
-        player.sendMessage("Given " + amount.orElse(1) + " " + material.name() + " to " + player.getName());
+        sender.sendMessage("Given " + amount.orElse(1) + " " + material.name() + " to " + player.getName());
     }
 
     @SubCommand("location <location>")

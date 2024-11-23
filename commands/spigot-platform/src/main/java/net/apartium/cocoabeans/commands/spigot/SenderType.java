@@ -20,6 +20,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public enum SenderType implements Requirement {
 
     /**
@@ -40,9 +42,13 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.PLAYER, SenderType.class));
         }
 
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
+        }
     },
 
     /**
@@ -63,7 +69,12 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.BLOCK, SenderType.class));
+        }
+
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
         }
     },
 
@@ -85,7 +96,12 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.CONSOLE, SenderType.class));
+        }
+
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
         }
     },
 
@@ -108,11 +124,12 @@ public enum SenderType implements Requirement {
                         null
                 ));
 
-            return RequirementResult.meet();
+            return RequirementResult.meet(RequirementResult.valueOf(SenderType.ENTITY, SenderType.class));
         }
-    }
 
-    ;
-
-
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
+        }
+    };
 }

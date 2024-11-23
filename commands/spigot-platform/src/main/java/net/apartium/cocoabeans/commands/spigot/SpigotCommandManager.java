@@ -14,10 +14,7 @@ import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.exception.SpigotExceptionArgumentMapper;
-import net.apartium.cocoabeans.commands.spigot.parsers.LocationParser;
-import net.apartium.cocoabeans.commands.spigot.parsers.MaterialParser;
-import net.apartium.cocoabeans.commands.spigot.parsers.OfflinePlayerParser;
-import net.apartium.cocoabeans.commands.spigot.parsers.PlayerParser;
+import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
@@ -37,7 +34,8 @@ public class SpigotCommandManager extends CommandManager {
             new PlayerParser(0),
             new OfflinePlayerParser(0),
             new MaterialParser(0),
-            new LocationParser(0)
+            new LocationParser(0),
+            new GameModeParser(0)
     );
 
     private final JavaPlugin plugin;

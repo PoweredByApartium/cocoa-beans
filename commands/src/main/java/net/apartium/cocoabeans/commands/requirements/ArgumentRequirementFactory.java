@@ -10,11 +10,70 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public interface ArgumentRequirementFactory {
 
+    /**
+     * Get the class of the argument requirement factory
+     * @param annotation annotation that has a ArgumentRequirementType
+     * @return the class of the argument requirement factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static Class<? extends ArgumentRequirementFactory> getArgumentRequirementFactoryClass(Annotation annotation) {
+        if (annotation == null)
+            return null;
+
+        ArgumentRequirementType argumentRequirementType = annotation.annotationType().getAnnotation(ArgumentRequirementType.class);
+        return argumentRequirementType == null ? null : argumentRequirementType.value();
+    }
+
+    /**
+     * Create an argument requirement factory
+     * @param annotation annotation
+     * @param commandManager command manager
+     * @return argument requirement factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static ArgumentRequirementFactory createFromAnnotation(Annotation annotation, CommandManager commandManager) {
+        if (annotation == null)
+            return null;
+
+        Class<? extends ArgumentRequirementFactory> clazz = getArgumentRequirementFactoryClass(annotation);
+
+        if (clazz == null)
+            return null;
+
+        try {
+            Constructor<? extends ArgumentRequirementFactory> constructor = clazz.getConstructor();
+            if (constructor.getParameterCount() == 0)
+                return constructor.newInstance();
+
+            if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class)) {
+                if (commandManager == null)
+                    throw new IllegalArgumentException("Command manager cannot be null");
+                return constructor.newInstance(commandManager);
+            }
+
+            return null;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException("Failed to instantiate argument requirement factory: " + clazz, e);
+        }
+    }
+
+    /**
+     * Create an argument requirement from the given object
+     * @param commandNode command node
+     * @param obj object
+     * @return argument requirement or null
+     */
     @Nullable
     ArgumentRequirement getArgumentRequirement(CommandNode commandNode, Object obj);
 

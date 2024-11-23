@@ -11,14 +11,56 @@
 package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 public interface RequirementFactory {
 
+    /**
+     * Get the class of the requirement factory
+     * @param annotation annotation that has a CommandRequirementType
+     * @return the class of the requirement factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static Class<? extends RequirementFactory> getRequirementFactoryClass(Annotation annotation) {
+        if (annotation == null)
+            return null;
+
+        CommandRequirementType commandRequirementType = annotation.annotationType().getAnnotation(CommandRequirementType.class);
+        return commandRequirementType == null ? null : commandRequirementType.value();
+    }
+
+    /**
+     * Create a requirement factory from an annotation
+     * @param annotation annotation that has a CommandRequirementType
+     * @return the created requirement factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static RequirementFactory createFromAnnotation(Annotation annotation) {
+        if (annotation == null)
+            return null;
+
+        Class<? extends RequirementFactory> requirementFactoryClass = getRequirementFactoryClass(annotation);
+
+        if (requirementFactoryClass == null)
+            return null;
+
+        try {
+            return requirementFactoryClass.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException("Failed to instantiate requirement factory: " + requirementFactoryClass, e);
+        }
+    }
+
+    /**
+     * Create a requirement from the given object
+     * @param commandNode command node
+     * @param obj object
+     * @return requirement or null
+     */
     @Nullable
     Requirement getRequirement(CommandNode commandNode, Object obj);
 

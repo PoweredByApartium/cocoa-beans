@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.spigot.visibility.TestPlayerVisibilityController;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityGroup;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityManager;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityPlayerRemoveType;
@@ -40,7 +41,7 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
 
         plugin.getLogger();
 
-        visibilityManager = new VisibilityManager(plugin);
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
 
         VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
         VisibilityGroup group1 = visibilityManager.getOrCreateGroup("test2");
@@ -175,6 +176,39 @@ public class VisibilityManagerTest extends CocoaBeansTestBase {
         assertCantSee(voigon, cloudflareDNS);
         assertCantSee(voigon, googleDNS);
 
+    }
+
+    @Test
+    void gameVisibleTest() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        spectator.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.removePlayer(ikfir);
+
+        assertCanSeeOneSide(voigon, ikfir);
+        assertCantSeeOneSide(ikfir, voigon);
+
+        spectator.removePlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
     }
 
     void assertCanSeeOneSide(PlayerMock player, PlayerMock target) {

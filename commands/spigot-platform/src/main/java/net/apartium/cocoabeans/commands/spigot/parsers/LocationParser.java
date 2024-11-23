@@ -19,14 +19,31 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class LocationParser extends ArgumentParser<Location> {
 
+    public static final String DEFAULT_KEYWORD = "location";
+
+    /**
+     * Constructs a new instance of LocationParser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public LocationParser(int priority, String keyword) {
+        super(keyword, Location.class, priority);
+    }
+
+    /**
+     * Constructs a new instance of LocationParser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public LocationParser(int priority) {
-        super("location", Location.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

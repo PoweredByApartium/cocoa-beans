@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.visibility;
 
+import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,6 +18,7 @@ public class VisibilityManager {
 
     private final Map<String, VisibilityGroup> groups = new HashMap<>();
     private final Map<UUID, VisibilityPlayer> players = new HashMap<>();
+    private final PlayerVisibilityController playerVisibilityController;
     private final JavaPlugin plugin;
     private VisibilityListener visibilityListener;
 
@@ -25,7 +27,12 @@ public class VisibilityManager {
      * @param plugin plugin to associate this instance with
      */
     public VisibilityManager(JavaPlugin plugin) {
+        this(plugin, VersionedImplInstantiator.createPlayerVisibilityController());
+    }
+
+    public VisibilityManager(JavaPlugin plugin, PlayerVisibilityController playerVisibilityController) {
         this.plugin = plugin;
+        this.playerVisibilityController = playerVisibilityController;
     }
 
     /**
@@ -88,12 +95,12 @@ public class VisibilityManager {
                     continue;
 
                 if (getPlayer(target).getVisibleGroups().isEmpty()) {
-                    target.showPlayer(plugin, joinPlayer);
+                    playerVisibilityController.showPlayer(plugin, target, joinPlayer);
                     continue;
                 }
 
-                joinPlayer.hidePlayer(plugin, target);
-                target.hidePlayer(plugin, joinPlayer);
+                playerVisibilityController.hidePlayer(plugin, joinPlayer, target);
+                playerVisibilityController.hidePlayer(plugin, target, joinPlayer);
             }
 
             return;
@@ -106,7 +113,7 @@ public class VisibilityManager {
             if (getPlayer(target).getVisibleGroups().isEmpty())
                 continue;
 
-            target.hidePlayer(plugin, joinPlayer);
+            playerVisibilityController.hidePlayer(plugin, target, joinPlayer);
         }
 
         updateVisiblityForPlayer(joinPlayer);
@@ -137,7 +144,7 @@ public class VisibilityManager {
         }
 
         for (Player target : playerToShow) {
-            target.showPlayer(plugin, joinPlayer);
+            playerVisibilityController.showPlayer(plugin, target, joinPlayer);
         }
 
     }
@@ -185,13 +192,13 @@ public class VisibilityManager {
                     continue;
 
                 if (!getPlayer(target).getVisibleGroups().isEmpty()) {
-                    player.hidePlayer(plugin, target);
-                    target.hidePlayer(plugin, player);
+                    playerVisibilityController.hidePlayer(plugin, player, target);
+                    playerVisibilityController.hidePlayer(plugin, target, player);
                     continue;
                 }
 
-                player.showPlayer(plugin, target);
-                target.showPlayer(plugin, player);
+                playerVisibilityController.showPlayer(plugin, player, target);
+                playerVisibilityController.showPlayer(plugin, target, player);
             }
 
             return;
@@ -202,12 +209,12 @@ public class VisibilityManager {
                 continue;
 
             if (getPlayer(target).getVisibleGroups().isEmpty()) {
-                player.hidePlayer(plugin, target);
-                target.hidePlayer(plugin, player);
+                playerVisibilityController.hidePlayer(plugin, player, target);
+                playerVisibilityController.hidePlayer(plugin, target, player);
                 continue;
             }
 
-            player.hidePlayer(plugin, target);
+            playerVisibilityController.hidePlayer(plugin, player, target);
         }
 
         Set<Player> playersToShow = new HashSet<>();
@@ -254,7 +261,7 @@ public class VisibilityManager {
         }
 
         for (Player target : playersToShow)
-            player.showPlayer(plugin, target);
+            playerVisibilityController.showPlayer(plugin, player, target);
 
     }
 

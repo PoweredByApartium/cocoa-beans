@@ -1,10 +1,15 @@
 import io.papermc.hangarpublishplugin.model.Platforms
+import org.sonarqube.gradle.SonarQubePlugin
+import org.sonarqube.gradle.SonarTask
 
 plugins {
     id("java-library")
     id("maven-publish")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
+    id("apartium-maven-publish")
+    id("org.sonarqube") version "5.1.0.4882"
+    jacoco
 }
 
 val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
@@ -18,6 +23,8 @@ allprojects {
 
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
+    apply<JacocoPlugin>()
+    apply<SonarQubePlugin>()
 
     publishing {
         repositories {
@@ -63,6 +70,32 @@ allprojects {
     tasks {
         test {
             useJUnitPlatform()
+        }
+    }
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.test)
+        reports {
+            xml.required = true
+        }
+    }
+
+    tasks.withType<SonarTask> {
+        dependsOn(tasks.test)
+        dependsOn(tasks.jacocoTestReport)
+    }
+
+    sonar {
+        properties {
+            if (isCi) {
+                val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
+                if (tokenFromEnv.isEmpty())
+                    throw RuntimeException("sonar.token cannot be empty")
+
+                property("sonar.token", tokenFromEnv)
+            } else {
+                property("sonar.token", project.findProperty("apartium.sonar.token").toString())
+            }
         }
     }
 

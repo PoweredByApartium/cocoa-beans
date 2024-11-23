@@ -12,13 +12,30 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.StringHelpers;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
 public class DoubleParser extends ArgumentParser<Double> {
 
+    public static final String DEFAULT_KEYWORD = "double";
+
+    /**
+     * Creates new double parser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public DoubleParser(int priority, String keyword) {
+        super(keyword, double.class, priority);
+    }
+
+    /**
+     * Creates new double parser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public DoubleParser(int priority) {
-        super("double", double.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override

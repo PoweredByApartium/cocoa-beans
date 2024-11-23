@@ -19,9 +19,14 @@
             <toc-element topic="source-parser.md"/>
             <toc-element topic="Command-Information.md"/>
             <toc-element topic="Dynamic-annotation-parser.md"/>
+            <toc-element topic="value-requirement.md"/>
+            <toc-element topic="parameter-name.md"/>
         </toc-element>
     </toc-element>
-    <toc-element topic="Visibility-Api.md"/>
+    <toc-element topic="spigot.md">
+        <toc-element topic="minecraft-version.md"/>
+        <toc-element topic="Visibility-Api.md"/>
+    </toc-element>
     <toc-element topic="Collections.md"/>
     <toc-element topic="Space-Api.md"/>
 

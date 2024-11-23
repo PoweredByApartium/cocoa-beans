@@ -11,11 +11,9 @@
 package net.apartium.cocoabeans.commands.requirements;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.CommandNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -25,24 +23,6 @@ import java.util.*;
  */
 @ApiStatus.Internal
 public class RequirementSet implements Set<Requirement> {
-
-    public static Set<Requirement> createRequirementSet(Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, CommandNode commandNode, Annotation[] annotations) {
-        if (annotations == null || annotations.length == 0)
-            return Collections.emptySet();
-
-        Set<Requirement> requirements = new HashSet<>();
-
-        for (Annotation annotation : annotations) {
-            Requirement requirement = Requirement.createRequirement(requirementFactories, commandNode, annotation);
-            if (requirement == null)
-                continue;
-
-            requirements.add(requirement);
-        }
-
-        return requirements;
-    }
-
 
     private final Requirement[] requirements;
 
@@ -191,13 +171,17 @@ public class RequirementSet implements Set<Requirement> {
     }
 
     public RequirementResult meetsRequirements(RequirementEvaluationContext context) {
+        List<RequirementResult.Value> values = new ArrayList<>();
+
         for (Requirement requirement : requirements) {
             RequirementResult requirementResult = requirement.meetsRequirement(context);
             if (!requirementResult.meetRequirement())
                 return requirementResult;
+
+            values.addAll(Arrays.asList(requirementResult.getValues()));
         }
 
-        return RequirementResult.meet();
+        return RequirementResult.meet(values.toArray(new RequirementResult.Value[0]));
     }
 
 }

@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Requires senders running a command / sub command to be of a certain type, for example players / console only
@@ -49,14 +51,38 @@ public class SenderLimitFactory implements RequirementFactory {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
-            if (senderTypes.stream().anyMatch(senderType -> senderType.meetsRequirement(context).meetRequirement()) != invert)
+            for (SenderType senderType : senderTypes) {
+                RequirementResult requirementResult = senderType.meetsRequirement(context);
+                if (invert) {
+                    if (requirementResult.meetRequirement())
+                        return RequirementResult.error(new UnmetSenderLimit(
+                                this,
+                                context,
+                                "This command can not be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                        ));
+
+                    continue;
+                }
+
+                if (!requirementResult.meetRequirement())
+                    continue;
+
+                return requirementResult;
+            }
+
+            if (invert)
                 return RequirementResult.meet();
 
             return RequirementResult.error(new UnmetSenderLimit(
                     this,
                     context,
-                    "This command can " + (invert ? "not" : "only") + " be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
+                    "This command can only be used by " + String.join(", ", senderTypes.stream().map(Enum::name).toList().toArray(new String[0])) + "s"
             ));
+        }
+
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(SenderType.class);
         }
 
         private class UnmetSenderLimit extends UnmetRequirementResponse {

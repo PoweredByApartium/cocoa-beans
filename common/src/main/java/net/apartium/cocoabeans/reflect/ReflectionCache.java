@@ -96,7 +96,10 @@ import java.util.stream.Stream;
         if (result.declaredMethods == null) {
             synchronized (result) {
                 if (result.declaredMethods == null) {
-                    result.declaredMethods = setAccessible(clazz.getDeclaredMethods());
+                    result.declaredMethods = Arrays.stream(clazz.getDeclaredMethods())
+                            .filter(method -> !method.isSynthetic())
+                            .peek(method -> method.setAccessible(true))
+                            .toArray(Method[]::new);
                 }
             }
         }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class CommandsSpigotTestBase {
 
@@ -41,6 +42,15 @@ public class CommandsSpigotTestBase {
         execute(sender, split[0], Arrays.copyOfRange(split, 1, split.length));
     }
 
+    public void execute(CommandSender sender, String commandName, String args) {
+        try {
+            commandManager.handle(new SpigotSender<>(sender), commandName, args.split("\\s+"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public void execute(CommandSender sender, String commandName, String[] args) {
         try {
             commandManager.handle(new SpigotSender<>(sender), commandName, args);
@@ -48,4 +58,9 @@ public class CommandsSpigotTestBase {
             throw new RuntimeException(e);
         }
     }
+
+    public List<String> evaluateTabCompletion(CommandSender sender, String label, String args) {
+        return commandManager.handleTabComplete(new SpigotSender<>(sender), label, args.split("\\s+"));
+    }
+
 }

@@ -13,17 +13,31 @@ package net.apartium.cocoabeans.commands.spigot.parsers;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.bukkit.Material;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MaterialParser extends ArgumentParser<Material> {
 
+    public static final String DEFAULT_KEYWORD = "material";
+
+    /**
+     * Creates a new MaterialParser
+     * @param priority parser priority of which should be higher than others or lower
+     * @param keyword parser keyword
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public MaterialParser(int priority, String keyword) {
+        super(keyword, Material.class, priority);
+    }
+
+    /**
+     * Creates a new MaterialParser
+     * @param priority parser priority of which should be higher than others or lower
+     */
     public MaterialParser(int priority) {
-        super("material", Material.class, priority);
+        this(priority, DEFAULT_KEYWORD);
     }
 
     @Override
@@ -52,6 +66,15 @@ public class MaterialParser extends ArgumentParser<Material> {
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
+
+        Set<String> result = Arrays.stream(Material.values())
+                .map((type) -> {
+                    if (type.isLegacy())
+                        return type.name();
+
+                    return type.getKey().asString();
+                })
+                .collect(Collectors.toSet());
 
         return Optional.of(new TabCompletionResult(
                 Arrays.stream(Material.values())

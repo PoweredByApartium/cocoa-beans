@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.spigot.lazies;
 
 import com.google.common.reflect.ClassPath;
+import net.apartium.cocoabeans.Dispensers;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,19 +22,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * Listener auto registration for spigot.
- * @author Voigon
+ * @author Voigon, Thebotgame
  * @see Listener
  */
 public class ListenerAutoRegistration {
 
-    final JavaPlugin
-            plugin;
+    private final JavaPlugin plugin;
 
-    final boolean
-            loadDevListeners;
+    private final boolean loadDevListeners;
+
+    private final List<Object> injectableObjects;
 
     /**
      * Creates a new instance of listener auto registration
@@ -45,6 +48,17 @@ public class ListenerAutoRegistration {
         this.plugin = plugin;
         this.loadDevListeners = loadDevListeners;
 
+        this.injectableObjects = new ArrayList<>();
+        this.injectableObjects.add(plugin);
+    }
+
+    /**
+     * Add injectable object that will be used to create listeners
+     * @param injectableObject injectable object
+     * @see ListenerAutoRegistration#register(String, boolean, Set)
+     */
+    public void addInjectableObject(Object injectableObject) {
+        injectableObjects.add(injectableObject);
     }
 
     /**
@@ -62,6 +76,16 @@ public class ListenerAutoRegistration {
      * @param deep whether sub packages of given package should also be queried
      */
     public void register(String packageName, boolean deep) {
+        register(packageName, deep, Set.of());
+    }
+
+    /**
+     * Auto discovers listeners in given package name
+     * @param packageName package name
+     * @param deep whether sub packages of given package should also be queried
+     * @param ignore classes that should be ignored and not be registered by this method
+     */
+    public void register(String packageName, boolean deep, Set<Class<?>> ignore) {
         ClassLoader classLoader = plugin.getClass().getClassLoader();
         ClassPath classPath;
         try {
@@ -76,21 +100,60 @@ public class ListenerAutoRegistration {
                 if (!Listener.class.isAssignableFrom(clazz))
                     continue;
 
+                if (ignore.contains(clazz))
+                    continue;
+
                 boolean devListener = clazz.isAnnotationPresent(DevServerListener.class);
                 if (devListener && !loadDevListeners)
                     continue;
 
                 Constructor<?> constructor = clazz.getConstructors()[0];
-                Listener instance = (Listener) constructor.newInstance(constructor.getParameterCount() == 0 ? new Object[0] : new Object[] {plugin});
+                Listener instance = createInstance(constructor, this.injectableObjects);
+
+                if (instance == null) {
+                    plugin.getLogger().warning("Failed to create listener " + clazz.getSimpleName() + "!");
+                    continue;
+                }
+
                 Bukkit.getPluginManager().registerEvents(instance, plugin);
 
-                plugin.getLogger().info("Loaded " + (devListener ? "dev" : "") + " listener " + clazz.getSimpleName() + "!");
+                plugin.getLogger().info("Loaded " + (devListener ? "dev " : "") + "listener " + clazz.getSimpleName() + "!");
 
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
+            } catch (Exception e) {
+                Dispensers.dispense(e);
             }
         }
 
+    }
+
+    private Listener createInstance(Constructor<?> constructor, List<Object> injectableObjects) {
+        Object[] objects = new Object[constructor.getParameterCount()];
+        for (int i = 0; i < constructor.getParameterCount(); i++) {
+            Class<?> target = constructor.getParameterTypes()[i];
+
+            Object value = null;
+
+            for (Object o : injectableObjects) {
+                if (target.isInstance(o)) {
+                    value = o;
+                    break;
+                }
+            }
+
+            if (value == null) {
+                plugin.getLogger().warning("No injectable object found for " + target.getName() + "!");
+                return null;
+            }
+
+            objects[i] = value;
+        }
+
+        try {
+            return (Listener) constructor.newInstance(objects);
+        } catch (Exception e) {
+            Dispensers.dispense(e);
+            return null;
+        }
     }
 
     /**
