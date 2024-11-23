@@ -420,7 +420,7 @@ import java.util.stream.Stream;
 
             ArgumentRequirement argumentRequirement = Optional.ofNullable(commandManager.argumentRequirementFactories.computeIfAbsent(
                             argumentRequirementType,
-                            (clazz) -> ArgumentRequirementFactory.createFromAnnotation(annotation, commandManager)
+                            clazz -> ArgumentRequirementFactory.createFromAnnotation(annotation, commandManager)
                     ))
                     .map(factory -> factory.getArgumentRequirement(commandNode, annotation))
                     .orElse(null);
@@ -481,7 +481,7 @@ import java.util.stream.Stream;
 
         RequirementFactory requirementFactory = commandManager.requirementFactories.computeIfAbsent(
                 requirementFactoryClass,
-                (clazz) -> RequirementFactory.createFromAnnotation(annotation)
+                clazz -> RequirementFactory.createFromAnnotation(annotation)
         );
 
         if (requirementFactory == null)
@@ -531,7 +531,7 @@ import java.util.stream.Stream;
 
         ParserFactory parserFactory = commandManager.parserFactories.computeIfAbsent(
                 parserFactoryClass,
-                (clazz) -> ParserFactory.createFromAnnotation(annotation, onlyClassParser)
+                clazz -> ParserFactory.createFromAnnotation(annotation, onlyClassParser)
         );
 
         if (parserFactory == null)

@@ -45,6 +45,9 @@ public interface RequirementFactory {
 
         Class<? extends RequirementFactory> requirementFactoryClass = getRequirementFactoryClass(annotation);
 
+        if (requirementFactoryClass == null)
+            return null;
+
         try {
             return requirementFactoryClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
