@@ -87,6 +87,8 @@ allprojects {
 
     sonar {
         properties {
+            property("sonar.coverage.jacoco.xmlReportPaths", "${rootProject.rootDir}/code-coverage-report/build/reports/jacoco/unifiedCoverageReport/unifiedCoverageReport.xml")
+
             if (isCi) {
                 val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
                 if (tokenFromEnv.isEmpty())
