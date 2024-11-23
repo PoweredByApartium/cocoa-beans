@@ -12,13 +12,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Set;
 
 @ApiStatus.Internal
 public class EnchantGlow_1_20_R1 extends Enchantment {
 
     public static final NamespacedKey
-            ENCHANT_GLOW_KEY = new NamespacedKey(JavaPlugin.getProvidingPlugin(EnchantGlow.class), "glow");
+            ENCHANT_GLOW_KEY = new NamespacedKey(JavaPlugin.getProvidingPlugin(EnchantGlow.class), "cocoa_glow");
 
     public EnchantGlow_1_20_R1() {
         super(ENCHANT_GLOW_KEY);
@@ -55,7 +56,7 @@ public class EnchantGlow_1_20_R1 extends Enchantment {
 
     @Override
     public String getName() {
-        return "Glow";
+        return "CocoaGlow";
     }
 
     @Override

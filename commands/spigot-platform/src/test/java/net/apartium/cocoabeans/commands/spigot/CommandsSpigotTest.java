@@ -64,6 +64,9 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
 
         assertEquals("Teleporting Voigon to Thebotgame", ikfir.nextMessage());
         assertEquals(voigon.getLocation(), thebotgame.getLocation());
+
+        execute(ikfir, "test tp voigon");
+        assertEquals("Teleporting ikfir to Voigon", ikfir.nextMessage());
     }
 
     @Test

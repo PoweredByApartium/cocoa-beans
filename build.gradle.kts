@@ -1,4 +1,5 @@
 import io.papermc.hangarpublishplugin.model.Platforms
+import org.sonarqube.gradle.SonarQubePlugin
 import org.sonarqube.gradle.SonarTask
 
 plugins {
@@ -23,6 +24,7 @@ allprojects {
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
     apply<JacocoPlugin>()
+    apply<SonarQubePlugin>()
 
     publishing {
         repositories {

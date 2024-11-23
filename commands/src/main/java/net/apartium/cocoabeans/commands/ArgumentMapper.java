@@ -10,6 +10,9 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+
 import java.util.List;
 
 /**
@@ -18,6 +21,13 @@ import java.util.List;
  */
 public interface ArgumentMapper {
 
-    List<Object> map(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant);
+    /**
+     * Maps the command arguments into the argument indexes required by the sub command to be call with the right arguments
+     * @param parameters parameters
+     * @param argumentParsers argumentParsers (should be in order)
+     * @param requirements requirements
+     * @return list of argument indexes
+     */
+    List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements);
 
 }

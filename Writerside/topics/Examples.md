@@ -14,3 +14,4 @@ You can find some examples of using the commands system in this page
 * [`Write information about command`](Command-Information.md)
 * [`Dynamic annotation parser`](Dynamic-annotation-parser.md)
 * [`Value Requirement`](value-requirement.md)
+* [`Named command arguments`](parameter-name.md)

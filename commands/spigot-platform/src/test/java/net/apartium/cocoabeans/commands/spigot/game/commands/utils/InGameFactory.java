@@ -8,6 +8,8 @@ import net.apartium.cocoabeans.commands.spigot.game.PlayerManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class InGameFactory implements RequirementFactory {
 
     @Override
@@ -78,6 +80,10 @@ public class InGameFactory implements RequirementFactory {
             return RequirementResult.meet(RequirementResult.valueOf(game, Game.class), RequirementResult.valueOf(gamePlayer, GamePlayer.class));
         }
 
+        @Override
+        public List<Class<?>> getTypes() {
+            return List.of(Game.class, GamePlayer.class);
+        }
 
         private class UnmetGameRequirement extends UnmetRequirementResponse {
 

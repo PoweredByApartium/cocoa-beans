@@ -39,6 +39,7 @@ import java.util.List;
  *
  * @author Thebotgame, ofirtim
  */
+@SuppressWarnings("deprecation")
 public abstract class ItemBuilder {
 
     private static final ItemFactory factory = VersionedImplInstantiator.createItemFactory();
@@ -117,11 +118,12 @@ public abstract class ItemBuilder {
      * @return current instance
      */
     public ItemBuilder setSkullTextureBase64(String base64) throws MalformedURLException {
-        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        if (!(meta instanceof SkullMeta)) return this;
 
         String decodeText = new String(Base64.getDecoder().decode(base64));
 
-        int start = decodeText.indexOf("http"), end = decodeText.indexOf("\"}}}");
+        int start = decodeText.indexOf("http");
+        int end = decodeText.indexOf("\"}}}");
         if (start == -1 || end == -1) return this;
         setSkullTextureURL(new URL(decodeText.substring(start, end)));
 
@@ -185,6 +187,16 @@ public abstract class ItemBuilder {
      */
     public ItemBuilder setLore(List<Component> lore) {
         meta.lore(lore);
+        return this;
+    }
+
+    /**
+     * @param lore set lore
+     * @return current instance
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public ItemBuilder setLore(Component lore) {
+        meta.lore(Collections.singletonList(lore));
         return this;
     }
 
@@ -272,9 +284,66 @@ public abstract class ItemBuilder {
      * @param lines add lines to lore
      * @return current instance
      */
-    public ItemBuilder addLine(String... lines) {
-        if (meta.getLore() == null) meta.setLore(Arrays.asList(lines));
-        meta.getLore().addAll(List.of(lines));
+    @ApiStatus.AvailableSince("0.0.36")
+    public ItemBuilder addLoreLines(String... lines) {
+        if (!meta.hasLore()) {
+            meta.setLore(Arrays.asList(lines));
+            return this;
+        }
+        List<String> existingLore = new ArrayList<>(meta.getLore());
+        existingLore.addAll(Arrays.asList(lines));
+        meta.setLore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add line to lore of the item
+     * @param line add lines to lore
+     * @return current instance
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public ItemBuilder addLoreLine(String line) {
+        if (!meta.hasLore()) {
+            meta.setLore(Collections.singletonList(line));
+            return this;
+        }
+        List<String> existingLore = new ArrayList<>(meta.getLore());
+        existingLore.add(line);
+        meta.setLore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add lines to lore of the item
+     * @param components add lines to lore
+     * @return current instance
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public ItemBuilder addLoreLines(Component... components) {
+        if (!meta.hasLore()) {
+            meta.lore(Arrays.asList(components));
+            return this;
+        }
+        List<Component> existingLore = new ArrayList<>(meta.lore());
+        existingLore.addAll(Arrays.asList(components));
+        meta.lore(existingLore);
+        return this;
+    }
+
+    /**
+     * Add line to lore of the item
+     * @param component add lines to lore
+     * @return current instance
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    public ItemBuilder addLoreLine(Component component) {
+        if (!meta.hasLore()) {
+            meta.lore(Collections.singletonList(component));
+            return this;
+        }
+        List<Component> existingLore = new ArrayList<>(meta.lore());
+        existingLore.add(component);
+        meta.lore(existingLore);
         return this;
     }
 

@@ -25,7 +25,8 @@ env:
 jobs:
   run_tests:
     uses: ./.github/workflows/callable.test.yml
-  
+    secrets: inherit
+
   setup:
     needs: run_tests
     runs-on: ubuntu-latest

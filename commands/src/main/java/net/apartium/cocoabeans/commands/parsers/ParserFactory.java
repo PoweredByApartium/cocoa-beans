@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 /**
@@ -16,6 +17,42 @@ import java.util.Collection;
  */
 @ApiStatus.AvailableSince("0.0.30")
 public interface ParserFactory {
+
+    /**
+     * Get the class of the parser factory from an annotation
+     * @param annotation The annotation that has a CommandParserFactory
+     * @return The class of the parser factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static Class<? extends ParserFactory> getParserFactoryClass(Annotation annotation) {
+        CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
+        return commandParserFactory == null ? null : commandParserFactory.value();
+    }
+
+    /**
+     * Create a parser factory from an annotation
+     * @param annotation The annotation that has a CommandParserFactory
+     * @param onlyClassParser Whether to only create parsers for classes
+     * @return The created parser factory
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static ParserFactory createFromAnnotation(Annotation annotation, boolean onlyClassParser) {
+        if (annotation == null)
+            return null;
+
+        CommandParserFactory commandParserFactory = annotation.annotationType().getAnnotation(CommandParserFactory.class);
+        if (commandParserFactory == null)
+            return null;
+
+        if (!commandParserFactory.scope().isClass() && onlyClassParser)
+            return null;
+
+        try {
+            return commandParserFactory.value().getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException("Failed to instantiate parser factory: " + commandParserFactory.value(), e);
+        }
+    }
 
     /**
      * Construct argument parsers for the given annotation

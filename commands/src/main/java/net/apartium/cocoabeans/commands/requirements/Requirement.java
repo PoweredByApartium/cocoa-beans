@@ -10,6 +10,11 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represents a requirement to run a command or a sub command, eg a permission, sender type (player / console etc)
  * @see RequirementFactory
@@ -23,6 +28,16 @@ public interface Requirement {
      * @return if sender meets requirement or else given an error
      */
     RequirementResult meetsRequirement(RequirementEvaluationContext context);
+
+    /**
+     * Get list of classes that will be return if requirement is met
+     * Note: By default returns an empty list
+     * @return list of classes that will be return if requirement is met
+     */
+    @ApiStatus.AvailableSince("0.0.36")
+    default List<Class<?>> getTypes() {
+        return Collections.emptyList();
+    }
 
 
 }
