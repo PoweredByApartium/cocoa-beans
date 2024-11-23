@@ -104,7 +104,15 @@ import java.util.stream.Stream;
 
             for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
                 try {
-                    handleSubCommand(node, clazz, requirementSet, argumentTypeHandlerMap, publicLookup, commandOption, method, targetMethod, classRequirementsResult);
+                    handleSubCommand(new ParserSubCommandContext(
+                            method,
+                            null,
+                            clazz,
+                            node,
+                            commandOption,
+                            argumentTypeHandlerMap,
+                            requirementSet
+                    ), publicLookup, targetMethod, classRequirementsResult);
                 } catch (IllegalAccessException e) {
                     Dispensers.dispense(e);
                     return;
@@ -167,7 +175,7 @@ import java.util.stream.Stream;
         }
     }
 
-    private void handleSubCommand(CommandNode node, Class<?> clazz, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, MethodHandles.Lookup publicLookup, CommandOption commandOption, Method method, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
+    private void handleSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
         ExceptionHandle exceptionHandle;
         if (targetMethod == null)
             return;
@@ -175,7 +183,7 @@ import java.util.stream.Stream;
         SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
 
         for (SubCommand subCommand : superSubCommands) {
-            parseSubCommand(new ParserSubCommandContext(method, subCommand, clazz, node, commandOption, argumentTypeHandlerMap, requirementSet), publicLookup, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+            parseSubCommand(new ParserSubCommandContext(context.method, subCommand, context.clazz, context.commandNode, context.commandOption, context.argumentTypeHandlerMap, context.requirementSet), publicLookup, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
         }
 
         exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
@@ -184,9 +192,9 @@ import java.util.stream.Stream;
                 CollectionHelpers.addElementSorted(
                         handleExceptionVariants,
                         new HandleExceptionVariant(
-                                publicLookup.unreflect(method),
-                                Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
-                                node,
+                                publicLookup.unreflect(context.method),
+                                Arrays.stream(context.method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
+                                context.commandNode,
                                 exceptionHandle.priority()
                         ),
                         HANDLE_EXCEPTION_VARIANT_COMPARATOR
