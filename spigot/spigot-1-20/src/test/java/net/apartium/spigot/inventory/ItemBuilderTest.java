@@ -10,7 +10,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
