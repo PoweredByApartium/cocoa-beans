@@ -1,13 +1,18 @@
 package net.apartium.spigot.inventory;
 
+import be.seeseemelk.mockbukkit.profile.PlayerProfileMock;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.spigot.SpigotTestBase;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
+import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -192,6 +197,35 @@ class ItemBuilderTest extends SpigotTestBase {
         assertEquals(Component.text("This lore line #4"), itemEdit.getItemMeta().lore().get(3));
     }
 
+    @Test
+    void skullBuilderPaper() {
+        PlayerProfileMock profile = server.createProfile(UUID.randomUUID());
+        ItemStack build = ItemBuilder.skullBuilder(profile).build();
+        assertEquals(Material.PLAYER_HEAD, build.getType());
+
+    }
+
+    @Test
+    void skullBuilderOfflinePlayer() {
+        OfflinePlayer offlinePlayer = server.getOfflinePlayer(UUID.randomUUID());
+        ItemStack build = ItemBuilder.skullBuilder(offlinePlayer).build();
+        assertEquals(Material.PLAYER_HEAD, build.getType());
+    }
+
+    @Test
+    void skullBuilderOfflineURL() throws Exception {
+        ItemStack build = ItemBuilder.skullBuilder(new URL("https://google.com")).build();
+        assertEquals(Material.PLAYER_HEAD, build.getType());
+    }
+
+    @Test
+    void skullBuilderOfflineBase() throws Exception {
+        ItemStack build = ItemBuilder.skullBuilder("").build();
+        assertEquals(Material.PLAYER_HEAD, build.getType());
+    }
+
+
+
     private void assertItem(ItemStack item, Material type, int amount, String name, List<String> lore) {
         assertEquals(type, item.getType());
         assertEquals(amount, item.getAmount());
@@ -211,7 +245,5 @@ class ItemBuilderTest extends SpigotTestBase {
             assertEquals(lore, item.getItemMeta().lore());
         }
     }
-
-
 
 }

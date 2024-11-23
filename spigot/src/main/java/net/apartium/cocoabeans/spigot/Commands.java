@@ -28,8 +28,6 @@ public class Commands {
 
     private static final MethodHandle getCommandMap = getCommandMap0();
 
-    private static final CommandMap commandMap = getCommandMap(Bukkit.getServer());
-
     private static MethodHandle getCommandMap0() {
         try {
             Method method = Bukkit.getServer().getClass().getMethod("getCommandMap");
@@ -60,7 +58,10 @@ public class Commands {
      * @return bukkit command map object
      */
     public static CommandMap getCommandMap() {
-        return commandMap;
+        // note: We don't cache the command map instance to make it easier to apply unit testing
+        // in unit testing scenario the active command map instance will change often
+        // because we use method handles to access the command map, it's not a big deal
+        return getCommandMap(Bukkit.getServer());
     }
 
 }

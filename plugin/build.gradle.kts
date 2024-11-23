@@ -16,6 +16,10 @@ dependencies {
     implementation(project(":spigot:spigot-1-20"))
     implementation(project(":commands:spigot-platform"))
 
+    testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")
+
 }
 
 tasks {

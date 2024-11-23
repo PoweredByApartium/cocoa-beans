@@ -1,15 +1,25 @@
 package net.apartium.cocoabeans.structs;
 
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.Region;
 import net.apartium.cocoabeans.space.SphereRegion;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SphereRegionTest {
+class SphereRegionTest {
 
     @Test
-    public void collide() {
+    void sphere() {
+        SphereRegion sphere = Region.sphere(
+                Position.UP,
+                5
+        );
+        assertNotNull(sphere);
+    }
+
+    @Test
+    void collide() {
         SphereRegion region = new SphereRegion(
                 new Position(0, 0, 0),
                 5
@@ -26,7 +36,7 @@ public class SphereRegionTest {
     }
 
     @Test
-    public void distance() {
+    void distance() {
         SphereRegion region = new SphereRegion(
                 new Position(0, 0, 0),
                 5

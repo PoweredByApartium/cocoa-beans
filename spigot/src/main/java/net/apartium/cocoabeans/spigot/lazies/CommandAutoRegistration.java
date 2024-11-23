@@ -27,7 +27,8 @@ import java.util.Locale;
 public class CommandAutoRegistration {
 
     private static Class<?> COMMAND_NODE_CLASS;
-    {
+
+    static {
         try {
             COMMAND_NODE_CLASS = Class.forName("net.apartium.cocoabeans.commands.CommandNode");
         } catch (ClassNotFoundException e) {
