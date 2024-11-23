@@ -1,15 +1,16 @@
 package net.apartium.spigot.inventory;
 
+import be.seeseemelk.mockbukkit.UnimplementedOperationException;
 import be.seeseemelk.mockbukkit.profile.PlayerProfileMock;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.spigot.SpigotTestBase;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -200,9 +201,7 @@ class ItemBuilderTest extends SpigotTestBase {
     @Test
     void skullBuilderPaper() {
         PlayerProfileMock profile = server.createProfile(UUID.randomUUID());
-        ItemStack build = ItemBuilder.skullBuilder(profile).build();
-        assertEquals(Material.PLAYER_HEAD, build.getType());
-
+        assertThrows(UnimplementedOperationException.class, () -> ItemBuilder.skullBuilder(profile).build(), "MockBukkit does not support player skulls");
     }
 
     @Test
@@ -213,13 +212,12 @@ class ItemBuilderTest extends SpigotTestBase {
     }
 
     @Test
-    void skullBuilderOfflineURL() throws Exception {
-        ItemStack build = ItemBuilder.skullBuilder(new URL("https://google.com")).build();
-        assertEquals(Material.PLAYER_HEAD, build.getType());
+    void skullBuilderOfflineURL() {
+        assertThrows(UnimplementedOperationException.class, () -> ItemBuilder.skullBuilder(new URL("https://google.com")).build(), "MockBukkit does not support player skulls");
     }
 
     @Test
-    void skullBuilderOfflineBase() throws Exception {
+    void skullBuilderOfflineBase() {
         ItemStack build = ItemBuilder.skullBuilder("").build();
         assertEquals(Material.PLAYER_HEAD, build.getType());
     }
