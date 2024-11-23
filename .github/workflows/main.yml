@@ -47,11 +47,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Publish to maven repository
-        run: ./gradlew publish shadowJar
+        run: ./gradlew check sonar publish shadowJar -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
 
       - name: Move JAR file to root
         run: mv plugin/build/libs/*.jar ./

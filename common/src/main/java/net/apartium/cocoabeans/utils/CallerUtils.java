@@ -41,7 +41,7 @@ public class CallerUtils {
      * @param clazz class to exclude from stack trace search
      * @return class name
      */
-    public static String getCallerClassNameExpect(Class<?> clazz) {
+    public static String getCallerClassNameExcept(Class<?> clazz) {
         return impl.getCallerClassNameExpect(clazz);
     }
 
@@ -73,7 +73,7 @@ public class CallerUtils {
             return StackWalker.getInstance().walk(stream ->
                     stream
                             .map(StackWalker.StackFrame::getClassName)
-                            .filter(cls -> !cls.equals(clazz.getName()))
+                            .filter(cls -> (clazz == null || !cls.equals(clazz.getName())) && !cls.equals(CallerUtils.class.getName()) && !cls.equals(StackWalkerImpl.class.getName()))
                             .findFirst()
             ).orElse(null);
         }
