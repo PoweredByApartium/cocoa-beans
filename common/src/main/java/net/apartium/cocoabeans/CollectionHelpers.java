@@ -166,7 +166,7 @@ public class CollectionHelpers {
      * @param <V> value type
      */
     @ApiStatus.AvailableSince("0.0.37")
-    public static <K, V> void putAllIfAbsent(Map<K, V> map, Map<K, V> other) {
+    public static <K, V> void mergeInto(Map<K, V> map, Map<K, V> other) {
         for (Map.Entry<K, V> entry : other.entrySet()) {
             map.putIfAbsent(entry.getKey(), entry.getValue());
         }

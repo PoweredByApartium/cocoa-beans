@@ -64,7 +64,7 @@ public interface ArgumentRequirementFactory {
 
             return null;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Failed to instantiate argument requirement factory: " + clazz, e);
+            throw new RuntimeException("Failed to instantiate argument requirement factory: " + clazz, e);
         }
     }
 

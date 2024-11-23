@@ -141,19 +141,19 @@ class CollectionHelpersTest {
     }
 
     @Test
-    void testPutAllIfAbsent() {
+    void testMergeInto() {
         Map<String, String> map = new HashMap<>();
 
-        CollectionHelpers.putAllIfAbsent(map, Map.of("test", "value0"));
+        CollectionHelpers.mergeInto(map, Map.of("test", "value0"));
 
         assertEquals(Map.of("test", "value0"), map);
 
-        CollectionHelpers.putAllIfAbsent(map, Map.of("test", "value1"));
+        CollectionHelpers.mergeInto(map, Map.of("test", "value1"));
 
         assertEquals(Map.of("test", "value0"), map);
 
         map = new HashMap<>();
-        CollectionHelpers.putAllIfAbsent(map, Map.of("test", "value0", "test2", "value3", "test0", "value1", "test1", "value2"));
+        CollectionHelpers.mergeInto(map, Map.of("test", "value0", "test2", "value3", "test0", "value1", "test1", "value2"));
 
         assertEquals(Map.of("test", "value0", "test0", "value1", "test1", "value2", "test2", "value3"), map);
 

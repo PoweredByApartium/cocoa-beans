@@ -51,7 +51,7 @@ public interface RequirementFactory {
         try {
             return requirementFactoryClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Failed to instantiate requirement factory: " + requirementFactoryClass, e);
+            throw new RuntimeException("Failed to instantiate requirement factory: " + requirementFactoryClass, e);
         }
     }
 

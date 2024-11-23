@@ -229,13 +229,13 @@ import java.util.stream.Stream;
         Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(serializeArgumentTypeHandler(context.commandNode, context.method.getAnnotations(), context.method, false));
 
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(context.method)) {
-            CollectionHelpers.putAllIfAbsent(
+            CollectionHelpers.mergeInto(
                     methodArgumentTypeHandlerMap,
                     serializeArgumentTypeHandler(context.commandNode, targetMethod.getAnnotations(), targetMethod, false)
             );
         }
 
-        CollectionHelpers.putAllIfAbsent(
+        CollectionHelpers.mergeInto(
                 methodArgumentTypeHandlerMap,
                 context.argumentTypeHandlerMap
         );

@@ -50,7 +50,7 @@ public interface ParserFactory {
         try {
             return commandParserFactory.value().getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Failed to instantiate parser factory: " + commandParserFactory.value(), e);
+            throw new RuntimeException("Failed to instantiate parser factory: " + commandParserFactory.value(), e);
         }
     }
 
