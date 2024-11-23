@@ -1,33 +1,34 @@
 package net.apartium.cocoabeans.spigot;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public abstract class SpigotTestBase {
+import static org.junit.jupiter.api.Assertions.*;
+
+class CocoaBeansSpigotLoaderTest {
 
     protected ServerMock server;
 
-    protected MockPlugin plugin;
+    protected CocoaBeansSpigotLoader plugin;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         server = MockBukkit.mock();
-        plugin = MockBukkit.createMockPlugin();
-
-        initialize();
+        plugin = MockBukkit.load(CocoaBeansSpigotLoader.class);
     }
 
-    public abstract void initialize();
+    @Test
+    void testLoaded() {
+        assertNotNull(plugin);
+        assertTrue(plugin.isEnabled());
+    }
 
     @AfterEach
     public void tearDown() {
         MockBukkit.unmock();
-        server = null;
-        plugin = null;
     }
-
 
 }

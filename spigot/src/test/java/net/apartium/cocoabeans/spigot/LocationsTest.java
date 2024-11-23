@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LocationsTest extends CocoaBeansTestBase {
+class LocationsTest extends CocoaBeansTestBase {
 
     private Location location, copy, diffLocation;
     private WorldMock world;
@@ -66,6 +66,16 @@ public class LocationsTest extends CocoaBeansTestBase {
         assertEquals(1, result.size());
         assertTrue(result.contains(new Location(world, 0, 0, 0)));
     }
+
+    @Test
+    void testGetLocationsBetweenInverse() {
+        Location location0 = new Location(this.world, 1, 1, 1);
+        Location location1 = new Location(this.world, 0, 0, 0);
+
+        Set<Location> sameResult = Locations.getLocationsBetween(location0, location1);
+        assertFalse(sameResult.isEmpty());
+    }
+
 
     @Test
     void testToPosition() {

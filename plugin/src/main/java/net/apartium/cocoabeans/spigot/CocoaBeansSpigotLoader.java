@@ -12,12 +12,17 @@ package net.apartium.cocoabeans.spigot;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CocoaBeansSpigotLoader extends JavaPlugin {
+public class CocoaBeansSpigotLoader extends JavaPlugin {
 
     @Override
-    public void onEnable() {}
+    public void onEnable() {
+        // Nothing is needed here
+        // Ideally, all loading mechanisms should be triggered via static init to allow for easier inclusion into other plugins
+    }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        // see note on onEnable
+    }
 
 }

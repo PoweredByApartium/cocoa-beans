@@ -2,24 +2,27 @@ package net.apartium.cocoabeans.spigot.inventory;
 
 import io.papermc.paper.enchantments.EnchantmentRarity;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityCategory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.net.URLClassLoader;
 import java.util.Set;
 
 @ApiStatus.Internal
 public class EnchantGlow_1_20_R1 extends Enchantment {
 
     public static final NamespacedKey
-            ENCHANT_GLOW_KEY = new NamespacedKey(JavaPlugin.getProvidingPlugin(EnchantGlow.class), "cocoa_glow");
+            ENCHANT_GLOW_KEY = new NamespacedKey(getProvidingPlugin(), "cocoa_glow");
 
     public EnchantGlow_1_20_R1() {
         super(ENCHANT_GLOW_KEY);
@@ -104,4 +107,15 @@ public class EnchantGlow_1_20_R1 extends Enchantment {
         return Enchantment.CHANNELING.translationKey();
     }
 
+    private static Plugin getProvidingPlugin() {
+        try {
+            return JavaPlugin.getProvidingPlugin(EnchantGlow.class);
+        } catch (IllegalArgumentException e) {
+            if (!(EnchantGlow_1_20_R1.class.getClassLoader() instanceof URLClassLoader)) {
+                // this will trigger in unit test scenario
+                return Bukkit.getPluginManager().getPlugins()[0];
+            } else
+                throw e;
+        }
+    }
 }

@@ -3,14 +3,24 @@ package net.apartium.cocoabeans.structs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.apartium.cocoabeans.space.BoxRegion;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.Region;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BoxRegionTest {
+class BoxRegionTest {
 
     @Test
-    public void collide() {
+    void box() {
+        BoxRegion box = Region.box(
+                Position.UP,
+                Position.DOWN
+        );
+        assertNotNull(box);
+    }
+
+    @Test
+    void collide() {
         BoxRegion region = new BoxRegion(
                 0, 3,
                 0, 3,
@@ -28,7 +38,7 @@ public class BoxRegionTest {
     }
 
     @Test
-    public void distance() {
+    void distance() {
         BoxRegion region = new BoxRegion(
                 new Position(0, 0, 0),
                 new Position(3, 3, 3)
@@ -44,7 +54,7 @@ public class BoxRegionTest {
     }
 
     @Test
-    public void getAndSet() {
+    void getAndSet() {
         BoxRegion region = new BoxRegion(
                 new Position(0, 0, 0),
                 new Position(3, 3, 3)

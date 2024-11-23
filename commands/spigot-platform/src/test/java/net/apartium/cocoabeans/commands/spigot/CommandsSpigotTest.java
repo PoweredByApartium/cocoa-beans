@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CommandsSpigotTest extends CommandsSpigotTestBase {
+class CommandsSpigotTest extends CommandsSpigotTestBase {
 
     PlayerMock ikfir;
 
@@ -161,6 +161,19 @@ public class CommandsSpigotTest extends CommandsSpigotTestBase {
                 evaluateTabCompletion(ikfir, "test", "give ikfir dirt"),
                 List.of("DIRT", "DIRT_PATH")
         ));
+    }
+
+    @Test
+    void testWithoutPermission() {
+        execute(ikfir, "test permission");
+        assertEquals("Invalid usage", ikfir.nextMessage());
+    }
+
+    @Test
+    void testWithPermission() {
+        ikfir.addAttachment(plugin, "cocoabeans.test", true);
+        execute(ikfir, "test permission");
+        assertEquals("You have permission!", ikfir.nextMessage());
     }
 
 
