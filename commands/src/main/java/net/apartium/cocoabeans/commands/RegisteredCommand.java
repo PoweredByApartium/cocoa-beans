@@ -466,14 +466,14 @@ import java.util.stream.Stream;
         Set<Requirement> requirements = new HashSet<>();
 
         for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
-            requirements.addAll(RequirementSet.createRequirementSet(commandManager.requirementFactories, commandNode, c.getAnnotations()));
+            requirements.addAll(createRequirementSet(commandNode, c.getAnnotations()));
         }
 
         return requirements;
     }
 
     private Set<Requirement> findAllRequirements(CommandNode commandNode, Method method) {
-        Set<Requirement> requirements = new HashSet<>(RequirementSet.createRequirementSet(commandManager.requirementFactories, commandNode, method.getAnnotations()));
+        Set<Requirement> requirements = new HashSet<>(createRequirementSet(commandNode, method.getAnnotations()));
         for (Method target : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
             requirements.addAll(createRequirementSet(commandNode, target.getAnnotations()));
         }

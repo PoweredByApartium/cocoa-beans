@@ -5,31 +5,44 @@ import net.apartium.cocoabeans.commands.ArgumentMapper;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.RegisteredCommandVariant;
 import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
+import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
+import net.apartium.cocoabeans.commands.lexer.CommandLexer;
+import net.apartium.cocoabeans.commands.lexer.CommandToken;
+import net.apartium.cocoabeans.commands.lexer.KeywordToken;
+import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.*;
 
-@ApiStatus.AvailableSince("0.0.30")
+@ApiStatus.AvailableSince("0.0.37")
 public class  CompoundParser<T> extends ArgumentParser<T> {
 
     private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
     private final Class<?> self;
     private final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
+    private final ArgumentMapper argumentMapper;
+    private final CommandLexer commandLexer;
+
 
     /**
      * Constructs a
      *
+     * @param self
      * @param keyword
      * @param clazz
      * @param priority
      */
-    protected CompoundParser(Class<? extends CompoundParser<T>> self, String keyword, Class<T> clazz, int priority) {
+    protected CompoundParser(Class<? extends CompoundParser<T>> self, String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         super(keyword, clazz, priority);
 
         this.self = self;
+        this.argumentMapper = argumentMapper;
+
+        this.commandLexer = commandLexer;
         this.compoundParserBranchProcessor = new CompoundParserBranchProcessor<>();
 
         createBranch();
@@ -43,10 +56,38 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
 
             // TODO Continue here
             for (ParserVariant parserVariant : parserVariants) {
-
+                handleParserVariants(parserVariant);
             }
         }
     }
+
+    private void handleParserVariants(ParserVariant parserVariant) {
+        List<CommandToken> tokens = commandLexer.tokenize(parserVariant.value());
+
+        if (tokens.isEmpty())
+            throw new IllegalArgumentException("Parser variant cannot be empty");
+
+        CompoundParserBranchProcessor<?> current = compoundParserBranchProcessor;
+        for (int i = 0; i < tokens.size(); i++) {
+            CommandToken token = tokens.get(i);
+
+            RequirementSet requirements = i == 0 ? methodRequirements : new RequirementSet();
+
+            if (token instanceof KeywordToken keywordToken) {
+                current = createKeywordOption(currentCommandOption, context.subCommand, keywordToken, requirements, requirementsResult);
+                continue;
+            }
+
+            if (token instanceof ArgumentParserToken argumentParserToken) {
+                current = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult);
+                continue;
+            }
+
+            throw new UnknownTokenException(token);
+        }
+    }
+
+    private CompoundParserBranchProcessor
 
     protected void addParser(ArgumentParser<?> parser) {
         argumentTypeHandlerMap.put(parser.getKeyword(), parser);
