@@ -51,8 +51,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
         try {
             createBranch();
         } catch (IllegalAccessException e) {
-            Dispensers.dispense(e);
-            return;
+            throw new RuntimeException("Failed to create branch", e);
         }
 
         // clear cache
@@ -220,6 +219,9 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
                     processingContext.sender(),
                     new ArgumentContext(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.sender(), parse.get().mappedByClass)
             );
+
+            if (parameters == null)
+                continue;
 
             T output;
             try {

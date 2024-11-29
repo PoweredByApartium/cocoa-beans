@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.commands.AbstractCommandProcessingContext;
+import net.apartium.cocoabeans.commands.SimpleCommandProcessingContext;
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.RegisteredVariant;
@@ -29,7 +29,7 @@ import java.util.*;
             if (parse.isEmpty())
                 continue;
 
-            Optional<CompoundParser.ParserResult> result = entry.value().parse(new AbstractCommandProcessingContext(
+            Optional<CompoundParser.ParserResult> result = entry.value().parse(new SimpleCommandProcessingContext(
                     processingContext.sender(),
                     processingContext.label(),
                     processingContext.args().toArray(new String[0]),

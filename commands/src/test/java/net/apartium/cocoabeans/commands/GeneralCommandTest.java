@@ -115,7 +115,7 @@ public class  GeneralCommandTest extends CommandTestBase {
 
     @Test
     void senderMeetsRequirementTest() {
-        CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, "test", new String[0], 0);
+        CommandProcessingContext processingContext = new SimpleCommandProcessingContext(sender, "test", new String[0], 0);
         assertTrue(processingContext.senderMeetsRequirement(sender -> RequirementResult.meet()).meetRequirement());
         assertFalse(processingContext.senderMeetsRequirement(sender -> RequirementResult.error(new UnmetRequirementResponse(null, null, null, 0, "no", null))).meetRequirement());
     }

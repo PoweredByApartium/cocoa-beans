@@ -19,8 +19,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@ApiStatus.Internal
-public class AbstractCommandProcessingContext implements CommandProcessingContext {
+/**
+ * A simple implementation of {@link CommandProcessingContext}
+ */
+@ApiStatus.AvailableSince("0.0.37")
+public class SimpleCommandProcessingContext implements CommandProcessingContext {
 
     @NotNull
     private final Sender sender;
@@ -33,47 +36,87 @@ public class AbstractCommandProcessingContext implements CommandProcessingContex
 
     private BadCommandResponse error = null;
 
-    public AbstractCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
+    /**
+     * Create a simple command processing context
+     * @param sender sender
+     * @param label label (command name)
+     * @param args args split by spaces
+     * @param index current index
+     */
+    public SimpleCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
         this.index = index;
         this.label = label;
     }
 
+    /**
+     * Returns the sender
+     * @return sender
+     */
     @Override
     public @NotNull Sender sender() {
         return this.sender;
     }
 
+    /**
+     * Returns the command name
+     * @return command name
+     */
     @Override
     public String label() {
         return label;
     }
 
+    /**
+     * Returns the arguments
+     * @return arguments
+     */
     @Override
     public List<String> args() {
         return this.args;
     }
 
+    /**
+     * Returns the current index
+     * @return current index
+     */
     @Override
     public int index() {
         return this.index;
     }
 
+    /**
+     * check if sender meets requirement
+     * @param requirement requirement to meet
+     * @return requirement result
+     */
     @Override
     public RequirementResult senderMeetsRequirement(Requirement requirement) {
         return requirement.meetsRequirement(new RequirementEvaluationContext(sender, label, args.toArray(new String[0]), index));
     }
 
+    /**
+     * report a problem with command parsing
+     * @param source source reporter of the problem
+     * @param response response error description object
+     */
     @Override
     public void report(Object source, @NotNull BadCommandResponse response) {
         error = response;
     }
 
+    /**
+     * Retrieving the current report
+     * @return current report
+     */
     public BadCommandResponse getReport() {
         return error;
     }
 
+    /**
+     * Clear the current report
+     */
     public void clearReports() {
         error = null;
     }

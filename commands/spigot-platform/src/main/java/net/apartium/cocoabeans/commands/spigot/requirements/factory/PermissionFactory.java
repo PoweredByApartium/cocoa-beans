@@ -10,14 +10,12 @@
 
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
-import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class PermissionFactory implements RequirementFactory {

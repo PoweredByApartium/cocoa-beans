@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.GenericNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;

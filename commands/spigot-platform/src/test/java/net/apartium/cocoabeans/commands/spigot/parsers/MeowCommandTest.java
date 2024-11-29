@@ -5,6 +5,8 @@ import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MeowCommandTest extends CommandsSpigotTestBase {
 
     private PlayerMock player;
@@ -22,7 +24,7 @@ public class MeowCommandTest extends CommandsSpigotTestBase {
     @Test
     void setCommand() {
         execute(player, "cat", "set tom a_cat 13 male");
-        System.out.println(player.nextMessage());
+        assertEquals("tom has been set to cat: a_cat, age: 13, gender: MALE", player.nextMessage());
     }
 
 

@@ -75,7 +75,7 @@ import java.util.*;
             commandError = result;
         }
 
-        AbstractCommandProcessingContext context = new AbstractCommandProcessingContext(sender, commandName, args, index);
+        SimpleCommandProcessingContext context = new SimpleCommandProcessingContext(sender, commandName, args, index);
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key().parser();
@@ -243,7 +243,7 @@ import java.util.*;
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key().isOptional()) {
                         if (!entry.key().optionalNotMatch())
@@ -291,12 +291,12 @@ import java.util.*;
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
-            OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, commandName, args, index));
+            OptionalInt parse = typeParser.tryParse(new SimpleCommandProcessingContext(sender, commandName, args, index));
             if (parse.isEmpty()) {
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key().isOptional()) {
                         if (!entry.key().optionalNotMatch())
@@ -317,7 +317,7 @@ import java.util.*;
 
             if (parse.getAsInt() <= args.length) {
                 if (entry.value().haveAnyRequirementsMeet(sender, commandName, args, index)) {
-                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                     if (tabCompletionResult.isPresent()) {
                         if (tabCompletionResult.get().newIndex() >= args.length) {
                             result.addAll(tabCompletionResult.get().result().stream().toList());
