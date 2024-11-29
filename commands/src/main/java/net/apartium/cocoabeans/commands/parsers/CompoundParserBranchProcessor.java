@@ -28,7 +28,7 @@ import java.util.*;
             for (RequirementResult.Value value : requirementResult.getValues()) {
                 result.get().mappedByClass()
                         .computeIfAbsent(value.clazz(), (clazz) -> new ArrayList<>())
-                        .add(0, value.value());
+                        .add(value.value());
             }
 
             return result;

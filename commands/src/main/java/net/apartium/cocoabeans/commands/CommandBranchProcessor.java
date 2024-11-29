@@ -117,7 +117,7 @@ import java.util.*;
         for (RequirementResult.Value value : requirementResult.getValues()) {
             context.parsedArgs()
                     .computeIfAbsent(value.clazz(), (clazz) -> new ArrayList<>())
-                    .add(0, value.value());
+                    .add(value.value());
         }
     }
 
