@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
+import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.structs.Entry;
 
@@ -15,12 +16,20 @@ import java.util.*;
         RequirementEvaluationContext requirementEvaluationContext = new RequirementEvaluationContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index());
 
         for (Entry<RequirementSet, CompoundParserOption<T>> entry : objectMap) {
-            if (!entry.key().meetsRequirements(requirementEvaluationContext).meetRequirement())
+            RequirementResult requirementResult = entry.key().meetsRequirements(requirementEvaluationContext);
+
+            if (!requirementResult.meetRequirement())
                 continue;
 
             Optional<CompoundParser.ParserResult> result = entry.value().parse(processingContext);
             if (result.isEmpty())
                 continue;
+
+            for (RequirementResult.Value value : requirementResult.getValues()) {
+                result.get().mappedByClass()
+                        .computeIfAbsent(value.clazz(), (clazz) -> new ArrayList<>())
+                        .add(0, value.value());
+            }
 
             return result;
         }
@@ -28,22 +37,6 @@ import java.util.*;
         return Optional.empty();
     }
 
-    public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        RequirementEvaluationContext requirementEvaluationContext = new RequirementEvaluationContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index());
-
-        for (Entry<RequirementSet, CompoundParserOption<T>> entry : objectMap) {
-            if (!entry.key().meetsRequirements(requirementEvaluationContext).meetRequirement())
-                continue;
-
-            OptionalInt result = entry.value().tryParse(processingContext);
-            if (result.isEmpty())
-                continue;
-
-            return result;
-        }
-
-        return OptionalInt.empty();
-    }
     public Optional<ArgumentParser.TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         RequirementEvaluationContext requirementEvaluationContext = new RequirementEvaluationContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index());
 

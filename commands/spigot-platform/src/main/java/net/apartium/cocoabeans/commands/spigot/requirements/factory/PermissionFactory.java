@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
@@ -23,7 +24,7 @@ public class PermissionFactory implements RequirementFactory {
 
     @Nullable
     @Override
-    public Requirement getRequirement(CommandNode node, Object obj) {
+    public Requirement getRequirement(GenericNode node, Object obj) {
         if (!(obj instanceof Permission permission))
             return null;
 

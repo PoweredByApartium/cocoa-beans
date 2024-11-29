@@ -21,7 +21,7 @@ import java.util.*;
 
     private final CommandManager commandManager;
 
-    private final List<RegisteredCommandVariant> registeredCommandVariants = new ArrayList<>();
+    private final List<RegisteredVariant> registeredVariants = new ArrayList<>();
     private final CommandInfo commandInfo = new CommandInfo();
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
@@ -35,7 +35,7 @@ import java.util.*;
 
     public CommandContext handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length == 0 && index == 0) {
-            if (!registeredCommandVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
+            if (!registeredVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
                 return new CommandContext(
                     sender,
                     commandInfo,
@@ -180,7 +180,7 @@ import java.util.*;
 
 
             if (result == null) {
-                if (!registeredCommandVariants.isEmpty())
+                if (!registeredVariants.isEmpty())
                     return new CommandContext(
                             sender,
                             commandInfo,
@@ -342,8 +342,8 @@ import java.util.*;
         return result;
     }
 
-    public List<RegisteredCommandVariant> getRegisteredCommandVariants() {
-        return registeredCommandVariants;
+    public List<RegisteredVariant> getRegisteredCommandVariants() {
+        return registeredVariants;
     }
 
     public CommandInfo getCommandInfo() {

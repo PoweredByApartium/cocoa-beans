@@ -1,18 +1,20 @@
-package net.apartium.cocoabeans.commands.parser;
+package net.apartium.cocoabeans.commands.spigot.parsers;
 
-import net.apartium.cocoabeans.commands.parsers.CompoundParser;
-import net.apartium.cocoabeans.commands.parsers.ParserVariant;
-import net.apartium.cocoabeans.commands.parsers.SourceParser;
+import net.apartium.cocoabeans.commands.SimpleArgumentMapper;
+import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
+import net.apartium.cocoabeans.commands.parsers.*;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@WithParser(StringParser.class)
+@WithParser(IntParser.class)
 public class MeowParser extends CompoundParser<Meow> {
 
 
     public MeowParser(int priority) {
-        super(MeowParser.class, "meow", Meow.class, priority);
+        super("meow", Meow.class, priority, new SimpleArgumentMapper(), new SimpleCommandLexer());
     }
 
     @ParserVariant("<string> <int> <gender>")

@@ -1,28 +1,33 @@
 package net.apartium.cocoabeans.commands.parsers;
 
+import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.Dispensers;
-import net.apartium.cocoabeans.commands.ArgumentMapper;
-import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.RegisteredCommandVariant;
-import net.apartium.cocoabeans.commands.Sender;
+import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandLexer;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARIANT_COMPARATOR;
+
 @ApiStatus.AvailableSince("0.0.37")
-public class  CompoundParser<T> extends ArgumentParser<T> {
+public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode {
+
+    private final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
+    private final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
+    private final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
 
     private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
-    private final Class<?> self;
-    private final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     private final ArgumentMapper argumentMapper;
     private final CommandLexer commandLexer;
@@ -31,143 +36,218 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
     /**
      * Constructs a
      *
-     * @param self
      * @param keyword
      * @param clazz
      * @param priority
      */
-    protected CompoundParser(Class<? extends CompoundParser<T>> self, String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+    protected CompoundParser(String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         super(keyword, clazz, priority);
 
-        this.self = self;
         this.argumentMapper = argumentMapper;
 
         this.commandLexer = commandLexer;
         this.compoundParserBranchProcessor = new CompoundParserBranchProcessor<>();
 
-        createBranch();
+        try {
+            createBranch();
+        } catch (IllegalAccessException e) {
+            Dispensers.dispense(e);
+            return;
+        }
+
+        // clear cache
+        this.requirementFactories.clear();
+        this.parserFactories.clear();
+        this.argumentRequirementFactories.clear();
     }
 
-    private void createBranch() {
-        for (Method method : self.getMethods()) {
+    private void createBranch() throws IllegalAccessException {
+        RequirementSet requirementsResult = RequirementFactory.createRequirementSet(this, this.getClass().getAnnotations(), requirementFactories);
+        Map<String, ArgumentParser<?>> argumentParser = new HashMap<>();
+
+        MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+
+        CollectionHelpers.mergeInto(
+                argumentParser,
+                ParserFactory.findClassParsers(this, this.getClass(), parserFactories)
+        );
+
+        for (Method method : this.getClass().getMethods()) {
             ParserVariant[] parserVariants = method.getAnnotationsByType(ParserVariant.class);
-            if (parserVariants == null || parserVariants.length == 0)
+            if (parserVariants.length == 0)
                 continue;
 
-            // TODO Continue here
+            RequirementSet methodRequirements = new RequirementSet(
+                    RequirementFactory.createRequirementSet(this, method.getAnnotations(), requirementFactories),
+                    requirementsResult
+            );
+
+            Map<String, ArgumentParser<?>> methodArgumentTypeHandlerMap = new HashMap<>(argumentParser);
+            methodArgumentTypeHandlerMap.putAll(ParserFactory.getArgumentParsers(this, method.getAnnotations(), method, false, parserFactories));
+
+            RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(this, method.getParameters(), argumentRequirementFactories);
+
             for (ParserVariant parserVariant : parserVariants) {
-                handleParserVariants(parserVariant);
+                handleParserVariants(lookup.unreflect(method), parserVariant, methodRequirements, methodArgumentTypeHandlerMap, parameters, new ArrayList<>(), new ArrayList<>(methodRequirements));
             }
         }
     }
 
-    private void handleParserVariants(ParserVariant parserVariant) {
+    private void handleParserVariants(MethodHandle method, ParserVariant parserVariant, RequirementSet requirementSet, Map<String, ArgumentParser<?>> argumentParserMap, RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
         List<CommandToken> tokens = commandLexer.tokenize(parserVariant.value());
 
         if (tokens.isEmpty())
             throw new IllegalArgumentException("Parser variant cannot be empty");
 
-        CompoundParserBranchProcessor<?> current = compoundParserBranchProcessor;
+        CompoundParserOption<T> currentOption = findOrCreateOption(this.compoundParserBranchProcessor, requirementSet, new ArrayList<>());
+
+
         for (int i = 0; i < tokens.size(); i++) {
             CommandToken token = tokens.get(i);
 
-            RequirementSet requirements = i == 0 ? methodRequirements : new RequirementSet();
+            RequirementSet requirements = i == 0 ? requirementSet : new RequirementSet();
 
-            if (token instanceof KeywordToken keywordToken) {
-                current = createKeywordOption(currentCommandOption, context.subCommand, keywordToken, requirements, requirementsResult);
-                continue;
-            }
+
+            if (token instanceof KeywordToken)
+                throw new UnsupportedOperationException("Keyword tokens are not supported");
+
 
             if (token instanceof ArgumentParserToken argumentParserToken) {
-                current = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult);
+                currentOption = createArgumentOption(currentOption, argumentParserToken, argumentParserMap, requirements, parsersResult, requirementsResult);
                 continue;
             }
 
             throw new UnknownTokenException(token);
         }
+
+
+        CollectionHelpers.addElementSorted(
+                currentOption.getRegisteredVariants(),
+                new RegisteredVariant(
+                        method,
+                        parameters,
+                        this,
+                        argumentMapper.mapIndices(parameters, parsersResult, requirementsResult),
+                        parserVariant.priority()
+                ),
+                REGISTERED_VARIANT_COMPARATOR
+        );
     }
 
-    private CompoundParserBranchProcessor
+    private CompoundParserOption<T> createArgumentOption(CompoundParserOption<T> option, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> argumentTypeHandlerMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
+        RegisterArgumentParser<?> parser = argumentParserToken.getParser(argumentTypeHandlerMap);
+        if (parser == null)
+            throw new IllegalArgumentException("Parser not found: " + argumentParserToken.getParserName());
 
-    protected void addParser(ArgumentParser<?> parser) {
-        argumentTypeHandlerMap.put(parser.getKeyword(), parser);
-    }
+        Entry<RegisterArgumentParser<?>, CompoundParserBranchProcessor<T>> entryArgument = option.argumentTypeHandlerMap.stream()
+                .filter(entry -> entry.key().equals(parser))
+                .findAny()
+                .orElse(null);
 
-    @Override
-    public Optional<ParseResult<T>> parse(CommandProcessingContext processingContext) {
-        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(processingContext);
+        CompoundParserBranchProcessor<T> branchProcessor = entryArgument == null
+                ? null
+                : entryArgument.value();
 
-        if (parse.isEmpty())
-            return Optional.empty();
+        parsersResult.add(entryArgument == null ? parser : entryArgument.key());
 
-        List<Object> parameters = mapParameters(parse.get(), processingContext.sender(), processingContext);
+        if (branchProcessor == null) {
+            branchProcessor = new CompoundParserBranchProcessor<>();
 
+            CollectionHelpers.addElementSorted(
+                    option.argumentTypeHandlerMap,
+                    new Entry<>(
+                            parser,
+                            branchProcessor
+                    ),
+                    (a, b) -> b.key().compareTo(a.key())
+            );
 
-        Object output;
-        try {
-            output = parse.get().methodHandle().invokeWithArguments(parameters);
-        } catch (Throwable e) {
-            Dispensers.dispense(e);
-            return Optional.empty(); // never going to reach this place
         }
 
-        if (output == null)
-            return Optional.empty();
-
-        return Optional.of((ParseResult<T>) new ParseResult<>(
-                output,
-                parse.get().newIndex
-        ));
+        return findOrCreateOption(branchProcessor, requirements, requirementsResult);
     }
 
-    private List<Object> mapParameters(ParserResult result, Sender sender, CommandProcessingContext processingContext) {
-        if (result.parameters.length == 0)
-            return List.of(self.cast(this));
+    @ApiStatus.Internal
+    private CompoundParserOption<T> findOrCreateOption(CompoundParserBranchProcessor<T> branchProcessor, RequirementSet requirements, List<Requirement> requirementsResult) {
+        for (Entry<RequirementSet, CompoundParserOption<T>> entry : branchProcessor.objectMap) {
+            if (entry.key().equals(requirements))
+                return entry.value();
+        }
 
-        List<Object> parameters = new ArrayList<>(result.parameters.length + 1);
+        CompoundParserOption<T> option = new CompoundParserOption<>();
+        branchProcessor.objectMap.add(new Entry<>(
+                requirements,
+                option
+        ));
 
-        parameters.add(this);
+        requirementsResult.addAll(requirements);
 
-        boolean senderHasBeenUsed = false;
-        boolean processingContextHasBeenUsed = false;
+        return option;
+    }
 
-        for (int i = 0; i < result.parameters.length; i++) {
-            RegisteredCommandVariant.Parameter parameter = result.parameters[i];
+    @ApiStatus.Internal
+    private List<Object> getParameters(RegisteredVariant registeredVariant, Sender sender, ArgumentContext context) {
+        List<Object> parameters = new ArrayList<>(registeredVariant.argumentIndexList().stream()
+                .<Object>map((argumentIndex -> argumentIndex.get(context)))
+                .toList());
 
-            if (!senderHasBeenUsed) {
-                if (parameter.type().isInstance(sender)) {
-                    senderHasBeenUsed = true;
-                    parameters.add(sender);
-                    continue;
-                }
+        parameters.add(0, registeredVariant.node());
 
-                if (parameter.type().isInstance(sender.getSender())) {
-                    senderHasBeenUsed = true;
-                    parameters.add(sender.getSender());
-                    continue;
-                }
+        for (int i = 0; i < registeredVariant.parameters().length; i++) {
+            Object obj = parameters.get(i + 1); // first element is class instance
+            for (ArgumentRequirement argumentRequirement : registeredVariant.parameters()[i].argumentRequirements()) {
+                if (!argumentRequirement.meetsRequirement(sender, null, obj))
+                    return null;
             }
-
-
-            if (!processingContextHasBeenUsed && parameter.type().isInstance(processingContext)) {
-                parameters.add(processingContext);
-                processingContextHasBeenUsed = true;
-                continue;
-            }
-
-            List<Object> objects = result.mappedByClass.get(parameter.type());
-            if (objects == null)
-                throw new RuntimeException("Shouldn't be null");
-
-            parameters.add(objects.remove(0));
         }
 
         return parameters;
     }
 
+
+    @Override
+    public Optional<ParseResult<T>> parse(CommandProcessingContext processingContext) {
+        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(processingContext);
+
+        if (parse.isEmpty()) {
+            processingContext.report(this, new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index(), "No variant found"));
+            return Optional.empty();
+        }
+
+        for (RegisteredVariant registeredVariant : parse.get().registeredVariant()) {
+            List<Object> parameters = getParameters(
+                    registeredVariant,
+                    processingContext.sender(),
+                    new ArgumentContext(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.sender(), parse.get().mappedByClass)
+            );
+
+            T output;
+            try {
+                output = (T) registeredVariant.method().invokeWithArguments(parameters);
+            } catch (Throwable e) {
+                Dispensers.dispense(e);
+                return Optional.empty(); // never going to reach this place
+            }
+
+            if (output == null)
+                continue;
+
+            return Optional.of(new ParseResult<>(
+                    output,
+                    parse.get().newIndex
+            ));
+
+        }
+        processingContext.report(this, new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index(), "No variant found"));
+        return Optional.empty();
+    }
+
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        return compoundParserBranchProcessor.tryParse(processingContext);
+        return parse(processingContext)
+                .map(ParseResult::newIndex)
+                .map(OptionalInt::of)
+                .orElse(OptionalInt.empty());
     }
 
     @Override
@@ -177,8 +257,7 @@ public class  CompoundParser<T> extends ArgumentParser<T> {
 
 
     /* package-private */ record ParserResult (
-            MethodHandle methodHandle,
-            RegisteredCommandVariant.Parameter[] parameters,
+            List<RegisteredVariant> registeredVariant,
             int newIndex,
             Map<Class<?>, List<Object>> mappedByClass
     ) {

@@ -9,6 +9,7 @@
 - [common] Add `CollectionHelpers#putAllIfAbsent(Map<K, V>, Map<K, V>)` to add all elements from one map to another if key isn't present
 - [commands] Improve code structure for registering a command
 - [commands] Add Compound parser
+- [commands] Add `ParserAssertions#assertParserTabCopletetion` for better unit testing
 
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods

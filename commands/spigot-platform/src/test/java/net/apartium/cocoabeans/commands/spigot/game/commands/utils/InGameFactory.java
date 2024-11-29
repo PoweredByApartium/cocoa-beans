@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.spigot.game.commands.utils;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.game.Game;
 import net.apartium.cocoabeans.commands.spigot.game.GamePlayer;
@@ -13,7 +14,7 @@ import java.util.List;
 public class InGameFactory implements RequirementFactory {
 
     @Override
-    public @Nullable Requirement getRequirement(CommandNode commandNode, Object obj) {
+    public @Nullable Requirement getRequirement(GenericNode node, Object obj) {
         if (!(obj instanceof InGame inGame))
             return null;
 

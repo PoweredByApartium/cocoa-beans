@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 
 import java.util.List;
@@ -28,6 +27,6 @@ public interface ArgumentMapper {
      * @param requirements requirements
      * @return list of argument indexes
      */
-    List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements);
+    List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements);
 
 }

@@ -128,7 +128,7 @@ public abstract class CommandManager {
         }
         
 
-        for (RegisteredCommandVariant method : context.option().getRegisteredCommandVariants()) {
+        for (RegisteredVariant method : context.option().getRegisteredCommandVariants()) {
             try {
                 if (invoke(context, sender, method))
                     return true;
@@ -186,16 +186,16 @@ public abstract class CommandManager {
         return true;
     }
 
-    private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        List<Object> parameters = new ArrayList<>(registeredCommandVariant.argumentIndexList().stream()
+    private boolean invoke(CommandContext context, Sender sender, RegisteredVariant registeredVariant) {
+        List<Object> parameters = new ArrayList<>(registeredVariant.argumentIndexList().stream()
                 .<Object>map((argumentIndex -> argumentIndex.get(context.toArgumentContext())))
                 .toList());
 
-        parameters.add(0, registeredCommandVariant.commandNode());
+        parameters.add(0, registeredVariant.node());
 
-        for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
+        for (int i = 0; i < registeredVariant.parameters().length; i++) {
             Object obj = parameters.get(i + 1); // first element is class instance
-            for (ArgumentRequirement argumentRequirement : registeredCommandVariant.parameters()[i].argumentRequirements()) {
+            for (ArgumentRequirement argumentRequirement : registeredVariant.parameters()[i].argumentRequirements()) {
                 if (!argumentRequirement.meetsRequirement(sender, context, obj))
                     return false;
             }
@@ -203,7 +203,7 @@ public abstract class CommandManager {
 
         Object output;
         try {
-            output = registeredCommandVariant.method().invokeWithArguments(parameters);
+            output = registeredVariant.method().invokeWithArguments(parameters);
         } catch (Throwable e) {
             Dispensers.dispense(e);
             return false; // never going to reach this place

@@ -1,22 +1,29 @@
-package net.apartium.cocoabeans.commands.parser;
+package net.apartium.cocoabeans.commands.spigot.parsers;
 
-import net.apartium.cocoabeans.commands.CommandForTest;
-import net.apartium.cocoabeans.commands.CommandTestBase;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MeowCommandTest extends CommandTestBase {
+public class MeowCommandTest extends CommandsSpigotTestBase {
 
+    private PlayerMock player;
 
     @Override
     @BeforeEach
-    public void before() {
-        super.before();
-        testCommandManager.registerArgumentTypeHandler(new MeowParser(0));
+    public void setup() {
+        super.setup();
+        commandManager.registerArgumentTypeHandler(new MeowParser(0));
+        commandManager.addCommand(new CatCommand());
+
+        player = server.addPlayer("ikfir");
     }
 
     @Test
-    void init() {
-        System.out.println("meow");
+    void setCommand() {
+        execute(player, "cat", "set tom a_cat 13 male");
+        System.out.println(player.nextMessage());
     }
+
+
 }

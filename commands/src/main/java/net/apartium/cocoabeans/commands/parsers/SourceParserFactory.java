@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class SourceParserFactory implements ParserFactory {
 
     @Override
-    public @NotNull Collection<ParserResult> getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
+    public @NotNull Collection<ParserResult> getArgumentParser(GenericNode node, Annotation annotation, GenericDeclaration obj) {
         if (!(annotation instanceof SourceParser sourceParser))
             return Collections.emptyList();
 
@@ -36,7 +37,7 @@ public class SourceParserFactory implements ParserFactory {
 
         try {
             return List.of(new ParserResult(new SourceParserImpl<>(
-                    commandNode,
+                    node,
                     sourceParser.keyword(),
                     sourceParser.clazz(),
                     sourceParser.priority(),
@@ -53,7 +54,7 @@ public class SourceParserFactory implements ParserFactory {
 
     private static class SourceParserImpl<T> extends MapBasedParser<T> {
 
-        private final CommandNode node;
+        private final GenericNode node;
 
         private final MethodHandle handle;
         private final long resultMaxAgeInMills;
@@ -61,7 +62,7 @@ public class SourceParserFactory implements ParserFactory {
         private Instant nextCall = Instant.now();
         private Map<String, T> result = null;
 
-        public SourceParserImpl(CommandNode node, String keyword, Class<T> clazz, int priority, MethodHandle handle, long resultMaxAgeInMills, boolean ignoreCase, boolean lax) {
+        public SourceParserImpl(GenericNode node, String keyword, Class<T> clazz, int priority, MethodHandle handle, long resultMaxAgeInMills, boolean ignoreCase, boolean lax) {
             super(keyword, clazz, priority, ignoreCase, lax);
 
             this.node = node;

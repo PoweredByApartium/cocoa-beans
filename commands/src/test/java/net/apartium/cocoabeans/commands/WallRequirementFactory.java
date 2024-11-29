@@ -15,7 +15,7 @@ import net.apartium.cocoabeans.commands.requirements.*;
 public class WallRequirementFactory implements RequirementFactory {
 
     @Override
-    public Requirement getRequirement(CommandNode commandNode, Object obj) {
+    public Requirement getRequirement(GenericNode commandNode, Object obj) {
         return new WallRequirementImpl((WallRequirement) obj);
     }
 
