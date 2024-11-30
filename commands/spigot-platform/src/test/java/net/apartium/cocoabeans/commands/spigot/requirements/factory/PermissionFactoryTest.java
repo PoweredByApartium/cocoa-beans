@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class PermissionFactoryTest {
 
     @Test
-    void passingPermissionFactory() throws ClassNotFoundException {
+    void passingPermissionFactory() {
         PermissionFactory permissionFactory = new PermissionFactory();
 
         assertNull(permissionFactory.getRequirement(null, null));

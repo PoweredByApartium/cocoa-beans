@@ -10,7 +10,8 @@ Available Since 0.0.37
 - [Advantages](#advantages)
 
 ## Introduction
-The compound parser is a simple way to create custom parsers that are composed of other parsers.
+Writing custom parsers for complicated arguments, such as locations, can be a tedious and error prone task.
+For this reason we have added a way to define compound parsers in the same way its possible to define commands. Each parser could have multiple variants with different input types.
 
 ## Usage
 We will create a simple compound parser called `LocationParser` that will parse a location from a string doubles,
@@ -138,3 +139,4 @@ You could lock the parser but it's not recommended because it will slow down the
 - **Easier to Use** 👍: The compound parser is easy to use and can be used to create complex parsers with multiple parameters and variants with different requirements.
 - **Reduced Code** 📦: The compound parser is a reusable component that can be used in multiple commands to avoid code duplication and reduce the amount of code needed to write a command.
 - **Increased Flexibility** 🎯: The compound parser allows you to create parsers that are more complex and can be used in multiple places in your command structure.
+- **Reduced Error Prone** 🐛: The compound parser is easy to use and can be used to create complex parsers with multiple parameters and variants with different requirements.
