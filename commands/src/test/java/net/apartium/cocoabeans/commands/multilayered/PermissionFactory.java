@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.commands.multilayered;
 
-import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.TestSender;

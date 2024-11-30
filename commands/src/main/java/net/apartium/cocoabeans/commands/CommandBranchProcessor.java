@@ -116,7 +116,7 @@ import java.util.*;
     private void addToParserArgs(RequirementResult requirementResult, CommandContext context) {
         for (RequirementResult.Value value : requirementResult.getValues()) {
             context.parsedArgs()
-                    .computeIfAbsent(value.clazz(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(value.clazz(), clazz -> new ArrayList<>())
                     .add(value.value());
         }
     }

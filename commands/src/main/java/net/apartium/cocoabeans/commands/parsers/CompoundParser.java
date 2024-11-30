@@ -34,11 +34,11 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
 
     /**
-     * Constructs a
-     *
-     * @param keyword
-     * @param clazz
-     * @param priority
+     * Constructs a new parser
+     * 
+     * @param keyword keyword of the parser
+     * @param clazz output class
+     * @param priority priority
      */
     protected CompoundParser(String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         super(keyword, clazz, priority);

@@ -29,11 +29,13 @@ public class PermissionFactory implements RequirementFactory {
         return new PermissionImpl(permission, permission.value(), permission.invert());
     }
 
-    // TODO inverted
     private record PermissionImpl(Permission permission, String permissionAsString, boolean invert) implements Requirement {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            if (invert)
+                return meetsInvertedRequirement(context);
+
             Sender sender = context.sender();
 
             if ((sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))) {
@@ -49,6 +51,22 @@ public class PermissionFactory implements RequirementFactory {
                         this,
                         context,
                         "You don't have permission to execute this command"
+                ));
+
+            return RequirementResult.meet();
+        }
+
+        private RequirementResult meetsInvertedRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+
+            if (sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))
+                return RequirementResult.meet();
+
+            if (commandSender.hasPermission(permissionAsString))
+                return RequirementResult.error(new UnmetPermissionResponse(
+                        this,
+                        context,
+                        "You should not have permission to execute this command"
                 ));
 
             return RequirementResult.meet();

@@ -32,7 +32,7 @@ public interface RequirementFactory {
     @ApiStatus.AvailableSince("0.0.37")
     static RequirementSet createRequirementSet(GenericNode node, Annotation[] annotations, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories) {
         if (annotations == null)
-            return null;
+            return new RequirementSet();
 
         Set<Requirement> result = new HashSet<>();
         for (Annotation annotation : annotations) {

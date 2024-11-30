@@ -40,7 +40,7 @@ import java.util.*;
                 continue;
 
             result.get().mappedByClass()
-                    .computeIfAbsent(entry.key().getArgumentType(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(entry.key().getArgumentType(), clazz -> new ArrayList<>())
                     .add(0, parse.get().result());
 
             return result;

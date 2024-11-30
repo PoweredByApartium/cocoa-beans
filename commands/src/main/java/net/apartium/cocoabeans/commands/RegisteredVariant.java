@@ -123,4 +123,28 @@ public record RegisteredVariant(
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RegisteredVariant that)) return false;
+        return priority == that.priority
+                && Objects.equals(node, that.node)
+                && Objects.equals(method, that.method)
+                && Objects.deepEquals(parameters, that.parameters)
+                && Objects.equals(argumentIndexList, that.argumentIndexList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(method, Arrays.hashCode(parameters), node, argumentIndexList, priority);
+    }
+
+    @Override
+    public String toString() {
+        return "RegisteredVariant{" + "method=" + method +
+                ", parameters=" + Arrays.toString(parameters) +
+                ", node=" + node +
+                ", argumentIndexList=" + argumentIndexList +
+                ", priority=" + priority +
+                '}';
+    }
 }

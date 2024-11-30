@@ -114,7 +114,7 @@ import java.util.*;
                 }
 
                 result.parsedArgs()
-                        .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
+                        .computeIfAbsent(typeParser.getArgumentType(), clazz -> new ArrayList<>())
                         .add(0, Optional.empty());
 
                 return result;
@@ -144,7 +144,7 @@ import java.util.*;
             }
 
             result.parsedArgs()
-                    .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(typeParser.getArgumentType(), clazz -> new ArrayList<>())
                     .add(0, parse.get().result());
 
             return result;
@@ -203,7 +203,7 @@ import java.util.*;
 
 
             result.parsedArgs()
-                    .computeIfAbsent(entry.key().parser().getArgumentType(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(entry.key().parser().getArgumentType(), clazz -> new ArrayList<>())
                     .add(0, Optional.empty());
 
             return result;
