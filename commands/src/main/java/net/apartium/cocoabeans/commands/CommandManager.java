@@ -106,7 +106,7 @@ public abstract class CommandManager {
             try {
                 if (invoke(context, sender, method))
                     return true;
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 if (handleError(context, sender, commandName, args, registeredCommand, e))
                     return true;
 
