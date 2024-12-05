@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans.commands.requirements.argument;
 
 import net.apartium.cocoabeans.commands.CommandContext;
-import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
@@ -40,7 +39,17 @@ public class RangeArgumentRequirementFactory implements ArgumentRequirementFacto
             if (argument == null)
                 return false;
 
-            if (!(argument instanceof Double))
+            if (argument instanceof Integer num)
+                argument = num * 1.0;
+            else if (argument instanceof Long num)
+                argument = num * 1.0;
+            else if (argument instanceof Float num)
+                argument = num * 1.0;
+            else if (argument instanceof Short num)
+                argument = num * 1.0;
+            else if (argument instanceof Byte num)
+                argument = num * 1.0;
+            else if (!(argument instanceof Double))
                 return false;
 
             double num = (double) argument;

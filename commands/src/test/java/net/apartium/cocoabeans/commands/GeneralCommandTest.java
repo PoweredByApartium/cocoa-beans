@@ -736,6 +736,8 @@ public class  GeneralCommandTest extends CommandTestBase {
         assertEquals(List.of("Invalid usage"), sender.getMessages());
 
         assertThrowsExactly(NoSuchElementException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
+
+        assertThrowsExactly(IllegalArgumentException.class, () -> testCommandManager.addCommand(new ThereAnotherEvilCommand()));
     }
 
 
