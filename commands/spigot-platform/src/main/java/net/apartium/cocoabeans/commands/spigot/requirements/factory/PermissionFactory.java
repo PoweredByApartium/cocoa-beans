@@ -42,7 +42,7 @@ public class PermissionFactory implements RequirementFactory {
                 return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
-                        "You don't have permission to execute this command"
+                        "You must be a command sender"
                 ));
             }
 
@@ -60,7 +60,11 @@ public class PermissionFactory implements RequirementFactory {
             Sender sender = context.sender();
 
             if (sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))
-                return RequirementResult.meet();
+                return RequirementResult.error(new UnmetPermissionResponse(
+                        this,
+                        context,
+                        "You must be a command sender"
+                ));
 
             if (commandSender.hasPermission(permissionAsString))
                 return RequirementResult.error(new UnmetPermissionResponse(

@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.commands.parsers.ParserAssertions;
 import net.apartium.cocoabeans.space.Position;
 import org.junit.jupiter.api.Test;
 
+import java.util.OptionalInt;
 import java.util.Set;
 
 class PositionParserTest {
@@ -27,6 +28,10 @@ class PositionParserTest {
 
         ParserAssertions.assertParserThrowsReport(parser, null, null, args("1"), BadCommandResponse.class);
         ParserAssertions.assertParserThrowsReport(parser, null, null, args("asd 13 31"), BadCommandResponse.class);
+
+        ParserAssertions.assertTryParseResult(parser, null, null, args("3 5 2"), OptionalInt.of(3));
+        ParserAssertions.assertTryParseResult(parser, null, null, args("meow 3 5 2"), 1, OptionalInt.of(4));
+        ParserAssertions.assertTryParseResult(parser, null, null, args("2 1"), OptionalInt.empty());
     }
 
     @Test
