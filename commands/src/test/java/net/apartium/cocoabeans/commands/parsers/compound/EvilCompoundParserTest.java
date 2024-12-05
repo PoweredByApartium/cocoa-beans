@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
-public class EvilCompoundParserTest {
+class EvilCompoundParserTest {
 
     @Test
     void creatingInstance() {

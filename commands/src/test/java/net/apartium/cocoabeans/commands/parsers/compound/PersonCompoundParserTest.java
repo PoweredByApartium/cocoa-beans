@@ -5,7 +5,7 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ParserAssertions;
 import org.junit.jupiter.api.Test;
 
-public class PersonCompoundParserTest {
+class PersonCompoundParserTest {
 
     @Test
     void testingParser() {
