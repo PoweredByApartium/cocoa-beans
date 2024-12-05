@@ -39,20 +39,11 @@ public class RangeArgumentRequirementFactory implements ArgumentRequirementFacto
             if (argument == null)
                 return false;
 
-            if (argument instanceof Integer num)
-                argument = num * 1.0;
-            else if (argument instanceof Long num)
-                argument = num * 1.0;
-            else if (argument instanceof Float num)
-                argument = num * 1.0;
-            else if (argument instanceof Short num)
-                argument = num * 1.0;
-            else if (argument instanceof Byte num)
-                argument = num * 1.0;
-            else if (!(argument instanceof Double))
+            if (!(argument instanceof Number number))
                 return false;
 
-            double num = (double) argument;
+
+            double num = number.doubleValue();
 
             if (num < from)
                 return false;
