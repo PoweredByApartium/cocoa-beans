@@ -40,6 +40,8 @@
 - [common] Add Rotation and Transform classes
 - [docs] Add docs talking about region box, transform, region and rotation.
 - [spigot-commands] `MaterialParser` using namespaced key for tab competition
+- [spigot] Fix visibility API to work on 1.8
+- [commands] Add `ValueRequirement`
 - [docs] Add docs about region box, transform, region and rotation.
 
 ## v0.0.29
