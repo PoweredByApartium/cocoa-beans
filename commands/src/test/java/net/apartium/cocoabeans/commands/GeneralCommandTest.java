@@ -115,7 +115,7 @@ public class  GeneralCommandTest extends CommandTestBase {
 
     @Test
     void senderMeetsRequirementTest() {
-        CommandProcessingContext processingContext = new AbstractCommandProcessingContext(sender, "test", new String[0], 0);
+        CommandProcessingContext processingContext = new SimpleCommandProcessingContext(sender, "test", new String[0], 0);
         assertTrue(processingContext.senderMeetsRequirement(sender -> RequirementResult.meet()).meetRequirement());
         assertFalse(processingContext.senderMeetsRequirement(sender -> RequirementResult.error(new UnmetRequirementResponse(null, null, null, 0, "no", null))).meetRequirement());
     }
@@ -343,6 +343,19 @@ public class  GeneralCommandTest extends CommandTestBase {
         // Fail
         evaluate("test", "yes meOw");
         assertEquals(List.of("fallbackHandle(Sender sender, String label, String[] args) You can't access that method... args: [yes, meOw]"), sender.getMessages());
+    }
+
+    @Test
+    void performanceTime() {
+        long start, end;
+
+        for (int i = 0; i < 16_384; i++) {
+            start = System.currentTimeMillis();
+            evaluate("test", "try random-string 0.3");
+            end = System.currentTimeMillis();
+            assertEquals(List.of("tryDouble(Sender sender, double num) I ignore the second argument it wasn't important also your number is 0.3"), sender.getMessages());
+            assertTrue(end - start < 50);
+        }
     }
 
     @Test
@@ -723,6 +736,8 @@ public class  GeneralCommandTest extends CommandTestBase {
         assertEquals(List.of("Invalid usage"), sender.getMessages());
 
         assertThrowsExactly(NoSuchElementException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
+
+        assertThrowsExactly(IllegalArgumentException.class, () -> testCommandManager.addCommand(new ThereAnotherEvilCommand()));
     }
 
 

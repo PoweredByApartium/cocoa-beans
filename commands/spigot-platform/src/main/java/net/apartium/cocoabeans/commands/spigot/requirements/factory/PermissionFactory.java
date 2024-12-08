@@ -10,7 +10,7 @@
 
 package net.apartium.cocoabeans.commands.spigot.requirements.factory;
 
-import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
@@ -22,7 +22,7 @@ public class PermissionFactory implements RequirementFactory {
 
     @Nullable
     @Override
-    public Requirement getRequirement(CommandNode node, Object obj) {
+    public Requirement getRequirement(GenericNode node, Object obj) {
         if (!(obj instanceof Permission permission))
             return null;
 
@@ -33,19 +33,44 @@ public class PermissionFactory implements RequirementFactory {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+            if (invert)
+                return meetsInvertedRequirement(context);
+
             Sender sender = context.sender();
-            if (sender == null || !(sender.getSender() instanceof CommandSender commandSender))
+
+            if ((sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))) {
                 return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
-                        "You don't have permission to execute this command"
+                        "You must be a command sender"
                 ));
+            }
 
             if (!commandSender.hasPermission(permissionAsString))
                 return RequirementResult.error(new UnmetPermissionResponse(
                         this,
                         context,
                         "You don't have permission to execute this command"
+                ));
+
+            return RequirementResult.meet();
+        }
+
+        private RequirementResult meetsInvertedRequirement(RequirementEvaluationContext context) {
+            Sender sender = context.sender();
+
+            if (sender.getSender() == null || !(sender.getSender() instanceof CommandSender commandSender))
+                return RequirementResult.error(new UnmetPermissionResponse(
+                        this,
+                        context,
+                        "You must be a command sender"
+                ));
+
+            if (commandSender.hasPermission(permissionAsString))
+                return RequirementResult.error(new UnmetPermissionResponse(
+                        this,
+                        context,
+                        "You should not have permission to execute this command"
                 ));
 
             return RequirementResult.meet();

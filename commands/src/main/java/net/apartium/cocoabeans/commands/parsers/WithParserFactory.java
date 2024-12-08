@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.reflect.ConstructorUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -19,41 +20,6 @@ import java.util.List;
  */
 @ApiStatus.Internal
 public class WithParserFactory implements ParserFactory {
-
-    @Override
-    public @NotNull List<ParserResult> getArgumentParser(CommandNode commandNode, Annotation annotation, GenericDeclaration obj) {
-        if (annotation instanceof WithParsers withParsers) {
-            List<ParserResult> result = new ArrayList<>(withParsers.value().length);
-
-            for (WithParser withParser : withParsers.value())
-                result.addAll(getArgumentParser(commandNode, withParser, obj));
-
-            return result;
-        }
-
-        if (!(annotation instanceof WithParser withParser))
-            return List.of();
-
-
-        try {
-            ArgumentParser<?> argumentParser = newInstance(
-                    ConstructorUtils.getDeclaredConstructors(withParser.value()),
-                    withParser.priority(),
-                    withParser.keyword()
-            );
-
-            if (argumentParser == null)
-                return List.of();
-
-            return List.of(new ParserResult(
-                    argumentParser,
-                    obj instanceof Method ? Scope.VARIANT : Scope.CLASS
-            ));
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            SharedSecrets.LOGGER.log(System.Logger.Level.WARNING, "Failed to create WithParser", e);
-            return List.of();
-        }
-    }
 
     private static <T extends ArgumentParser<?>> T newInstance(Collection<Constructor<T>> constructors, int priority, String keyword) throws InstantiationException, IllegalAccessException, InvocationTargetException {
         Constructor<T> matchingConstructor = null;
@@ -114,6 +80,41 @@ public class WithParserFactory implements ParserFactory {
         }
 
         return matchingConstructor.newInstance(params);
+    }
+
+    @Override
+    public @NotNull List<ParserResult> getArgumentParser(GenericNode node, Annotation annotation, GenericDeclaration obj) {
+        if (annotation instanceof WithParsers withParsers) {
+            List<ParserResult> result = new ArrayList<>(withParsers.value().length);
+
+            for (WithParser withParser : withParsers.value())
+                result.addAll(getArgumentParser(node, withParser, obj));
+
+            return result;
+        }
+
+        if (!(annotation instanceof WithParser withParser))
+            return List.of();
+
+
+        try {
+            ArgumentParser<?> argumentParser = newInstance(
+                    ConstructorUtils.getDeclaredConstructors(withParser.value()),
+                    withParser.priority(),
+                    withParser.keyword()
+            );
+
+            if (argumentParser == null)
+                return List.of();
+
+            return List.of(new ParserResult(
+                    argumentParser,
+                    obj instanceof Method ? Scope.VARIANT : Scope.CLASS
+            ));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            SharedSecrets.LOGGER.log(System.Logger.Level.WARNING, "Failed to create WithParser", e);
+            return List.of();
+        }
     }
 
 }

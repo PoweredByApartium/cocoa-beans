@@ -21,7 +21,7 @@ import java.util.*;
 
     private final CommandManager commandManager;
 
-    private final List<RegisteredCommandVariant> registeredCommandVariants = new ArrayList<>();
+    private final List<RegisteredVariant> registeredVariants = new ArrayList<>();
     private final CommandInfo commandInfo = new CommandInfo();
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
@@ -35,7 +35,7 @@ import java.util.*;
 
     public CommandContext handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length == 0 && index == 0) {
-            if (!registeredCommandVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
+            if (!registeredVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
                 return new CommandContext(
                     sender,
                     commandInfo,
@@ -75,7 +75,7 @@ import java.util.*;
             commandError = result;
         }
 
-        AbstractCommandProcessingContext context = new AbstractCommandProcessingContext(sender, commandName, args, index);
+        SimpleCommandProcessingContext context = new SimpleCommandProcessingContext(sender, commandName, args, index);
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key().parser();
@@ -114,7 +114,7 @@ import java.util.*;
                 }
 
                 result.parsedArgs()
-                        .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
+                        .computeIfAbsent(typeParser.getArgumentType(), clazz -> new ArrayList<>())
                         .add(0, Optional.empty());
 
                 return result;
@@ -144,7 +144,7 @@ import java.util.*;
             }
 
             result.parsedArgs()
-                    .computeIfAbsent(typeParser.getArgumentType(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(typeParser.getArgumentType(), clazz -> new ArrayList<>())
                     .add(0, parse.get().result());
 
             return result;
@@ -180,7 +180,7 @@ import java.util.*;
 
 
             if (result == null) {
-                if (!registeredCommandVariants.isEmpty())
+                if (!registeredVariants.isEmpty())
                     return new CommandContext(
                             sender,
                             commandInfo,
@@ -203,7 +203,7 @@ import java.util.*;
 
 
             result.parsedArgs()
-                    .computeIfAbsent(entry.key().parser().getArgumentType(), (clazz) -> new ArrayList<>())
+                    .computeIfAbsent(entry.key().parser().getArgumentType(), clazz -> new ArrayList<>())
                     .add(0, Optional.empty());
 
             return result;
@@ -243,7 +243,7 @@ import java.util.*;
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key().isOptional()) {
                         if (!entry.key().optionalNotMatch())
@@ -291,12 +291,12 @@ import java.util.*;
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
-            OptionalInt parse = typeParser.tryParse(new AbstractCommandProcessingContext(sender, commandName, args, index));
+            OptionalInt parse = typeParser.tryParse(new SimpleCommandProcessingContext(sender, commandName, args, index));
             if (parse.isEmpty()) {
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                 if (tabCompletionResult.isEmpty()) {
                     if (entry.key().isOptional()) {
                         if (!entry.key().optionalNotMatch())
@@ -317,7 +317,7 @@ import java.util.*;
 
             if (parse.getAsInt() <= args.length) {
                 if (entry.value().haveAnyRequirementsMeet(sender, commandName, args, index)) {
-                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new AbstractCommandProcessingContext(sender, commandName, args, index));
+                    Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                     if (tabCompletionResult.isPresent()) {
                         if (tabCompletionResult.get().newIndex() >= args.length) {
                             result.addAll(tabCompletionResult.get().result().stream().toList());
@@ -342,8 +342,8 @@ import java.util.*;
         return result;
     }
 
-    public List<RegisteredCommandVariant> getRegisteredCommandVariants() {
-        return registeredCommandVariants;
+    public List<RegisteredVariant> getRegisteredCommandVariants() {
+        return registeredVariants;
     }
 
     public CommandInfo getCommandInfo() {

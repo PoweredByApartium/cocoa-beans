@@ -8,6 +8,8 @@
 - [commands] Add support for named command arguments
 - [common] Add `CollectionHelpers#putAllIfAbsent(Map<K, V>, Map<K, V>)` to add all elements from one map to another if key isn't present
 - [commands] Improve code structure for registering a command
+- [commands] Add Compound parser
+- [commands] Add `ParserAssertions#assertParserTabCompletion` for better unit testing
 
 ## 0.0.36
 - [common] Improve MinecraftVersion added known version (1.8 to 1.21.1) with protocol number and some helper methods
@@ -40,6 +42,7 @@
 - [spigot-commands] `MaterialParser` using namespaced key for tab competition
 - [spigot] Fix visibility API to work on 1.8
 - [commands] Add `ValueRequirement`
+- [docs] Add docs about region box, transform, region and rotation.
 
 ## v0.0.29
 - [commands] Improve location parser

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * To be implemented by command classes to provide general functionality
  */
-public interface CommandNode {
+public interface CommandNode extends GenericNode {
 
     /**
      * This method should be overriden by implementations in order to provide fallback implementation for the cmd system

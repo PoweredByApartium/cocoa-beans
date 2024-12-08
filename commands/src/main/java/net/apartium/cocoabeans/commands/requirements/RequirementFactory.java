@@ -10,14 +10,59 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public interface RequirementFactory {
+
+    /**
+     * Create a requirement set from the given annotations
+     * @param node generic node (command node or compound parser)
+     * @param annotations annotations
+     * @param requirementFactories requirement factories for caching factories
+     * @return requirement set
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static RequirementSet createRequirementSet(GenericNode node, Annotation[] annotations, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories) {
+        if (annotations == null)
+            return new RequirementSet();
+
+        Set<Requirement> result = new HashSet<>();
+        for (Annotation annotation : annotations) {
+            Requirement requirement = getRequirement(node, annotation, requirementFactories);
+            if (requirement == null)
+                continue;
+
+            result.add(requirement);
+        }
+
+        return new RequirementSet(result);
+    }
+
+    @ApiStatus.Internal
+    private static Requirement getRequirement(GenericNode node, Annotation annotation, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories) {
+        Class<? extends RequirementFactory> requirementFactoryClass = RequirementFactory.getRequirementFactoryClass(annotation);
+
+        if (requirementFactoryClass == null)
+            return null;
+
+        RequirementFactory requirementFactory = requirementFactories.computeIfAbsent(
+                requirementFactoryClass,
+                clazz -> RequirementFactory.createFromAnnotation(annotation)
+        );
+
+        if (requirementFactory == null)
+            return null;
+
+        return requirementFactory.getRequirement(node, annotation);
+    }
 
     /**
      * Get the class of the requirement factory
@@ -57,12 +102,12 @@ public interface RequirementFactory {
 
     /**
      * Create a requirement from the given object
-     * @param commandNode command node
+     * @param node generic node (command node or compound parser)
      * @param obj object
      * @return requirement or null
      */
     @Nullable
-    Requirement getRequirement(CommandNode commandNode, Object obj);
+    Requirement getRequirement(GenericNode node, Object obj);
 
 }
 

@@ -11,7 +11,7 @@
 package net.apartium.cocoabeans.commands.requirements.argument;
 
 import net.apartium.cocoabeans.commands.CommandContext;
-import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.requirements.ArgumentRequirement;
 import net.apartium.cocoabeans.commands.requirements.ArgumentRequirementFactory;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public class RangeArgumentRequirementFactory implements ArgumentRequirementFactory {
 
     @Override
-    public @Nullable ArgumentRequirement getArgumentRequirement(CommandNode commandNode, Object obj) {
+    public @Nullable ArgumentRequirement getArgumentRequirement(GenericNode node, Object obj) {
         if (obj == null)
             return null;
 
@@ -39,10 +39,11 @@ public class RangeArgumentRequirementFactory implements ArgumentRequirementFacto
             if (argument == null)
                 return false;
 
-            if (!(argument instanceof Double))
+            if (!(argument instanceof Number number))
                 return false;
 
-            double num = (double) argument;
+
+            double num = number.doubleValue();
 
             if (num < from)
                 return false;

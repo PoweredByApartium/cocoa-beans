@@ -10,16 +10,56 @@
 
 package net.apartium.cocoabeans.commands.requirements;
 
-import net.apartium.cocoabeans.commands.CommandManager;
-import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface ArgumentRequirementFactory {
+
+    /**
+     * Create an argument requirement from the given annotations
+     * @param node node
+     * @param annotations annotations
+     * @param argumentRequirementFactories argument requirement factories
+     * @return argument requirements
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    static ArgumentRequirement[] createArgumentRequirements(GenericNode node, Annotation[] annotations, Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories) {
+        if (annotations == null)
+            return new ArgumentRequirement[0];
+
+        List<ArgumentRequirement> result = new ArrayList<>();
+
+        for (Annotation annotation : annotations) {
+            Class<? extends ArgumentRequirementFactory> argumentRequirementType = ArgumentRequirementFactory.getArgumentRequirementFactoryClass(annotation);
+
+            if (argumentRequirementType == null)
+                continue;
+
+            ArgumentRequirement argumentRequirement = Optional.ofNullable(argumentRequirementFactories.computeIfAbsent(
+                            argumentRequirementType,
+                            clazz -> ArgumentRequirementFactory.createFromAnnotation(annotation)
+                    ))
+                    .map(factory -> factory.getArgumentRequirement(node, annotation))
+                    .orElse(null);
+
+            if (argumentRequirement == null)
+                continue;
+
+            result.add(argumentRequirement);
+        }
+
+        return result.toArray(new ArgumentRequirement[0]);
+
+    }
 
     /**
      * Get the class of the argument requirement factory
@@ -38,11 +78,10 @@ public interface ArgumentRequirementFactory {
     /**
      * Create an argument requirement factory
      * @param annotation annotation
-     * @param commandManager command manager
      * @return argument requirement factory
      */
     @ApiStatus.AvailableSince("0.0.37")
-    static ArgumentRequirementFactory createFromAnnotation(Annotation annotation, CommandManager commandManager) {
+    static ArgumentRequirementFactory createFromAnnotation(Annotation annotation) {
         if (annotation == null)
             return null;
 
@@ -55,12 +94,6 @@ public interface ArgumentRequirementFactory {
             Constructor<? extends ArgumentRequirementFactory> constructor = clazz.getConstructor();
             if (constructor.getParameterCount() == 0)
                 return constructor.newInstance();
-
-            if (constructor.getParameters().length == 1 && constructor.getParameterTypes()[0].equals(CommandManager.class)) {
-                if (commandManager == null)
-                    throw new IllegalArgumentException("Command manager cannot be null");
-                return constructor.newInstance(commandManager);
-            }
 
             return null;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -75,6 +108,6 @@ public interface ArgumentRequirementFactory {
      * @return argument requirement or null
      */
     @Nullable
-    ArgumentRequirement getArgumentRequirement(CommandNode commandNode, Object obj);
+    ArgumentRequirement getArgumentRequirement(GenericNode commandNode, Object obj);
 
 }

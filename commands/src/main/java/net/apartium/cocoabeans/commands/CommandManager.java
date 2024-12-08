@@ -89,35 +89,9 @@ public abstract class CommandManager {
                 0
         );
 
-        if (context == null) {
-            BadCommandResponse badCommandResponse = null;
-            for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+        if (context == null)
+            return handleNullContext(sender, commandName, args, registeredCommand);
 
-                RequirementResult requirementResult = listener.requirements().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, 0));
-                if (requirementResult.hasError()) {
-                    badCommandResponse = requirementResult.getError();
-                    break;
-                }
-            }
-
-
-             // fall back will be called even if sender doesn't meet requirements
-            for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-                if (listener.listener().fallbackHandle(sender, commandName, args))
-                    return true;
-
-            }
-
-            if (badCommandResponse != null) {
-                if (handleError(null, sender, commandName, args, registeredCommand, context.error().getError()))
-                    return true;
-
-                context.error().throwError();
-                return false; // should never reach here
-            }
-
-            return false;
-        }
 
         if (context.hasError()) {
             if (handleError(context, sender, commandName, args, registeredCommand, context.error().getError()))
@@ -128,21 +102,55 @@ public abstract class CommandManager {
         }
         
 
-        for (RegisteredCommandVariant method : context.option().getRegisteredCommandVariants()) {
+        for (RegisteredVariant method : context.option().getRegisteredCommandVariants()) {
             try {
                 if (invoke(context, sender, method))
                     return true;
-            } catch (Throwable e) {
-                if (handleError(context, sender, commandName, args, registeredCommand, e)) return true;
+            } catch (Exception e) {
+                if (handleError(context, sender, commandName, args, registeredCommand, e))
+                    return true;
 
                 throw e;
             }
         }
 
+        return handleFallback(sender, commandName, args, registeredCommand);
+    }
+
+    private boolean handleNullContext(Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand) throws Exception {
+        BadCommandResponse badCommandResponse = null;
+        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+
+            RequirementResult requirementResult = listener.requirements().meetsRequirements(new RequirementEvaluationContext(sender, commandName, args, 0));
+            if (requirementResult.hasError()) {
+                badCommandResponse = requirementResult.getError();
+                break;
+            }
+        }
+
+
+        // fall back will be called even if sender doesn't meet requirements
         for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
             if (listener.listener().fallbackHandle(sender, commandName, args))
                 return true;
 
+        }
+
+        if (badCommandResponse != null) {
+            if (handleError(null, sender, commandName, args, registeredCommand, badCommandResponse.getError()))
+                return true;
+
+            badCommandResponse.throwError();
+            return false; // should never reach here
+        }
+
+        return false;
+    }
+
+    private boolean handleFallback(Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand) {
+        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
+            if (listener.listener().fallbackHandle(sender, commandName, args))
+                return true;
         }
 
         return false;
@@ -186,16 +194,16 @@ public abstract class CommandManager {
         return true;
     }
 
-    private boolean invoke(CommandContext context, Sender sender, RegisteredCommandVariant registeredCommandVariant) {
-        List<Object> parameters = new ArrayList<>(registeredCommandVariant.argumentIndexList().stream()
+    private boolean invoke(CommandContext context, Sender sender, RegisteredVariant registeredVariant) {
+        List<Object> parameters = new ArrayList<>(registeredVariant.argumentIndexList().stream()
                 .<Object>map((argumentIndex -> argumentIndex.get(context.toArgumentContext())))
                 .toList());
 
-        parameters.add(0, registeredCommandVariant.commandNode());
+        parameters.add(0, registeredVariant.node());
 
-        for (int i = 0; i < registeredCommandVariant.parameters().length; i++) {
+        for (int i = 0; i < registeredVariant.parameters().length; i++) {
             Object obj = parameters.get(i + 1); // first element is class instance
-            for (ArgumentRequirement argumentRequirement : registeredCommandVariant.parameters()[i].argumentRequirements()) {
+            for (ArgumentRequirement argumentRequirement : registeredVariant.parameters()[i].argumentRequirements()) {
                 if (!argumentRequirement.meetsRequirement(sender, context, obj))
                     return false;
             }
@@ -203,7 +211,7 @@ public abstract class CommandManager {
 
         Object output;
         try {
-            output = registeredCommandVariant.method().invokeWithArguments(parameters);
+            output = registeredVariant.method().invokeWithArguments(parameters);
         } catch (Throwable e) {
             Dispensers.dispense(e);
             return false; // never going to reach this place

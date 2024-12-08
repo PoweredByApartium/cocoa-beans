@@ -9,10 +9,9 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;
 import org.junit.jupiter.api.AssertionFailureBuilder;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Parser assertions is a collection of assertions for parsers
@@ -314,6 +313,57 @@ public class ParserAssertions {
             return;
 
         failMessage("Reports aren't the same as expected", message, expected, reports);
+    }
+
+    /**
+     *
+     * @param parser
+     * @param sender
+     * @param label
+     * @param args
+     * @param startIndex
+     * @param expected
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    public static void assertParserTabCompletion(ArgumentParser<?> parser, Sender sender, String label, String[] args, int startIndex, Set<String> expected, int expectedIndex) {
+        assertParserTabCompletion(parser, sender, label, args, startIndex, expected, expectedIndex, null);
+    }
+
+    /**
+     *
+     * @param parser
+     * @param sender
+     * @param label
+     * @param args
+     * @param startIndex
+     * @param expected
+     * @param message
+     */
+    @ApiStatus.AvailableSince("0.0.37")
+    public static void assertParserTabCompletion(ArgumentParser<?> parser, Sender sender, String label, String[] args, int startIndex, Set<String> expected, int expectedIndex, String message) {
+        TestCommandProcessingContext context = new TestCommandProcessingContext(sender, label, List.of(args), startIndex);
+        Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = parser.tabCompletion(context);
+
+        if (context.hasAnyReports()) {
+            List<BadCommandResponse> reports = context.getReports();
+            failMessage("Parser produced unexpected error reports", message, expected, reports);
+            return;
+        }
+
+        if (expected == null) {
+            if (tabCompletionResult.isPresent())
+                failMessage("Expected no tab completion", message, null, tabCompletionResult.get().result());
+            return;
+        }
+
+        if (tabCompletionResult.isEmpty()) {
+            failMessage("Expected tab completion", message, expected, null);
+            return;
+        }
+
+        Set<String> result = tabCompletionResult.get().result();
+        assertEquals(expected, result, message);
+        assertEquals(expectedIndex, tabCompletionResult.get().newIndex(), message);
     }
 
     @ApiStatus.Internal

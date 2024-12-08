@@ -92,7 +92,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     );
 
     @Override
-    public List<ArgumentIndex<?>> mapIndices(RegisteredCommandVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
         if (parameters.length == 0)
             return List.of();
 
@@ -101,7 +101,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         Map<Class<?>, Integer> counterMap = new HashMap<>();
         ResultMap resultMap = createParsedArgs(argumentParsers, requirements, getParametersNames(parameters));
 
-        for (RegisteredCommandVariant.Parameter parameter : parameters) {
+        for (RegisteredVariant.Parameter parameter : parameters) {
             Class<?> type = parameter.type();
 
             boolean optional = false;
@@ -131,10 +131,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return result;
     }
 
-    private Map<String, Class<?>> getParametersNames(RegisteredCommandVariant.Parameter[] parameters) {
+    private Map<String, Class<?>> getParametersNames(RegisteredVariant.Parameter[] parameters) {
         Map<String, Class<?>> result = new HashMap<>();
 
-        for (RegisteredCommandVariant.Parameter parameter : parameters) {
+        for (RegisteredVariant.Parameter parameter : parameters) {
             if (parameter.parameterName() == null)
                 continue;
 

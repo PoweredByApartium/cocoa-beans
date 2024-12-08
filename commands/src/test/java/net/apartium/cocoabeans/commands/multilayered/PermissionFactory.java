@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.commands.multilayered;
 
-import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.TestSender;
 import net.apartium.cocoabeans.commands.requirements.*;
@@ -9,7 +9,7 @@ public class PermissionFactory implements RequirementFactory {
 
 
     @Override
-    public Requirement getRequirement(CommandNode commandNode, Object obj) {
+    public Requirement getRequirement(GenericNode node, Object obj) {
         if (obj == null)
             return null;
 
