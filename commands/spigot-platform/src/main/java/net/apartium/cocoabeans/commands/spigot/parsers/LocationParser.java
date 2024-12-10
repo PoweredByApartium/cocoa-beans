@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
-import net.apartium.cocoabeans.commands.SimpleArgumentMapper;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.SenderType;

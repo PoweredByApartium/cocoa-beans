@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.OptionalInt;
 import java.util.Set;
 
-public class WorldParserTest extends CommandsSpigotTestBase {
+class WorldParserTest extends CommandsSpigotTestBase {
 
     @Test
     void parse() {
