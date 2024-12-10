@@ -10,211 +10,91 @@
 
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
-import net.apartium.cocoabeans.StringHelpers;
-import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
-import net.apartium.cocoabeans.utils.OptionalFloat;
-import org.bukkit.Bukkit;
+import net.apartium.cocoabeans.commands.SimpleArgumentMapper;
+import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
+import net.apartium.cocoabeans.commands.parsers.*;
+import net.apartium.cocoabeans.commands.spigot.SenderType;
+import net.apartium.cocoabeans.commands.spigot.SpigotArgumentMapper;
+import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class LocationParser extends ArgumentParser<Location> {
+public class LocationParser extends WrappedArgumentParser<Location> {
 
     public static final String DEFAULT_KEYWORD = "location";
 
+    private static LocationParserImpl getImpl() {
+        if (impl == null)
+            impl = new LocationParserImpl(DEFAULT_KEYWORD, 0);
+
+        return impl;
+    }
+
+    private static LocationParserImpl impl = getImpl();
+
     /**
-     * Constructs a new instance of LocationParser
-     * @param priority parser priority of which should be higher than others or lower
-     * @param keyword parser keyword
+     * Creates a new LocationParser
+     * @param priority priority
+     * @param keyword keyword to be used
      */
-    @ApiStatus.AvailableSince("0.0.36")
     public LocationParser(int priority, String keyword) {
-        super(keyword, Location.class, priority);
+        super(impl, priority, keyword);
     }
 
     /**
-     * Constructs a new instance of LocationParser
-     * @param priority parser priority of which should be higher than others or lower
+     * Creates a new LocationParser
+     * @param priority priority
      */
     public LocationParser(int priority) {
         this(priority, DEFAULT_KEYWORD);
     }
 
-    @Override
-    public Optional<ParseResult<Location>> parse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args(); // pre 20 20 20 20
-        int index = processingContext.index(); // @SubCommand("pre <location>) 1
-        int leftArgs = args.size() - index;
-        if (leftArgs < 3)
-            return Optional.empty();
+    @WithParser(DoubleParser.class)
+    @WithParser(FloatParser.class)
+    @WithParser(WorldParser.class)
+    @ApiStatus.AvailableSince("0.0.38")
+    private static class LocationParserImpl extends CompoundParser<Location> {
 
-        World world = getSenderWorld(processingContext).orElse(null);
-        OptionalDouble optionalX = StringHelpers.parseDouble(args.get(index));
-        if (optionalX.isEmpty()) {
-
-            // if first arg is not numeric, x y z fields shift one argument, so the minimum number of args is 4 and not 3
-            if (leftArgs < 4)
-                return Optional.empty();
-
-            world = Bukkit.getWorld(args.get(index++));
-            optionalX = StringHelpers.parseDouble(args.get(index));
+        public LocationParserImpl(String keyword, int priority) {
+            super(keyword, Location.class, priority, new SpigotArgumentMapper(), new SimpleCommandLexer());
         }
 
-        index++;
-        OptionalDouble optionalY = StringHelpers.parseDouble(args.get(index++));
-        OptionalDouble optionalZ = StringHelpers.parseDouble(args.get(index++));
+        @ParserVariant("<world> <double> <double> <double>")
+        public Location parseWorldWithXyz(World world, double x, double y, double z) {
+            return new Location(world, x, y, z);
+        }
 
-        if (world == null || optionalX.isEmpty() || optionalY.isEmpty() || optionalZ.isEmpty())
-            return Optional.empty();
+        @ParserVariant("<world> <double> <double> <double> <float> <float>")
+        public Location parseWorldWithXyzYawPitch(World world, double x, double y, double z, float yaw, float pitch) {
+            return new Location(world, x, y, z, yaw, pitch);
+        }
 
-        Location location = new Location(world, optionalX.getAsDouble(), optionalY.getAsDouble(), optionalZ.getAsDouble());
-        if ((args.size() - index) < 2)
-            return Optional.of(new ParseResult<>(location, index));
+        @SenderLimit(SenderType.PLAYER)
+        @ParserVariant("<double> <double> <double>")
+        public Location parseWithXyz(Player sender, double x, double y, double z) {
+            return new Location(
+                    sender.getWorld(),
+                    x,
+                    y,
+                    z
+            );
+        }
 
-        OptionalFloat optionalYaw = StringHelpers.parseFloat(args.get(index++));
-        OptionalFloat optionalPitch = StringHelpers.parseFloat(args.get(index));
-
-        if (optionalYaw.isEmpty() || optionalPitch.isEmpty())
-            return Optional.of(new ParseResult<>(location, index - 1));
-
-        location.setYaw(optionalYaw.getAsFloat());
-        location.setPitch(optionalPitch.getAsFloat());
-        
-        return Optional.of(new ParseResult<>(location, index + 1));
+        @SenderLimit(SenderType.PLAYER)
+        @ParserVariant("<double> <double> <double> <float> <float>")
+        public Location parseWithXyzYawPitch(Player sender, double x, double y, double z, float yaw, float pitch) {
+            return new Location(
+                    sender.getWorld(),
+                    x,
+                    y,
+                    z,
+                    yaw,
+                    pitch
+            );
+        }
     }
 
-    private Optional<World> getSenderWorld(CommandProcessingContext processingContext) {
-        if (processingContext.sender().getSender() instanceof BlockCommandSender console)
-            return Optional.of(console.getBlock().getWorld());
-        else if (processingContext.sender().getSender() instanceof Entity entity)
-            return Optional.of(entity.getWorld());
-        else
-            return Optional.empty();
-    }
 
-    @Override
-    public OptionalInt tryParse(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
-        int index = processingContext.index();
-
-        if (args.size() - index < 4)
-            return OptionalInt.empty();
-
-        if (StringHelpers.parseDouble(args.get(index + 1)).isEmpty() ||
-                StringHelpers.parseDouble(args.get(index + 2)).isEmpty() ||
-                StringHelpers.parseDouble(args.get(index + 3)).isEmpty()
-        ) return OptionalInt.empty();
-
-        if (Bukkit.getWorld(args.get(index)) == null)
-            return OptionalInt.empty();
-
-        return OptionalInt.of(index + 4);
-    }
-
-    @Override
-    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        List<String> args = processingContext.args();
-        int index = processingContext.index();
-
-        if (args.isEmpty())
-            return Optional.of(new TabCompletionResult(
-                    Bukkit.getWorlds().stream()
-                            .map(World::getName)
-                            .collect(Collectors.toSet()),
-                    index + 1
-            ));
-
-        if (args.size() - index == 0)
-            return Optional.of(new TabCompletionResult(
-                    Bukkit.getWorlds().stream()
-                            .map(World::getName)
-                            .filter(worldName -> args.get(index).startsWith(worldName))
-                            .collect(Collectors.toSet()),
-                    index + 1
-            ));
-
-        if (args.size() - index == 1) {
-            if (Bukkit.getWorld(args.get(index)) == null)
-                return Optional.empty();
-        }
-
-        if (args.size() - index == 2)
-            return tabDouble(args.get(index + 1), index + 2);
-
-        if (args.size() - index == 3) {
-            if (StringHelpers.parseDouble(args.get(index + 1)).isEmpty())
-                return Optional.empty();
-
-            return tabDouble(args.get(index + 2), index + 3);
-        }
-
-        if (args.size() - index == 4) {
-            if (StringHelpers.parseDouble(args.get(index + 1)).isEmpty())
-                return Optional.empty();
-
-            if (StringHelpers.parseDouble(args.get(index + 2)).isEmpty())
-                return Optional.empty();
-
-            return tabDouble(args.get(index + 3), index + 4);
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<TabCompletionResult> tabDouble(String s, int resultIndex) {
-        if (s.isEmpty())
-            return Optional.of(new TabCompletionResult(
-                    Set.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "."),
-                    resultIndex
-            ));
-
-        boolean onlyZero = true;
-        boolean hasDot = false;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '-' || s.charAt(i) == '+') {
-                if (i != 0)
-                    return Optional.empty();
-                continue;
-            }
-
-            if (s.charAt(i) == '.') {
-                if (hasDot)
-                    return Optional.empty();
-                hasDot = true;
-                onlyZero = false;
-                continue;
-            }
-
-            if (s.charAt(i) == '0') {
-                onlyZero = false;
-                continue;
-            }
-
-            if (s.charAt(i) >= '0' && s.charAt('9') <= 9)
-                continue;
-
-            return Optional.empty();
-        }
-
-        Set<String> result = new HashSet<>();
-
-        for (int i = onlyZero ? 1 : 0; i < 10; i++) {
-            result.add(s + i);
-        }
-
-        if (!hasDot)
-            result.add(s + ".");
-
-        return Optional.of(new TabCompletionResult(
-                result,
-                resultIndex
-        ));
-    }
 }

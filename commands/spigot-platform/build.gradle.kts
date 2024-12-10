@@ -14,4 +14,6 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")
+
+    testImplementation(testFixtures(project.project(":commands")))
 }

@@ -164,7 +164,7 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
 
         return Optional.of(new TabCompletionResult(
                 result,
-                args.size() + 1
+                index + 1
         ));
 
     }
