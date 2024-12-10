@@ -6,7 +6,7 @@
 - [commands] Updated exception handling in command tests for more precise error reporting
 - [spigot] Change EnchantGlow's key and name so it wouldn't collide with other plugins
 - [commands] Add support for named command arguments
-- [common] Add `CollectionHelpers#putAllIfAbsent(Map<K, V>, Map<K, V>)` to add all elements from one map to another if key isn't present
+- [common] Add `CollectionHelpers#mergeInto(Map<K, V>, Map<K, V>)` to add all elements from one map to another if key isn't present
 - [commands] Improve code structure for registering a command
 - [commands] Add Compound parser
 - [commands] Add `ParserAssertions#assertParserTabCompletion` for better unit testing
