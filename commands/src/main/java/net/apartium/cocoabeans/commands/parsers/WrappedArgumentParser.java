@@ -87,13 +87,18 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
             if (!(obj instanceof ArgumentParser<?> other))
                 return false;
 
-            return parser.equals(other);
+            return parser.getClass().equals(other.getClass())
+                    && other.getKeyword().equals(getKeyword())
+                    && other.getArgumentType().equals(getArgumentType())
+                    && other.getPriority() == getPriority();
         }
 
-        if (!super.equals(obj))
-            return false;
+        WrappedArgumentParser<?> other = (WrappedArgumentParser<?>) obj;
 
-        return parser.equals(((WrappedArgumentParser<?>) obj).parser);
+        return parser.getClass().equals(other.parser.getClass())
+                && other.getKeyword().equals(getKeyword())
+                && other.getArgumentType().equals(getArgumentType())
+                && other.getPriority() == getPriority();
     }
 
     @Override
