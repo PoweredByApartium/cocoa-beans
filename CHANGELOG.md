@@ -1,6 +1,10 @@
 # CHANGELOG
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers
+- [commands-spigot] Improve `LocationParser` that will use `CompoundParser`
+- [commands-spigot] Add `WorldParser`
+- [commands] Fixes CompoundParser method access modifiers
+- [commands] Fixes MapBasedParser tabCompletion index
 
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands
