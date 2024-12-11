@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class WrappedArgumentParserTest {
 
@@ -15,13 +16,23 @@ class WrappedArgumentParserTest {
         ArgumentParser<Integer> parser = new IntParser(0);
         WrappedArgumentParser<Integer> wrapped = new WrappedArgumentParser<>(parser, 7, "test");
 
-        assertEquals(wrapped, parser);
+        assertNotEquals(wrapped, parser);
 
         assertEquals(parser.getArgumentType(), wrapped.getArgumentType());
         assertEquals("test", wrapped.getKeyword());
         assertEquals("int", parser.getKeyword());
         assertEquals(7, wrapped.getPriority());
         assertEquals(0, parser.getPriority());
+
+        assertEquals(wrapped, wrapped);
+
+        WrappedArgumentParser<Integer> wrapped2 = new WrappedArgumentParser<>(parser, 7, "test");
+        assertEquals(wrapped, wrapped2);
+
+        assertNotEquals(wrapped, null);
+
+        parser = new IntParser(7, "test");
+        assertEquals(wrapped, parser);
     }
 
     @Test
@@ -59,6 +70,25 @@ class WrappedArgumentParserTest {
 
         processingContext = new TestCommandProcessingContext(null, null, List.of("72.1"), 0);
         assertEquals(parser.tabCompletion(processingContext), wrapped.tabCompletion(processingContext));
+    }
+
+    @Test
+    void testHashCode() {
+        ArgumentParser<Integer> parser = new IntParser(0);
+        WrappedArgumentParser<Integer> wrapped = new WrappedArgumentParser<>(parser, 7, "test");
+
+        assertEquals(parser.hashCode(), wrapped.hashCode());
+    }
+
+    @Test
+    void testToString() {
+        ArgumentParser<Integer> parser = new IntParser(0);
+        WrappedArgumentParser<Integer> wrapped = new WrappedArgumentParser<>(parser, 0);
+
+        assertEquals(parser.toString(), wrapped.toString());
+
+        wrapped = new WrappedArgumentParser<>(parser, "test");
+        assertEquals(parser.toString(), wrapped.toString());
     }
 
 }
