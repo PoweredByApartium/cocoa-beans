@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.38
+- [commands] Add `WrappedArgumentParser` for better handling of argument parsers
+
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands
 - [commands] Introduced a new CommandLexer interface for better command tokenization
