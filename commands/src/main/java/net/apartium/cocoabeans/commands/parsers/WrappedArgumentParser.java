@@ -46,10 +46,17 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
     }
 
     /**
-     * Tries to parse next argument in the context
-     *
-     * @param processingContext cmd processing context
-     * @return empty if failed, otherwise result
+     * {@inheritDoc}
+     * Using the wrapped parser to get tab completion
+     */
+    @Override
+    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
+        return parser.tabCompletion(processingContext);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Using the wrapped parser to parse the context
      */
     @Override
     public Optional<ParseResult<T>> parse(CommandProcessingContext processingContext) {
@@ -57,25 +64,12 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
     }
 
     /**
-     * Tries to lazily parse next argument in the context
-     *
-     * @param processingContext cmd processing context
-     * @return new index int if success, empty if not
+     * {@inheritDoc}
+     * Using the wrapped parser to try parse the context
      */
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
         return parser.tryParse(processingContext);
-    }
-
-    /**
-     * Retrieves available options for tab completion of this argument
-     *
-     * @param processingContext cmd processing context
-     * @return tab completion result if success, otherwise empty option
-     */
-    @Override
-    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        return parser.tabCompletion(processingContext);
     }
 
     @Override
