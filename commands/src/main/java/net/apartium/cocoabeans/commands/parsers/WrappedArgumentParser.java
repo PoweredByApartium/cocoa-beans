@@ -47,6 +47,15 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
 
     /**
      * {@inheritDoc}
+     * Using the wrapped parser to get tab completion
+     */
+    @Override
+    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
+        return parser.tabCompletion(processingContext);
+    }
+
+    /**
+     * {@inheritDoc}
      * Using the wrapped parser to parse the context
      */
     @Override
@@ -61,15 +70,6 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
         return parser.tryParse(processingContext);
-    }
-
-    /**
-     * {@inheritDoc}
-     * Using the wrapped parser to get tab completion
-     */
-    @Override
-    public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        return parser.tabCompletion(processingContext);
     }
 
     @Override
