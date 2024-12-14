@@ -5,7 +5,7 @@
 - [commands-spigot] Add `WorldParser`
 - [commands] Fixes CompoundParser method access modifiers
 - [commands] Fixes MapBasedParser tabCompletion index
-
+  
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands
 - [commands] Introduced a new CommandLexer interface for better command tokenization
