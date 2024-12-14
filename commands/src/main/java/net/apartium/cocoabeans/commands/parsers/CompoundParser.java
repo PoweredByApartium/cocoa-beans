@@ -86,8 +86,10 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
             RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(this, method.getParameters(), argumentRequirementFactories);
 
+            method.setAccessible(true);
+            MethodHandle unreflect = lookup.unreflect(method);
             for (ParserVariant parserVariant : parserVariants) {
-                handleParserVariants(lookup.unreflect(method), parserVariant, methodRequirements, methodArgumentTypeHandlerMap, parameters, new ArrayList<>(), new ArrayList<>(methodRequirements));
+                handleParserVariants(unreflect, parserVariant, methodRequirements, methodArgumentTypeHandlerMap, parameters, new ArrayList<>(), new ArrayList<>(methodRequirements));
             }
         }
     }
