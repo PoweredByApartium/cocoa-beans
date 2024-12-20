@@ -1,13 +1,14 @@
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import org.opentest4j.AssertionFailedError;
 
 @Command("trust-me-bro")
 public class TrustMeBroImPublicEvilCommand implements CommandNode {
 
-    @SubCommand("im-public")
-    private void imPublicEvilCommand(Sender sender) {
-        throw new AssertionFailedError("How did we get here");
+    @ExceptionHandle(Exception.class)
+    private boolean meow(Exception exception, Sender sender) {
+        throw new RuntimeException(exception);
     }
 
 }
