@@ -102,7 +102,12 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 }
             }
 
-            serializeExceptionHandles(method, node, publicLookup);
+            try {
+                serializeExceptionHandles(method, node, publicLookup);
+            } catch (IllegalAccessException e) {
+                Dispensers.dispense(e);
+                return;
+            }
 
 
             for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
@@ -126,10 +131,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     }
 
-    private void serializeExceptionHandles(Method method, CommandNode node, MethodHandles.Lookup publicLookup) {
-        if (!Modifier.isPublic(method.getModifiers()))
-            return;
-
+    private void serializeExceptionHandles(Method method, CommandNode node, MethodHandles.Lookup publicLookup) throws IllegalAccessException {
         for (Method targetMethod : Stream.concat(
                 Stream.of(method),
                 MethodUtils.getMethodsFromSuperClassAndInterface(method).stream()
@@ -137,6 +139,9 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             ExceptionHandle exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
             if (exceptionHandle == null)
                 continue;
+
+            if (!Modifier.isPublic(method.getModifiers()))
+                throw new IllegalAccessException("Method " + method.getName() + "#" + node.getClass().getSimpleName() + " is not public");
 
 
             try {
