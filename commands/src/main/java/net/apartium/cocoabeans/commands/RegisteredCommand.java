@@ -254,9 +254,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         for (int i = 0; i < tokens.size(); i++) {
             CommandToken token = tokens.get(i);
-
-            //  TODO may need to split requirements so it will be faster and joined stuff
-            RequirementSet requirements = i == 0 ? methodRequirements : new RequirementSet();
+            RequirementSet requirements = resolveRequirementsForBranch(i, methodRequirements);
 
             if (token instanceof KeywordToken keywordToken) {
                 currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand, keywordToken, requirements, requirementsResult);
@@ -291,6 +289,13 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("There is an misused parameter for the following method " + context.clazz.getName() + "#" + context.method.getName() + "\nSub command value: " + context.subCommand.value(), e);
         }
+    }
+
+    //  TODO may need to split requirements so it will be faster and joined stuff
+    private RequirementSet resolveRequirementsForBranch(int index, RequirementSet methodRequirements) {
+        return index == 0
+                ? methodRequirements
+                : new RequirementSet();
     }
 
     private boolean isEmptyArgs(String[] split) {
