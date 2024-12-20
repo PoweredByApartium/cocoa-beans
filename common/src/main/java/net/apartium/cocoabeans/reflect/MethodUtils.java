@@ -21,9 +21,28 @@ import java.util.stream.Collectors;
 /**
  * Utilities to work with java Method class
  * @see Method
- * @author Voigon (Lior S.)
+ * @author Voigon (Lior S.), Thebotgame (Kfir b.)
  */
 public class MethodUtils {
+
+    /**
+     * Get all methods from given class
+     * by recursion getting declared methods from super class
+     *
+     * @param clazz class
+     * @return set consisting of all methods from given class including super class public & non-public methods
+     */
+    @ApiStatus.AvailableSince("0.0.38")
+    public static Set<Method> getAllMethods(Class<?> clazz) {
+        Set<Method> methods = new HashSet<>();
+
+        while (clazz != null && clazz != Object.class) {
+            methods.addAll(ReflectionCache.getDeclaredMethods(clazz).toList());
+            clazz = clazz.getSuperclass();
+        }
+
+        return methods;
+    }
 
     /**
      * Get declared methods from given class

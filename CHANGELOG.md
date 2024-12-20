@@ -5,6 +5,8 @@
 - [commands-spigot] Add `WorldParser`
 - [commands] Fixes CompoundParser method access modifiers
 - [commands] Fixes MapBasedParser tabCompletion index
+- [commands] Added error logging for cases where subcommand methods are non-public or when variables are misused.
+- [commands] Added `MethodUtils#getAllMethods(Class)` for getting all methods of a class including inherited & public & non-public
   
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands
