@@ -30,7 +30,7 @@ public class MethodUtils {
      * by recursion getting declared methods from super class
      *
      * @param clazz class
-     * @return set consisting of all methods from given class including super class public & non-public methods
+     * @return set consisting of all methods from given class including super class public &amp; non-public methods
      */
     @ApiStatus.AvailableSince("0.0.38")
     public static Set<Method> getAllMethods(Class<?> clazz) {
