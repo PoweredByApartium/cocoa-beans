@@ -90,7 +90,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         List<Requirement> classRequirementsResult = new ArrayList<>();
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor, classRequirementsResult);
 
-        for (Method method : clazz.getMethods()) {
+        for (Method method : MethodUtils.getAllMethods(clazz)) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
@@ -127,6 +127,9 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     }
 
     private void serializeExceptionHandles(Method method, CommandNode node, MethodHandles.Lookup publicLookup) {
+        if (!Modifier.isPublic(method.getModifiers()))
+            return;
+
         for (Method targetMethod : Stream.concat(
                 Stream.of(method),
                 MethodUtils.getMethodsFromSuperClassAndInterface(method).stream()
@@ -134,6 +137,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             ExceptionHandle exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
             if (exceptionHandle == null)
                 continue;
+
 
             try {
                 CollectionHelpers.addElementSorted(
@@ -189,7 +193,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             return;
 
         if (!Modifier.isPublic(context.method.getModifiers()))
-            return;
+            throw new IllegalAccessException("Method " + context.clazz.getName() + "#" + context.method.getName() + " is not public");
 
         if (Modifier.isStatic(context.method.getModifiers()))
             throw new IllegalAccessException("Static method " + context.clazz.getName() + "#" + context.method.getName() + " is not supported");
@@ -238,6 +242,8 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 );
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error accessing method", e);
+            } catch (NoSuchElementException e) {
+                throw new NoSuchElementException("There is an misused parameter for the following method " + context.clazz.getName() + "#" + context.method.getName() + "\nSub command value: " + context.subCommand.value(), e);
             }
 
             return;
@@ -270,17 +276,21 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(context.commandNode, context.method.getParameters(), commandManager.argumentRequirementFactories);
 
-        CollectionHelpers.addElementSorted(
-                currentCommandOption.getRegisteredCommandVariants(),
-                new RegisteredVariant(
-                        publicLookup.unreflect(context.method),
-                        parameters,
-                        context.commandNode,
-                        commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
-                        context.subCommand.priority()
-                ),
-                REGISTERED_VARIANT_COMPARATOR
-        );
+        try {
+            CollectionHelpers.addElementSorted(
+                    currentCommandOption.getRegisteredCommandVariants(),
+                    new RegisteredVariant(
+                            publicLookup.unreflect(context.method),
+                            parameters,
+                            context.commandNode,
+                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
+                            context.subCommand.priority()
+                    ),
+                    REGISTERED_VARIANT_COMPARATOR
+            );
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("There is an misused parameter for the following method " + context.clazz.getName() + "#" + context.method.getName() + "\nSub command value: " + context.subCommand.value(), e);
+        }
     }
 
     private boolean isEmptyArgs(String[] split) {

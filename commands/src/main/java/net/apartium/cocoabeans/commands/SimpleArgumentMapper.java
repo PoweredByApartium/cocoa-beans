@@ -116,7 +116,13 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             }
 
             int index = counterMap.computeIfAbsent(type, k -> 0);
-            ArgumentIndex<?> argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
+
+            ArgumentIndex<?> argumentIndex;
+            try {
+                argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
+            } catch (NoSuchElementException e) {
+                throw new NoSuchElementException("There is no argument for parameter " + parameter.parameterName() + " at index " + index + ".", e);
+            }
 
             if (optional)
                 argumentIndex = wrapInOptional(argumentIndex);

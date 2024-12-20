@@ -731,13 +731,12 @@ public class  GeneralCommandTest extends CommandTestBase {
     void evilCommand() {
         assertThrowsExactly(IllegalArgumentException.class, () -> testCommandManager.addCommand(new EvilCommandTest()), "Couldn't resolve net.apartium.cocoabeans.commands.EvilCommandTest#evil parser: thebotgame");
         assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new NullCommandTest()), "Static method net.apartium.cocoabeans.commands.NullCommandTest#meow is not supported");
-        testCommandManager.addCommand(new AnotherEvilCommandTest());
-        evaluate("evil-brother", "private");
-        assertEquals(List.of("Invalid usage"), sender.getMessages());
+        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new AnotherEvilCommandTest()));
 
         assertThrowsExactly(NoSuchElementException.class, () -> testCommandManager.addCommand(new MoreEvilCommand()));
 
         assertThrowsExactly(IllegalArgumentException.class, () -> testCommandManager.addCommand(new ThereAnotherEvilCommand()));
+        assertThrowsExactly(RuntimeException.class, () -> testCommandManager.addCommand(new TrustMeBroImPublicEvilCommand()));
     }
 
 
