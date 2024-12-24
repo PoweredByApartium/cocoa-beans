@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExceptionHandle {
 
-    Class<? extends Throwable>[] value();
+    Class<? extends Throwable> value();
     int priority() default 0;
 
 }

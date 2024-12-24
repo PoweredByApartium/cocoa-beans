@@ -92,14 +92,14 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     );
 
     @Override
-    public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes) {
         if (parameters.length == 0)
             return List.of();
 
         List<ArgumentIndex<?>> result = new ArrayList<>(parameters.length);
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
-        ResultMap resultMap = createParsedArgs(argumentParsers, requirements, getParametersNames(parameters));
+        ResultMap resultMap = createParsedArgs(argumentParsers, requirements, additionalTypes, getParametersNames(parameters));
 
         for (RegisteredVariant.Parameter parameter : parameters) {
             Class<?> type = parameter.type();
@@ -247,7 +247,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return mapOfArguments.get(Sender.class).get(index - 1);
     }
 
-    private ResultMap createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, Map<String, Class<?>> lookupParametersNames) {
+    private ResultMap createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes, Map<String, Class<?>> lookupParametersNames) {
         Map<Class<?>, List<ArgumentIndex<?>>> resultMap = new HashMap<>();
         Map<String, ArgumentIndex<?>> resultParameterName = new HashMap<>();
 
@@ -263,6 +263,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             for (Class<?> type : requirement.getTypes()) {
                 serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
             }
+        }
+
+        for (Class<?> type : additionalTypes) {
+            serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
         }
 
         return new ResultMap(resultMap, resultParameterName);

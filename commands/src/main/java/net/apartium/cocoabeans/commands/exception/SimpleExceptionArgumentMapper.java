@@ -14,10 +14,10 @@ public class SimpleExceptionArgumentMapper implements ExceptionArgumentMapper {
     public List<Object> map(HandleExceptionVariant handleExceptionVariant, CommandContext context, Sender sender, String commandName, String[] args, Throwable throwable) {
         Class<?>[] parameters = handleExceptionVariant.parameters();
         if (parameters.length == 0)
-            return List.of(handleExceptionVariant.commandNode());
+            return List.of(handleExceptionVariant.node());
 
         List<Object> result = new ArrayList<>(parameters.length + 1);
-        result.add(handleExceptionVariant.commandNode());
+        result.add(handleExceptionVariant.node());
 
         for (Class<?> type : parameters) {
             if (Sender.class.isAssignableFrom(type)) {

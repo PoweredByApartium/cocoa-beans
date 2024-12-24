@@ -11,6 +11,11 @@ public class CommandException extends RuntimeException {
         this.badCommandResponse = commandError;
     }
 
+    @ApiStatus.AvailableSince("0.0.38")
+    public Class<? extends BadCommandResponse> getErrorType() {
+        return badCommandResponse.getClass();
+    }
+
     public BadCommandResponse getBadCommandResponse() {
         return badCommandResponse;
     }
