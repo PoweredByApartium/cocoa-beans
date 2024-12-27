@@ -13,7 +13,7 @@ import java.util.List;
  * @see net.apartium.cocoabeans.commands.parsers.SourceParser
  */
 @ApiStatus.AvailableSince("0.0.30")
-public class AmbiguousMappedKeyResponse extends InvalidParserResponse {
+public class AmbiguousMappedKeyResponse extends InvalidParserResponse<AmbiguousMappedKeyResponse.AmbiguousMappedKeyException> {
 
     private final List<String> keys;
 

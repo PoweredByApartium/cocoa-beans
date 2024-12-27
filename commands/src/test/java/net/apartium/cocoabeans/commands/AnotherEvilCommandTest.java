@@ -22,7 +22,7 @@ public class AnotherEvilCommandTest implements CommandNode {
     }
 
     @ExceptionHandle(InvalidUsageResponse.InvalidUsageException.class)
-    public boolean meow(InvalidUsageResponse exception, Sender sender) {
+    public boolean meow(InvalidUsageResponse.InvalidUsageException exception, Sender sender) {
         sender.sendMessage("Invalid usage");
         return true;
     }

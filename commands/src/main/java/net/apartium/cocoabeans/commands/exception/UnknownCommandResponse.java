@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.commands.exception;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
-public class UnknownCommandResponse extends BadCommandResponse {
+public class UnknownCommandResponse extends BadCommandResponse<UnknownCommandResponse.UnknownCommandException> {
 
     private final String commandName;
 
@@ -16,7 +16,7 @@ public class UnknownCommandResponse extends BadCommandResponse {
     }
 
     @Override
-    public Exception getError() {
+    public UnknownCommandException getError() {
         return new UnknownCommandException();
     }
 

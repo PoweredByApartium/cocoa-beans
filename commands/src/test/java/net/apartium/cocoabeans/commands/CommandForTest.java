@@ -202,7 +202,7 @@ public class CommandForTest implements CommandNode {
     }
 
     @ExceptionHandle(RequirementException.class)
-    public boolean meow(UnmetRequirementResponse exception, Sender sender) {
+    public boolean meow(RequirementException exception, Sender sender) {
         sender.sendMessage("You don't have permission to execute this command!");
         return true;
     }

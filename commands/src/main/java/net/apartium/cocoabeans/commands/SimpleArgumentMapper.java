@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
+import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.jetbrains.annotations.ApiStatus;
@@ -119,7 +121,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
             ArgumentIndex<?> argumentIndex;
             try {
-                argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
+                argumentIndex = resolveArgumentIndex(parameter, type, parameter.parameterName(), counterMap, resultMap, index);
             } catch (NoSuchElementException e) {
                 throw new NoSuchElementException("There is no argument for parameter " + parameter.parameterName() + " at index " + index + ".", e);
             }
@@ -154,6 +156,9 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     private Class<?> getGenericType(Type parameterizedType) {
+        if (!(parameterizedType instanceof ParameterizedType))
+            return null;
+
         return (Class<?>) ((ParameterizedType) parameterizedType).getActualTypeArguments()[0];
     }
 
@@ -184,7 +189,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         };
     }
 
-    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
+    private ArgumentIndex<?> resolveArgumentIndex(RegisteredVariant.Parameter parameter, Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
         if (name != null && resultMap.mapOfArgumentsByParameterName.containsKey(name)) {
             counterMap.put(type, counterMap.get(type) - 1);
             return resultMap.mapOfArgumentsByParameterName.get(name);
@@ -193,6 +198,11 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         ArgumentIndex<?> argumentIndex = resolveBuiltInArgumentIndex(type, counterMap, resultMap.mapOfArgumentsByType, index);
         if (argumentIndex != null)
             return argumentIndex;
+
+        argumentIndex = resolveBadResponseIndex(parameter, type, counterMap, resultMap.mapOfArgumentsByType);
+        if (argumentIndex != null)
+            return argumentIndex;
+
 
         List<ArgumentIndex<?>> arguments = resultMap.mapOfArgumentsByType.get(type);
 
@@ -208,6 +218,26 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
 
         return arguments.get(index);
+    }
+
+    private ArgumentIndex<?> resolveBadResponseIndex(RegisteredVariant.Parameter parameter, Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType) {
+        if (!BadCommandResponse.class.isAssignableFrom(type))
+            return null;
+
+        Class<? extends CommandException> c = (Class<? extends CommandException>) getGenericType(parameter.parameterizedType());
+
+        if (c == null)
+            return null;
+
+        return context -> {
+            for (Map.Entry<Class<?>, List<ArgumentIndex<?>>> entry : mapOfArgumentsByType.entrySet()) {
+                if (entry.getKey().isAssignableFrom(c)) {
+                    return ((CommandException) entry.getValue().get(0).get(context)).getBadCommandResponse();
+                }
+            }
+
+            return null;
+        };
     }
 
     private boolean isInvalidArguments(List<ArgumentIndex<?>> arguments, int index) {
@@ -294,6 +324,20 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 throw new IllegalArgumentException("Parameter name " + parameterName + " is not assignable from type " + type);
 
             resultParameterName.put(parameterName, context -> context.parsedArgs().get(type).get(countIndex));
+            return;
+        }
+
+        if (CommandException.class.isAssignableFrom(type)) {
+            resultMap.computeIfAbsent(type, k -> new ArrayList<>())
+                    .add(context -> {
+                        for (Map.Entry<Class<?>, List<Object>> entry : context.parsedArgs().entrySet()) {
+                            if (type.isAssignableFrom(entry.getKey())) {
+                                return entry.getValue().get(0);
+                            }
+                        }
+
+                        return null;
+                    });
             return;
         }
 

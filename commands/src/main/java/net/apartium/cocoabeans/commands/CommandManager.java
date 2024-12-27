@@ -180,8 +180,10 @@ public abstract class CommandManager {
                 CommandContext.class, List.of(context)
         ));
 
-        if (throwable instanceof CommandException commandException)
+        if (throwable instanceof CommandException commandException) {
             parsedArgs.put(BadCommandResponse.class, List.of(commandException.getBadCommandResponse()));
+            parsedArgs.put(throwable.getClass(), List.of(throwable));
+        }
 
         ArgumentContext argumentContext = new ArgumentContext(commandName, args, sender, parsedArgs);
         List<Object> parameters = new ArrayList<>(handleExceptionVariant.argumentIndexList().stream()

@@ -92,13 +92,13 @@ public class WhitelistRequirementFactory implements RequirementFactory {
                     ));
         }
 
-        private class UnmetWhitelistResponse extends UnmetRequirementResponse {
+        private class UnmetWhitelistResponse extends UnmetRequirementResponse<WhitelistException> {
             public UnmetWhitelistResponse(Requirement requirement, RequirementEvaluationContext context, String message) {
                 super(requirement, context, message, whitelist);
             }
 
             @Override
-            public Exception getError() {
+            public WhitelistException getError() {
                 return new WhitelistException(this, whitelist);
             }
         }

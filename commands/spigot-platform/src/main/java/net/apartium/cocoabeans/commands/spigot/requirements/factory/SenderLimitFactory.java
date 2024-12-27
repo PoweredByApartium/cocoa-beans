@@ -86,14 +86,14 @@ public class SenderLimitFactory implements RequirementFactory {
             return List.of(SenderType.class);
         }
 
-        private class UnmetSenderLimit extends UnmetRequirementResponse {
+        private class UnmetSenderLimit extends UnmetRequirementResponse<SenderLimitException> {
 
             public UnmetSenderLimit(Requirement requirement, RequirementEvaluationContext context, String message) {
                 super(requirement, context, message, senderLimit);
             }
 
             @Override
-            public Exception getError() {
+            public SenderLimitException getError() {
                 return new SenderLimitException(this, senderLimit);
             }
         }

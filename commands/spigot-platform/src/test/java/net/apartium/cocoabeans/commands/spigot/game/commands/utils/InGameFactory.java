@@ -86,14 +86,14 @@ public class InGameFactory implements RequirementFactory {
             return List.of(Game.class, GamePlayer.class);
         }
 
-        private class UnmetGameRequirement extends UnmetRequirementResponse {
+        private class UnmetGameRequirement extends UnmetRequirementResponse<NotInGameException> {
 
             public UnmetGameRequirement(Requirement requirement, RequirementEvaluationContext context, String message) {
                 super(requirement, context, message, inGame);
             }
 
             @Override
-            public Exception getError() {
+            public NotInGameException getError() {
                 return new NotInGameException(this, inGame);
             }
         }

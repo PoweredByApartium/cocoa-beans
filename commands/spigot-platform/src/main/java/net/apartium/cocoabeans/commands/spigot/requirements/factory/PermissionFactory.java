@@ -76,7 +76,7 @@ public class PermissionFactory implements RequirementFactory {
             return RequirementResult.meet();
         }
 
-        private class UnmetPermissionResponse extends UnmetRequirementResponse {
+        private class UnmetPermissionResponse extends UnmetRequirementResponse<PermissionException> {
 
 
 
@@ -85,7 +85,7 @@ public class PermissionFactory implements RequirementFactory {
             }
 
             @Override
-            public Exception getError() {
+            public PermissionException getError() {
                 return new PermissionException(this, permission);
             }
         }

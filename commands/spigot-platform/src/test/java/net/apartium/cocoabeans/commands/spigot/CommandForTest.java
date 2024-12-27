@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
 import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
+import net.apartium.cocoabeans.commands.spigot.exception.PermissionException;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import org.bukkit.Location;
@@ -71,6 +72,11 @@ public class CommandForTest implements CommandNode {
         }
 
         sender.sendMessage("idk who is " + context.args()[1]);
+    }
+
+    @ExceptionHandle(PermissionException.class)
+    public void noPermission(CommandSender sender, PermissionException permissionException) {
+        sender.sendMessage(permissionException.getMessage());
     }
 
     @Permission("cocoabeans.test")

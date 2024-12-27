@@ -158,19 +158,13 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 exceptionHandle.value()
         ));
 
-        if (exceptionHandle.value().isAssignableFrom(CommandException.class)) {
-
-            additionalTypes.add(BadCommandResponse.class); // TODO fix it here
-        }
-
-        commandManager.getArgumentMapper().mapIndices(parameters, List.of(), List.of(), additionalTypes);
         try {
             return new HandleExceptionVariant(
                     exceptionHandle.value(),
                     publicLookup.unreflect(method),
                     Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
                     node,
-                    List.of(),
+                    commandManager.getArgumentMapper().mapIndices(parameters, List.of(), List.of(), additionalTypes),
                     exceptionHandle.priority()
             );
         } catch (IllegalAccessException e) {

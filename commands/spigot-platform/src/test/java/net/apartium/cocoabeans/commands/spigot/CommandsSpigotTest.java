@@ -166,7 +166,7 @@ class CommandsSpigotTest extends CommandsSpigotTestBase {
     @Test
     void testWithoutPermission() {
         execute(ikfir, "test permission");
-        assertEquals("Invalid usage", ikfir.nextMessage());
+        assertEquals("You don't have permission to execute this command", ikfir.nextMessage());
     }
 
     @Test
