@@ -199,7 +199,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         if (argumentIndex != null)
             return argumentIndex;
 
-        argumentIndex = resolveBadResponseIndex(parameter, type, counterMap, resultMap.mapOfArgumentsByType);
+        argumentIndex = resolveBadResponseIndex(parameter, type, resultMap.mapOfArgumentsByType);
         if (argumentIndex != null)
             return argumentIndex;
 
@@ -220,7 +220,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return arguments.get(index);
     }
 
-    private ArgumentIndex<?> resolveBadResponseIndex(RegisteredVariant.Parameter parameter, Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType) {
+    private ArgumentIndex<?> resolveBadResponseIndex(RegisteredVariant.Parameter parameter, Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType) {
         if (!BadCommandResponse.class.isAssignableFrom(type))
             return null;
 
