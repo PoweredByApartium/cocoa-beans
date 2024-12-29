@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.commands.spigot.game.commands.utils;
 
-import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.game.Game;
@@ -86,7 +85,7 @@ public class InGameFactory implements RequirementFactory {
             return List.of(Game.class, GamePlayer.class);
         }
 
-        private class UnmetGameRequirement extends UnmetRequirementResponse<NotInGameException> {
+        private class UnmetGameRequirement extends UnmetRequirementResponse {
 
             public UnmetGameRequirement(Requirement requirement, RequirementEvaluationContext context, String message) {
                 super(requirement, context, message, inGame);

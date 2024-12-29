@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 
 @ApiStatus.AvailableSince("0.0.22")
-public class UnmetRequirementResponse<R extends RequirementException> extends BadCommandResponse<R> {
+public class UnmetRequirementResponse extends BadCommandResponse {
 
     protected final Requirement requirement;
     protected final Annotation requirementAnnotation;
@@ -31,8 +31,8 @@ public class UnmetRequirementResponse<R extends RequirementException> extends Ba
     }
 
     @Override
-    public R getError() {
-        return (R) new RequirementException(this, requirementAnnotation);
+    public CommandException getError() {
+        return new RequirementException(this, requirementAnnotation);
     }
 
 }

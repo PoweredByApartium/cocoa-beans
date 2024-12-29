@@ -51,7 +51,7 @@ public class PermissionFactory implements RequirementFactory {
 
         }
 
-        private class UnmetPermissionResponse extends UnmetRequirementResponse<PermissionException> {
+        private class UnmetPermissionResponse extends UnmetRequirementResponse {
 
             public UnmetPermissionResponse(Requirement requirement, RequirementEvaluationContext context, String message) {
                 super(requirement, context, message, permission);

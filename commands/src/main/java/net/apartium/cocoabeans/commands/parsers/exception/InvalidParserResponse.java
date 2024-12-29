@@ -11,7 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see CommandProcessingContext#report(Object, BadCommandResponse)
  */
 @ApiStatus.AvailableSince("0.0.30")
-public class InvalidParserResponse<I extends InvalidParserResponse.InvalidParserException> extends BadCommandResponse<I> {
+public class InvalidParserResponse extends BadCommandResponse {
 
     private final ArgumentParser<?> parser;
 
@@ -39,13 +39,13 @@ public class InvalidParserResponse<I extends InvalidParserResponse.InvalidParser
      * @return exception to be thrown
      */
     @Override
-    public I getError() {
-        return (I) new InvalidParserException(this);
+    public InvalidParserException getError() {
+        return new InvalidParserException(this);
     }
 
     public static class InvalidParserException extends CommandException {
 
-        public InvalidParserException(InvalidParserResponse<?> response) {
+        public InvalidParserException(InvalidParserResponse response) {
             super(response);
         }
 

@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.commands.exception;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.22")
-public class InvalidUsageResponse extends BadCommandResponse<InvalidUsageResponse.InvalidUsageException> {
+public class InvalidUsageResponse extends BadCommandResponse {
 
     public InvalidUsageResponse() {
 
