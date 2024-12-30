@@ -199,11 +199,6 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         if (argumentIndex != null)
             return argumentIndex;
 
-        argumentIndex = resolveBadResponseIndex(parameter, type, resultMap.mapOfArgumentsByType);
-        if (argumentIndex != null)
-            return argumentIndex;
-
-
         List<ArgumentIndex<?>> arguments = resultMap.mapOfArgumentsByType.get(type);
 
         if (isInvalidArguments(arguments, index))
@@ -218,26 +213,6 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
 
         return arguments.get(index);
-    }
-
-    private ArgumentIndex<?> resolveBadResponseIndex(RegisteredVariant.Parameter parameter, Class<?> type, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType) {
-        if (!BadCommandResponse.class.isAssignableFrom(type))
-            return null;
-
-        Class<? extends CommandException> c = (Class<? extends CommandException>) getGenericType(parameter.parameterizedType());
-
-        if (c == null)
-            return null;
-
-        return context -> {
-            for (Map.Entry<Class<?>, List<ArgumentIndex<?>>> entry : mapOfArgumentsByType.entrySet()) {
-                if (entry.getKey().isAssignableFrom(c)) {
-                    return ((CommandException) entry.getValue().get(0).get(context)).getBadCommandResponse();
-                }
-            }
-
-            return null;
-        };
     }
 
     private boolean isInvalidArguments(List<ArgumentIndex<?>> arguments, int index) {
