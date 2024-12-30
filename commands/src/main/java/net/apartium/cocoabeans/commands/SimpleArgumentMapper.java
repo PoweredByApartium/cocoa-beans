@@ -155,9 +155,6 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     private Class<?> getGenericType(Type parameterizedType) {
-        if (!(parameterizedType instanceof ParameterizedType))
-            return null;
-
         return (Class<?>) ((ParameterizedType) parameterizedType).getActualTypeArguments()[0];
     }
 
