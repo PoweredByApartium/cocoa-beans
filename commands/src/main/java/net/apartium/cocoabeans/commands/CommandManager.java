@@ -36,7 +36,6 @@ public abstract class CommandManager {
 
     protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
-    private final ExceptionArgumentMapper exceptionArgumentMapper;
     private final CommandLexer commandLexer;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
@@ -45,13 +44,12 @@ public abstract class CommandManager {
 
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper) {
-        this(argumentMapper, exceptionArgumentMapper, new SimpleCommandLexer());
+    protected CommandManager(ArgumentMapper argumentMapper) {
+        this(argumentMapper, new SimpleCommandLexer());
     }
 
-    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper, CommandLexer commandLexer) {
+    protected CommandManager(ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         this.argumentMapper = argumentMapper;
-        this.exceptionArgumentMapper = exceptionArgumentMapper;
         this.commandLexer = commandLexer;
     }
 
@@ -269,10 +267,6 @@ public abstract class CommandManager {
 
     public ArgumentMapper getArgumentMapper() {
         return argumentMapper;
-    }
-
-    public ExceptionArgumentMapper getExceptionArgumentMapper() {
-        return exceptionArgumentMapper;
     }
 
     public CommandLexer getCommandLexer() {

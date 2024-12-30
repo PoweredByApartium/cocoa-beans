@@ -11,9 +11,7 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.*;
-import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
-import net.apartium.cocoabeans.commands.spigot.exception.SpigotExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.spigot.Commands;
@@ -45,7 +43,7 @@ public class SpigotCommandManager extends CommandManager {
      * @param plugin plugin to own this command manager
      */
     public SpigotCommandManager(JavaPlugin plugin) {
-        this(plugin, new SpigotArgumentMapper(), new SpigotExceptionArgumentMapper());
+        this(plugin, new SpigotArgumentMapper());
     }
 
     /**
@@ -53,8 +51,8 @@ public class SpigotCommandManager extends CommandManager {
      * @param plugin plugin to own this command manager
      * @param argumentMapper argument mapper instance
      */
-    public SpigotCommandManager(JavaPlugin plugin, ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper) {
-        super(argumentMapper, exceptionArgumentMapper);
+    public SpigotCommandManager(JavaPlugin plugin, ArgumentMapper argumentMapper) {
+        super(argumentMapper);
         this.plugin = plugin;
     }
 
