@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.utils.OptionalFloat;
@@ -121,7 +120,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
             ArgumentIndex<?> argumentIndex;
             try {
-                argumentIndex = resolveArgumentIndex(parameter, type, parameter.parameterName(), counterMap, resultMap, index);
+                argumentIndex = resolveArgumentIndex(type, parameter.parameterName(), counterMap, resultMap, index);
             } catch (NoSuchElementException e) {
                 throw new NoSuchElementException("There is no argument for parameter " + parameter.parameterName() + " at index " + index + ".", e);
             }
@@ -189,7 +188,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         };
     }
 
-    private ArgumentIndex<?> resolveArgumentIndex(RegisteredVariant.Parameter parameter, Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
+    private ArgumentIndex<?> resolveArgumentIndex(Class<?> type, String name, Map<Class<?>, Integer> counterMap, ResultMap resultMap, int index) {
         if (name != null && resultMap.mapOfArgumentsByParameterName.containsKey(name)) {
             counterMap.put(type, counterMap.get(type) - 1);
             return resultMap.mapOfArgumentsByParameterName.get(name);
