@@ -16,6 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -66,9 +67,17 @@ public record RegisteredVariant(
             Parameter[] result = new Parameter[parameters.length];
 
             for (int i = 0; i < result.length; i++) {
+
+                Type parameterizedType = parameters[i].getParameterizedType();
+
+                Type genericSuperclass = parameters[i].getType().getGenericSuperclass();
+                if (genericSuperclass instanceof ParameterizedType)
+                    parameterizedType = genericSuperclass;
+
+
                 result[i] = new Parameter(
                         parameters[i].getType(),
-                        parameters[i].getParameterizedType(),
+                        parameterizedType,
                         ArgumentRequirementFactory.createArgumentRequirements(node, parameters[i].getAnnotations(), argumentRequirementFactories),
                         getParamName(parameters[i])
                 );

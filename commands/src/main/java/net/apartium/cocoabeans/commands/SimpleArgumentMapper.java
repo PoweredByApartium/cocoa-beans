@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands;
 
+import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.jetbrains.annotations.ApiStatus;
@@ -92,14 +93,14 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     );
 
     @Override
-    public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements) {
+    public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes) {
         if (parameters.length == 0)
             return List.of();
 
         List<ArgumentIndex<?>> result = new ArrayList<>(parameters.length);
 
         Map<Class<?>, Integer> counterMap = new HashMap<>();
-        ResultMap resultMap = createParsedArgs(argumentParsers, requirements, getParametersNames(parameters));
+        ResultMap resultMap = createParsedArgs(argumentParsers, requirements, additionalTypes, getParametersNames(parameters));
 
         for (RegisteredVariant.Parameter parameter : parameters) {
             Class<?> type = parameter.type();
@@ -247,7 +248,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return mapOfArguments.get(Sender.class).get(index - 1);
     }
 
-    private ResultMap createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, Map<String, Class<?>> lookupParametersNames) {
+    private ResultMap createParsedArgs(List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes, Map<String, Class<?>> lookupParametersNames) {
         Map<Class<?>, List<ArgumentIndex<?>>> resultMap = new HashMap<>();
         Map<String, ArgumentIndex<?>> resultParameterName = new HashMap<>();
 
@@ -263,6 +264,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             for (Class<?> type : requirement.getTypes()) {
                 serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
             }
+        }
+
+        for (Class<?> type : additionalTypes) {
+            serializesArgumentIndex(type, null, lookupParametersNames, counterMap, resultMap, resultParameterName);
         }
 
         return new ResultMap(resultMap, resultParameterName);
@@ -290,6 +295,20 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 throw new IllegalArgumentException("Parameter name " + parameterName + " is not assignable from type " + type);
 
             resultParameterName.put(parameterName, context -> context.parsedArgs().get(type).get(countIndex));
+            return;
+        }
+
+        if (CommandException.class.isAssignableFrom(type)) {
+            resultMap.computeIfAbsent(type, k -> new ArrayList<>())
+                    .add(context -> {
+                        for (Map.Entry<Class<?>, List<Object>> entry : context.parsedArgs().entrySet()) {
+                            if (type.isAssignableFrom(entry.getKey())) {
+                                return entry.getValue().get(0);
+                            }
+                        }
+
+                        return null;
+                    });
             return;
         }
 

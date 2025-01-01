@@ -12,9 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.Dispensers;
-import net.apartium.cocoabeans.commands.exception.ExceptionHandle;
-import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
-import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
+import net.apartium.cocoabeans.commands.exception.*;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
@@ -24,6 +22,7 @@ import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
@@ -143,24 +142,34 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             if (!Modifier.isPublic(method.getModifiers()))
                 throw new IllegalAccessException("Method " + method.getName() + "#" + node.getClass().getSimpleName() + " is not public");
 
-
-            try {
-                CollectionHelpers.addElementSorted(
-                        handleExceptionVariants,
-                        new HandleExceptionVariant(
-                                publicLookup.unreflect(method),
-                                Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
-                                node,
-                                exceptionHandle.priority()
-                        ),
-                        HANDLE_EXCEPTION_VARIANT_COMPARATOR
-                );
-            } catch (IllegalAccessException e) {
-                Dispensers.dispense(e);
-                return;
-            }
+            CollectionHelpers.addElementSorted(
+                    handleExceptionVariants,
+                    getHandleExceptionVariant(node, method, exceptionHandle, publicLookup),
+                    HANDLE_EXCEPTION_VARIANT_COMPARATOR
+            );
         }
 
+    }
+
+    private HandleExceptionVariant getHandleExceptionVariant(GenericNode node, Method method, ExceptionHandle exceptionHandle, MethodHandles.Lookup publicLookup) {
+        RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(node, method.getParameters(), commandManager.argumentRequirementFactories);
+
+        List<Class<?>> additionalTypes = new ArrayList<>(List.of(
+                exceptionHandle.value()
+        ));
+
+        try {
+            return new HandleExceptionVariant(
+                    exceptionHandle.value(),
+                    publicLookup.unreflect(method),
+                    Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
+                    node,
+                    commandManager.getArgumentMapper().mapIndices(parameters, List.of(), List.of(), additionalTypes),
+                    exceptionHandle.priority()
+            );
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void handleSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
@@ -176,20 +185,11 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
         if (exceptionHandle != null) {
-            try {
-                CollectionHelpers.addElementSorted(
-                        handleExceptionVariants,
-                        new HandleExceptionVariant(
-                                publicLookup.unreflect(context.method),
-                                Arrays.stream(context.method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
-                                context.commandNode,
-                                exceptionHandle.priority()
-                        ),
-                        HANDLE_EXCEPTION_VARIANT_COMPARATOR
-                );
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            CollectionHelpers.addElementSorted(
+                    handleExceptionVariants,
+                    getHandleExceptionVariant(context.commandNode, context.method, exceptionHandle, publicLookup),
+                    HANDLE_EXCEPTION_VARIANT_COMPARATOR
+            );
         }
     }
 
@@ -240,7 +240,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                             publicLookup.unreflect(context.method),
                             parameters,
                             context.commandNode,
-                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
+                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult, List.of()),
                             context.subCommand.priority()
                         ),
                         REGISTERED_VARIANT_COMPARATOR
@@ -286,7 +286,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                             publicLookup.unreflect(context.method),
                             parameters,
                             context.commandNode,
-                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult),
+                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult, List.of()),
                             context.subCommand.priority()
                     ),
                     REGISTERED_VARIANT_COMPARATOR

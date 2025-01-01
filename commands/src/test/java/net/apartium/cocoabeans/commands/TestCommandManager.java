@@ -11,13 +11,12 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandException;
-import net.apartium.cocoabeans.commands.exception.SimpleExceptionArgumentMapper;
 import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
 
 public class TestCommandManager extends CommandManager {
 
     public TestCommandManager() {
-        super(new SimpleArgumentMapper(), new SimpleExceptionArgumentMapper());
+        super(new SimpleArgumentMapper());
 
     }
 

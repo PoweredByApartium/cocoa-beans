@@ -7,6 +7,9 @@
 - [commands] Fixes MapBasedParser tabCompletion index
 - [commands] Added error logging for cases where subcommand methods are non-public or when variables are misused.
 - [commands] Added `MethodUtils#getAllMethods(Class)` for getting all methods of a class including inherited & public & non-public
+- [commands] Fixes bug with `ExecptionHandle` ignoring value
+- [commands] Removed `ExecptionArgumentMapper` in favor of `ArgumentMapper`
+- [commands] Added additional types to `ArgumentMapper#mapIndices`
   
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands

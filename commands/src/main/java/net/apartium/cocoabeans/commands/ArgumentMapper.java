@@ -25,8 +25,9 @@ public interface ArgumentMapper {
      * @param parameters parameters
      * @param argumentParsers argumentParsers (should be in order)
      * @param requirements requirements
+     * @param additionalTypes additional types are use for providing additional arguments to the command they are inserted at the end
      * @return list of argument indexes
      */
-    List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements);
+    List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes);
 
 }

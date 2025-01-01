@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.commands.spigot.game.commands.utils;
 
-import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.GenericNode;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.spigot.game.Game;
@@ -93,7 +92,7 @@ public class InGameFactory implements RequirementFactory {
             }
 
             @Override
-            public Exception getError() {
+            public NotInGameException getError() {
                 return new NotInGameException(this, inGame);
             }
         }

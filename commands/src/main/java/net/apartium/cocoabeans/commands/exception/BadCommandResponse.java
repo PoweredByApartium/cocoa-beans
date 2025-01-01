@@ -45,11 +45,11 @@ public class BadCommandResponse {
         return message;
     }
 
-    public Exception getError() {
+    public CommandException getError() {
         return new CommandException(this);
     }
 
-    public void throwError() throws Exception {
+    public void throwError() throws CommandException {
         throw getError();
     }
 }

@@ -58,7 +58,7 @@ public class PermissionFactory implements RequirementFactory {
             }
 
             @Override
-            public Exception getError() {
+            public PermissionException getError() {
                 return new PermissionException(this, permission);
             }
         }

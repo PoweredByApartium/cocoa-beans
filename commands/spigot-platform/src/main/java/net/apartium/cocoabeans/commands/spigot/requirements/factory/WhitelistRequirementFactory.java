@@ -98,7 +98,7 @@ public class WhitelistRequirementFactory implements RequirementFactory {
             }
 
             @Override
-            public Exception getError() {
+            public WhitelistException getError() {
                 return new WhitelistException(this, whitelist);
             }
         }

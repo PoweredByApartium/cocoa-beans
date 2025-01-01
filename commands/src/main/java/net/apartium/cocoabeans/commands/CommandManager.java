@@ -11,10 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.Dispensers;
-import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
-import net.apartium.cocoabeans.commands.exception.ExceptionArgumentMapper;
-import net.apartium.cocoabeans.commands.exception.HandleExceptionVariant;
-import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
+import net.apartium.cocoabeans.commands.exception.*;
 import net.apartium.cocoabeans.commands.lexer.CommandLexer;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
@@ -39,7 +36,6 @@ public abstract class CommandManager {
 
     protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
-    private final ExceptionArgumentMapper exceptionArgumentMapper;
     private final CommandLexer commandLexer;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
@@ -48,13 +44,12 @@ public abstract class CommandManager {
 
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper) {
-        this(argumentMapper, exceptionArgumentMapper, new SimpleCommandLexer());
+    protected CommandManager(ArgumentMapper argumentMapper) {
+        this(argumentMapper, new SimpleCommandLexer());
     }
 
-    protected CommandManager(ArgumentMapper argumentMapper, ExceptionArgumentMapper exceptionArgumentMapper, CommandLexer commandLexer) {
+    protected CommandManager(ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         this.argumentMapper = argumentMapper;
-        this.exceptionArgumentMapper = exceptionArgumentMapper;
         this.commandLexer = commandLexer;
     }
 
@@ -158,6 +153,9 @@ public abstract class CommandManager {
 
     private boolean handleError(CommandContext context, Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand, Throwable error) {
         for (HandleExceptionVariant handleExceptionVariant : registeredCommand.getHandleExceptionVariants()) {
+            if (!handleExceptionVariant.exceptionType().isAssignableFrom(error.getClass()))
+                continue;
+
             if (invokeException(handleExceptionVariant, context, sender, commandName, args, error))
                 return true;
         }
@@ -175,10 +173,22 @@ public abstract class CommandManager {
     }
 
     private boolean invokeException(HandleExceptionVariant handleExceptionVariant, CommandContext context, Sender sender, String commandName, String[] args, Throwable throwable) {
-        List<Object> parameters = exceptionArgumentMapper.map(handleExceptionVariant, context, sender, commandName, args, throwable);
+        Map<Class<?>, List<Object>> parsedArgs = new HashMap<>(Map.of(
+                Throwable.class, List.of(throwable),
+                CommandContext.class, List.of(context)
+        ));
 
-        if (parameters == null)
-            return false;
+        if (throwable instanceof CommandException commandException) {
+            parsedArgs.put(BadCommandResponse.class, List.of(commandException.getBadCommandResponse()));
+            parsedArgs.put(throwable.getClass(), List.of(throwable));
+        }
+
+        ArgumentContext argumentContext = new ArgumentContext(commandName, args, sender, parsedArgs);
+        List<Object> parameters = new ArrayList<>(handleExceptionVariant.argumentIndexList().stream()
+                .<Object>map((argumentIndex -> argumentIndex.get(argumentContext)))
+                .toList());
+
+        parameters.add(0, handleExceptionVariant.node());
 
         Object output;
         try {
@@ -257,10 +267,6 @@ public abstract class CommandManager {
 
     public ArgumentMapper getArgumentMapper() {
         return argumentMapper;
-    }
-
-    public ExceptionArgumentMapper getExceptionArgumentMapper() {
-        return exceptionArgumentMapper;
     }
 
     public CommandLexer getCommandLexer() {

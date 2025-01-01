@@ -16,7 +16,7 @@ public class UnknownCommandResponse extends BadCommandResponse {
     }
 
     @Override
-    public Exception getError() {
+    public UnknownCommandException getError() {
         return new UnknownCommandException();
     }
 

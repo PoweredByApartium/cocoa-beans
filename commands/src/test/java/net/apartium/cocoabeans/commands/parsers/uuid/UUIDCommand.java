@@ -18,7 +18,7 @@ public class UUIDCommand implements CommandNode {
     }
 
     @ExceptionHandle(InvalidUUIDResponse.InvalidUUIDException.class)
-    public void invalidUUID(Sender sender, InvalidUUIDResponse response) {
+    public void invalidUUID(Sender sender, InvalidUUIDResponse.InvalidUUIDException response) {
         sender.sendMessage("Invalid UUID: " + response.getUserInput());
     }
 

@@ -18,7 +18,8 @@ public class GameModeCommand implements CommandNode {
     }
 
     @ExceptionHandle(value = InvalidParserResponse.InvalidParserException.class, priority = 1)
-    public boolean invalidParser(Sender sender, InvalidParserResponse invalidParserResponse) {
+    public boolean invalidParser(Sender sender, InvalidParserResponse.InvalidParserException exception) {
+        InvalidParserResponse invalidParserResponse = (InvalidParserResponse) exception.getBadCommandResponse();
         if (!(invalidParserResponse instanceof AmbiguousMappedKeyResponse ambiguousMappedKeyResponse))
             return false;
 
@@ -31,8 +32,8 @@ public class GameModeCommand implements CommandNode {
     }
 
     @ExceptionHandle(AmbiguousMappedKeyResponse.AmbiguousMappedKeyException.class)
-    public void gamemodeCollision(Sender sender, AmbiguousMappedKeyResponse ambiguousMappedKeyResponse) {
-        sender.sendMessage(getDidMeanMessage(ambiguousMappedKeyResponse));
+    public void gamemodeCollision(Sender sender, AmbiguousMappedKeyResponse.AmbiguousMappedKeyException ambiguousMappedKeyException) {
+        sender.sendMessage(getDidMeanMessage(((AmbiguousMappedKeyResponse) ambiguousMappedKeyException.getBadCommandResponse())));
     }
 
 }

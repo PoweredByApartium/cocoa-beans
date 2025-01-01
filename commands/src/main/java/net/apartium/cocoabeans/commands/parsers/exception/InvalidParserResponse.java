@@ -39,15 +39,11 @@ public class InvalidParserResponse extends BadCommandResponse {
      * @return exception to be thrown
      */
     @Override
-    public Exception getError() {
-        return new InvalidParserException();
+    public InvalidParserException getError() {
+        return new InvalidParserException(this);
     }
 
-    public class InvalidParserException extends CommandException {
-
-        public InvalidParserException() {
-            super(InvalidParserResponse.this);
-        }
+    public static class InvalidParserException extends CommandException {
 
         public InvalidParserException(InvalidParserResponse response) {
             super(response);

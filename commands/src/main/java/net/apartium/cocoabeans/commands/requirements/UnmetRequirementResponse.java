@@ -31,7 +31,7 @@ public class UnmetRequirementResponse extends BadCommandResponse {
     }
 
     @Override
-    public Exception getError() {
+    public CommandException getError() {
         return new RequirementException(this, requirementAnnotation);
     }
 

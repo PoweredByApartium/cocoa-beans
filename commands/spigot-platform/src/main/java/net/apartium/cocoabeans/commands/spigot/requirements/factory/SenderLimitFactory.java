@@ -93,7 +93,7 @@ public class SenderLimitFactory implements RequirementFactory {
             }
 
             @Override
-            public Exception getError() {
+            public SenderLimitException getError() {
                 return new SenderLimitException(this, senderLimit);
             }
         }

@@ -18,7 +18,7 @@ public class InvalidUsageResponse extends BadCommandResponse {
     }
 
     @Override
-    public Exception getError() {
+    public InvalidUsageException getError() {
         return new InvalidUsageException();
     }
 
