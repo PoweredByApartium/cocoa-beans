@@ -68,7 +68,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 node,
                 new RequirementSet(
                         requirementSet,
-                        RequirementFactory.createRequirementSet(node, fallbackHandle.getAnnotations(), commandManager.requirementFactories)
+                        RequirementFactory.createRequirementSet(node, fallbackHandle.getAnnotations(), commandManager.requirementFactories, commandManager.getExternalRequirementFactories())
                 ))
         );
         Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
@@ -403,16 +403,16 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         Set<Requirement> requirements = new HashSet<>();
 
         for (Class<?> c : ClassUtils.getSuperClassAndInterfaces(clazz)) {
-            requirements.addAll(RequirementFactory.createRequirementSet(commandNode, c.getAnnotations(), commandManager.requirementFactories));
+            requirements.addAll(RequirementFactory.createRequirementSet(commandNode, c.getAnnotations(), commandManager.requirementFactories, commandManager.getExternalRequirementFactories()));
         }
 
         return requirements;
     }
 
     private Set<Requirement> findAllRequirements(CommandNode commandNode, Method method) {
-        Set<Requirement> requirements = new HashSet<>(RequirementFactory.createRequirementSet(commandNode, method.getAnnotations(), commandManager.requirementFactories));
+        Set<Requirement> requirements = new HashSet<>(RequirementFactory.createRequirementSet(commandNode, method.getAnnotations(), commandManager.requirementFactories, commandManager.getExternalRequirementFactories()));
         for (Method target : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
-            requirements.addAll(RequirementFactory.createRequirementSet(commandNode, target.getAnnotations(), commandManager.requirementFactories));
+            requirements.addAll(RequirementFactory.createRequirementSet(commandNode, target.getAnnotations(), commandManager.requirementFactories, commandManager.getExternalRequirementFactories()));
         }
 
         return requirements;

@@ -11,8 +11,7 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.requirements.UnmetRequirementResponse;
-import net.apartium.cocoabeans.commands.requirements.RequirementResult;
+import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.requirements.argument.RangeArgumentRequirementFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,6 +152,16 @@ public class  GeneralCommandTest extends CommandTestBase {
     void noOne() {
         evaluate("test", "no-one");
         assertEquals(List.of("You don't have permission to execute this command!"), sender.getMessages());
+
+        testCommandManager = new TestCommandManager();
+
+        testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        testCommandManager.registerRequirementFactory(WallRequirement.class, (node, obj) -> context -> RequirementResult.meet());
+
+        testCommandManager.addCommand(new CommandForTest());
+
+        evaluate("test", "no-one");
+        assertEquals(List.of("noOne(Sender sender) witch!!!"), sender.getMessages());
     }
 
     @Test

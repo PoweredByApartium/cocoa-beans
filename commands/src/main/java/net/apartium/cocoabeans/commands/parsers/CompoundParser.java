@@ -13,6 +13,7 @@ import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -27,6 +28,8 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
     private final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     private final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
 
+    private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories;
+
     private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
 
     private final ArgumentMapper argumentMapper;
@@ -39,14 +42,32 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
      * @param keyword keyword of the parser
      * @param clazz output class
      * @param priority priority
+     * @param argumentMapper argument mapper
+     * @param commandLexer command lexer
      */
+    @Deprecated(since = "0.0.38", forRemoval = true)
     protected CompoundParser(String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+        this(keyword, clazz, priority, new EvaluationContext(commandLexer, argumentMapper));
+    }
+
+    /**
+     * Constructs a new parser
+     *
+     * @param keyword keyword of the parser
+     * @param clazz output class
+     * @param priority priority
+     * @param evaluationContext evaluation context
+     */
+    @ApiStatus.AvailableSince("0.0.38")
+    protected CompoundParser(String keyword, Class<T> clazz, int priority, EvaluationContext evaluationContext) {
         super(keyword, clazz, priority);
 
-        this.argumentMapper = argumentMapper;
+        this.argumentMapper = evaluationContext.mapper();
 
-        this.commandLexer = commandLexer;
+        this.commandLexer = evaluationContext.lexer();
         this.compoundParserBranchProcessor = new CompoundParserBranchProcessor<>();
+
+        this.externalRequirementFactories = evaluationContext.externalRequirementFactories();
 
         try {
             createBranch();
@@ -61,7 +82,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
     }
 
     private void createBranch() throws IllegalAccessException {
-        RequirementSet requirementsResult = RequirementFactory.createRequirementSet(this, this.getClass().getAnnotations(), requirementFactories);
+        RequirementSet requirementsResult = RequirementFactory.createRequirementSet(this, this.getClass().getAnnotations(), requirementFactories, externalRequirementFactories);
         Map<String, ArgumentParser<?>> argumentParser = new HashMap<>();
 
         MethodHandles.Lookup lookup = MethodHandles.publicLookup();
@@ -77,7 +98,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
                 continue;
 
             RequirementSet methodRequirements = new RequirementSet(
-                    RequirementFactory.createRequirementSet(this, method.getAnnotations(), requirementFactories),
+                    RequirementFactory.createRequirementSet(this, method.getAnnotations(), requirementFactories, externalRequirementFactories),
                     requirementsResult
             );
 
