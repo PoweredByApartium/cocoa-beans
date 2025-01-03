@@ -291,12 +291,8 @@ public abstract class CommandManager {
         return commandLexer;
     }
 
-    /**
-     * Get external requirement factories
-     * @return external requirement factories
-     */
-    @ApiStatus.AvailableSince("0.0.38")
-    public Map<Class<? extends Annotation>, RequirementFactory> getExternalRequirementFactories() {
+    @ApiStatus.Internal
+    /* package-private */ Map<Class<? extends Annotation>, RequirementFactory> getExternalRequirementFactories() {
         return Collections.unmodifiableMap(externalRequirementFactories);
     }
 }
