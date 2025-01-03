@@ -18,6 +18,7 @@ import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 @ApiStatus.NonExtendable
@@ -42,6 +43,7 @@ public abstract class CommandManager {
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
 
+    private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories = new HashMap<>();
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     protected CommandManager(ArgumentMapper argumentMapper) {
@@ -60,6 +62,22 @@ public abstract class CommandManager {
     public void registerArgumentTypeHandler(Set<ArgumentParser<?>> argumentTypeHandlers) {
         for (ArgumentParser<?> argumentTypeHandler : argumentTypeHandlers)
             registerArgumentTypeHandler(argumentTypeHandler);
+    }
+
+    /**
+     * Registers an external requirement factory for a specific annotation.
+     * <p>
+     * This allows overriding the default behavior of the annotation with a custom
+     * factory implementation. Note that this registration only affects commands
+     * registered after the factory is set. Commands registered prior to this
+     * change will continue to use their previously assigned implementation.
+     *
+     * @param annotation the annotation class to override
+     * @param factory    the custom factory implementation to be registered
+     */
+    @ApiStatus.AvailableSince("0.0.38")
+    public void registerRequirementFactory(Class<? extends Annotation> annotation, RequirementFactory factory) {
+        externalRequirementFactories.put(annotation, factory);
     }
 
 
@@ -271,6 +289,15 @@ public abstract class CommandManager {
 
     public CommandLexer getCommandLexer() {
         return commandLexer;
+    }
+
+    /**
+     * Get external requirement factories
+     * @return external requirement factories
+     */
+    @ApiStatus.AvailableSince("0.0.38")
+    public Map<Class<? extends Annotation>, RequirementFactory> getExternalRequirementFactories() {
+        return Collections.unmodifiableMap(externalRequirementFactories);
     }
 }
 

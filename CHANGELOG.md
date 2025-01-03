@@ -10,6 +10,7 @@
 - [commands] Fixes bug with `ExecptionHandle` ignoring value
 - [commands] Removed `ExecptionArgumentMapper` in favor of `ArgumentMapper`
 - [commands] Added additional types to `ArgumentMapper#mapIndices`
+- [commands] Added External Requirement Factory to be able to create requirements from external sources
   
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands

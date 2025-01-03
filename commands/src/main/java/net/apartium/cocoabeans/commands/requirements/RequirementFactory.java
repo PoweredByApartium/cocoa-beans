@@ -27,16 +27,17 @@ public interface RequirementFactory {
      * @param node generic node (command node or compound parser)
      * @param annotations annotations
      * @param requirementFactories requirement factories for caching factories
+     * @param externalRequirementFactories external requirement factories
      * @return requirement set
      */
     @ApiStatus.AvailableSince("0.0.37")
-    static RequirementSet createRequirementSet(GenericNode node, Annotation[] annotations, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories) {
+    static RequirementSet createRequirementSet(GenericNode node, Annotation[] annotations, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
         if (annotations == null)
             return new RequirementSet();
 
         Set<Requirement> result = new HashSet<>();
         for (Annotation annotation : annotations) {
-            Requirement requirement = getRequirement(node, annotation, requirementFactories);
+            Requirement requirement = getRequirement(node, annotation, requirementFactories, externalRequirementFactories);
             if (requirement == null)
                 continue;
 
@@ -47,13 +48,18 @@ public interface RequirementFactory {
     }
 
     @ApiStatus.Internal
-    private static Requirement getRequirement(GenericNode node, Annotation annotation, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories) {
+    private static Requirement getRequirement(GenericNode node, Annotation annotation, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
+        RequirementFactory requirementFactory = externalRequirementFactories.get(annotation.annotationType());
+
+        if (requirementFactory != null)
+            return requirementFactory.getRequirement(node, annotation);
+
         Class<? extends RequirementFactory> requirementFactoryClass = RequirementFactory.getRequirementFactoryClass(annotation);
 
         if (requirementFactoryClass == null)
             return null;
 
-        RequirementFactory requirementFactory = requirementFactories.computeIfAbsent(
+        requirementFactory = requirementFactories.computeIfAbsent(
                 requirementFactoryClass,
                 clazz -> RequirementFactory.createFromAnnotation(annotation)
         );
