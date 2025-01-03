@@ -11,6 +11,7 @@
 - [commands] Removed `ExecptionArgumentMapper` in favor of `ArgumentMapper`
 - [commands] Added additional types to `ArgumentMapper#mapIndices`
 - [commands] Added External Requirement Factory: Allows custom factories to override annotation behavior, enabling requirements from external sources. `CommandManager#registerRequirementFactory`
+- [commands] Added `EvaluationContext`
   
 ## 0.0.37
 - [commands] Enhanced command handling with improved serialization of subcommands

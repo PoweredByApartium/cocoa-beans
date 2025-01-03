@@ -45,8 +45,9 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
      * @param argumentMapper argument mapper
      * @param commandLexer command lexer
      */
+    @Deprecated(since = "0.0.38", forRemoval = true)
     protected CompoundParser(String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
-        this(keyword, clazz, priority, argumentMapper, commandLexer, Collections.emptyMap());
+        this(keyword, clazz, priority, new EvaluationContext(commandLexer, argumentMapper));
     }
 
     /**
@@ -55,20 +56,18 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
      * @param keyword keyword of the parser
      * @param clazz output class
      * @param priority priority
-     * @param argumentMapper argument mapper
-     * @param commandLexer command lexer
-     * @param externalRequirementFactories external requirement factories
+     * @param evaluationContext evaluation context
      */
     @ApiStatus.AvailableSince("0.0.38")
-    protected CompoundParser(String keyword, Class<T> clazz, int priority, ArgumentMapper argumentMapper, CommandLexer commandLexer, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
+    protected CompoundParser(String keyword, Class<T> clazz, int priority, EvaluationContext evaluationContext) {
         super(keyword, clazz, priority);
 
-        this.argumentMapper = argumentMapper;
+        this.argumentMapper = evaluationContext.mapper();
 
-        this.commandLexer = commandLexer;
+        this.commandLexer = evaluationContext.lexer();
         this.compoundParserBranchProcessor = new CompoundParserBranchProcessor<>();
 
-        this.externalRequirementFactories = externalRequirementFactories;
+        this.externalRequirementFactories = evaluationContext.externalRequirementFactories();
 
         try {
             createBranch();
