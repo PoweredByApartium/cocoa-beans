@@ -46,26 +46,13 @@ public abstract class CommandManager {
     private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories = new HashMap<>();
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-    @Deprecated(since = "0.0.38", forRemoval = true)
     protected CommandManager(ArgumentMapper argumentMapper) {
         this(argumentMapper, new SimpleCommandLexer());
     }
 
-    @Deprecated(since = "0.0.38", forRemoval = true)
     protected CommandManager(ArgumentMapper argumentMapper, CommandLexer commandLexer) {
-        this(new EvaluationContext(commandLexer, argumentMapper));
-    }
-
-    /**
-     * Constructs a new CommandManager with the provided evaluation context for registering commands.
-     * @param evaluationContext evaluation context
-     */
-    @ApiStatus.AvailableSince("0.0.38")
-    protected CommandManager(EvaluationContext evaluationContext) {
-        this.argumentMapper = evaluationContext.mapper();
-        this.commandLexer = evaluationContext.lexer();
-
-        externalRequirementFactories.putAll(evaluationContext.externalRequirementFactories());
+        this.argumentMapper = argumentMapper;
+        this.commandLexer = commandLexer;
     }
 
     public void registerArgumentTypeHandler(ArgumentParser<?> argumentTypeHandler) {
