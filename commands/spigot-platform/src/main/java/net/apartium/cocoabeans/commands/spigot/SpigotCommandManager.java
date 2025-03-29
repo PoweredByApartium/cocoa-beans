@@ -33,7 +33,8 @@ public class SpigotCommandManager extends CommandManager {
             new OfflinePlayerParser(0),
             new MaterialParser(0),
             new LocationParser(0),
-            new GameModeParser(0)
+            new GameModeParser(0),
+            new WorldParser(0)
     );
 
     private final JavaPlugin plugin;
