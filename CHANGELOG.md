@@ -1,4 +1,8 @@
 # CHANGELOG
+## 0.0.39
+- [commands-spigot] Added `WorldParser` to SpigotParsers
+- [common] Bump Minecraft Version 1.21.2 - 1.21.5
+
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers
 - [commands-spigot] Improve `LocationParser` that will use `CompoundParser`
