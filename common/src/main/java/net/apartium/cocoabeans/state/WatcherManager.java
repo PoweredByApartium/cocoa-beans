@@ -66,7 +66,7 @@ public class WatcherManager implements WatcherOperator {
      *  {@inheritDoc}
      */
     @Override
-    public void cancel(AttachedWatcher<?> watcher) {
+    public void detach(AttachedWatcher<?> watcher) {
         lock.writeLock().lock();
         try {
             watchers.remove(watcher);

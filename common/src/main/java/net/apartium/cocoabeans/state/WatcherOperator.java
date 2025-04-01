@@ -11,9 +11,9 @@ import org.jetbrains.annotations.ApiStatus;
 public interface WatcherOperator {
 
     /**
-     * Cancels a watcher attached with the current instance
+     * Detach a watcher attached with the current instance
      * @param watcher watcher instance
      */
-    void cancel(AttachedWatcher<?> watcher);
+    void detach(AttachedWatcher<?> watcher);
 
 }

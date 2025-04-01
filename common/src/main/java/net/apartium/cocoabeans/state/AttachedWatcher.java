@@ -42,11 +42,11 @@ public class AttachedWatcher<T> extends Watcher<T> {
      * Cancels this watcher instance.
      * Cancelled instances will not trigger
      */
-    public void cancel() {
+    public void detach() {
         if (this.manager == null)
             throw new IllegalArgumentException("not attached");
 
-        this.manager.cancel(this);
+        this.manager.detach(this);
     }
 
 }
