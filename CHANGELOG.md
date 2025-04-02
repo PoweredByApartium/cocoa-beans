@@ -1,6 +1,7 @@
 # CHANGELOG
 ## 0.0.39
 - [commands-spigot] Added `WorldParser` to SpigotParsers
+- [commands-spigot] Fixes `WorldParser` to support on legacy versions
 - [common] Bump Minecraft Version 1.21.2 - 1.21.5
 
 ## 0.0.38
