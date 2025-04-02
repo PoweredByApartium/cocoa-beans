@@ -1,11 +1,8 @@
 package net.apartium.cocoabeans.commands.parsers.exception;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
 
 /**
  * Represents a response that is reported via a parser when a mapped key is not found
