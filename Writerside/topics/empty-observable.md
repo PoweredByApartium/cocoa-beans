@@ -4,11 +4,6 @@
 Available Since 0.0.39
 </sup>
 
-```java
-public void example() {
-    Observable<Integer> observable = Observable.empty(); // same instance
-    
-    print(observable); // null
-}
-```
+<code-block lang="java" src="../../common/src/test/java/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="empty"/>
+
 Start typing here...

@@ -4,15 +4,6 @@
 Available Since 0.0.39
 </sup>
 
-```java
-public void example() {
-    MutableObservable<Integer> observable = Observable.mutable(123);
-    
-    print(observable.get()); // 123
+<code-block lang="java" src="../../common/src/test/java/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="mutable"/>
 
-    observable.set(456); // flag his observers dirty
-    
-    print(observable.get()); // 456
-}
-```
 Start typing here...
