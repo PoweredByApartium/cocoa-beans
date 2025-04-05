@@ -151,4 +151,57 @@ class CodeSnippets {
         assertFalse(watcher.isAttached()); // Make sure it detach
     }
 
+    @Test
+    void example() {
+        MutableObservable<Integer> num = Observable.mutable(0);
+        Observable<Boolean> isEven = num.map(n -> n % 2 == 0);
+        Observable<String> parity = Observable.compound(num, isEven)
+                .map((args) -> args.arg0() + ": " + args.arg1());
+
+        assertEquals("0: true", parity.get());
+
+        num.set(9); // Flag isEven and parity as dirty but don't recompute yet
+
+        assertEquals("9: false", parity.get());
+
+        num.set(42); // Flag isEven and parity as dirty but don't recompute yet
+
+        assertEquals("42: true", parity.get());
+
+        num.set(21); // Flag isEven and parity as dirty but don't recompute yet
+        num.set(42); // Flag isEven and parity as dirty but don't recompute yet
+
+        assertEquals("42: true", parity.get()); // output "42: true" but didn't need to recompute
+    }
+
+    @Test
+    void listExample() {
+        ListObservable<String> names = Observable.list(); // Create an ArrayList<String>
+
+        assertEquals(List.of(), names.get());
+
+        names.add("Kfir");
+
+        assertEquals(List.of("Kfir"), names.get());
+
+        names.addAll(List.of("Lior", "Tom"));
+
+        assertEquals(List.of("Kfir", "Lior", "Tom"), names.get());
+
+        names.remove("Tom");
+
+        assertEquals(List.of("Kfir", "Lior"),names.get());
+
+        Observable<List<String>> namesLength = names.map((list) ->
+                list.stream()
+                        .map(name -> name + ": " + name.length())
+                        .toList()
+        );
+
+        assertEquals(List.of("Kfir: 4", "Lior: 4"), namesLength.get());
+
+        names.add("Elion");
+        assertEquals(List.of("Kfir: 4", "Lior: 4", "Elion: 5"), namesLength.get());
+    }
+
 }

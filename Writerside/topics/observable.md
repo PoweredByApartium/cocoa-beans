@@ -7,7 +7,7 @@ Available Since 0.0.39
 **Table of content:**
 - [Introduction](#introduction)
 - [Usage](#usage)
-- [How it work](#how-it-work)
+- [How it works](#how-it-works)
 - [Advantages](#advantages)
 - [What next](#what-next)
 
@@ -19,62 +19,8 @@ Observables are designed to be either immutable or mutable, with support for com
 This system is designed to be lightweight, composable, and extensible.
 
 ## Usage
-
-```java
-public void example() {
-    MutableObservable<Integer> num = Observable.mutable(0);
-    Observable<Boolean> isEven = num.map(n -> n % 2 == 0);
-    Observable<String> parity = Observable.compound(num, isEven)
-            .map((args) -> args.arg0() + ": " + args.arg1());
-
-    print(parity.get()); // output "0: false"
-
-    num.set(9); // Flag isEven and parity as dirty but don't recompute yet
-
-    print(parity.get()); // output "9: false"
-
-    num.set(42); // Flag isEven and parity as dirty but don't recompute yet
-
-    print(parity.get()); // output "42: true"
-
-    num.set(21); // Flag isEven and parity as dirty but don't recompute yet
-    num.set(42); // Flag isEven and parity as dirty but don't recompute yet
-
-    print(parity.get()); // output "42: true" but didn't need to recompute
-}
-```
-
-
-```java
-public void example() {
-    ListObservable<String> names = Observable.list(); // Create an ArrayList<String>
-
-    print(names.get()); // []
-
-    names.add("Kfir");
-
-    print(names.get()); // ["Kfir"]
-
-    names.addAll(List.of("Lior", "Tom"));
-
-    print(names.get()); // ["Kfir", "Lior", "Tom"]
-
-    names.remove("Tom");
-
-    print(names.get()); // ["Kfir", "Lior"]
-
-    Observable<List<String>> namesLength = names.map((list) ->
-            list.stream()
-                    .map(name -> name + ": " + name.length())
-                    .toList()
-    );
-
-    print(namesLength.get()); // ["Kfir: 4", "Lior: 4"]
-
-    names.add("Elion");
-    print(namesLength.get()); // ["Kfir: 4", "Lior: 4", "Elion: 5"]
-}
-```
+<code-block lang="java" src="../../common/src/test/java/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="example"/>
+<code-block lang="java" src="../../common/src/test/java/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="listExample"/>
 
 ## How it works
 
