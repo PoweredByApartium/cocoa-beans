@@ -2,13 +2,14 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
+import net.apartium.cocoabeans.commands.parsers.exception.NoSuchElementInMapResponse;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
 /**
  * Map based parser that map of keyword to value
- *
+ * When Map entry not found report {@link NoSuchElementInMapResponse}
  * @see SourceParser
  * @param <T> result type
  */
@@ -56,11 +57,10 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
     }
 
     /**
-     * If you want to ignore case to be applied don't forgot to lowercase the keyword
+     * If you want to ignore case to be applied then don't forgot to lowercase the keyword
      * @return map of keyword to value
      */
     public abstract Map<String, T> getMap();
-
     @Override
     public Optional<ParseResult<T>> parse(CommandProcessingContext commandProcessingContext) {
         List<String> args = commandProcessingContext.args();
@@ -69,6 +69,7 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
         Map<String, T> map = getMap();
         String s = "";
 
+        boolean ambiguous = false;
         for (int i = index; i < args.size(); i++) {
             if (i != index)
                 s += " ";
@@ -78,14 +79,22 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
             if (ignoreCase)
                 s = s.toLowerCase();
 
+
             T value = map.get(s);
             if (value == null) {
                 if (!lax)
                     continue;
 
-                value = getLax(commandProcessingContext, s);
-                if (value == null)
+                LaxResult<T> result = getLax(commandProcessingContext, s);
+                if (result == null)
                     continue;
+
+                if (result.hasAmbiguous()) {
+                    ambiguous = true;
+                    continue;
+                }
+
+                value = result.value();
             }
 
             return Optional.of(new ParseResult<>(
@@ -94,10 +103,27 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
             ));
         }
 
+        if (ambiguous)
+            return Optional.empty();
+
+        commandProcessingContext.report(
+                this,
+                new NoSuchElementInMapResponse(commandProcessingContext, this, "No such element in map", s)
+        );
+
         return Optional.empty();
     }
 
-    private T getLax(CommandProcessingContext context, String s) {
+
+    private record LaxResult<T>(T value, boolean hasAmbiguous) {
+
+        private static <T> LaxResult<T> createHasAmbiguous() {
+            return new LaxResult<>(null, true);
+        }
+
+    }
+
+    private LaxResult<T> getLax(CommandProcessingContext context, String s) {
         T result = null;
         List<String> dupeKeys = new ArrayList<>();
 
@@ -127,10 +153,10 @@ public abstract class MapBasedParser<T> extends ArgumentParser<T> {
                             dupeKeys
                     )
             );
-            return null;
+            return LaxResult.createHasAmbiguous();
         }
 
-        return result;
+        return new LaxResult<>(result, false);
     }
 
     @Override
