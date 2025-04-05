@@ -78,7 +78,7 @@ public class WorldParser extends MapBasedParser<World> {
     public Map<String, World> getMap() {
         return Bukkit.getWorlds()
                 .stream()
-                .collect(Collectors.toMap(World::getName, world -> world));
+                .collect(Collectors.toMap((w) -> w.getName(), world -> world));
     }
 
 }

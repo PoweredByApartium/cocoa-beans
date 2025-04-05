@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
+import net.apartium.cocoabeans.commands.parsers.exception.NoSuchElementInMapResponse;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
@@ -50,6 +51,21 @@ public class MapBasedParserTest {
         }
 
         assertParserThrowsReport(parser, null, "test", new String[]{"s"}, 0, AmbiguousMappedKeyResponse.class);
+
+        try {
+            assertParserResult(parser, null, "test", new String[]{"sa"}, 0, new ArgumentParser.ParseResult<>(GameMode.SURVIVAL, 1));
+        } catch (AssertionFailedError e) {
+            Object value = e.getActual().getEphemeralValue();
+            if (!(value instanceof List<?> list)) {
+                fail();
+                return;
+            }
+
+            assertEquals(1, list.size());
+            assertEquals(NoSuchElementInMapResponse.class, list.get(0).getClass());
+            assertEquals("sa", ((NoSuchElementInMapResponse) list.get(0)).getAttempted());
+            assertEquals("sa", ((NoSuchElementInMapResponse) list.get(0)).getError().getAttempted());
+        }
     }
 
     public enum GameMode {
