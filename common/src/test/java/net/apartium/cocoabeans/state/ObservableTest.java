@@ -2,10 +2,8 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,20 +11,207 @@ import static org.junit.jupiter.api.Assertions.*;
 class ObservableTest {
 
     @Test
-    public void testValueState() {
+    void testValueState() {
         MutableObservable<Integer> num = Observable.mutable(9);
         assertEquals(9, ((int) num.get()));
     }
 
     @Test
-    public void setValueStateTest() {
+    void setValueStateTest() {
         MutableObservable<Integer> num = Observable.mutable(9);
         num.set(20);
         assertEquals(20, ((int) num.get()));
     }
 
     @Test
-    public void testCompoundState() {
+    void empty() {
+        Observable<Integer> empty = Observable.empty();
+        assertEquals(Observable.empty(), empty);
+        assertNull(empty.get());
+
+    }
+
+    @Test
+    void listAddAndAddAllAndRetainAllAndRemoveFailed() {
+        ListObservable<String> list = Observable.list(new List<>() {
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @Override
+            public Iterator<String> iterator() {
+                return null;
+            }
+
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T[] toArray(T[] ts) {
+                return null;
+            }
+
+            @Override
+            public boolean add(String integer) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends String> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(int i, Collection<? extends String> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public String get(int i) {
+                return null;
+            }
+
+            @Override
+            public String set(int i, String s) {
+                return null;
+            }
+
+            @Override
+            public void add(int i, String s) {
+
+            }
+
+            @Override
+            public String remove(int i) {
+                return null;
+            }
+
+            @Override
+            public int indexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public int lastIndexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public ListIterator<String> listIterator() {
+                return null;
+            }
+
+            @Override
+            public ListIterator<String> listIterator(int i) {
+                return null;
+            }
+
+            @Override
+            public List<String> subList(int i, int i1) {
+                return List.of();
+            }
+        });
+
+        assertFalse(list.add("test"));
+        assertFalse(list.addAll(List.of("test", "wow")));
+        assertFalse(list.retainAll(List.of("lol", "wow")));
+        assertFalse(list.removeAll(List.of("lol", "wow")));
+
+        list.add(0, "lol");
+        assertNull(list.remove(0));
+    }
+
+    @Test
+    void MappedObservableFlagDirtyNotBase() {
+        Observable<Integer> num = Observable.mutable(9);
+
+        MappedObservable<Integer, Boolean> map = (MappedObservable<Integer, Boolean>) num.map((n) -> n % 2 == 0);
+
+        try {
+            map.flagAsDirty(null);
+            Field isDirty = map.getClass().getDeclaredField("isDirty");
+            isDirty.setAccessible(true);
+
+            assertFalse(isDirty.getBoolean(map));
+
+            map.flagAsDirty(map);
+            assertFalse(isDirty.getBoolean(map));
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail(e);
+        }
+
+
+
+
+    }
+
+    @Test
+    void hadChangedCollection() {
+        MutableObservable<String> playerName = Observable.mutable("test");
+        ListObservable<Integer> list = Observable.list();
+
+        AtomicInteger count = new AtomicInteger();
+        Observable<String> map = Observable.compound(playerName, list).map((args) -> {
+            count.incrementAndGet();
+
+            return args.arg0() + ": " + Arrays.toString(args.arg1().toArray(new Integer[0]));
+        });
+
+        assertEquals(0, count.get());
+        assertEquals("test: []", map.get());
+        assertEquals(1, count.get());
+
+        list.add(90);
+        assertEquals(1, count.get());
+
+        list.add(74);
+        assertEquals(1, count.get());
+
+        assertEquals("test: [90, 74]", map.get());
+        assertEquals(2, count.get());
+
+    }
+
+    @Test
+    void testCompoundState() {
         MutableObservable<Integer> num = Observable.mutable(9);
 
         AtomicInteger isEvenCalled = new AtomicInteger();
@@ -90,7 +275,7 @@ class ObservableTest {
     }
 
     @Test
-    public void tryingToModifyCompoundState() {
+    void tryingToModifyCompoundState() {
         MutableObservable<Integer> num = Observable.mutable(9);
         Observable<Boolean> isEven = Observable.compound(
                 (list) -> {
@@ -105,7 +290,7 @@ class ObservableTest {
     }
 
     @Test
-    public void testCompoundState2() {
+    void testCompoundState2() {
 
         MutableObservable<Integer> num0 = Observable.mutable(7);
         MutableObservable<Integer> num1 = Observable.mutable(14);
@@ -177,7 +362,7 @@ class ObservableTest {
     }
 
     @Test
-    public void nullStateValue() {
+    void nullStateValue() {
         MutableObservable<String> name = Observable.mutable(null);
 
         AtomicInteger helloWorldCalled = new AtomicInteger();
@@ -295,14 +480,10 @@ class ObservableTest {
 
         AtomicInteger stateCalled = new AtomicInteger();
 
-        Observable<String> state = Observable.compound(
-                (list) -> {
+        Observable<String> state = names.map((namesList) -> {
                     stateCalled.addAndGet(1);
-                    List<String> namesList = (List<String>) list.get(0);
-
                     return "[" + String.join(", ", namesList) + "]";
-                },
-                List.of(names)
+                }
         );
 
         names.add("test");
@@ -392,6 +573,49 @@ class ObservableTest {
 
         assertEquals("[ah???, cool_name, test, test2, test3, test3_1, test3_4]", state.get());
         assertEquals(8, stateCalled.get());
+
+        names.clear();
+
+        assertEquals("[]", state.get());
+        assertEquals(0, names.get().size());
+        assertEquals(9, stateCalled.get());
+
+        names.clear();
+        assertEquals("[]", state.get());
+        assertEquals(9, stateCalled.get());
+
+        names.addAll(List.of("test0", "test1", "test2", "test0"));
+        assertTrue(names.retainAll(List.of("test0", "test2")));
+
+        assertEquals("[test0, test2, test0]", state.get());
+        assertEquals(10, stateCalled.get());
+
+        assertThrowsExactly(IndexOutOfBoundsException.class, () -> names.remove(4));
+        assertThrowsExactly(NullPointerException.class, () -> names.sort(null));
+
+        assertEquals("[test0, test2, test0]", state.get());
+        assertEquals(10, stateCalled.get());
+
+        names.addAll(List.of("test1", "test3", "test4", "test1"));
+        assertEquals(10, stateCalled.get());
+
+        assertEquals("[test0, test2, test0, test1, test3, test4, test1]", state.get());
+        assertEquals(11, stateCalled.get());
+
+        names.remove("test0");
+        assertEquals(11, stateCalled.get());
+
+
+        assertEquals("[test2, test0, test1, test3, test4, test1]", state.get());
+        assertEquals(12, stateCalled.get());
+
+        names.removeAll(List.of("test1", "test2"));
+        assertEquals(12, stateCalled.get());
+
+
+        assertEquals("[test0, test3, test4]", state.get());
+        assertEquals(13, stateCalled.get());
+
     }
 
     @Test

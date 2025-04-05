@@ -22,7 +22,7 @@ package net.apartium.cocoabeans.state;
     }
 
     /**
-     * Add a observer to the state
+     * Add an observer to the state
      *
      * @param observer the observer we want to add
      */

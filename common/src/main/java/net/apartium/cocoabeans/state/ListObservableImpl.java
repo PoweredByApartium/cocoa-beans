@@ -32,12 +32,12 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
 
-    private void notfiyObservers() {
+    private void notifyObservers() {
         for (Observer observer : observers)
             observer.flagAsDirty(this);
     }
@@ -49,7 +49,7 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
@@ -62,7 +62,7 @@ import java.util.function.Predicate;
         if (prevSize == list.size())
             return;
 
-        notfiyObservers();
+        notifyObservers();
     }
 
     @Override
@@ -72,7 +72,7 @@ import java.util.function.Predicate;
         if (element == null)
             return null;
 
-        notfiyObservers();
+        notifyObservers();
 
         return element;
     }
@@ -86,7 +86,7 @@ import java.util.function.Predicate;
             return;
 
         list.sort(comparator);
-        notfiyObservers();
+        notifyObservers();
     }
 
     @Override
@@ -96,7 +96,7 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
@@ -108,7 +108,7 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
@@ -120,7 +120,7 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
@@ -132,21 +132,21 @@ import java.util.function.Predicate;
         if (!result)
             return false;
 
-        notfiyObservers();
+        notifyObservers();
 
         return true;
     }
 
     @Override
     public void clear() {
-        boolean result = list.isEmpty();
+        boolean empty = list.isEmpty();
+        list.clear();
 
-        list.clear();;
-
-        if (result)
+        if (empty)
             return;
 
-        notfiyObservers();
+
+        notifyObservers();
     }
 
     /**
