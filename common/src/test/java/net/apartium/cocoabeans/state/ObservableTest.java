@@ -211,6 +211,39 @@ class ObservableTest {
     }
 
     @Test
+    void mapListObservable() {
+        ListObservable<String> names = Observable.list();
+        AtomicInteger count = new AtomicInteger();
+
+        Observable<List<String>> namesLength = names.map((list) -> {
+            count.incrementAndGet();
+            return list.stream()
+                            .map(name -> name + ": " + name.length())
+                            .toList();
+        });
+
+        assertEquals(0, count.get());
+
+        assertEquals(List.of(), namesLength.get());
+        assertEquals(1, count.get());
+
+        names.add("Kfir");
+        assertEquals(1, count.get());
+
+        assertEquals(List.of("Kfir: 4"), namesLength.get());
+        assertEquals(2, count.get());
+
+        names.add("Elion");
+        assertEquals(2, count.get());
+        names.add("Lior");
+        assertEquals(2, count.get());
+
+        assertEquals(List.of("Kfir: 4", "Elion: 5", "Lior: 4"), namesLength.get());
+        assertEquals(3, count.get());
+
+    }
+
+    @Test
     void testCompoundState() {
         MutableObservable<Integer> num = Observable.mutable(9);
 

@@ -29,6 +29,17 @@
         <toc-element topic="Visibility-Api.md"/>
     </toc-element>
     <toc-element topic="Collections.md"/>
+    <toc-element topic="observable.md">
+        <toc-element topic="immutable-observable.md"/>
+        <toc-element topic="mutable-observable.md"/>
+        <toc-element topic="compound-observable.md"/>
+        <toc-element topic="mapped-observable.md"/>
+        <toc-element topic="collection-observable.md">
+            <toc-element topic="list-observable.md"/>
+        </toc-element>
+        <toc-element topic="observer.md"/>
+        <toc-element topic="watcher.md"/>
+    </toc-element>
     <toc-element topic="Space-Api.md"/>
 
 </instance-profile>
