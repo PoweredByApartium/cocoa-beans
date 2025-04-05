@@ -76,7 +76,7 @@ public void example() {
 }
 ```
 
-## How it work
+## How it works
 
 
 ## Advantages

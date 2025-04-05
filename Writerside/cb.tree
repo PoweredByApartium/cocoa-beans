@@ -30,7 +30,9 @@
     </toc-element>
     <toc-element topic="Collections.md"/>
     <toc-element topic="observable.md">
-        <toc-element topic="immutable-observable.md"/>
+        <toc-element topic="immutable-observable.md">
+            <toc-element topic="empty-observable.md"/>
+        </toc-element>
         <toc-element topic="mutable-observable.md"/>
         <toc-element topic="compound-observable.md"/>
         <toc-element topic="mapped-observable.md"/>
