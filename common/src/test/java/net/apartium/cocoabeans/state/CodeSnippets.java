@@ -1,1 +1,1 @@
-/mnt/E24A33024A32D351/developing/github/cocoa-beans/Writerside/topics/code-samples/common/net/apartium/cocoabeans/state/CodeSnippets.java
+/mnt/E24A33024A32D351/developing/github/cocoa-beans/Writerside/code-samples/CodeSnippets.java

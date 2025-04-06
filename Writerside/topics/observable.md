@@ -19,8 +19,8 @@ Observables are designed to be either immutable or mutable, with support for com
 This system is designed to be lightweight, composable, and extensible.
 
 ## Usage
-<code-block lang="java" src="code-samples/common/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="example"/>
-<code-block lang="java" src="code-samples/common/net/apartium/cocoabeans/state/CodeSnippets.java" include-symbol="listExample"/>
+<code-block lang="java" src="../code-samples/CodeSnippets.java" include-symbol="example"/>
+<code-block lang="java" src="../code-samples/CodeSnippets.java" include-symbol="listExample"/>
 
 ## How it works
 
