@@ -4,6 +4,6 @@
 Available Since 0.0.39
 </sup>
 
-<code-block lang="java" src="code-samples/CodeSnippets.java" include-symbol="immutable"/>
+<code-block lang="java" src="../code-samples/CodeSnippets.java" include-symbol="immutable"/>
 
 Start typing here...

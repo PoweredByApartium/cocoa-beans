@@ -378,7 +378,7 @@ class ObservableTest {
 
         // TODO Fixed order random
 
-        assertEquals(text.get(), "24 is even");
+        assertEquals("24 is even", text.get());
         assertEquals(1, isEvenCalled.get());
         assertEquals(1, parityCalled.get());
         assertEquals(1, textCalled.get());
@@ -386,7 +386,7 @@ class ObservableTest {
 
         num0.set(11);
 
-        assertEquals(text.get(), "26 is even");
+        assertEquals("26 is even", text.get());
         assertEquals(2, isEvenCalled.get());
         assertEquals(1, parityCalled.get());
         assertEquals(2, textCalled.get());
@@ -477,32 +477,32 @@ class ObservableTest {
         assertEquals(1, textCalled.get());
 
         num.set(10);
-        assertEquals(parity.get(), "even");
+        assertEquals("even", parity.get());
         assertEquals(2, isEvenCalled.get());
         assertEquals(2, parityCalled.get());
 
         num.set(10);
-        assertEquals(parity.get(), "even");
+        assertEquals("even", parity.get());
         assertEquals(2, isEvenCalled.get());
         assertEquals(2, parityCalled.get());
 
-        assertEquals(text.get(), "this is even");
+        assertEquals("this is even", text.get());
         assertEquals(2, isEvenCalled.get());
         assertEquals(2, textCalled.get());
 
         num.set(11);
-        assertEquals(text.get(), "this is odd");
+        assertEquals("this is odd", text.get());
 
         assertEquals(3, isEvenCalled.get());
         assertEquals(3, textCalled.get());
         num.set(15);
 
-        assertEquals(text.get(), "this is odd");
+        assertEquals("this is odd", text.get());
 
         assertEquals(4, isEvenCalled.get());
         assertEquals(3, textCalled.get());
 
-        assertEquals(parity.get(), "odd");
+        assertEquals("odd", parity.get());
         assertEquals(4, isEvenCalled.get());
         assertEquals(3, textCalled.get());
     }
