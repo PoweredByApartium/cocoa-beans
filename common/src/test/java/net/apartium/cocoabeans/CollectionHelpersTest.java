@@ -45,6 +45,21 @@ class CollectionHelpersTest {
     }
 
     @Test
+    void equalsCollections() {
+        List<Integer> list = List.of(1);
+        assertTrue(CollectionHelpers.equalsCollections(list, list));
+        assertFalse(CollectionHelpers.equalsCollections(list, null));
+        assertFalse(CollectionHelpers.equalsCollections(null, list));
+        assertTrue(CollectionHelpers.equalsCollections(null, null));
+
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of()));
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of(1, 2)));
+        assertTrue(CollectionHelpers.equalsCollections(list, Set.of(1)));
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of(2)));
+
+    }
+
+    @Test
     void pickEntry() {
         Set<String> set = Set.of("1", "2", "3");
         List<String> list = List.of("1", "2", "3");
@@ -157,6 +172,17 @@ class CollectionHelpersTest {
 
         assertEquals(Map.of("test", "value0", "test0", "value1", "test1", "value2", "test2", "value3"), map);
 
+
+    }
+
+    @Test
+    void isSorted() {
+        assertTrue(CollectionHelpers.isSorted(List.of(0, 1, 2, 3), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(-21, -3, 7, 16, 74), Integer::compareTo));
+
+        assertTrue(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1), (a, b) -> b - a));
+        assertFalse(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1, 4), (a, b) -> b - a));
 
     }
 
