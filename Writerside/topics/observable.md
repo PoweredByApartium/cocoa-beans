@@ -44,6 +44,7 @@ This system is designed to be lightweight, composable, and extensible.
 * [](mapped-observable.md)
 * [](collection-observable.md):
     * [](list-observable.md)
+    * [](set-observable.md)
 * [](observer.md)
 * [](watcher.md)
 * [Javadocs](https://cocoa-beans.apartium.net/%version%/common/net/apartium/cocoabeans/state/package-summary.html)

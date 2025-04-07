@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -202,6 +203,18 @@ class CodeSnippets {
 
         names.add("Elion");
         assertEquals(List.of("Kfir: 4", "Lior: 4", "Elion: 5"), namesLength.get());
+    }
+
+    @Test
+    void setExample() {
+        SetObservable<String> names = Observable.set();
+
+        assertTrue(names.add("ikfir"));
+        assertFalse(names.add("ikfir"));
+
+        assertEquals(Set.of("ikfir"), names.get());
+
+        assertTrue(names.get().contains("ikfir"));
     }
 
 }

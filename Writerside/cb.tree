@@ -38,6 +38,7 @@
         <toc-element topic="mapped-observable.md"/>
         <toc-element topic="collection-observable.md">
             <toc-element topic="list-observable.md"/>
+            <toc-element topic="set-observable.md"/>
         </toc-element>
         <toc-element topic="observer.md"/>
         <toc-element topic="watcher.md"/>

@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -64,6 +65,21 @@ public interface Observable<T> {
         return new ListObservableImpl<>(list);
     }
 
+    /**
+     * Create a new SetObservable with an empty set
+     * @apiNote it would use HashSet as is set implementation
+     */
+    static <E> SetObservable<E> set() {
+        return new SetObservableImpl<>();
+    }
+
+    /**
+     * Create a new SetObservable with the given set
+     * @param set should be modifiable
+     */
+    static <E> SetObservable<E> set(Set<E> set) {
+        return new SetObservableImpl<>(set);
+    }
 
     static <T> ObservableCompound<T> compound(Function<List<?>, T> function, List<Observable<?>> depends) {
         return new ObservableCompound<>(function, depends);
