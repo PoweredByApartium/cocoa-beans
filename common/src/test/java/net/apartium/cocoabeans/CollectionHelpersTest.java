@@ -96,6 +96,97 @@ class CollectionHelpersTest {
     }
 
     @Test
+    void equalsInfinity() {
+        Collection<Integer> collection = new Collection<>() {
+            @Override
+            public int size() {
+                return 3;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<>() {
+                    int c = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return c++;
+                    }
+                };
+            }
+
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T[] toArray(T[] ts) {
+                return null;
+            }
+
+            @Override
+            public boolean add(Integer integer) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends Integer> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+        };
+        assertFalse(CollectionHelpers.equalsCollections(
+                List.of(1, 2, 3),
+                collection
+        ));
+
+        assertFalse(CollectionHelpers.equalsCollections(
+                collection,
+                List.of(1, 2, 3)
+        ));
+    }
+
+    @Test
     void equalsArray() {
         Object[] empty = new Object[0];
         Assertions.assertTrue(CollectionHelpers.equalsArray(empty, empty));
