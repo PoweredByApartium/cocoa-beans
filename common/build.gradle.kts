@@ -10,5 +10,5 @@ dependencies {
     testImplementation("commons-codec:commons-codec:${project.findProperty("versions.apache.commons-codec")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")
-    testCompileOnly("org.jetbrains:annotations:26.0.2")
+    testCompileOnly("org.jetbrains:annotations:${project.findProperty("versions.jetbrains.annotations")}")
 }
