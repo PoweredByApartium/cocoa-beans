@@ -1,5 +1,6 @@
-package net.apartium.cocoabeans.state;
+package net.apartium.cocoabeans;
 
+import net.apartium.cocoabeans.state.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
