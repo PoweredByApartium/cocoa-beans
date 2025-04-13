@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -96,11 +97,109 @@ class CollectionHelpersTest {
     }
 
     @Test
+    void equalsInfinity() {
+        Collection<Integer> collection = new Collection<>() {
+            @Override
+            public int size() {
+                return 3;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @NotNull
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<>() {
+                    int c = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return c++;
+                    }
+                };
+            }
+
+
+            @Override
+            public Object @NotNull [] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T @NotNull [] toArray(T @NotNull [] ts) {
+                return ts;
+            }
+
+            @Override
+            public boolean add(Integer integer) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(@NotNull Collection<? extends Integer> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+        };
+        assertFalse(CollectionHelpers.equalsCollections(
+                List.of(1, 2, 3),
+                collection
+        ));
+
+        assertFalse(CollectionHelpers.equalsCollections(
+                collection,
+                List.of(1, 2, 3)
+        ));
+
+        assertFalse(CollectionHelpers.equalsCollections(
+                collection,
+                Collections.unmodifiableCollection(collection)
+        ));
+    }
+
+    @Test
     void equalsArray() {
         Object[] empty = new Object[0];
         Assertions.assertTrue(CollectionHelpers.equalsArray(empty, empty));
         Object[] arr0 = new Object[]{"1", "2", "3"};
-        Object[] arr1 = new Object[]{"1", "2", new String("3")};
+        Object[] arr1 = new Object[]{"1", "2", "3"};
         Assertions.assertTrue(CollectionHelpers.equalsArray(arr0, arr1));
         Assertions.assertFalse(CollectionHelpers.equalsArray(arr0, empty));
 
@@ -141,18 +240,6 @@ class CollectionHelpersTest {
     void testTheTest() {
         assertEquals(List.of("1", "2", "3"), List.of("1", "2", "3"));
         assertNotEquals(List.of("1", "2", "3"), List.of("3", "1", "2"));
-    }
-
-    boolean equal(List<?> arr0, List<?> arr1) {
-        if (arr0.size() != arr1.size())
-            return false;
-
-        for (int i = 0; i < arr0.size(); i++) {
-            if (!arr0.get(i).equals(arr1.get(i)))
-                return false;
-        }
-
-        return true;
     }
 
     @Test

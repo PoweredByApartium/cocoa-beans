@@ -44,7 +44,6 @@ public class CollectionHelpers {
      * @param <E> collection type
      *
      */
-    @SuppressWarnings("unchecked")
     public static <E> E pickEntry(Collection<E> collection, int index) {
         if (collection instanceof List<E> list)
             return list.get(index);
@@ -144,13 +143,18 @@ public class CollectionHelpers {
         if (a == null || b == null)
             return false;
 
-        if (a.size() != b.size())
+        int size = a.size();
+        if (size != b.size())
             return false;
 
         Iterator<?> iterator = a.iterator();
         Iterator<?> iterator1 = b.iterator();
 
+        int i = 0;
         while (iterator.hasNext() && iterator1.hasNext()) {
+            if (i++ > size)
+                return false;
+
             Object next = iterator.next();
             Object next1 = iterator1.next();
 
