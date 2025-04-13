@@ -47,4 +47,34 @@ class WatcherManagerTest {
 
     }
 
+    @Test
+    void heartbeat() {
+        WatcherManager watcherManager = new WatcherManager();
+
+        MutableObservable<Integer> observable = Observable.mutable(null);
+        AtomicInteger counter = new AtomicInteger(0);
+        AttachedWatcher<Integer> watcher = watcherManager.watch(observable, (num) -> {
+            if (counter.get() >= 2) {
+                fail();
+                return;
+            }
+
+            assertEquals(
+                    counter.get() == 0
+                            ? null
+                            : 456,
+                    num
+            );
+            counter.incrementAndGet();
+        });
+
+        watcherManager.heartbeat();
+        watcherManager.heartbeat();
+
+        observable.set(456);
+        watcherManager.heartbeat();
+
+        watcher.detach();
+    }
+
 }
