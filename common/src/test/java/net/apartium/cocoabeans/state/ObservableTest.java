@@ -376,7 +376,6 @@ class ObservableTest {
         });
 
 
-        // TODO Fixed order random
 
         assertEquals("24 is even", text.get());
         assertEquals(1, isEvenCalled.get());

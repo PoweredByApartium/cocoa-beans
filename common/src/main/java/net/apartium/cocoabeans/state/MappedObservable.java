@@ -1,9 +1,8 @@
 package net.apartium.cocoabeans.state;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
+import net.apartium.cocoabeans.CollectionHelpers;
+
+import java.util.*;
 import java.util.function.Function;
 
 /* package-private */ class MappedObservable<F, T> implements Observable<T>, Observer {
@@ -35,7 +34,10 @@ import java.util.function.Function;
         F parameter = base.get();
 
         boolean hadChange = !Objects.equals(parameter, prev);
-        // TODO add collection check here
+        if (parameter != null && prev != null) {
+            if (parameter instanceof Collection<?> a && prev instanceof Collection<?> b)
+                hadChange = !CollectionHelpers.equalsCollections(a, b);
+        }
 
 
 
