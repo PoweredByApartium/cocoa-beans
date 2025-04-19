@@ -34,12 +34,8 @@ import java.util.function.Function;
         F parameter = base.get();
 
         boolean hadChange = !Objects.equals(parameter, prev);
-        if (parameter != null && prev != null) {
-            if (parameter instanceof Collection<?> a && prev instanceof Collection<?> b)
-                hadChange = !CollectionHelpers.equalsCollections(a, b);
-        }
-
-
+        if (parameter instanceof Collection<?> a && prev instanceof Collection<?> b)
+            hadChange = !CollectionHelpers.equalsCollections(a, b);
 
         if (!first && !hadChange) {
             isDirty = false;
