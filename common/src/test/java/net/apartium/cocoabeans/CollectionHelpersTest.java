@@ -273,6 +273,9 @@ class CollectionHelpersTest {
         assertTrue(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1), (a, b) -> b - a));
         assertFalse(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1, 4), (a, b) -> b - a));
 
+        assertTrue(CollectionHelpers.isSorted(List.of(), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(1), Integer::compareTo));
+
     }
 
 }
