@@ -175,7 +175,9 @@ class CollectionHelpersTest {
 
             @Override
             public void clear() {
-
+                /*
+                 * just for test
+                 */
             }
         };
         assertFalse(CollectionHelpers.equalsCollections(

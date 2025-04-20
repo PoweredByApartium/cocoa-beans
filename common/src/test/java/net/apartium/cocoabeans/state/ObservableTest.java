@@ -101,7 +101,9 @@ class ObservableTest {
 
             @Override
             public void clear() {
-
+                /*
+                 * fakes list with custom size
+                 */
             }
 
             @Override
@@ -116,7 +118,9 @@ class ObservableTest {
 
             @Override
             public void add(int i, String s) {
-
+                /*
+                 * fakes list that doesn't add and just ignore it
+                 */
             }
 
             @Override
@@ -163,7 +167,7 @@ class ObservableTest {
     void MappedObservableFlagDirtyNotBase() {
         Observable<Integer> num = Observable.mutable(9);
 
-        MappedObservable<Integer, Boolean> map = (MappedObservable<Integer, Boolean>) num.map((n) -> n % 2 == 0);
+        MappedObservable<Integer, Boolean> map = (MappedObservable<Integer, Boolean>) num.map(n -> n % 2 == 0);
 
         try {
             map.flagAsDirty(null);
@@ -189,7 +193,7 @@ class ObservableTest {
         ListObservable<Integer> list = Observable.list();
 
         AtomicInteger count = new AtomicInteger();
-        Observable<String> map = Observable.compound(playerName, list).map((args) -> {
+        Observable<String> map = Observable.compound(playerName, list).map(args -> {
             count.incrementAndGet();
 
             return args.arg0() + ": " + Arrays.toString(args.arg1().toArray(new Integer[0]));
@@ -215,7 +219,7 @@ class ObservableTest {
         ListObservable<String> names = Observable.list();
         AtomicInteger count = new AtomicInteger();
 
-        Observable<List<String>> namesLength = names.map((list) -> {
+        Observable<List<String>> namesLength = names.map(list -> {
             count.incrementAndGet();
             return list.stream()
                             .map(name -> name + ": " + name.length())
@@ -250,7 +254,7 @@ class ObservableTest {
         AtomicInteger isEvenCalled = new AtomicInteger();
 
         Observable<Boolean> isEven = Observable.compound(
-                (list) -> {
+                list -> {
                     isEvenCalled.addAndGet(1);
                     return ((int) list.get(0)) % 2 == 0;
                 },
@@ -260,7 +264,7 @@ class ObservableTest {
         AtomicInteger parityCalled = new AtomicInteger();
 
         Observable<String> parity = Observable.compound(
-                (list) -> {
+                list -> {
                     parityCalled.addAndGet(1);
                     return ((boolean) list.get(0)) ? "even" : "odd";
                 },
@@ -311,7 +315,7 @@ class ObservableTest {
     void tryingToModifyCompoundState() {
         MutableObservable<Integer> num = Observable.mutable(9);
         Observable<Boolean> isEven = Observable.compound(
-                (list) -> {
+                list -> {
                     assertThrows(UnsupportedOperationException.class, () -> list.remove(0));
                     return ((int) list.get(0)) % 2 == 0;
                 },
@@ -330,7 +334,7 @@ class ObservableTest {
 
         AtomicInteger addToNumberCalled = new AtomicInteger();
         Observable<Integer> addToNumber = Observable.compound(num0, num1).map(
-                (nums) -> {
+                nums -> {
                     addToNumberCalled.addAndGet(1);
                     return nums.arg0() + nums.arg1();
                 }
@@ -357,14 +361,14 @@ class ObservableTest {
         assertEquals(3, addToNumberCalled.get());
 
         AtomicInteger isEvenCalled = new AtomicInteger();
-        Observable<Boolean> isEven = Observable.compound(addToNumber).map((num) -> {
+        Observable<Boolean> isEven = Observable.compound(addToNumber).map(num -> {
                     isEvenCalled.addAndGet(1);
                     return num.arg0() % 2 == 0;
         });
 
         AtomicInteger parityCalled = new AtomicInteger();
         Observable<String> parity = Observable.compound(isEven).map(
-                (even) -> {
+                even -> {
                     parityCalled.addAndGet(1);
                     return even.arg0() ? "even" : "odd";
                 });
@@ -399,7 +403,7 @@ class ObservableTest {
 
         AtomicInteger helloWorldCalled = new AtomicInteger();
         Observable<String> helloWorld = Observable.compound(
-                (list) -> {
+                list -> {
                     helloWorldCalled.addAndGet(1);
                     return "Hello, World " + list.get(0);
                 },
@@ -441,7 +445,7 @@ class ObservableTest {
         AtomicInteger isEvenCalled = new AtomicInteger();
 
         Observable<Boolean> isEven = Observable.compound(
-                (list) -> {
+                list -> {
                     isEvenCalled.addAndGet(1);
                     return ((int) list.get(0)) % 2 == 0;
                 },
@@ -451,7 +455,7 @@ class ObservableTest {
         AtomicInteger parityCalled = new AtomicInteger();
 
         Observable<String> parity = Observable.compound(
-                (list) -> {
+                list -> {
                     parityCalled.addAndGet(1);
                     return ((boolean) list.get(0)) ? "even" : "odd";
                 },
@@ -461,7 +465,7 @@ class ObservableTest {
         AtomicInteger textCalled = new AtomicInteger();
 
         Observable<String> text = Observable.compound(
-                (list) -> {
+                list -> {
                     textCalled.addAndGet(1);
                     return ((boolean) list.get(0)) ? "this is even" : "this is odd";
                 },
@@ -512,7 +516,7 @@ class ObservableTest {
 
         AtomicInteger stateCalled = new AtomicInteger();
 
-        Observable<String> state = names.map((namesList) -> {
+        Observable<String> state = names.map(namesList -> {
                     stateCalled.addAndGet(1);
                     return "[" + String.join(", ", namesList) + "]";
                 }
@@ -656,9 +660,9 @@ class ObservableTest {
 
         AtomicInteger isEvenCalled = new AtomicInteger();
 
-        Observable<Boolean> isEven = Observable.compound(number).map((record) -> {
+        Observable<Boolean> isEven = Observable.compound(number).map(num -> {
             isEvenCalled.addAndGet(1);
-            return record.arg0() % 2 == 0;
+            return num.arg0() % 2 == 0;
         });
 
         assertFalse(isEven.get());
@@ -675,9 +679,9 @@ class ObservableTest {
         assertEquals(2, isEvenCalled.get());
 
         AtomicInteger parityCalled = new AtomicInteger();
-        Observable<String> parity = Observable.compound(isEven).map((record) -> {
+        Observable<String> parity = Observable.compound(isEven).map(even -> {
             parityCalled.addAndGet(1);
-            return record.arg0() ? "Even" : "Odd";
+            return even.arg0() ? "Even" : "Odd";
         });
 
         assertEquals("Even", parity.get());
@@ -690,9 +694,9 @@ class ObservableTest {
         assertEquals(3, isEvenCalled.get());
 
         AtomicInteger textCalled = new AtomicInteger();
-        Observable<String> text = Observable.compound(number, parity).map((record) -> {
+        Observable<String> text = Observable.compound(number, parity).map(values -> {
             textCalled.addAndGet(1);
-            return record.arg0() + " is " + record.arg1();
+            return values.arg0() + " is " + values.arg1();
         });
 
         assertEquals("11 is Odd", text.get());
@@ -716,12 +720,14 @@ class ObservableTest {
         players.add("ikfir");
         players.add("voigon");
 
-        Observable<List<String>> loreState = players.map((list) -> {
+        Observable<List<String>> loreState = players.map(list -> {
             List<String> lore = new ArrayList<>();
             for (String player : list)
                 lore.add(" - " + player);
             return lore;
         });
+
+        assertEquals(List.of(" - ikfir", " - voigon"), loreState.get() );
 
     }
 
@@ -733,7 +739,7 @@ class ObservableTest {
 
         AtomicInteger current = new AtomicInteger(9);
 
-        number.watch(watcherManager, (num) -> {
+        number.watch(watcherManager, num -> {
             assertEquals(current.get(), num);
         });
 

@@ -15,7 +15,7 @@ class WatcherManagerTest {
 
         MutableObservable<Integer> observable = Observable.mutable(123);
         AtomicInteger counter = new AtomicInteger(0);
-        AttachedWatcher<Integer> watcher = watcherManager.watch(observable, (num) -> {
+        AttachedWatcher<Integer> watcher = watcherManager.watch(observable, num -> {
             if (counter.get() >= 2) {
                 fail();
                 return;
@@ -53,7 +53,7 @@ class WatcherManagerTest {
 
         MutableObservable<Integer> observable = Observable.mutable(null);
         AtomicInteger counter = new AtomicInteger(0);
-        AttachedWatcher<Integer> watcher = watcherManager.watch(observable, (num) -> {
+        AttachedWatcher<Integer> watcher = watcherManager.watch(observable, num -> {
             if (counter.get() >= 2) {
                 fail();
                 return;

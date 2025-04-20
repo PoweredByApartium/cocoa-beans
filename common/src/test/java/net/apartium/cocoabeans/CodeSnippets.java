@@ -51,7 +51,7 @@ class CodeSnippets {
     @Test
     void mapped() {
         MutableObservable<Integer> number = Observable.mutable(123);
-        Observable<Boolean> isEven = number.map((num) -> num % 2 == 0);
+        Observable<Boolean> isEven = number.map(num -> num % 2 == 0);
 
         assertFalse(isEven.get()); // because 123 is odd
 
@@ -60,10 +60,10 @@ class CodeSnippets {
 
         number.set(11);
         number.set(8);
-        assertTrue(isEven.get()); // because 8 is even and won't recompute because same value
+        assertTrue(isEven.get()); // because 8 is even and won't recompute the same value
 
         Observable<String> isEvenParity = isEven.map(
-                (b) -> b
+                b -> b
                         ? "even"
                         : "odd"
         );
@@ -109,7 +109,7 @@ class CodeSnippets {
             isDirty = true;
             // Using heartbeat or other way to get
             // the value after it has been flagged as dirty
-            // this is simple example no changes check
+            // this is a simple example no changes check
         }
 
     }
@@ -120,7 +120,7 @@ class CodeSnippets {
         AtomicInteger count = new AtomicInteger();
 
         WatcherManager watcherManager = new WatcherManager();
-        AttachedWatcher<Integer> watcher = observable.watch(watcherManager, (num) -> {
+        AttachedWatcher<Integer> watcher = observable.watch(watcherManager, num -> {
             System.out.println(num);
 
             switch (count.get()) {
@@ -158,7 +158,7 @@ class CodeSnippets {
         MutableObservable<Integer> num = Observable.mutable(0);
         Observable<Boolean> isEven = num.map(n -> n % 2 == 0);
         Observable<String> parity = Observable.compound(num, isEven)
-                .map((args) -> args.arg0() + ": " + args.arg1());
+                .map(args -> args.arg0() + ": " + args.arg1());
 
         assertEquals("0: true", parity.get());
 
@@ -194,7 +194,7 @@ class CodeSnippets {
 
         assertEquals(List.of("Kfir", "Lior"),names.get());
 
-        Observable<List<String>> namesLength = names.map((list) ->
+        Observable<List<String>> namesLength = names.map(list ->
                 list.stream()
                         .map(name -> name + ": " + name.length())
                         .toList()

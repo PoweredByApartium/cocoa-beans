@@ -11,7 +11,7 @@ class AttachedWatcherTest {
         Observable<Integer> num = Observable.mutable(5);
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num, System.out::println);
 
-        WatcherOperator operator = (w) -> {};
+        WatcherOperator operator = w -> {};
 
         watcher.attach(operator);
 
@@ -28,7 +28,7 @@ class AttachedWatcherTest {
         Observable<Integer> num = Observable.mutable(5);
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num, System.out::println);
 
-        WatcherOperator operator = (w) -> {};
+        WatcherOperator operator = w -> {};
 
         watcher.attach(operator);
 

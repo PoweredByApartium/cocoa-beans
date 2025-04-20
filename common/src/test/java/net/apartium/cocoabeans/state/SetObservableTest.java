@@ -16,7 +16,7 @@ class SetObservableTest {
         SetObservable<Integer> set = Observable.set();
 
         AtomicInteger counter = new AtomicInteger(0);
-        Observable<String> map = set.map((values) -> {
+        Observable<String> map = set.map(values -> {
             counter.incrementAndGet();
             return values.stream().sorted().toList().toString();
         });
@@ -48,7 +48,7 @@ class SetObservableTest {
         SetObservable<Integer> set = Observable.set();
 
         AtomicInteger counter = new AtomicInteger(0);
-        Observable<String> map = set.map((values) -> {
+        Observable<String> map = set.map(values -> {
             counter.incrementAndGet();
             return values.stream().sorted().toList().toString();
         });
@@ -86,7 +86,7 @@ class SetObservableTest {
     void addAllRemoveAll() {
         SetObservable<Integer> set = Observable.set();
         AtomicInteger counter = new AtomicInteger(0);
-        Observable<String> map = set.map((values) -> {
+        Observable<String> map = set.map(values -> {
             counter.incrementAndGet();
             return values.stream().sorted().toList().toString();
         });
@@ -111,11 +111,11 @@ class SetObservableTest {
         assertEquals("[3, 5, 6]", map.get());
         assertEquals(2, counter.get());
 
-        assertTrue(set.removeIf((num) -> num % 2 == 1));
+        assertTrue(set.removeIf(num -> num % 2 == 1));
         assertEquals("[6]", map.get());
         assertEquals(3, counter.get());
 
-        assertFalse(set.removeIf((num) -> num % 2 == 1));
+        assertFalse(set.removeIf(num -> num % 2 == 1));
         assertEquals("[6]", map.get());
         assertEquals(3, counter.get());
     }
@@ -124,7 +124,7 @@ class SetObservableTest {
     void retainAll() {
         SetObservable<Integer> set = Observable.set();
         AtomicInteger counter = new AtomicInteger(0);
-        Observable<String> map = set.map((values) -> {
+        Observable<String> map = set.map(values -> {
             counter.incrementAndGet();
             return values.stream().sorted().toList().toString();
         });
@@ -148,7 +148,7 @@ class SetObservableTest {
     void clear() {
         SetObservable<Integer> set = Observable.set();
         AtomicInteger counter = new AtomicInteger(0);
-        Observable<String> map = set.map((values) -> {
+        Observable<String> map = set.map(values -> {
             counter.incrementAndGet();
             return values.stream().sorted().toList().toString();
         });
