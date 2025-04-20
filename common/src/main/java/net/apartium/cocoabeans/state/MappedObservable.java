@@ -22,8 +22,6 @@ import java.util.function.Function;
     public MappedObservable(Observable<F> base, Function<F, T> mapper) {
         this.base = base;
         this.mapper = mapper;
-
-        base.observe(this);
     }
 
     @Override

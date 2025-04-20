@@ -312,7 +312,9 @@ public interface Observable<T> {
      * @param <M> The return type
      */
     default <M> Observable<M> map(Function<T, M> mapper) {
-        return new MappedObservable<>(this, mapper);
+        MappedObservable<T, M> observable = new MappedObservable<>(this, mapper);
+        observe(observable);
+        return observable;
     }
 
     /**
