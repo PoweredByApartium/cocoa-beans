@@ -305,10 +305,22 @@ public interface Observable<T> {
      */
     void observe(Observer observer);
 
+    /**
+     * Maps the value of the observable using the given function when it is dirty
+     * @param mapper the mapper function that will be used to map the value
+     * @return new Instance of mapped observable
+     * @param <M> The return type
+     */
     default <M> Observable<M> map(Function<T, M> mapper) {
         return new MappedObservable<>(this, mapper);
     }
 
+    /**
+     * Create a watcher for the observable that will be attached to the given watcher manager and run the given action
+     * @param watcherManager operator to attach to
+     * @param consumer action to run
+     * @return a new attached watcher
+     */
     default AttachedWatcher<T> watch(WatcherManager watcherManager, Consumer<T> consumer) {
         return watcherManager.watch(this, consumer);
     }

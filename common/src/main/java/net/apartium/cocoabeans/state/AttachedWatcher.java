@@ -28,13 +28,13 @@ public class AttachedWatcher<T> extends Watcher<T> {
     /**
      * Attach this instance to an operator.
      * @throws IllegalArgumentException if this watcher is already attached
-     * @param watcherManager operator to associate this instance to
+     * @param manager operator to associate this instance to
      */
-    public void attach(WatcherOperator watcherManager) {
+    public void attach(WatcherOperator manager) {
         if (this.manager != null)
             throw new IllegalArgumentException("already attached");
 
-        this.manager = watcherManager;
+        this.manager = manager;
 
     }
 
