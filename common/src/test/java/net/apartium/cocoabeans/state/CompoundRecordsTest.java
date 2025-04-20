@@ -1,6 +1,12 @@
 package net.apartium.cocoabeans.state;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -24,8 +30,119 @@ class CompoundRecordsTest {
         a.set(5);
 
         assertEquals(5, one.get().arg0());
+        assertEquals(5, one.get().arg0());
 
         ((ObservableCompound<CompoundRecords.RecordOf1<Integer>>) one).flagAsDirty(null);
+    }
+
+    @Test
+    void dirtyAndFirst() {
+        MutableObservable<Integer> number = Observable.mutable(123);
+
+        Observable<CompoundRecords.RecordOf1<Integer>> compound = Observable.compound(number);
+
+        number.set(5);
+
+        assertEquals(5, compound.get().arg0());
+        assertEquals(5, compound.get().arg0());
+    }
+
+    @Test
+    void fakeCollectionTest() {
+        Collection<Integer> collection = new Collection<>() {
+            @Override
+            public int size() {
+                return 3;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @NotNull
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<>() {
+                    int c = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return c++;
+                    }
+                };
+            }
+
+
+            @Override
+            public Object @NotNull [] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T @NotNull [] toArray(T @NotNull [] ts) {
+                return ts;
+            }
+
+            @Override
+            public boolean add(Integer integer) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(@NotNull Collection<? extends Integer> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+                /*
+                 * just for test
+                 */
+            }
+        };
+
+        MutableObservable<Collection<Integer>> mutable = Observable.mutable(collection);
+
+        Observable<CompoundRecords.RecordOf1<Collection<Integer>>> compound = Observable.compound(mutable);
+
+        assertEquals(collection, compound.get().arg0());
+
+        mutable.set(List.of(3, 2, 4));
+        assertEquals(List.of(3, 2, 4), compound.get().arg0());
+
+        mutable.set(List.of(3, 2, 4));
+        assertEquals(List.of(3, 2, 4), compound.get().arg0());
     }
 
     @Test

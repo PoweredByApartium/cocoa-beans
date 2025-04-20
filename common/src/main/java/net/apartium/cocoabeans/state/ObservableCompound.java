@@ -11,7 +11,7 @@ public class ObservableCompound<T> implements Observable<T>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    private boolean isDirty = true;
+    private boolean isDirty = false;
     private boolean first = true;
     private final Map<Observable<?>, Object> dependsOn = new LinkedHashMap<>();
     private final Function<List<?>, T> singularMapper;
