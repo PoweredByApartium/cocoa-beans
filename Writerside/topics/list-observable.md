@@ -13,4 +13,3 @@ lists. Unlike sets, lists have a **defined order**, which means changes like reo
 
 <code-block lang="java" src="common/CodeSnippets.java" include-symbol="listOrderAndMapped"/>
 
-```
