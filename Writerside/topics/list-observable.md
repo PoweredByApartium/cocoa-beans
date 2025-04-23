@@ -4,7 +4,13 @@
 Available Since 0.0.39
 </sup>
 
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="list"/>
-```
+## Introduction
+A **List Observable** is a specialized `CollectionObservable` that focuses on **ordered collections**—specifically,
+lists. Unlike sets, lists have a **defined order**, which means changes like reordering, inserting, or removing elements at specific indices matter.
 
-Start typing here...
+## Usage
+<code-block lang="java" src="common/CodeSnippets.java" include-symbol="simpleList"/>
+
+<code-block lang="java" src="common/CodeSnippets.java" include-symbol="listOrderAndMapped"/>
+
+```

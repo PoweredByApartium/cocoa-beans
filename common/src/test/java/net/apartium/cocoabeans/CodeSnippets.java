@@ -76,7 +76,40 @@ class CodeSnippets {
     }
 
     @Test
-    void list() {
+    void listOrderAndMapped() {
+        ListObservable<Integer> scores = Observable.list();
+        Observable<Integer> average = scores.map(list ->
+                list.isEmpty()
+                        ? 0
+                        : list.stream().reduce(0, Integer::sum) / list.size()
+        );
+
+        assertEquals(0, average.get());
+        assertEquals(List.of(), scores.get());
+
+        scores.add(100);
+        assertEquals(List.of(100), scores.get());
+        assertEquals(100, average.get());
+
+        scores.add(90);
+        assertEquals(List.of(100, 90), scores.get());
+        assertEquals(95, average.get());
+
+        scores.add(95);
+        assertEquals(List.of(100, 90, 95), scores.get());
+        assertEquals(95, average.get());
+
+        scores.add(75);
+        assertEquals(List.of(100, 90, 95, 75), scores.get());
+        assertEquals(90, average.get());
+
+        scores.sort(Integer::compareTo);
+        assertEquals(90, average.get());
+        assertEquals(List.of(75, 90, 95, 100), scores.get());
+    }
+
+    @Test
+    void simpleList() {
         ListObservable<String> names = Observable.list(); // An ArrayList<String>
 
         names.add("Kfir");
