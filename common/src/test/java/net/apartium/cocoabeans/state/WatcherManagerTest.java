@@ -16,7 +16,7 @@ class WatcherManagerTest {
         WatcherManager watcherManager = new WatcherManager();
 
         AtomicInteger counter = new AtomicInteger(0);
-        AttachedWatcher<Integer> watch = num.watch(watcherManager, (n) -> {
+        AttachedWatcher<Integer> watch = num.watch(watcherManager, n -> {
             assertEquals(switch(counter.getAndIncrement()) {
                 case 0 -> 9;
                 case 1 -> 10;
@@ -51,14 +51,14 @@ class WatcherManagerTest {
         WatcherManager watcherManager = new WatcherManager();
 
         AtomicInteger counter = new AtomicInteger(0);
-        Watcher<Integer> watch = num.watch(watcherManager, (n) -> {
+        Watcher<Integer> watch = num.watch(watcherManager, n ->
             assertEquals(switch(counter.getAndIncrement()) {
                 case 0 -> 9;
                 case 1 -> 10;
                 case 2 -> 63;
                 default -> throw new IllegalArgumentException();
-            }, n);
-        });
+            }, n)
+        );
 
         watcherManager.heartbeat();
         watcherManager.heartbeat();

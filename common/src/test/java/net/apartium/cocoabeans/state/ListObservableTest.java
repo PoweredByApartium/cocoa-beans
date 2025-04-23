@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ListObservableTest {
 
@@ -32,7 +33,7 @@ class ListObservableTest {
         Observer observer = n -> {};
         scores.observe(observer);
         scores.add(100);
-        scores.removeObserver(observer);
+        assertTrue(scores.removeObserver(observer));
     }
 
 }

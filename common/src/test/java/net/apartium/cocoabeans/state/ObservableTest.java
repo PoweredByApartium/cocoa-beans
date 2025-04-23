@@ -12,8 +12,8 @@ class ObservableTest {
 
     @Test
     void removeObserverImmutable() {
-        Observable.immutable(1).removeObserver(null);
-        Observable.immutable(1).removeObserver(n -> {});
+        assertFalse(Observable.immutable(1).removeObserver(null));
+        assertFalse(Observable.immutable(1).removeObserver(n -> {}));
     }
 
     @Test
@@ -23,7 +23,7 @@ class ObservableTest {
         Observer observer = n -> {};
         num.observe(observer);
         num.set(100);
-        num.removeObserver(observer);
+        assertTrue(num.removeObserver(observer));
     }
 
     @Test
@@ -34,7 +34,7 @@ class ObservableTest {
         Observer observer = n -> {};
         compound.observe(observer);
         num.set(100);
-        compound.removeObserver(observer);
+        assertTrue(compound.removeObserver(observer));
     }
 
     @Test
@@ -45,7 +45,7 @@ class ObservableTest {
         Observer observer = n -> {};
         isEven.observe(observer);
         num.set(100);
-        isEven.removeObserver(observer);
+        assertTrue(isEven.removeObserver(observer));
     }
 
     @Test
