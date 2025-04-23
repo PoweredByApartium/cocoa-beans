@@ -5,6 +5,7 @@
 - [commands-spigot] Fix `WorldParser` to support on legacy versions
 - [common] Bump Minecraft Version 1.21.2 - 1.21.5
 - [commands] Add Contextual Report for "Not Found" Results in `MapBasedParser` as `NoSuchElementInMapResponse`
+- [common] 📺 **Observable** api
 
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers
