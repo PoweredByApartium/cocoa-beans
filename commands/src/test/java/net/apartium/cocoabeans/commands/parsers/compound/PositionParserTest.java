@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.OptionalInt;
 import java.util.Set;
 
+import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.args;
+
 class PositionParserTest {
 
     @Test
@@ -42,8 +44,4 @@ class PositionParserTest {
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("1 6 -"), 2, Set.of("-.", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9"), 3);
     }
 
-
-    private String[] args(String args) {
-        return args.split("\\s+");
-    }
 }

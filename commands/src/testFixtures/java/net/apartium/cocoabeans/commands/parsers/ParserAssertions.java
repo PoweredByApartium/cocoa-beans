@@ -5,7 +5,6 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.TestCommandProcessingContext;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
-import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;
 import org.junit.jupiter.api.AssertionFailureBuilder;
 
@@ -370,5 +369,16 @@ public class ParserAssertions {
     private static void failMessage(String reason, String message, Object expected, Object actual) {
         AssertionFailureBuilder.assertionFailure().reason(reason).message(message).expected(expected).actual(actual).buildAndThrow();
     }
+
+    /**
+     * Convert string to command args
+     * @param args the string to convert
+     * @return command args output
+     */
+    @ApiStatus.AvailableSince("0.0.39")
+    public static String[] args(String args) {
+        return args.split("\\s+");
+    }
+
 
 }
