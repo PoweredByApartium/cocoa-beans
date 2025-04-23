@@ -68,5 +68,11 @@ public interface CollectionObservable<E, C extends Collection<E>> extends Observ
      */
     void clear();
 
+    /**
+     * Returns an observable representing the size of the observable.
+     * When the size of the current observable changes, the size observable will emit the new size.
+     * @return size observable
+     */
+    Observable<Integer> size();
 
 }

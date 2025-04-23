@@ -52,6 +52,9 @@ public class Watcher<T> implements Observer {
         consumer.accept(value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void flagAsDirty(Observable<?> observable) {
         isDirty = true;

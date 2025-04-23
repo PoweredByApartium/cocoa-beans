@@ -13,6 +13,7 @@ public interface Observer {
      * Flag listener as dirty
      * @param observable marking observable
      */
+    @ApiStatus.OverrideOnly
     void flagAsDirty(Observable<?> observable);
 
 }

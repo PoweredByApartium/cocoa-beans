@@ -38,7 +38,6 @@ public class AttachedWatcher<T> extends Watcher<T> {
 
     }
 
-
     /**
      * Checks if this watcher instance is currently attached to a {@link WatcherOperator}.
      *

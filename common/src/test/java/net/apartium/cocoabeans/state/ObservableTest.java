@@ -164,7 +164,7 @@ class ObservableTest {
     }
 
     @Test
-    void MappedObservableFlagDirtyNotBase() {
+    void mappedObservableFlagDirtyNotBase() {
         Observable<Integer> num = Observable.mutable(9);
 
         MappedObservable<Integer, Boolean> map = (MappedObservable<Integer, Boolean>) num.map(n -> n % 2 == 0);

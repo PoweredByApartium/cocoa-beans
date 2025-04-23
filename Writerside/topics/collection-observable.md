@@ -5,8 +5,8 @@ Available Since 0.0.39
 </sup>
 
 ## Introduction
-A Collection Observable is an observable that wraps around a collection (like a list or set) and tracks changes to its contents, 
-not just its reference
+A ``CollectionObservable`` is an observable that wraps around a collection (like a list or set) and tracks changes to its contents.
+It differs from [](compound-observable.md) by allowing the length of the collection to change dynamically, at the expense of having a single element type.
 
 ## 🧠 Why is it special?
 Most observables only react when their **value changes**—for example,
@@ -25,3 +25,7 @@ That's where `CollectionObservable` shines:
 - A list of players in a game lobby that updates when players join or leave.
 - A cart in a shopping app that reacts when items are added or removed.
 - A filtered view that always shows only the matching items.
+
+## Implementations
+- [](list-observable.md)
+- [](set-observable.md)

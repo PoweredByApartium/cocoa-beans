@@ -4,6 +4,6 @@
 Available Since 0.0.39
 </sup>
 
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="setExample"/>
+A **SetObservable** is a specialized `CollectionObservable` that provides ``java.util.Set`` specific operations.
 
-Start typing here...
+<code-block lang="java" src="common/CodeSnippets.java" include-symbol="setExample"/>

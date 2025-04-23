@@ -39,13 +39,54 @@ class CodeSnippets {
 
     @Test
     void compound() {
-        MutableObservable<String> name = Observable.mutable("Kfir");
-        MutableObservable<Integer> num = Observable.mutable(123);
+        MutableObservable<Integer> age = Observable.mutable(17);
+        MutableObservable<String> username = Observable.mutable("thebotgame");
 
-        var compound = Observable.compound(name, num);
+        var compound = Observable.compound(age, username);
+        assertEquals(17, compound.get().arg0());
+        assertEquals("thebotgame", compound.get().arg1());
 
-        assertEquals("Kfir", compound.get().arg0());
-        assertEquals(123, compound.get().arg1());
+        Observable<Boolean> validUser = compound.map(args -> {
+            String name = args.arg1();
+            int ageValue = args.arg0();
+
+            return ageValue >= 18
+                    && name.length() >= 3
+                    && name.length() <= 20;
+        });
+
+        assertFalse(validUser.get()); // because age is 17
+
+        age.set(19);
+        assertTrue(validUser.get()); // because age is 19 and username is "thebotgame"
+
+        username.set("bo");
+        assertFalse(validUser.get()); // because username is "bo" and its length is less than 3
+
+    }
+
+    @Test
+    void customCompound() {
+        MutableObservable<Integer> age = Observable.mutable(24);
+        MutableObservable<String> username = Observable.mutable("Voigon");
+
+        // The user class allows you to specify as many arguments as you would like
+        // It also helps keeping track of your data by naming all the fields
+        record User(int age, String username) {}
+
+
+        Observable<User> compound = Observable.compound(
+                // the first argument takes the list of values and constructs the User object
+                list -> new User((int) list.get(0), (String) list.get(1)),
+                // the second argument is the list of dependent observables we will derive our compound from
+                List.of(age, username)
+        );
+
+        User user = compound.get();
+
+        // now we can access the compound values in a prettier way
+        assertEquals(24, user.age());
+        assertEquals("Voigon", user.username());
     }
 
     @Test
@@ -152,10 +193,12 @@ class CodeSnippets {
         MutableObservable<Integer> observable = Observable.mutable(1);
         AtomicInteger count = new AtomicInteger();
 
+        // we need to create a watcher manager, every watcher needs to be attached to it
         WatcherManager watcherManager = new WatcherManager();
-        AttachedWatcher<Integer> watcher = observable.watch(watcherManager, num -> {
-            System.out.println(num);
 
+        // our watcher performs some checks and increments the count variable
+        // The attached watcher object allows as to cancel the watcher
+        AttachedWatcher<Integer> watcher = observable.watch(watcherManager, num -> {
             switch (count.get()) {
                 case 0 -> assertEquals(1, num);
                 case 1 -> assertEquals(8, num);
@@ -166,6 +209,8 @@ class CodeSnippets {
             count.incrementAndGet();
         });
 
+        // for anything to happen, we have to call the heartbeat method
+        // It will trigger every watcher attached to the manager that was flagged as dirty
         watcherManager.heartbeat(); // 1
         watcherManager.heartbeat(); // No new data
         watcherManager.heartbeat(); // No new data
@@ -207,6 +252,19 @@ class CodeSnippets {
         num.set(42); // Flag isEven and parity as dirty but don't recompute yet
 
         assertEquals("42: true", parity.get()); // output "42: true" but didn't need to recompute
+
+        // the final piece of the puzzle: if num reaches 69, we want to shut down the JVM
+        WatcherManager watcherManager = new WatcherManager();
+        num.watch(watcherManager, value -> {
+            if (value == 69) {
+                System.exit(69);
+            }
+        });
+
+        // In order to trigger the watching function, we need to call the heartbeat method
+        // If the value of num is 69, the JVM will shut down
+        // Right now it's not, we don't want to destroy our CI
+        watcherManager.heartbeat();
     }
 
     @Test

@@ -63,7 +63,7 @@ public class WatcherManager implements WatcherOperator {
     }
 
     /**
-     *  {@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void detach(AttachedWatcher<?> watcher) {

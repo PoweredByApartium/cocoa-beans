@@ -14,11 +14,12 @@ import java.util.function.Predicate;
 
     protected final C collection;
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final MutableObservable<Integer> size;
 
     protected AbstractCollectionObservable(C collection) {
         this.collection = collection;
+        this.size = Observable.mutable(collection.size());
     }
-
 
     @Override
     public boolean add(E element) {
@@ -40,7 +41,8 @@ import java.util.function.Predicate;
 
         notifyObservers();
 
-        return true;    }
+        return true;
+    }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
@@ -98,7 +100,6 @@ import java.util.function.Predicate;
         if (empty)
             return;
 
-
         notifyObservers();
     }
 
@@ -110,5 +111,12 @@ import java.util.function.Predicate;
     protected void notifyObservers() {
         for (Observer observer : observers)
             observer.flagAsDirty(this);
+
+        this.size.set(this.collection.size());
+    }
+
+    @Override
+    public Observable<Integer> size() {
+        return this.size;
     }
 }

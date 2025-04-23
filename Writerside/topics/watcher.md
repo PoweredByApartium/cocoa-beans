@@ -4,6 +4,7 @@
 Available Since 0.0.39
 </sup>
 
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="watch"/>
+After we have made our reactive state its time to put the final piece in the puzzle - watchers.
+Watchers allow us trigger external operations when the state changes.
 
-Start typing here...
+<code-block lang="java" src="common/CodeSnippets.java" include-symbol="watch"/>
