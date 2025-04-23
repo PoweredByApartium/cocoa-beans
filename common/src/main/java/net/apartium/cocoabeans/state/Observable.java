@@ -50,8 +50,7 @@ public interface Observable<T> {
     }
 
     /**
-     * Creates a new ListObservable with an empty list
-     * @apiNote it would use ArrayList as is list implementation
+     * Creates a new ListObservable with an empty list, it would use ArrayList as its list implementation
      */
     static <E> ListObservable<E> list() {
         return new ListObservableImpl<>();
@@ -66,8 +65,7 @@ public interface Observable<T> {
     }
 
     /**
-     * Create a new SetObservable with an empty set
-     * @apiNote it would use HashSet as is set implementation
+     * Create a new SetObservable with an empty set, using HashSet as is set implementation
      */
     static <E> SetObservable<E> set() {
         return new SetObservableImpl<>();
