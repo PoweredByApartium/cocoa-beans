@@ -28,6 +28,8 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
     private final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     private final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
 
+    private final Map<String, ArgumentParser<?>> argumentTypeHandlerMap;
+
     private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories;
 
     private final CompoundParserBranchProcessor<T> compoundParserBranchProcessor;
@@ -69,6 +71,8 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
         this.externalRequirementFactories = evaluationContext.externalRequirementFactories();
 
+        this.argumentTypeHandlerMap = evaluationContext.defaultArgumentParsers();
+
         try {
             createBranch();
         } catch (IllegalAccessException e) {
@@ -83,7 +87,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
     private void createBranch() throws IllegalAccessException {
         RequirementSet requirementsResult = RequirementFactory.createRequirementSet(this, this.getClass().getAnnotations(), requirementFactories, externalRequirementFactories);
-        Map<String, ArgumentParser<?>> argumentParser = new HashMap<>();
+        Map<String, ArgumentParser<?>> argumentParser = new HashMap<>(this.argumentTypeHandlerMap);
 
         MethodHandles.Lookup lookup = MethodHandles.publicLookup();
 
@@ -229,7 +233,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
     @Override
     public Optional<ParseResult<T>> parse(CommandProcessingContext processingContext) {
-        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(processingContext);
+        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(new SimpleCommandProcessingContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index()));
 
         if (parse.isEmpty()) {
             processingContext.report(this, new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index(), "No variant found"));

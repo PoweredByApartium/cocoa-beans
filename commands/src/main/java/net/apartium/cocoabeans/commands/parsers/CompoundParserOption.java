@@ -52,7 +52,6 @@ import java.util.*;
         return Optional.empty();
     }
 
-
     public Optional<ArgumentParser.TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         Set<String> result = new HashSet<>();
 

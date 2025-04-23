@@ -51,6 +51,20 @@ public class SimpleCommandProcessingContext implements CommandProcessingContext 
     }
 
     /**
+     * Create a simple command processing context
+     * @param sender sender
+     * @param label label (command name)
+     * @param args args
+     * @param index current index
+     */
+    public SimpleCommandProcessingContext(@NotNull Sender sender, String label, List<String> args, int index) {
+        this.sender = sender;
+        this.args = args;
+        this.index = index;
+        this.label = label;
+    }
+
+    /**
      * Returns the sender
      * @return sender
      */
