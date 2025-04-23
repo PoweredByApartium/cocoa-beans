@@ -68,5 +68,5 @@ dependencies {
 </tabs>
 
 ## Read more
-* [📜 Minecraft Version](minecraft-version.md)
-* [👁️ Visibility Api](Visibility-Api.md)
+* [](minecraft-version.md)
+* [](visibility-api.md)

@@ -9,10 +9,10 @@ and a common java module and commands java module and commands spigot module ins
 **Contributions are welcome!**
 
 ### Relevant Links
-* [🚰 Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/spigot/)
-* [📄 Common javadocs](https://cocoa-beans.apartium.net/snapshot/common/)
-* [🖥️ Command javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
-* [🤖 Command Spigot javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)
+* [🚰 Spigot javadocs](https://cocoa-beans.apartium.net/%version%/spigot/)
+* [📄 Common javadocs](https://cocoa-beans.apartium.net/%version%/common/)
+* [🖥️ Command javadocs](https://cocoa-beans.apartium.net/%version%/commands/)
+* [🤖 Command Spigot javadocs](https://cocoa-beans.apartium.net/%version%/commands-spigot/)
 * [📜 Our wiki](https://cocoa-beans.apartium.net/)
 <br/>
 

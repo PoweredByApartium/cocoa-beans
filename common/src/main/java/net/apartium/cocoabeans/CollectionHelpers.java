@@ -44,7 +44,6 @@ public class CollectionHelpers {
      * @param <E> collection type
      *
      */
-    @SuppressWarnings("unchecked")
     public static <E> E pickEntry(Collection<E> collection, int index) {
         if (collection instanceof List<E> list)
             return list.get(index);
@@ -131,6 +130,42 @@ public class CollectionHelpers {
     }
 
     /**
+     * Determines whether two collections are equal, and in the same order
+     * @param a the first collection
+     * @param b the second collection
+     * @return true if equals, otherwise false
+     */
+    @ApiStatus.AvailableSince("0.0.39")
+    public static boolean equalsCollections(Collection<?> a, Collection<?> b) {
+        if (a == b)
+            return true;
+
+        if (a == null || b == null)
+            return false;
+
+        int size = a.size();
+        if (size != b.size())
+            return false;
+
+        Iterator<?> iterator = a.iterator();
+        Iterator<?> iterator1 = b.iterator();
+
+        int i = 0;
+        while (iterator.hasNext() && iterator1.hasNext()) {
+            if (i++ > size)
+                return false;
+
+            Object next = iterator.next();
+            Object next1 = iterator1.next();
+
+            if (!Objects.equals(next, next1))
+                return false;
+        }
+
+        return !iterator.hasNext() && !iterator1.hasNext();
+    }
+
+    /**
      * Construct a new instance with values consisting of specified range
      * @param start range start
      * @param end range end
@@ -170,6 +205,26 @@ public class CollectionHelpers {
         for (Map.Entry<K, V> entry : other.entrySet()) {
             map.putIfAbsent(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Determines whether a list is sorted according to provided comparator
+     * @param list list to check against
+     * @param comparator comparator
+     * @return true if sorted, else false
+     * @param <T> list element type
+     */
+    @ApiStatus.AvailableSince("0.0.39")
+    public static <T> boolean isSorted(List<T> list, Comparator<? super T> comparator) {
+        if (list.isEmpty() || list.size() == 1)
+            return true;
+
+        for (int i = 0; i < list.size() - 1; i++) {
+            if (comparator.compare(list.get(i), list.get(i + 1)) > 0)
+                return false;
+        }
+
+        return true;
     }
 
 
