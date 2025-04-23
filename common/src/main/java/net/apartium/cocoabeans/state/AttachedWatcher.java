@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.state;
 
+import net.apartium.cocoabeans.Ensures;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
@@ -34,8 +35,10 @@ public class AttachedWatcher<T> extends Watcher<T> {
         if (this.manager != null)
             throw new IllegalArgumentException("already attached");
 
-        this.manager = manager;
+        Ensures.notNull(manager, "manager +-");
 
+        this.manager = manager;
+        depends.observe(this);
     }
 
     /**
@@ -62,12 +65,15 @@ public class AttachedWatcher<T> extends Watcher<T> {
      *
      * @throws IllegalArgumentException if this watcher is not currently attached to an operator
      */
+    @Override
     public void detach() {
         if (this.manager == null)
             throw new IllegalArgumentException("not attached");
 
         this.manager.detach(this);
         this.manager = null;
+
+        super.detach();
     }
 
 }

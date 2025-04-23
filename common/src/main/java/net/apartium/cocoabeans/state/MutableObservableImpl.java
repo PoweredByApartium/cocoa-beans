@@ -34,4 +34,10 @@ import java.util.WeakHashMap;
     public void observe(Observer observer) {
         observers.add(observer);
     }
+
+    @Override
+    public boolean removeObserver(Observer observer) {
+        return observers.remove(observer);
+    }
+
 }

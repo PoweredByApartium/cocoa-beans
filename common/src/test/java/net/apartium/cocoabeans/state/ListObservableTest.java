@@ -26,4 +26,13 @@ class ListObservableTest {
         assertEquals(1, size.get());
     }
 
+    @Test
+    void removeObserver() {
+        ListObservable<Integer> scores = Observable.list();
+        Observer observer = n -> {};
+        scores.observe(observer);
+        scores.add(100);
+        scores.removeObserver(observer);
+    }
+
 }

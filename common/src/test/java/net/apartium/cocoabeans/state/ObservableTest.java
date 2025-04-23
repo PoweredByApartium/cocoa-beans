@@ -11,6 +11,44 @@ import static org.junit.jupiter.api.Assertions.*;
 class ObservableTest {
 
     @Test
+    void removeObserverImmutable() {
+        Observable.immutable(1).removeObserver(null);
+        Observable.immutable(1).removeObserver(n -> {});
+    }
+
+    @Test
+    void removeObserverMutable() {
+        MutableObservable<Integer> num = Observable.mutable(12);
+
+        Observer observer = n -> {};
+        num.observe(observer);
+        num.set(100);
+        num.removeObserver(observer);
+    }
+
+    @Test
+    void removeObserverCompound() {
+        MutableObservable<Integer> num = Observable.mutable(12);
+        var compound = Observable.compound(num);
+
+        Observer observer = n -> {};
+        compound.observe(observer);
+        num.set(100);
+        compound.removeObserver(observer);
+    }
+
+    @Test
+    void removeObserverMapped() {
+        MutableObservable<Integer> num = Observable.mutable(12);
+        Observable<Boolean> isEven = num.map(n -> n % 2 == 0);
+
+        Observer observer = n -> {};
+        isEven.observe(observer);
+        num.set(100);
+        isEven.removeObserver(observer);
+    }
+
+    @Test
     void testValueState() {
         MutableObservable<Integer> num = Observable.mutable(9);
         assertEquals(9, ((int) num.get()));
@@ -22,6 +60,7 @@ class ObservableTest {
         num.set(20);
         assertEquals(20, ((int) num.get()));
     }
+
 
     @Test
     void empty() {

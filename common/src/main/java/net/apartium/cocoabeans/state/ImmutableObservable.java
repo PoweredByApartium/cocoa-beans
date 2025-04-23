@@ -30,4 +30,11 @@ package net.apartium.cocoabeans.state;
     public void observe(Observer observer) {
         // ignored
     }
+
+    @Override
+    public boolean removeObserver(Observer observer) {
+        // ignored
+        return false;
+    }
+
 }

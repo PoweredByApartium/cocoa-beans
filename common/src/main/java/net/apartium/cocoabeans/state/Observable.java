@@ -309,8 +309,17 @@ public interface Observable<T> {
     /**
      * Adds an observer to the state
      * @param observer the observer we want to add
+     * @see Observable#removeObserver(Observer)
      */
     void observe(Observer observer);
+
+    /**
+     * Removes an observer from the state
+     * @param observer observer we want to remove
+     * @return true if the observer was listening, false otherwise
+     * @see Observable#observe(Observer)
+     */
+    boolean removeObserver(Observer observer);
 
     /**
      * Maps the value of the observable using the given function when it is dirty

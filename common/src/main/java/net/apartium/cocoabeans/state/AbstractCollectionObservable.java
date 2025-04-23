@@ -108,6 +108,11 @@ import java.util.function.Predicate;
         observers.add(observer);
     }
 
+    @Override
+    public boolean removeObserver(Observer observer) {
+        return observers.remove(observer);
+    }
+
     protected void notifyObservers() {
         for (Observer observer : observers)
             observer.flagAsDirty(this);

@@ -79,6 +79,12 @@ public class ObservableCompound<T> implements Observable<T>, Observer {
     }
 
     @Override
+    public boolean removeObserver(Observer observer) {
+        return observers.remove(observer);
+    }
+
+
+    @Override
     public void flagAsDirty(Observable<?> observable) {
         if (!dependsOn.containsKey(observable))
             return;

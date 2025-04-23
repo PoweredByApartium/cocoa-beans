@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 @ApiStatus.AvailableSince("0.0.39")
 public class Watcher<T> implements Observer {
 
-    private final Observable<T> depends;
+    protected final Observable<T> depends;
     private final Consumer<T> consumer;
     private boolean first = true;
     private boolean isDirty = true;
@@ -50,6 +50,13 @@ public class Watcher<T> implements Observer {
         isDirty = false;
 
         consumer.accept(value);
+    }
+
+    /**
+     * Detaches the current watcher from its target observable.
+     */
+    public void detach() {
+        depends.removeObserver(this);
     }
 
     /**
