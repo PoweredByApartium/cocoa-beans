@@ -4,8 +4,8 @@
 Available Since 0.0.39
 </sup>
 
-Compound observables allow you to create a new Observable that derives its value from multiple dependent observables.
-Whenever one of the source observables updates, the compound observable will automatically recompute its value when it has been called.
+A compound observable is a type of observable which encapsulates multiple observables into it. 
+It allows accessing values of multiple observables as if they are just one. 
 
 ## Usage
 <code-block lang="java" src="common/CodeSnippets.java" include-symbol="compound"/>

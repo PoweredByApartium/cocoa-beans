@@ -42,7 +42,7 @@ class CodeSnippets {
         MutableObservable<String> name = Observable.mutable("Kfir");
         MutableObservable<Integer> num = Observable.mutable(123);
 
-        Observable<CompoundRecords.RecordOf2<String, Integer>> compound = Observable.compound(name, num);
+        var compound = Observable.compound(name, num);
 
         assertEquals("Kfir", compound.get().arg0());
         assertEquals(123, compound.get().arg1());

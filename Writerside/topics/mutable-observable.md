@@ -6,7 +6,7 @@ Available Since 0.0.39
 
 ## Introduction
 
-A `MutableObservable<T>` is a reactive container that allows both reading and updating its internal value.
+`Observable#mutable` returns a reactive container that allows both reading and updating its internal value.
 It implements the `Observable<T>` interface and provides a `set(T)` method to modify the current state.
 
 Mutable observers are the foundation for building dynamic, reactive state in your application. 

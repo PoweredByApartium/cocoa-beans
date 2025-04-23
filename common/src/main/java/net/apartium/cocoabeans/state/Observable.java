@@ -81,7 +81,14 @@ public interface Observable<T> {
         return new SetObservableImpl<>(set);
     }
 
-    static <T> ObservableCompound<T> compound(Function<List<?>, T> function, List<Observable<?>> depends) {
+    /**
+     * Creates a new compound observable with the given function and list of dependents
+     * @param function the function that will be used to compute the final value
+     * @param depends encapsulated observables that will be used as arguments for the function
+     * @return a new observable instance
+     * @param <T> the type of the final value
+     */
+    static <T> Observable<T> compound(Function<List<?>, T> function, List<Observable<?>> depends) {
         return new ObservableCompound<>(function, depends);
     }
 
