@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.args;
 
-public class PluginParserTest extends CommandsSpigotTestBase {
+class PluginParserTest extends CommandsSpigotTestBase {
 
     PluginParser parser;
 
