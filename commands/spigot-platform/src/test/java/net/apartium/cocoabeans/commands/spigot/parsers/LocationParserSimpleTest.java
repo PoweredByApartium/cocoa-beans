@@ -1,7 +1,5 @@
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
