@@ -13,7 +13,7 @@ This is done by creating an annotation, that is itself annotated with [`CommandP
 
 ## Declaring your annotation
 
-The core of the Dynamic Annotation Parser is the [`ParserFactory`](https://cocoa-beans.apartium.net/%version%/commands/net/apartium/cocoabeans/commands/parsers/ParserFactory.html) interface. This interface defines a method [`ParserFactory#getArgumentParser`](https://cocoa-beans.apartium.net/snapshot/commands/net/apartium/cocoabeans/commands/parsers/ParserFactory.html), which is responsible for returning a `Collection<ParserResult>` based on the provided command node, annotation, and generic declaration.
+The core of the Dynamic Annotation Parser is the [`ParserFactory`](https://cocoa-beans.apartium.net/%version%/commands/net/apartium/cocoabeans/commands/parsers/ParserFactory.html) interface. This interface defines a method [`ParserFactory#getArgumentParser`](https://cocoa-beans.apartium.net/%version%/commands/net/apartium/cocoabeans/commands/parsers/ParserFactory.html), which is responsible for returning a `Collection<ParserResult>` based on the provided command node, annotation, and generic declaration.
 ### Parameters
  - `commandNode`: The command node that the parser is associated with.
  - `annotation`: The annotation that triggers the parser creation.

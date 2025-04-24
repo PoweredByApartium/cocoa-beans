@@ -60,7 +60,7 @@ This command defines 3 sub commands:
 - a command to cancel the reboot process
 
 ## See more
-* [📌 Examples](Examples.md)
-* [Javadocs](https://cocoa-beans.apartium.net/snapshot/commands/)
-* [Spigot-Javadocs](https://cocoa-beans.apartium.net/snapshot/commands-spigot/)
+* [](examples.md)
+* [Javadocs](https://cocoa-beans.apartium.net/%version%/commands/)
+* [Spigot-Javadocs](https://cocoa-beans.apartium.net/%version%/commands-spigot/)
 

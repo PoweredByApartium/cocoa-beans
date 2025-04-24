@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,21 @@ class CollectionHelpersTest {
             if (!lastResult.equals(CollectionHelpers.randomEntry(testSet, random)))
                 break;
         }
+
+    }
+
+    @Test
+    void equalsCollections() {
+        List<Integer> list = List.of(1);
+        assertTrue(CollectionHelpers.equalsCollections(list, list));
+        assertFalse(CollectionHelpers.equalsCollections(list, null));
+        assertFalse(CollectionHelpers.equalsCollections(null, list));
+        assertTrue(CollectionHelpers.equalsCollections(null, null));
+
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of()));
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of(1, 2)));
+        assertTrue(CollectionHelpers.equalsCollections(list, Set.of(1)));
+        assertFalse(CollectionHelpers.equalsCollections(list, List.of(2)));
 
     }
 
@@ -81,11 +97,111 @@ class CollectionHelpersTest {
     }
 
     @Test
+    void equalsInfinity() {
+        Collection<Integer> collection = new Collection<>() {
+            @Override
+            public int size() {
+                return 3;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @NotNull
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<>() {
+                    int c = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return c++;
+                    }
+                };
+            }
+
+
+            @Override
+            public Object @NotNull [] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T @NotNull [] toArray(T @NotNull [] ts) {
+                return ts;
+            }
+
+            @Override
+            public boolean add(Integer integer) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(@NotNull Collection<? extends Integer> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(@NotNull Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+                /*
+                 * just for test
+                 */
+            }
+        };
+        assertFalse(CollectionHelpers.equalsCollections(
+                List.of(1, 2, 3),
+                collection
+        ));
+
+        assertFalse(CollectionHelpers.equalsCollections(
+                collection,
+                List.of(1, 2, 3)
+        ));
+
+        assertFalse(CollectionHelpers.equalsCollections(
+                collection,
+                Collections.unmodifiableCollection(collection)
+        ));
+    }
+
+    @Test
     void equalsArray() {
         Object[] empty = new Object[0];
         Assertions.assertTrue(CollectionHelpers.equalsArray(empty, empty));
         Object[] arr0 = new Object[]{"1", "2", "3"};
-        Object[] arr1 = new Object[]{"1", "2", new String("3")};
+        Object[] arr1 = new Object[]{"1", "2", "3"};
         Assertions.assertTrue(CollectionHelpers.equalsArray(arr0, arr1));
         Assertions.assertFalse(CollectionHelpers.equalsArray(arr0, empty));
 
@@ -128,18 +244,6 @@ class CollectionHelpersTest {
         assertNotEquals(List.of("1", "2", "3"), List.of("3", "1", "2"));
     }
 
-    boolean equal(List<?> arr0, List<?> arr1) {
-        if (arr0.size() != arr1.size())
-            return false;
-
-        for (int i = 0; i < arr0.size(); i++) {
-            if (!arr0.get(i).equals(arr1.get(i)))
-                return false;
-        }
-
-        return true;
-    }
-
     @Test
     void testMergeInto() {
         Map<String, String> map = new HashMap<>();
@@ -157,6 +261,20 @@ class CollectionHelpersTest {
 
         assertEquals(Map.of("test", "value0", "test0", "value1", "test1", "value2", "test2", "value3"), map);
 
+
+    }
+
+    @Test
+    void isSorted() {
+        assertTrue(CollectionHelpers.isSorted(List.of(0, 1, 2, 3), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(-21, -3, 7, 16, 74), Integer::compareTo));
+
+        assertTrue(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1), (a, b) -> b - a));
+        assertFalse(CollectionHelpers.isSorted(List.of(5, 4, 3, 2, 1, 4), (a, b) -> b - a));
+
+        assertTrue(CollectionHelpers.isSorted(List.of(), Integer::compareTo));
+        assertTrue(CollectionHelpers.isSorted(List.of(1), Integer::compareTo));
 
     }
 
