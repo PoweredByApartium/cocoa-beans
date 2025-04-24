@@ -8,6 +8,7 @@ import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.DoubleParser;
 import net.apartium.cocoabeans.commands.parsers.FloatParser;
 import net.apartium.cocoabeans.commands.parsers.ParserAssertions;
+import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
 import net.apartium.cocoabeans.commands.spigot.SpigotSender;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,22 +19,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-class LocationParserSimpleTest {
+class LocationParserSimpleTest extends CommandsSpigotTestBase {
 
-    private ServerMock server;
     private PlayerMock player;
 
+    @Override
     @BeforeEach
-    void setup() {
-        server = MockBukkit.mock();
+    public void setup() {
+        super.setup();
         player = server.addPlayer("ikfir");
     }
 
     @AfterEach
-    void tearDown() {
-        MockBukkit.unmock();
-        server = null;
-    }
 
     @Test
     void simpleLocation() {
