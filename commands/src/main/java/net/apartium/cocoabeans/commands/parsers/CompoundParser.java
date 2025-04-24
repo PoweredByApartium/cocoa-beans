@@ -233,7 +233,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
     @Override
     public Optional<ParseResult<T>> parse(CommandProcessingContext processingContext) {
-        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(new SimpleCommandProcessingContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index()));
+        Optional<ParserResult> parse = compoundParserBranchProcessor.parse(new SimpleCommandProcessingContext(processingContext.sender(), processingContext.label(), processingContext.args(), processingContext.index()));
 
         if (parse.isEmpty()) {
             processingContext.report(this, new BadCommandResponse(processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index(), "No variant found"));
