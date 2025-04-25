@@ -123,15 +123,11 @@ public class NMSUtils {
             DISPLAY_SLOT_TYPE = findNMSClass("world.scores", "DisplaySlot").orElse(int.class);
 
             Map<DisplaySlot, Object> displaySlotObjectMap = new IdentityHashMap<>();
-            try {
-                for (DisplaySlot slot : DisplaySlot.values())
-                    displaySlotObjectMap.put(slot, DISPLAY_SLOT_TYPE == int.class
-                            ? slot.getId()
-                            : findEnumValueOf(DISPLAY_SLOT_TYPE, slot.name(), slot.getId())
-                    );
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
-            }
+            for (DisplaySlot slot : DisplaySlot.values())
+                displaySlotObjectMap.put(slot, DISPLAY_SLOT_TYPE == int.class
+                        ? slot.getId()
+                        : findEnumValueOf(DISPLAY_SLOT_TYPE, slot.name(), slot.getId())
+                );
 
             DISPLAY_SLOT_OBJECT_MAP = Collections.unmodifiableMap(displaySlotObjectMap);
 
@@ -462,11 +458,9 @@ public class NMSUtils {
         if (action == ScoreboardAction.REMOVE)
             return PACKET_SB_RESET_SCORE.invoke(entityId, objectiveId);
 
-        Object format = displayName != null && displayName != Observable.<Component>empty() && displayName.get() != Component.empty()
-                ? FIXED_NUMBER_FORMAT.invoke(toMinecraftComponent(displayName))
-                : numberStyle == null
+        Object format = numberStyle == null
                 ? BLANK_NUMBER_FORMAT
-                : STYLE_NUMBER_FORMAT.invoke(intoNetworkStyle(numberStyle));
+                : STYLE_NUMBER_FORMAT.invoke(numberStyle);
 
         return SCORE_OPTIONAL_COMPONENTS
                 ? PACKET_SB_UPDATE_SCORE.invoke(entityId, objectiveId, scoreValue, Optional.of(toMinecraftComponent(displayName)), Optional.of(format))
@@ -579,7 +573,7 @@ public class NMSUtils {
         if (VERSION.isHigherThanOrEqual(V1_17)) {
             Object team = PACKET_SB_SERIALIZABLE_TEAM.createInstance();
 
-            setComponentField(team, null, 0); // Display name
+            setComponentField(team, Observable.empty(), 0); // Display name
             setField(team, CHAT_FORMAT_ENUM, RESET_FORMATTING); // Color
             setComponentField(team, prefix, 1); // Prefix
             setComponentField(team, suffix, 2); // Suffix
