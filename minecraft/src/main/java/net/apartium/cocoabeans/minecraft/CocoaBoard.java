@@ -34,7 +34,9 @@ public abstract class CocoaBoard {
     protected static class ComponentEntry implements Observer {
 
         private final Observable<Component> component;
+
         private boolean isDirty;
+        private Component prevComponent = null;
 
         private static ComponentEntry create(Observable<Component> component) {
             if (component == null)
@@ -64,7 +66,12 @@ public abstract class CocoaBoard {
             if (this.component != other.component)
                 return false;
 
-            return !this.isDirty() && !other.isDirty();
+            return this.isDirty() == other.isDirty();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.component, this.isDirty);
         }
 
         @Override
@@ -80,6 +87,7 @@ public abstract class CocoaBoard {
          */
         public void clean() {
             isDirty = false;
+            prevComponent = component.get();
         }
 
         /**
@@ -88,6 +96,13 @@ public abstract class CocoaBoard {
          */
         public boolean isDirty() {
             return isDirty;
+        }
+
+        public boolean hasChange() {
+            if (!isDirty)
+                return false;
+
+            return !Objects.equals(prevComponent, component.get());
         }
 
         /**
@@ -139,14 +154,14 @@ public abstract class CocoaBoard {
      * Check if the observable had change and if they did update it in the scoreboard
      */
     public void heartbeat() {
-        if (title != null && title.isDirty())
+        if (title != null && title.hasChange())
             updateTitle();
 
 
         for (int score = 0; score < lines.size(); score++) {
             ComponentEntry entry = lines.get(score);
 
-            if (entry == null || !entry.isDirty())
+            if (entry == null || !entry.hasChange())
                 continue;
 
             entry.clean();
@@ -157,7 +172,7 @@ public abstract class CocoaBoard {
             for (int score = 0; score < scores.size(); score++) {
                 ComponentEntry entry = scores.get(score);
 
-                if (entry == null || !entry.isDirty())
+                if (entry == null || !entry.hasChange())
                     continue;
 
                 entry.clean();
@@ -422,6 +437,9 @@ public abstract class CocoaBoard {
         lines0(newLines, newScores, newNumberStyles);
     }
 
+    private boolean hasChange(ComponentEntry a, ComponentEntry b) {
+        return !Objects.equals(a, b) || a.hasChange();
+    }
 
     private void lines0(Collection<ComponentEntry> lines, Collection<ComponentEntry> scores, Collection<Style> numberStyles) {
         ensuresLineNumber(lines.size(), false, true);
@@ -451,16 +469,19 @@ public abstract class CocoaBoard {
             handleNotSameSize(oldLines, linesSize);
 
         for (int i = 0; i < linesSize; i++) {
-            if (!Objects.equals(getLineByScore(oldLines, i), getLineByScore(i)))
+            if (hasChange(getLineByScore(oldLines, i), getLineByScore(i))) {
+                getLineByScore(i).clean();
                 sendLineChange(i);
+            }
 
-            if (!Objects.equals(
+            if (hasChange(
                     getLineByScore(oldScores, i),
                     getLineByScore(this.scores, i)
             ) || !Objects.equals(
                     getLineByScore(oldNumberStyles, i),
                     getLineByScore(this.numberStyles, i))
             ) {
+                getLineByScore(this.scores, i).clean();
                 sendScorePacket(
                         i,
                         Optional.ofNullable(getLineByScore(this.scores, i))
