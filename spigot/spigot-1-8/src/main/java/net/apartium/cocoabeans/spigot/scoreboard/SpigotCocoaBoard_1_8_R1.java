@@ -57,9 +57,10 @@ public class SpigotCocoaBoard_1_8_R1 extends SpigotCocoaBoard {
 
     private String addColor(String prefix, ChatColor chatColor) {
         String color = ChatColor.getLastColors(prefix);
-        boolean addColor = chatColor == null || chatColor.isFormat();
+        if (chatColor == null || chatColor.isFormat())
+            return color.isEmpty() ? ChatColor.RESET.toString() : color;
 
-        return addColor ? (color.isEmpty() ? ChatColor.RESET.toString() : color) : "";
+        return "";
     }
 
     private ChatColor chatColorForSuffix(String suffix) {
