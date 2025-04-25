@@ -82,6 +82,11 @@ public abstract class CocoaBoard {
             isDirty = true;
         }
 
+        public void delete() {
+            component.removeObserver(this);
+            prevComponent = null;
+        }
+
         /**
          * clean the entry
          */
@@ -551,8 +556,13 @@ public abstract class CocoaBoard {
         }
 
         sendObjectivePacket(ObjectiveMode.REMOVE, null);
+
+        lines.forEach(ComponentEntry::delete);
         lines.clear();
+
+        scores.forEach(ComponentEntry::delete);
         scores.clear();
+
         numberStyles.clear();
     }
 
