@@ -10,7 +10,8 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
     compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
     compileOnly(project.project(":commands"))
-    api(project.project(":common"))
+    api(project.project(":minecraft"))
+
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")

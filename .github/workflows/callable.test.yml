@@ -37,11 +37,15 @@ jobs:
                 commands-spigot
                 common
                 spigot
+                minecraft
+                minestom
            report_paths: |
                 **/commands/build/test-results/test/TEST-*.xml
                 **/commands/spigot-platform/build/test-results/test/TEST-*.xml
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
+                **/minecraft/build/test-results/test/TEST-*.xml
+                **/minestom/build/test-results/test/TEST-*.xml
 
         - name: Publish Test Report
           uses: test-summary/action@v2
@@ -52,3 +56,5 @@ jobs:
               **/commands/spigot-platform/build/test-results/test/TEST-*.xml
               **/common/build/test-results/test/TEST-*.xml
               **/spigot/build/test-results/test/TEST-*.xml
+              **/minecraft/build/test-results/test/TEST-*.xml
+              **/minestom/build/test-results/test/TEST-*.xml

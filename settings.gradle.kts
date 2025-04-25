@@ -1,4 +1,3 @@
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -21,3 +20,5 @@ include("spigot:spigot-1-20")
 include("commands")
 include("commands:spigot-platform")
 include("code-coverage-report")
+include("minecraft")
+include("minestom")
