@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.utils;
 
-import net.apartium.cocoabeans.minecraft.*;
+import net.apartium.cocoabeans.scoreboard.*;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.structs.MinecraftVersion;

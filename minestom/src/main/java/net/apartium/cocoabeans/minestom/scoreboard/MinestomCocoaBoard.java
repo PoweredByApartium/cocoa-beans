@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.minestom.scoreboard;
 
-import net.apartium.cocoabeans.minecraft.*;
+import net.apartium.cocoabeans.scoreboard.*;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

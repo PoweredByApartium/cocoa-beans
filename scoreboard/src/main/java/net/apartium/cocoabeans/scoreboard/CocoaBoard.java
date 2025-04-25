@@ -1,4 +1,5 @@
-package net.apartium.cocoabeans.minecraft;
+package net.apartium.cocoabeans.scoreboard;
+
 import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.Observer;

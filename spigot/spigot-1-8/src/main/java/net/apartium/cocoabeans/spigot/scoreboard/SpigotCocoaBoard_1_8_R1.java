@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
-import net.apartium.cocoabeans.minecraft.TeamMode;
+import net.apartium.cocoabeans.scoreboard.TeamMode;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.structs.MinecraftVersion;

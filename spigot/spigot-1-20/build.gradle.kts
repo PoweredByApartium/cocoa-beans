@@ -9,6 +9,7 @@ version = parent!!.version
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper.1.20")}")
     compileOnly(project.project(":spigot"))
+    compileOnly(project.project(":scoreboard"))
 
     testImplementation(project.project(":spigot"))
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))

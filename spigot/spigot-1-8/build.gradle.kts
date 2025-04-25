@@ -8,6 +8,7 @@ version = parent!!.version
 dependencies {
     compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:${project.findProperty("versions.panda.spigot")}")
     compileOnly(project.project(":spigot"))
+    compileOnly(project.project(":scoreboard"))
     compileOnly("net.kyori:adventure-api:${project.findProperty("versions.adventure")}")
     compileOnly("net.kyori:adventure-text-serializer-legacy:${project.findProperty("versions.adventure")}")
 }
