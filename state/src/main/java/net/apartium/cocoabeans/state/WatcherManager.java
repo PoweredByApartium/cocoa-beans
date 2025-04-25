@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 /**
  * A reference implementation of {@link WatcherOperator}, referencing watchers via an identity hash set.
  * This implementation is thread safe.
- *
  * NOTE: To make an instance do anything, its {@link WatcherManager#heartbeat()} method has to be triggered externally.
  * @see WatcherOperator
  */
