@@ -83,6 +83,9 @@ public class NMSUtils {
     private static final boolean ADVENTURE_SUPPORT;
     private static final boolean SCORE_OPTIONAL_COMPONENTS;
 
+    public static final String MODE_ALWAYS = "always";
+    public static final String MODE_NEVER = "never";
+
 
     static {
         try {
@@ -533,7 +536,7 @@ public class NMSUtils {
     }
 
     private static Field[] getFieldsForPacket(Class<?> clazz) {
-        return PACKETS.computeIfAbsent(clazz, (key) -> {
+        return PACKETS.computeIfAbsent(clazz, key -> {
             Field[] fields = Arrays.stream(clazz.getDeclaredFields())
                     .filter(field -> !Modifier.isStatic(field.getModifiers()))
                     .toArray(Field[]::new);
@@ -580,15 +583,15 @@ public class NMSUtils {
             setField(team, CHAT_FORMAT_ENUM, RESET_FORMATTING); // Color
             setComponentField(team, prefix, 1); // Prefix
             setComponentField(team, suffix, 2); // Suffix
-            setField(team, String.class, "always", 0); // Visibility // TODO add option to change it
-            setField(team, String.class, "always", 1); // Collision // TODO add option to change it
+            setField(team, String.class, MODE_ALWAYS, 0); // Visibility // TODO add option to change it
+            setField(team, String.class, MODE_ALWAYS, 1); // Collision // TODO add option to change it
 
             setField(packet, Optional.class, Optional.of(team));
         } else {
             setComponentField(packet, prefix, 2); // Prefix
             setComponentField(packet, suffix, 3); // Suffix
-            setField(packet, String.class, "always", 4); // Visibility for 1.8+ // TODO add option to change it
-            setField(packet, String.class, "always", 5); // Collision for 1.9+ // TODO add option to change it
+            setField(packet, String.class, MODE_ALWAYS, 4); // Visibility for 1.8+ // TODO add option to change it
+            setField(packet, String.class, MODE_ALWAYS, 5); // Collision for 1.9+ // TODO add option to change it
         }
 
         if (mode == TeamMode.CREATE)
