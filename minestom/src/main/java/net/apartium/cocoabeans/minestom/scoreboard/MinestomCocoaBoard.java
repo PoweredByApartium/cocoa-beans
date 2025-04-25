@@ -135,16 +135,16 @@ public class MinestomCocoaBoard extends CocoaBoard {
         if (displayNameComponent == Component.empty())
             displayNameComponent = null;
 
+        Sidebar.NumberFormat numberFormat = displayNameComponent != null || numberStyle == null
+                ? Sidebar.NumberFormat.blank()
+                : Sidebar.NumberFormat.styled(Component.text(score).style(numberStyle));
+
         player.sendPacket(new UpdateScorePacket(
                 colorName(score),
                 objectiveId,
                 score,
                 displayNameComponent,
-                displayNameComponent != null
-                        ? Sidebar.NumberFormat.blank()
-                        : numberStyle == null
-                        ? Sidebar.NumberFormat.blank()
-                        : Sidebar.NumberFormat.styled(Component.text(score).style(numberStyle))
+                numberFormat
         ));
     }
 }

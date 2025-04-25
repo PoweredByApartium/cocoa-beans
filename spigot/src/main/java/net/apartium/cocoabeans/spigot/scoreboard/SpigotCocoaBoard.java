@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.minecraft.*;
 import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
-import net.apartium.cocoabeans.spigot.inventory.ItemFactory;
 import net.apartium.cocoabeans.spigot.utils.NMSUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
@@ -96,17 +95,17 @@ public abstract class SpigotCocoaBoard extends CocoaBoard {
     }
 
     public Player getPlayer() {
-        Player player = this.player.get();
+        Player target = this.player.get();
 
-        if (player == null) {
-            player = Bukkit.getPlayer(playerUUID);
-            if (player == null)
+        if (target == null) {
+            target = Bukkit.getPlayer(playerUUID);
+            if (target == null)
                 return null;
 
-            this.player = new WeakReference<>(player);
+            this.player = new WeakReference<>(target);
         }
 
-        return player;
+        return target;
     }
 
 
