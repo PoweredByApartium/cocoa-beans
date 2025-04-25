@@ -14,7 +14,7 @@ Mutable observers are the foundation for building dynamic, reactive state in you
 Any change to the state triggers notifications to dependent observers and re-computes them as needed.
 
 ## Usage
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="mutable"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="mutable"/>
 You can use it directly, or combine it with mapping, watching, or composing multiple observables.
 
 ## How it works

@@ -11,6 +11,7 @@ dependencies {
     compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
     compileOnly(project.project(":commands"))
     api(project.project(":common"))
+    compileOnly(project.project(":state"))
     compileOnly(project.project(":scoreboard"))
 
 
