@@ -7,7 +7,7 @@ version = parent!!.project.version
 
 dependencies {
     api(project.project(":state"))
-    api(project.project(":spigot"))
+//    api(project.project(":spigot")) TODO ask voigon xD
 
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
 
