@@ -6,9 +6,9 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
+//plugins {
+//    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+//}
 
 rootProject.name = "cocoa-beans"
 
@@ -26,3 +26,4 @@ include("state")
 include("state:spigot-platform")
 include("scoreboard:spigot-platform")
 include("scoreboard:minestom-platform")
+include("spigot:test-plugin")
