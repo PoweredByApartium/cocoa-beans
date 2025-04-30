@@ -460,7 +460,7 @@ public class NMSUtils {
 
         Object format = numberStyle == null
                 ? BLANK_NUMBER_FORMAT
-                : STYLE_NUMBER_FORMAT.invoke(numberStyle);
+                : STYLE_NUMBER_FORMAT.invoke(intoNetworkStyle(numberStyle));
 
         return SCORE_OPTIONAL_COMPONENTS
                 ? PACKET_SB_UPDATE_SCORE.invoke(entityId, objectiveId, scoreValue, Optional.of(toMinecraftComponent(displayName)), Optional.of(format))

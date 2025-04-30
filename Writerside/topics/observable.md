@@ -9,6 +9,7 @@ Available Since 0.0.39
 - [Usage](#usage)
 - [How it works](#how-it-works)
 - [Advantages](#advantages)
+- [](#include-in-your-project)
 - [What next](#what-next)
 
 ## Introduction
@@ -175,6 +176,65 @@ AttachedWatcher *-- WatcherOperator::detach
 
 
 🚀 Designed for performance and clarity with lazy re-computation and controlled observers.
+
+## Include in your project
+
+<tabs>
+<tab title="Maven">
+
+```xml
+<repositories>
+    <repository>
+        <id>apartium-releases</id>
+        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>net.apartium.cocoa-beans</groupId>
+        <artifactId>state</artifactId>
+        <version>%version%</version>
+    </dependency>
+</dependencies>
+```
+
+</tab>
+
+<tab title="Gradle">
+
+```groovy
+repositories {
+    maven {
+        name 'apartium-releases'
+        url 'https://nexus.voigon.dev/repository/apartium-releases'
+    }
+}
+
+dependencies {
+    compileOnly("net.apartium.cocoa-beans:state:%version%")
+}
+```
+
+</tab>
+
+<tab title="Gradle - Kotlin">
+
+```kotlin
+repositories {
+    maven {
+        name = "apartium-releases"
+        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
+    }
+}
+
+dependencies {
+    compileOnly("net.apartium.cocoa-beans:state:%version%")
+}
+```
+
+</tab>
+</tabs>
 
 ## What next
 * [](immutable-observable.md) <sub> Static observable value </sub>
