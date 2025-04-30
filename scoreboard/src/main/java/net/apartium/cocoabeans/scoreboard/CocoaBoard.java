@@ -255,33 +255,44 @@ public abstract class CocoaBoard {
 
         if (line < lines.size()) {
             ComponentEntry entry = ComponentEntry.create(component);
-            ComponentEntry scoreEntry = ComponentEntry.create(scoreDisplay);
 
-            lines.set(line, entry);
-            scores.set(line, scoreEntry);
+            if (hasChange(lines.get(line), entry)) {
+                lines.set(line, entry);
+                sendLineChange(getScoreByLine(line));
+            }
 
-            sendLineChange(getScoreByLine(line));
+            if (isCustomScoreSupported) {
+                ComponentEntry scoreEntry = ComponentEntry.create(scoreDisplay);
+                if (!hasChange(scores.get(line), scoreEntry) || Objects.equals(numberStyles.get(line), numberStyle))
+                    return;
 
-            int score = getScoreByLine(line);
-            if (isCustomScoreSupported)
+                scores.set(line, scoreEntry);
+                numberStyles.set(line, numberStyle);
+
+                int score = getScoreByLine(line);
                 sendScorePacket(score, scoreDisplay, ScoreboardAction.CREATE_OR_UPDATE, numberStyle);
+            }
 
             return;
         }
 
         List<ComponentEntry> newLines = new ArrayList<>(this.lines);
         List<ComponentEntry> newScores = new ArrayList<>(this.scores);
+        List<Style> newNumberStyles = new ArrayList<>(this.numberStyles);
 
         if (line > lines.size()) {
             for (int i = lines.size(); i < line; i++) {
                 newLines.add(ComponentEntry.create(Observable.empty()));
                 newScores.add(null);
+                newNumberStyles.add(null);
             }
         }
 
         newLines.add(ComponentEntry.create(component));
         newScores.add(ComponentEntry.create(scoreDisplay));
-        lines0(newLines, newScores, null);
+        newNumberStyles.add(numberStyle);
+
+        lines0(newLines, newScores, newNumberStyles);
     }
 
 
@@ -311,7 +322,7 @@ public abstract class CocoaBoard {
         List<Style> newNumberStyles = new ArrayList<>(this.numberStyles);
 
         newLines.add(ComponentEntry.create(component));
-        newScores.add(scoreDisplay == null ? null : ComponentEntry.create(scoreDisplay));
+        newScores.add(ComponentEntry.create(scoreDisplay));
         newNumberStyles.add(numberStyle);
 
         lines0(newLines, newScores, newNumberStyles);
@@ -444,7 +455,7 @@ public abstract class CocoaBoard {
     }
 
     private boolean hasChange(ComponentEntry a, ComponentEntry b) {
-        return !Objects.equals(a, b) || a.hasChange();
+        return !Objects.equals(a, b) || (a != null && a.hasChange());
     }
 
     private void lines0(Collection<ComponentEntry> lines, Collection<ComponentEntry> scores, Collection<Style> numberStyles) {
@@ -471,10 +482,11 @@ public abstract class CocoaBoard {
 
         int linesSize = this.lines.size();
 
+        int end = linesSize;
         if (oldLines.size() != linesSize)
-            handleNotSameSize(oldLines, linesSize);
+            end = handleNotSameSize(oldLines, linesSize);
 
-        for (int i = 0; i < linesSize; i++) {
+        for (int i = 0; i < end; i++) {
             if (hasChange(getLineByScore(oldLines, i), getLineByScore(i))) {
                 getLineByScore(i).clean();
                 sendLineChange(i);
@@ -501,7 +513,7 @@ public abstract class CocoaBoard {
 
     }
 
-    private void handleNotSameSize(List<ComponentEntry> oldLines, int linesSize) {
+    private int handleNotSameSize(List<ComponentEntry> oldLines, int linesSize) {
         List<ComponentEntry> oldLinesCopy = new ArrayList<>(oldLines);
 
         if (oldLines.size() > linesSize) {
@@ -514,7 +526,7 @@ public abstract class CocoaBoard {
                 oldLines.remove(0);
             }
 
-            return;
+            return linesSize;
         }
 
         for (int i = oldLinesCopy.size(); i < linesSize; i++) {
@@ -527,7 +539,10 @@ public abstract class CocoaBoard {
                     getLineByScore(this.numberStyles, i)
             );
             sendTeamPacket(i, TeamMode.CREATE, getLineByScore(i).component, null);
+            return oldLines.size();
         }
+
+        return linesSize;
 
     }
 
