@@ -16,7 +16,5 @@ java {
 }
 
 dependencies {
-    api(project.project(":scoreboard"))
-
     compileOnly("net.minestom:minestom-snapshots:${project.findProperty("versions.minestom")}")
 }

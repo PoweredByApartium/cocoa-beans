@@ -47,7 +47,7 @@ jobs:
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
                 **/state/build/test-results/test/TEST-*.xml
-                **/state/spigot/build/test-results/test/TEST-*.xml
+                **/state/spigot-platform/build/test-results/test/TEST-*.xml
                 **/scoreboard/build/test-results/test/TEST-*.xml
                 **/minestom/build/test-results/test/TEST-*.xml
 
@@ -61,6 +61,6 @@ jobs:
               **/common/build/test-results/test/TEST-*.xml
               **/spigot/build/test-results/test/TEST-*.xml
               **/state/build/test-results/test/TEST-*.xml
-              **/state/spigot/build/test-results/test/TEST-*.xml
+              **/state/spigot-platform/build/test-results/test/TEST-*.xml
               **/scoreboard/build/test-results/test/TEST-*.xml
               **/minestom/build/test-results/test/TEST-*.xml

@@ -9,10 +9,9 @@ version = parent!!.version
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
     compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
-    compileOnly(project.project(":commands"))
-    api(project.project(":common"))
-    compileOnly(project.project(":state"))
-    compileOnly(project.project(":scoreboard"))
+    compileOnly(project(":commands"))
+    api(project(":common"))
+
 
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")

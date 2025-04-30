@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.TeamMode;
+import net.apartium.cocoabeans.scoreboard.spigot.SpigotCocoaBoard;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
@@ -9,8 +10,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
-
-
 
 @ApiStatus.Internal
 public class SpigotCocoaBoard_1_8_R1 extends SpigotCocoaBoard {

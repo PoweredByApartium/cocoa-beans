@@ -8,11 +8,12 @@ version = parent!!.version
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper.1.20")}")
-    compileOnly(project.project(":spigot"))
-    compileOnly(project.project(":state"))
-    compileOnly(project.project(":scoreboard"))
+    compileOnly(project(":spigot"))
+    compileOnly(project(":state"))
+    compileOnly(project(":scoreboard"))
+    compileOnly(project(":scoreboard:spigot-platform"))
 
-    testImplementation(project.project(":spigot"))
+    testImplementation(project(":spigot"))
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")

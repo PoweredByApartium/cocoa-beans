@@ -6,8 +6,9 @@ group = "net.apartium.cocoa-beans"
 version = parent!!.version
 
 dependencies {
+    api(project(":scoreboard"))
     api(project(":common"))
-    api(project(":state"))
+    api(project(":spigot"))
 
-    compileOnly("net.kyori:adventure-api:${project.findProperty("versions.adventure")}")
+    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
 }

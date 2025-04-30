@@ -15,6 +15,8 @@ dependencies {
     implementation(project(":spigot:spigot-1-8"))
     implementation(project(":spigot:spigot-1-20"))
     implementation(project(":commands:spigot-platform"))
+    implementation(project(":state:spigot-platform"))
+    implementation(project(":scoreboard:spigot-platform"))
 
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")

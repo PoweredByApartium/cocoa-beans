@@ -12,7 +12,6 @@ package net.apartium.cocoabeans.spigot;
 
 import net.apartium.cocoabeans.spigot.inventory.ItemFactory;
 import net.apartium.cocoabeans.spigot.inventory.ItemUtilsHelpers;
-import net.apartium.cocoabeans.spigot.scoreboard.SpigotCocoaBoardFactory;
 import net.apartium.cocoabeans.spigot.visibility.PlayerVisibilityController;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.enchantments.Enchantment;
@@ -37,15 +36,6 @@ public class VersionedImplInstantiator {
         return switch (minecraftVersion.update()) {
             case 8 -> constructItemFactory("inventory.ItemFactory_1_8_R1");
             default -> constructItemFactory("inventory.ItemFactory_1_20_R1");
-        };
-    }
-
-
-    public static SpigotCocoaBoardFactory createCocoaBoardFactory() {
-        MinecraftVersion minecraftVersion = ServerUtils.getVersion();
-        return switch (minecraftVersion.update()) {
-            case 8 -> constructCocoaBoardFactory("scoreboard.CocoaBoardFactory_1_8_R1");
-            default -> constructCocoaBoardFactory("scoreboard.CocoaBoardFactory_1_20_R1");
         };
     }
 
@@ -84,10 +74,6 @@ public class VersionedImplInstantiator {
 
     private static PlayerVisibilityController constructPlayerVisibilityController(String clazz) {
         return construct(clazz, PlayerVisibilityController.class);
-    }
-
-    private static SpigotCocoaBoardFactory constructCocoaBoardFactory(String clazz) {
-        return construct(clazz, SpigotCocoaBoardFactory.class);
     }
 
     /* package-private */ static <T> T construct(String name, Class<T> type) {
