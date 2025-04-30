@@ -69,9 +69,9 @@ public class SpigotProvidedState {
     }
 
     private Set<Player> getOnlinePlayers() {
-        Set<Player> onlinePlayers = Collections.newSetFromMap(new WeakHashMap<>());
-        onlinePlayers.addAll(Bukkit.getOnlinePlayers());
-        return onlinePlayers;
+        Set<Player> players = Collections.newSetFromMap(new WeakHashMap<>());
+        players.addAll(Bukkit.getOnlinePlayers());
+        return players;
     }
 
     public Observable<Set<Player>> getOnlinePlayersObservable() {

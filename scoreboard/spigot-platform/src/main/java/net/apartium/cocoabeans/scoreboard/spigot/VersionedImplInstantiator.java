@@ -8,6 +8,8 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
  */
 /* package-private */ class VersionedImplInstantiator {
 
+    private VersionedImplInstantiator() {}
+
     public static SpigotCocoaBoardFactory createCocoaBoardFactory() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
         return switch (minecraftVersion.update()) {
