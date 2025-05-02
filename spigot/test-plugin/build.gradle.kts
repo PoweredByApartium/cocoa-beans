@@ -14,9 +14,9 @@ dependencies {
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
     implementation(project(":spigot:spigot-1-20"))
-    implementation(project(":commands:spigot-platform"))
-    implementation(project(":state:spigot-platform"))
-    implementation(project(":scoreboard:spigot-platform"))
+    implementation(project(":commands:commands-spigot"))
+    implementation(project(":state:state-spigot"))
+    implementation(project(":scoreboard:scoreboard-spigot"))
 }
 
 tasks {

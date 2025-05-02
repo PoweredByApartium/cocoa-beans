@@ -1,0 +1,2 @@
+[libraries]
+mock-bukkit = { group = "com.github.seeseemelk", name = "MockBukkit-v1.20", version = "3.9.0" }

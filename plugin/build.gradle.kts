@@ -14,13 +14,13 @@ dependencies {
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
     implementation(project(":spigot:spigot-1-20"))
-    implementation(project(":commands:spigot-platform"))
-    implementation(project(":state:spigot-platform"))
-    implementation(project(":scoreboard:spigot-platform"))
+    implementation(project(":commands:commands-spigot"))
+    implementation(project(":state:state-spigot"))
+    implementation(project(":scoreboard:scoreboard-spigot"))
 
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")
+    testImplementation(libs.mock.bukkit)
 
 }
 

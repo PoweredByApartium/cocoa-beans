@@ -3,7 +3,7 @@ plugins {
     id("apartium-maven-publish")
 }
 
-group = parent!!.project.group
+group = parent!!.group
 version = parent!!.project.version
 
 dependencies {

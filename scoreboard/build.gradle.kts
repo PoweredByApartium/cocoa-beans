@@ -2,7 +2,7 @@ plugins {
     id("apartium-maven-publish")
 }
 
-group = "net.apartium.cocoa-beans"
+group = parent!!.group
 version = parent!!.version
 
 dependencies {

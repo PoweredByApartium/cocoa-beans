@@ -9,6 +9,7 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
+    id("idea")
     jacoco
 }
 

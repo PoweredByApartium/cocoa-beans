@@ -11,10 +11,10 @@ dependencies {
     compileOnly(project(":spigot"))
     compileOnly(project(":state"))
     compileOnly(project(":scoreboard"))
-    compileOnly(project(":scoreboard:spigot-platform"))
+    compileOnly(project(":scoreboard:scoreboard-spigot"))
 
     testImplementation(project(":spigot"))
     testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:${project.findProperty("versions.mock")}")
+    testImplementation(libs.mock.bukkit)
 }

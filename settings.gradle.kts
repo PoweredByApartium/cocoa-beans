@@ -18,12 +18,20 @@ include("plugin")
 include("spigot:spigot-1-8")
 include("spigot:spigot-1-20")
 include("commands")
-include("commands:spigot-platform")
+include("commands:spigot")
 include("code-coverage-report")
 include("scoreboard")
 include("minestom")
 include("state")
-include("state:spigot-platform")
-include("scoreboard:spigot-platform")
-include("scoreboard:minestom-platform")
+include("state:spigot")
+include("scoreboard:spigot")
+include("scoreboard:minestom")
 include("spigot:test-plugin")
+
+for (project in rootProject.children) {
+    for (subproject in project.children) {
+        if (!subproject.name.startsWith(project.name)) {
+            subproject.name = "${project.name}-${subproject.name}"
+        }
+    }
+}

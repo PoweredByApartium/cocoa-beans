@@ -10,7 +10,7 @@ dependencies {
     compileOnly(project(":spigot"))
     compileOnly(project(":state"))
     compileOnly(project(":scoreboard"))
-    compileOnly(project(":scoreboard:spigot-platform"))
+    compileOnly(project(":scoreboard:scoreboard-spigot"))
     compileOnly("net.kyori:adventure-api:${project.findProperty("versions.adventure")}")
     compileOnly("net.kyori:adventure-text-serializer-legacy:${project.findProperty("versions.adventure")}")
 }
