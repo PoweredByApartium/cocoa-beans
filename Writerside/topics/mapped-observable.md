@@ -9,7 +9,7 @@ Mapped observable is a reactive transformation layer, apply a transformation fun
 This is the core of reactive mapping: taking one observable and transforming it into another value that updates automatically.
 
 ## Usage
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="mapped"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="mapped"/>
 
 ## Advantages
 - 📝 **Mapped state**: Ideal for mapping object into another object dynamically 

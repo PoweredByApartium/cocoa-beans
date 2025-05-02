@@ -11,7 +11,7 @@ It never becomes dirty and does not trigger re-computation or notify observers.
 This makes it ideal for constant values within a reactive system, naturally bridging the gap between the two.
 
 ## Usage
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="immutable"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="immutable"/>
 
 You can also use immutable observables as part of [mapped](mapped-observable.md) or [compound](compound-observable.md) observables to combine constants with dynamic values.
 

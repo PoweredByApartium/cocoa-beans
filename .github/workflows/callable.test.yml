@@ -37,11 +37,19 @@ jobs:
                 commands-spigot
                 common
                 spigot
+                state
+                state-spigot
+                scoreboard
+                minestom
            report_paths: |
                 **/commands/build/test-results/test/TEST-*.xml
                 **/commands/spigot-platform/build/test-results/test/TEST-*.xml
                 **/common/build/test-results/test/TEST-*.xml
                 **/spigot/build/test-results/test/TEST-*.xml
+                **/state/build/test-results/test/TEST-*.xml
+                **/state/spigot-platform/build/test-results/test/TEST-*.xml
+                **/scoreboard/build/test-results/test/TEST-*.xml
+                **/minestom/build/test-results/test/TEST-*.xml
 
         - name: Publish Test Report
           uses: test-summary/action@v2
@@ -52,3 +60,7 @@ jobs:
               **/commands/spigot-platform/build/test-results/test/TEST-*.xml
               **/common/build/test-results/test/TEST-*.xml
               **/spigot/build/test-results/test/TEST-*.xml
+              **/state/build/test-results/test/TEST-*.xml
+              **/state/spigot-platform/build/test-results/test/TEST-*.xml
+              **/scoreboard/build/test-results/test/TEST-*.xml
+              **/minestom/build/test-results/test/TEST-*.xml
