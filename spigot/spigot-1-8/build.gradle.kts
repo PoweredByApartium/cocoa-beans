@@ -5,12 +5,13 @@ plugins {
 
 group = parent!!.group
 version = parent!!.version
+
 dependencies {
-    compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:${project.findProperty("versions.panda.spigot")}")
+    compileOnly(libs.panda)
     compileOnly(project(":spigot"))
     compileOnly(project(":state"))
     compileOnly(project(":scoreboard"))
     compileOnly(project(":scoreboard:scoreboard-spigot"))
-    compileOnly("net.kyori:adventure-api:${project.findProperty("versions.adventure")}")
-    compileOnly("net.kyori:adventure-text-serializer-legacy:${project.findProperty("versions.adventure")}")
+    compileOnly(libs.adventure)
+    compileOnly(libs.adventure.legacy)
 }

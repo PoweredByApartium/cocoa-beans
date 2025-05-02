@@ -7,14 +7,14 @@ group = parent!!.group
 version = parent!!.version
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper.1.20")}")
+    compileOnly(libs.paper)
     compileOnly(project(":spigot"))
     compileOnly(project(":state"))
     compileOnly(project(":scoreboard"))
     compileOnly(project(":scoreboard:scoreboard-spigot"))
 
     testImplementation(project(":spigot"))
-    testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
+
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.mock.bukkit)
 }

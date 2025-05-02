@@ -8,12 +8,13 @@ version = parent!!.version
 
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
-    compileOnly("com.mojang:authlib:${project.findProperty("versions.monjang.authlib")}")
+    compileOnly(libs.paper)
+    compileOnly(libs.authlib)
     compileOnly(project(":commands"))
     api(project(":common"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation(libs.mock.bukkit)
 }

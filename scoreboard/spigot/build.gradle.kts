@@ -10,5 +10,5 @@ dependencies {
     api(project(":common"))
     api(project(":spigot"))
 
-    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
+    compileOnly(libs.paper)
 }

@@ -19,5 +19,5 @@ dependencies {
     api(project(":minestom"))
     api(project(":scoreboard"))
 
-    compileOnly("net.minestom:minestom-snapshots:${project.findProperty("versions.minestom")}")
+    compileOnly(libs.minestom)
 }

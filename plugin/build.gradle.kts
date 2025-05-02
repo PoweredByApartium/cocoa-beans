@@ -9,7 +9,7 @@ group = "net.apartium.cocoa-beans"
 version = parent!!.version
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:${project.findProperty("versions.spigot")}")
+    compileOnly(libs.spigot)
 
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
@@ -18,7 +18,7 @@ dependencies {
     implementation(project(":state:state-spigot"))
     implementation(project(":scoreboard:scoreboard-spigot"))
 
-    testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
+
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.mock.bukkit)
 

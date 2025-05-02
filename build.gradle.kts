@@ -56,21 +56,26 @@ allprojects {
 
     }
 
-    repositories {
-        maven {
-            name = "ApartiumNexus"
-            url = uri("https://nexus.apartium.net/repository/maven-public")
-        }
-    }
-
     dependencies {
-        compileOnlyApi("com.fasterxml.jackson.core:jackson-annotations:${findProperty("versions.jackson.annotations")}")
-        compileOnly("org.jetbrains:annotations:${findProperty("versions.jetbrains.annotations")}")
+        compileOnly(rootProject.libs.jackson.annotations)
+
+        compileOnly(rootProject.libs.jetbrains.annotations)
+        testCompileOnly(rootProject.libs.jetbrains.annotations)
+
+        testImplementation(platform(rootProject.libs.junit.bom))
+
     }
 
     tasks {
         test {
             useJUnitPlatform()
+        }
+    }
+
+    repositories {
+        maven {
+            name = "ApartiumNexus"
+            url = uri("https://nexus.apartium.net/repository/maven-public")
         }
     }
 

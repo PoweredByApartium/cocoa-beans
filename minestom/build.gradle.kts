@@ -16,5 +16,5 @@ java {
 }
 
 dependencies {
-    compileOnly("net.minestom:minestom-snapshots:${project.findProperty("versions.minestom")}")
+    compileOnly(libs.minestom)
 }

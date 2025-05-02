@@ -9,7 +9,7 @@ group = parent!!.group
 version = parent!!.version
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:${project.findProperty("versions.paper")}")
+    compileOnly(libs.paper)
 
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
