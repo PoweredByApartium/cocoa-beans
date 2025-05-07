@@ -48,7 +48,7 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
      * @param ignoreCase whether is it case-sensitive or not
      * @param lax lazy mapping
      */
-    public ContextualMapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase, boolean lax) {
+    protected ContextualMapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase, boolean lax) {
         super(keyword, clazz, priority);
 
         this.ignoreCase = ignoreCase;
@@ -78,10 +78,7 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
             sb.append(convertBaseOnIgnoreCase(args.get(i)));
 
             T value = map.get(sb.toString());
-            if (value == null) {
-                if (!lax)
-                    continue;
-
+            if (value == null && lax) {
                 LaxResult<T> result = getLax(commandProcessingContext, sb.toString());
                 if (result == null)
                     continue;
