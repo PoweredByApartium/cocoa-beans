@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.commands.parsers.exception;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.ContextualMapBasedParser;
-import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

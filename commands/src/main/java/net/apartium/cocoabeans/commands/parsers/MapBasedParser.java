@@ -1,11 +1,10 @@
 package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
 import net.apartium.cocoabeans.commands.parsers.exception.NoSuchElementInMapResponse;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Map-based parser that map of keyword to value
@@ -23,7 +22,7 @@ public abstract class MapBasedParser<T> extends ContextualMapBasedParser<T> {
      * @param clazz result class
      * @param priority priority
      */
-    public MapBasedParser(String keyword, Class<T> clazz, int priority) {
+    protected MapBasedParser(String keyword, Class<T> clazz, int priority) {
         this(keyword, clazz, priority, false);
     }
 
@@ -35,7 +34,7 @@ public abstract class MapBasedParser<T> extends ContextualMapBasedParser<T> {
      * @param ignoreCase whether is it case-sensitive or not
      */
     @ApiStatus.AvailableSince("0.0.30")
-    public MapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase) {
+    protected MapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase) {
         this(keyword, clazz, priority, ignoreCase, false);
     }
 
@@ -48,7 +47,7 @@ public abstract class MapBasedParser<T> extends ContextualMapBasedParser<T> {
      * @param lax lazy mapping
      */
     @ApiStatus.AvailableSince("0.0.30")
-    public MapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase, boolean lax) {
+    protected MapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase, boolean lax) {
         super(keyword, clazz, priority, ignoreCase, lax);
     }
 

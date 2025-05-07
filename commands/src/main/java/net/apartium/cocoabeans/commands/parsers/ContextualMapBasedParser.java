@@ -25,7 +25,7 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
      * @param clazz result class
      * @param priority priority
      */
-    public ContextualMapBasedParser(String keyword, Class<T> clazz, int priority) {
+    protected ContextualMapBasedParser(String keyword, Class<T> clazz, int priority) {
         this(keyword, clazz, priority, false);
     }
 
@@ -36,7 +36,7 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
      * @param priority priority
      * @param ignoreCase whether is it case-sensitive or not
      */
-    public ContextualMapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase) {
+    protected ContextualMapBasedParser(String keyword, Class<T> clazz, int priority, boolean ignoreCase) {
         this(keyword, clazz, priority, ignoreCase, false);
     }
 
@@ -68,25 +68,21 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
         int index = commandProcessingContext.index();
 
         Map<String, T> map = getMap(commandProcessingContext);
-        String s = "";
+        StringBuilder sb = new StringBuilder();
 
         boolean ambiguous = false;
         for (int i = index; i < args.size(); i++) {
             if (i != index)
-                s += " ";
+                sb.append(" ");
 
-            s += args.get(index);
+            sb.append(convertBaseOnIgnoreCase(args.get(i)));
 
-            if (ignoreCase)
-                s = s.toLowerCase();
-
-
-            T value = map.get(s);
+            T value = map.get(sb.toString());
             if (value == null) {
                 if (!lax)
                     continue;
 
-                LaxResult<T> result = getLax(commandProcessingContext, s);
+                LaxResult<T> result = getLax(commandProcessingContext, sb.toString());
                 if (result == null)
                     continue;
 
@@ -109,12 +105,18 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
 
         commandProcessingContext.report(
                 this,
-                new NoSuchElementInMapResponse(commandProcessingContext, this, "No such element in map", s)
+                new NoSuchElementInMapResponse(commandProcessingContext, this, "No such element in map", sb.toString())
         );
 
         return Optional.empty();
     }
 
+    private String convertBaseOnIgnoreCase(String s) {
+        if (ignoreCase)
+            return s.toLowerCase();
+
+        return s;
+    }
 
     private record LaxResult<T>(T value, boolean hasAmbiguous) {
 
