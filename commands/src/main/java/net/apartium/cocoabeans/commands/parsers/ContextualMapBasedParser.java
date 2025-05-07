@@ -78,7 +78,10 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
             sb.append(convertBaseOnIgnoreCase(args.get(i)));
 
             T value = map.get(sb.toString());
-            if (value == null && lax) {
+            if (value == null) {
+                if (!lax)
+                    continue;
+
                 LaxResult<T> result = getLax(commandProcessingContext, sb.toString());
                 if (result == null)
                     continue;
