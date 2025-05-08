@@ -150,7 +150,9 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
                     new AmbiguousMappedKeyResponse(
                             context,
                             this,
-                            "Did you mean " + dupeKeys.get(0) + "?",
+                            "Ambiguous mapping. Did you mean one of: "
+                                    + String.join(", ", dupeKeys.subList(0, Math.min(3, dupeKeys.size())))
+                                    + (dupeKeys.size() > 3 ? "... (" + dupeKeys.size() + " options)" : "?"),
                             dupeKeys
                     )
             );
@@ -191,7 +193,7 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
 
         return Optional.of(new TabCompletionResult(
                 result,
-                index + 1
+                args.size()
         ));
 
     }
