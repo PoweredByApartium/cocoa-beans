@@ -1,12 +1,14 @@
 package net.apartium.cocoabeans.commands.parsers.exception;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import net.apartium.cocoabeans.commands.parsers.ContextualMapBasedParser;
 import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Represents a response that is reported via a parser when a mapped key is not found
  * @see net.apartium.cocoabeans.commands.parsers.MapBasedParser
+ * @see net.apartium.cocoabeans.commands.parsers.ContextualMapBasedParser
  * @see net.apartium.cocoabeans.commands.parsers.SourceParser
  */
 @ApiStatus.AvailableSince("0.0.39")
@@ -22,7 +24,7 @@ public class NoSuchElementInMapResponse extends InvalidParserResponse {
      * @param message error message
      * @param attempted attempted key
      */
-    public NoSuchElementInMapResponse(CommandProcessingContext context, MapBasedParser<?> parser, String message, String attempted) {
+    public NoSuchElementInMapResponse(CommandProcessingContext context, ContextualMapBasedParser<?> parser, String message, String attempted) {
         super(context, parser, message);
 
         this.attempted = attempted;

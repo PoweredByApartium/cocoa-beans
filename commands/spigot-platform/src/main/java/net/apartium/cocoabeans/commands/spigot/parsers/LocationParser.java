@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
+import net.apartium.cocoabeans.commands.EvaluationContext;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
@@ -20,18 +21,17 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
+
 public class LocationParser extends WrappedArgumentParser<Location> {
 
     public static final String DEFAULT_KEYWORD = "location";
 
-    private static LocationParserImpl getImpl() {
-        if (impl == null)
-            impl = new LocationParserImpl(DEFAULT_KEYWORD, 0);
+    private static final LocationParserImpl defaultImplementation = new LocationParserImpl(DEFAULT_KEYWORD, 0);
 
-        return impl;
+    public LocationParser(int priority, String keyword, Map<String, ArgumentParser<?>> argumentTypeHandlerMap) {
+        super(new LocationParserImpl(keyword, priority, argumentTypeHandlerMap), priority, keyword);
     }
-
-    private static LocationParserImpl impl = getImpl();
 
     /**
      * Creates a new LocationParser
@@ -39,7 +39,7 @@ public class LocationParser extends WrappedArgumentParser<Location> {
      * @param keyword keyword to be used
      */
     public LocationParser(int priority, String keyword) {
-        super(impl, priority, keyword);
+        super(defaultImplementation, priority, keyword);
     }
 
     /**
@@ -50,14 +50,23 @@ public class LocationParser extends WrappedArgumentParser<Location> {
         this(priority, DEFAULT_KEYWORD);
     }
 
-    @WithParser(DoubleParser.class)
-    @WithParser(FloatParser.class)
-    @WithParser(WorldParser.class)
     @ApiStatus.AvailableSince("0.0.38")
     private static class LocationParserImpl extends CompoundParser<Location> {
 
         public LocationParserImpl(String keyword, int priority) {
-            super(keyword, Location.class, priority, new SpigotArgumentMapper(), new SimpleCommandLexer());
+            this(
+                    keyword,
+                    priority,
+                    Map.of(
+                            "double", new DoubleParser(0),
+                            "float", new FloatParser(0),
+                            "world", new WorldParser(0)
+                    )
+            );
+        }
+
+        public LocationParserImpl(String keyword, int priority, Map<String, ArgumentParser<?>> argumentTypeHandlerMap) {
+            super(keyword, Location.class, priority, new EvaluationContext(new SimpleCommandLexer(), new SpigotArgumentMapper(), Map.of(), argumentTypeHandlerMap));
         }
 
         @ParserVariant("<world> <double> <double> <double>")
