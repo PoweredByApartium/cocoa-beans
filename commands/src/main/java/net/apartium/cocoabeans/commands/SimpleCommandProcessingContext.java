@@ -17,6 +17,7 @@ import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,6 +47,20 @@ public class SimpleCommandProcessingContext implements CommandProcessingContext 
     public SimpleCommandProcessingContext(@NotNull Sender sender, String label, String[] args, int index) {
         this.sender = sender;
         this.args = List.of(args);
+        this.index = index;
+        this.label = label;
+    }
+
+    /**
+     * Create a simple command processing context
+     * @param sender sender
+     * @param label label (command name)
+     * @param args args
+     * @param index current index
+     */
+    public SimpleCommandProcessingContext(@NotNull Sender sender, String label, List<String> args, int index) {
+        this.sender = sender;
+        this.args = Collections.unmodifiableList(args);
         this.index = index;
         this.label = label;
     }
