@@ -14,14 +14,14 @@ Consider using ()[collection-observable.md] instead.
 
 ## Usage - The fast approach
 
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="compound"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="compound"/>
 
 ## Usage - Prettier compounds
 
 The default implementations of compound observables support compounding 1 up to 10 observables.
 You can support more arguments in the following way:
 
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="customCompound"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="customCompound"/>
 
 ## Use Cases
 - Aggregating values from several observables into one.

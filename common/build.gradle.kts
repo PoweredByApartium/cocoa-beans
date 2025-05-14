@@ -2,13 +2,13 @@ plugins {
     id("apartium-maven-publish")
 }
 
-group = "net.apartium.cocoa-beans"
+group = parent!!.group
 version = parent!!.version
 
 dependencies {
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:${project.findProperty("versions.jackson.annotations")}")
-    testImplementation("commons-codec:commons-codec:${project.findProperty("versions.apache.commons-codec")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.findProperty("versions.junit")}")
-    testCompileOnly("org.jetbrains:annotations:${project.findProperty("versions.jetbrains.annotations")}")
+
+    testImplementation(libs.jackson.databind)
+    testImplementation(libs.commons.codec)
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
