@@ -38,7 +38,6 @@ jobs:
                 common
                 spigot
                 state
-                state-spigot
                 scoreboard
                 minestom
            report_paths: |
