@@ -11,7 +11,11 @@ dependencies {
 
     compileOnly(libs.paper)
 
-
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation(libs.mock.bukkit)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

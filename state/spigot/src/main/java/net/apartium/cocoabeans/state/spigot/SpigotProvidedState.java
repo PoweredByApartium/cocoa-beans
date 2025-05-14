@@ -37,11 +37,10 @@ public class SpigotProvidedState {
         this.currentTick = Observable.mutable(Bukkit.getCurrentTick());
 
         playerQuitListener = new PlayerQuitListener(onlinePlayers);
-        Bukkit.getPluginManager().registerEvents(playerQuitListener, plugin);
-
         playerJoinListener = new PlayerJoinListener(onlinePlayers);
-        Bukkit.getPluginManager().registerEvents(playerJoinListener, plugin);
 
+        Bukkit.getPluginManager().registerEvents(playerQuitListener, plugin);
+        Bukkit.getPluginManager().registerEvents(playerJoinListener, plugin);
     }
 
     public void heartbeat() {
