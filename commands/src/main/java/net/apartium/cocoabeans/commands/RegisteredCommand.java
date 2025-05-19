@@ -26,6 +26,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARIANT_COMPARATOR;
@@ -35,14 +36,16 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     private static final Comparator<HandleExceptionVariant> HANDLE_EXCEPTION_VARIANT_COMPARATOR = (a, b) -> Integer.compare(b.priority(), a.priority());
 
     public record RegisteredCommandNode(CommandNode listener, RequirementSet requirements) {}
+    public record VirtualCommandNode(VirtualCommand command, Function<CommandContext, Boolean> callback) {}
 
     private final CommandManager commandManager;
 
     private final List<RegisteredCommandNode> commands = new ArrayList<>();
+    private final List<VirtualCommandNode> virtualNodes = new ArrayList<>();
+
     private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
     private final CommandInfo commandInfo = new CommandInfo();
-
 
     RegisteredCommand(CommandManager commandManager) {
         this.commandManager = commandManager;
@@ -128,6 +131,61 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         }
 
+    }
+
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback) {
+        commandInfo.fromCommandInfo(virtualCommand.info());
+
+        this.virtualNodes.add(new VirtualCommandNode(virtualCommand, callback));
+
+        List<Requirement> classRequirementsResult = new ArrayList<>();
+        final CommandOption virtualOption = createCommandOption(
+                new RequirementSet(virtualCommand.requirements()),
+                this.commandBranchProcessor,
+                classRequirementsResult
+        );
+
+        List<RegisterArgumentParser<?>> parsersResult = new ArrayList<>();
+        for (CommandVariant variant : virtualCommand.variants()) {
+            List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant().value());
+
+            CommandOption currentOption = virtualOption;
+            for (int i = 0; i < tokens.size(); i++) {
+                CommandToken token = tokens.get(i);
+                RequirementSet requirements = resolveRequirementsForBranch(
+                        i,
+                        new RequirementSet(
+                                variant.requirements(),
+                                virtualCommand.requirements()
+                        )
+                );
+
+                if (token instanceof KeywordToken keywordToken) {
+                    currentOption = createKeywordOption(
+                            currentOption,
+                            variant.variant(),
+                            keywordToken,
+                            requirements,
+                            classRequirementsResult
+                    );
+                    continue;
+                }
+
+                if (token instanceof ArgumentParserToken argumentParserToken) {
+                    currentOption = createArgumentOption(
+                            currentOption,
+                            argumentParserToken,
+                            commandManager.argumentTypeHandlerMap,
+                            requirements,
+                            parsersResult,
+                            classRequirementsResult
+                    );
+                    continue;
+                }
+
+                throw new UnknownTokenException(token);
+            }
+        }
     }
 
     private void serializeExceptionHandles(Method method, CommandNode node, MethodHandles.Lookup publicLookup) throws IllegalAccessException {
@@ -436,6 +494,10 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     public List<RegisteredCommandNode> getCommands() {
         return commands;
+    }
+
+    public List<VirtualCommandNode> getVirtualNodes() {
+        return virtualNodes;
     }
 
     public CommandBranchProcessor getCommandBranchProcessor() {
