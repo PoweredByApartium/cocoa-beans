@@ -6,6 +6,7 @@ import java.util.Set;
 
 public record CommandVariant(
         Set<Requirement> requirements, // Change to requirement as more simple type
+        CommandInfo info,
         SubCommand variant
 ) {
 

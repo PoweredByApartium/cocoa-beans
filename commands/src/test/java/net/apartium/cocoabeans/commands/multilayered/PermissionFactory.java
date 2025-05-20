@@ -5,6 +5,8 @@ import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.TestSender;
 import net.apartium.cocoabeans.commands.requirements.*;
 
+import java.util.Objects;
+
 public class PermissionFactory implements RequirementFactory {
 
 
@@ -20,7 +22,7 @@ public class PermissionFactory implements RequirementFactory {
         return null;
     }
 
-    private static class PermissionImpl implements Requirement {
+    public static class PermissionImpl implements Requirement {
 
         private final Permission permission;
         private final String value;
@@ -49,6 +51,18 @@ public class PermissionFactory implements RequirementFactory {
 
             return RequirementResult.meet();
 
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            PermissionImpl that = (PermissionImpl) o;
+            return Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
         }
 
         private class UnmetPermissionResponse extends UnmetRequirementResponse {

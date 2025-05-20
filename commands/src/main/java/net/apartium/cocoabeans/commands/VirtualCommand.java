@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
+ * Virtual Command is a simple way to represent command while having the implementation else where
  * @param requirements Change to requirement as more simple type
  */
 @ApiStatus.AvailableSince("0.0.39")
@@ -27,12 +28,19 @@ public record VirtualCommand(String name, Set<String> aliases, CommandInfo info,
     /**
      * Create virtual command from command node
      * @param node the node to create as virtual command
-     * @return new virtual command
+     * @return new virtual command base on node
      */
     public static VirtualCommand create(CommandNode node) {
         return create(node, new HashMap<>(), new HashMap<>());
     }
 
+    /**
+     * Create virtual command from command node
+     * @param node the node to create as virtual command
+     * @param requirementFactories caching of the requirement factory creation
+     * @param externalRequirementFactories external requirement factories that will be used instead of the normal one
+     * @return new virtual command base on node
+     */
     public static VirtualCommand create(CommandNode node, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
         Class<? extends CommandNode> clazz = node.getClass();
         Command command = clazz.getAnnotation(Command.class);
@@ -63,10 +71,16 @@ public record VirtualCommand(String name, Set<String> aliases, CommandInfo info,
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             Set<Requirement> methodRequirement = findAllRequirements(node, method, requirementFactories, externalRequirementFactories);
+            CommandInfo info = new CommandInfo();
+
+            info.fromAnnotations(method.getAnnotations(), true);
+            for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method))
+                info.fromAnnotations(targetMethod.getAnnotations(), false);
 
             for (SubCommand subCommand : subCommands)
                 variants.add(new CommandVariant(
                         methodRequirement,
+                        info,
                         subCommand
                 ));
 
@@ -75,6 +89,7 @@ public record VirtualCommand(String name, Set<String> aliases, CommandInfo info,
                 for (SubCommand subCommand : subCommands)
                     variants.add(new CommandVariant(
                             methodRequirement,
+                            info,
                             subCommand
                     ));
             }
