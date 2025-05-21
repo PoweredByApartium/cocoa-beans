@@ -140,7 +140,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         List<Requirement> classRequirementsResult = new ArrayList<>();
         final CommandOption virtualOption = createCommandOption(
-                new RequirementSet(virtualCommand.requirements()),
+                new RequirementSet(RequirementOption.getRequirements(virtualCommand.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories())),
                 this.commandBranchProcessor,
                 classRequirementsResult
         );
@@ -155,8 +155,8 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 RequirementSet requirements = resolveRequirementsForBranch(
                         i,
                         new RequirementSet(
-                                variant.requirements(),
-                                virtualCommand.requirements()
+                                RequirementOption.getRequirements(variant.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories()),
+                                RequirementOption.getRequirements(virtualCommand.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories())
                         )
                 );
 

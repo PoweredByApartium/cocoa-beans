@@ -1,11 +1,14 @@
 package net.apartium.cocoabeans.commands.virtual;
 
 import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.multilayered.Permission;
 import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
+import net.apartium.cocoabeans.commands.requirements.RequirementOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +29,7 @@ class SimpleVirtualTest {
 
         assertEquals("A simple description", virtualCommand.info().getDescriptions().get(0).value());
 
-        assertEquals(Set.of(new PermissionFactory.PermissionImpl(null, "meow")), virtualCommand.requirements());
+        assertEquals(Set.of(new RequirementOption(Permission.class.getName(), Map.of("value", "meow"))), virtualCommand.requirements());
 
         assertEquals(3, virtualCommand.variants().size());
 
@@ -71,7 +74,7 @@ class SimpleVirtualTest {
         assertEquals("clear", clearVariant.variant().value());
         // string variant
         assertEquals(
-                Set.of(new PermissionFactory.PermissionImpl(null, "my.permission")),
+                Set.of(new RequirementOption(Permission.class.getName(), Map.of("value","my.permission"))),
                 stringVariant.requirements()
         );
 

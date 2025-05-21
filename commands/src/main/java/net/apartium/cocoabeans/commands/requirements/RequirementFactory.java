@@ -48,7 +48,7 @@ public interface RequirementFactory {
     }
 
     @ApiStatus.Internal
-    private static Requirement getRequirement(GenericNode node, Annotation annotation, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
+    public static Requirement getRequirement(GenericNode node, Annotation annotation, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
         RequirementFactory requirementFactory = externalRequirementFactories.get(annotation.annotationType());
 
         if (requirementFactory != null)
