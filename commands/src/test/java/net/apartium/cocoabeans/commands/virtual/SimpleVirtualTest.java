@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.commands.virtual;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.multilayered.Permission;
 import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
@@ -97,6 +99,20 @@ class SimpleVirtualTest {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
         });
+    }
+
+    @Test
+    void jacksonTestVirtualCommand() {
+        SimpleCommand simpleCommand = new SimpleCommand();
+        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            System.out.println(objectMapper.writeValueAsString(virtualCommand));
+        } catch (JsonProcessingException e) {
+            System.out.println("oh no: ");
+            e.printStackTrace();
+        }
     }
 
     @Test

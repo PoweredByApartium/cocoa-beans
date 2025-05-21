@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
 import net.apartium.cocoabeans.commands.requirements.RequirementOption;
 import net.apartium.cocoabeans.reflect.ClassUtils;
