@@ -13,7 +13,7 @@ package net.apartium.cocoabeans.spigot;
 import net.apartium.cocoabeans.state.spigot.SpigotProvidedState;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CocoaBeansSpigotLoader extends JavaPlugin {
+public class TestCocoaBeansSpigotLoader extends JavaPlugin {
 
     private SpigotProvidedState spigotProvidedState;
 
