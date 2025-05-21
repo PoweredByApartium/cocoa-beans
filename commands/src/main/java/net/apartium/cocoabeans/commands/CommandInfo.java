@@ -11,19 +11,19 @@ import java.util.Optional;
 @ApiStatus.AvailableSince("0.0.30")
 public class CommandInfo {
 
-    private final List<Description> descriptions = new ArrayList<>();
-    private final List<Usage> usages = new ArrayList<>();
-    private final List<LongDescription> longDescriptions = new ArrayList<>();
+    private final List<String> descriptions = new ArrayList<>();
+    private final List<String> usages = new ArrayList<>();
+    private final List<String[]> longDescriptions = new ArrayList<>();
 
-    private Description description;
-    private Usage usage;
-    private LongDescription longDescription;
+    private String description;
+    private String usage;
+    private String[] longDescription;
 
     /**
      * Get the first description
      * @return the first description
      */
-    public Optional<Description> getDescription() {
+    public Optional<String> getDescription() {
         if (descriptions.isEmpty())
             return Optional.empty();
 
@@ -37,7 +37,7 @@ public class CommandInfo {
      * Get the first usage
      * @return the first usage
      */
-    public Optional<Usage> getUsage() {
+    public Optional<String> getUsage() {
         if (usages.isEmpty())
             return Optional.empty();
 
@@ -51,7 +51,7 @@ public class CommandInfo {
      * Get the first long description
      * @return the first long description
      */
-    public Optional<LongDescription> getLongDescription() {
+    public Optional<String[]> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
 
@@ -65,7 +65,7 @@ public class CommandInfo {
      * Get all descriptions
      * @return all descriptions
      */
-    public List<Description> getDescriptions() {
+    public List<String> getDescriptions() {
         return Collections.unmodifiableList(descriptions);
     }
 
@@ -73,7 +73,7 @@ public class CommandInfo {
      * Get all usages
      * @return all usages
      */
-    public List<Usage> getUsages() {
+    public List<String> getUsages() {
         return Collections.unmodifiableList(usages);
     }
 
@@ -81,35 +81,35 @@ public class CommandInfo {
      * Get all long descriptions
      * @return all long descriptions
      */
-    public List<LongDescription> getLongDescriptions() {
+    public List<String[]> getLongDescriptions() {
         return Collections.unmodifiableList(longDescriptions);
     }
 
     /* package-private */ void addDescription(final Description description, boolean first) {
         if (first) {
-            descriptions.add(0, description);
+            descriptions.add(0, description.value());
             return;
         }
 
-        descriptions.add(description);
+        descriptions.add(description.value());
     }
 
     /* package-private */ void addUsage(final Usage usage, boolean first) {
         if (first) {
-            usages.add(0, usage);
+            usages.add(0, usage.value());
             return;
         }
 
-        usages.add(usage);
+        usages.add(usage.value());
     }
 
     /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
         if (first) {
-            longDescriptions.add(0, longDescription);
+            longDescriptions.add(0, longDescription.value());
             return;
         }
 
-        longDescriptions.add(longDescription);
+        longDescriptions.add(longDescription.value());
     }
 
     /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {

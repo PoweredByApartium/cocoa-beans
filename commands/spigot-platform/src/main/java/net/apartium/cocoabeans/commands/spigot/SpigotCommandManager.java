@@ -103,8 +103,8 @@ public class SpigotCommandManager extends CommandManager {
 
         org.bukkit.command.Command cmd = new org.bukkit.command.Command(
                 virtualCommand.name(),
-                virtualCommand.info().getDescription().map(Description::value).orElse(""),
-                virtualCommand.info().getUsage().map(Usage::value).orElse(""),
+                virtualCommand.info().getDescription().orElse(""),
+                virtualCommand.info().getUsage().orElse(""),
                 List.copyOf(virtualCommand.aliases())
         ) {
             @Override
@@ -134,9 +134,9 @@ public class SpigotCommandManager extends CommandManager {
 
         virtualCommand.requirements()
                 .stream()
-                .filter((p -> p.getClass().equals(PermissionFactory.PermissionImpl.class)))
-                .map(PermissionFactory.PermissionImpl.class::cast)
-                .map(PermissionFactory.PermissionImpl::permissionAsString)
+                .filter((option -> option.getClassName().equals(Permission.class.getName())))
+                .map(option -> option.getArguments().get("value"))
+                .map(String.class::cast)
                 .findAny()
                 .ifPresent(cmd::setPermission);
 

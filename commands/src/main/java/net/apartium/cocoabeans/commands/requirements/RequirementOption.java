@@ -28,6 +28,10 @@ public class RequirementOption {
         return className;
     }
 
+    public Map<String, Object> getArguments() {
+        return arguments;
+    }
+
     public Requirement createRequirement(GenericNode node, Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories, Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories) {
         try {
             return RequirementFactory.getRequirement(node, createAnnotation(), requirementFactories, externalRequirementFactories);

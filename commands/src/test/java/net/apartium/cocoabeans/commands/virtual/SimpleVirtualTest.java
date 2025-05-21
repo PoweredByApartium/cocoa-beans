@@ -27,7 +27,7 @@ class SimpleVirtualTest {
         assertTrue(virtualCommand.info().getUsage().isEmpty());
         assertEquals(1, virtualCommand.info().getDescriptions().size());
 
-        assertEquals("A simple description", virtualCommand.info().getDescriptions().get(0).value());
+        assertEquals("A simple description", virtualCommand.info().getDescriptions().get(0));
 
         assertEquals(Set.of(new RequirementOption(Permission.class.getName(), Map.of("value", "meow"))), virtualCommand.requirements());
 
@@ -67,7 +67,7 @@ class SimpleVirtualTest {
         assertEquals(Set.of(), clearVariant.requirements());
 
         assertEquals(1, clearVariant.info().getDescriptions().size());
-        assertEquals("Variant that clear stuff", clearVariant.info().getDescriptions().get(0).value());
+        assertEquals("Variant that clear stuff", clearVariant.info().getDescriptions().get(0));
         assertEquals(List.of(), clearVariant.info().getLongDescriptions());
         assertEquals(List.of(), clearVariant.info().getUsages());
 
