@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.Internal
 public class RequirementOption {
 
     private final String className;
@@ -64,14 +64,12 @@ public class RequirementOption {
     private static class AnnotationInvocationHandler implements InvocationHandler {
         private final Class<? extends Annotation> annotationType;
         private final Map<String, Object> values;
-        private final Map<String, Method> members = new HashMap<>();
 
         AnnotationInvocationHandler(Class<? extends Annotation> annotationType, Map<String, Object> values) {
             this.annotationType = annotationType;
             this.values = new HashMap<>(values);
 
             for (Method method : annotationType.getDeclaredMethods()) {
-                members.put(method.getName(), method);
                 if (!values.containsKey(method.getName()))
                     values.put(method.getName(), method.getDefaultValue());
             }
