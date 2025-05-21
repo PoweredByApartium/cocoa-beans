@@ -14,14 +14,14 @@ import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
+import net.apartium.cocoabeans.commands.spigot.requirements.factory.PermissionFactory;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * A command manager implementation for Spigot and Spigot-based platforms.
@@ -93,6 +93,52 @@ public class SpigotCommandManager extends CommandManager {
 
         Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class))
                 .map(Permission::value).ifPresent(cmd::setPermission);
+
+        Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
+    }
+
+    @Override
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback) {
+        super.addVirtualCommand(virtualCommand, callback);
+
+        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
+                virtualCommand.name(),
+                virtualCommand.info().getDescription().map(Description::value).orElse(""),
+                virtualCommand.info().getUsage().map(Usage::value).orElse(""),
+                List.copyOf(virtualCommand.aliases())
+        ) {
+            @Override
+            public boolean execute(CommandSender sender, String invoke, String[] args) {
+                {
+                    String[] split = invoke.split(":");
+                    invoke = split[1 % split.length];
+                }
+
+                try {
+                    return handle(new SpigotSender<>(sender), invoke, args);
+                } catch (Throwable e) {
+                    return false;
+                }
+            }
+
+            @Override
+            public @NotNull List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
+                {
+                    String[] split = invoke.split(":");
+                    invoke = split[1 % split.length];
+                }
+
+                return handleTabComplete(new SpigotSender<>(sender), invoke, args);
+            }
+        };
+
+        virtualCommand.requirements()
+                .stream()
+                .filter((p -> p.getClass().equals(PermissionFactory.PermissionImpl.class)))
+                .map(PermissionFactory.PermissionImpl.class::cast)
+                .map(PermissionFactory.PermissionImpl::permissionAsString)
+                .findAny()
+                .ifPresent(cmd::setPermission);
 
         Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
     }
