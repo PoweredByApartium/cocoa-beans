@@ -3,15 +3,16 @@ plugins {
     id("apartium-maven-publish")
 }
 
-group = parent!!.project.group
+group = parent!!.group
 version = parent!!.project.version
 
 dependencies {
-    api(project.project(":common"))
-    testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
+    api(project(":common"))
+
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
-    testFixturesCompileOnly("org.jetbrains:annotations:${findProperty("versions.jetbrains.annotations")}")
+    testFixturesCompileOnly(platform(libs.junit.bom))
+    testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api")
+    testFixturesCompileOnly(libs.jetbrains.annotations)
 
 }

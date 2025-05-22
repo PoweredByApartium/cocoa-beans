@@ -5,7 +5,13 @@ plugins {
 
 group = parent!!.group
 version = parent!!.version
+
 dependencies {
-    compileOnly("com.hpfxd.pandaspigot:pandaspigot-api:${project.findProperty("versions.panda.spigot")}")
-    compileOnly(project.project(":spigot"))
+    compileOnly(libs.panda)
+    compileOnly(project(":spigot"))
+    compileOnly(project(":state"))
+    compileOnly(project(":scoreboard"))
+    compileOnly(project(":scoreboard:scoreboard-spigot"))
+    compileOnly(libs.adventure)
+    compileOnly(libs.adventure.legacy)
 }
