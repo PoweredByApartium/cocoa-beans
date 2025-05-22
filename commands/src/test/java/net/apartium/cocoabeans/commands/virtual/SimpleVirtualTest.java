@@ -1,18 +1,17 @@
 package net.apartium.cocoabeans.commands.virtual;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.multilayered.Permission;
-import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
 import net.apartium.cocoabeans.commands.requirements.RequirementOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static net.apartium.cocoabeans.CollectionHelpers.range;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleVirtualTest {
@@ -37,19 +36,19 @@ class SimpleVirtualTest {
 
         CommandVariant setVariant = virtualCommand.variants()
                 .stream()
-                .filter(variant -> variant.variant().value().equals("set <int>"))
+                .filter(variant -> variant.variant().equals("set <int>"))
                 .findFirst()
                 .orElseGet(Assertions::fail);
 
         CommandVariant clearVariant = virtualCommand.variants()
                 .stream()
-                .filter(variant -> variant.variant().value().equals("clear"))
+                .filter(variant -> variant.variant().equals("clear"))
                 .findFirst()
                 .orElseGet(Assertions::fail);
 
         CommandVariant stringVariant = virtualCommand.variants()
                 .stream()
-                .filter(variant -> variant.variant().value().equals("<string>"))
+                .filter(variant -> variant.variant().equals("<string>"))
                 .findFirst()
                 .orElseGet(Assertions::fail);
 
@@ -64,7 +63,7 @@ class SimpleVirtualTest {
         assertEquals(List.of(), setVariant.info().getLongDescriptions());
         assertEquals(List.of(), setVariant.info().getUsages());
 
-        assertEquals("set <int>", setVariant.variant().value());
+        assertEquals("set <int>", setVariant.variant());
         // clear variant
         assertEquals(Set.of(), clearVariant.requirements());
 
@@ -73,7 +72,7 @@ class SimpleVirtualTest {
         assertEquals(List.of(), clearVariant.info().getLongDescriptions());
         assertEquals(List.of(), clearVariant.info().getUsages());
 
-        assertEquals("clear", clearVariant.variant().value());
+        assertEquals("clear", clearVariant.variant());
         // string variant
         assertEquals(
                 Set.of(new RequirementOption(Permission.class.getName(), Map.of("value","my.permission"))),
@@ -84,7 +83,7 @@ class SimpleVirtualTest {
         assertEquals(List.of(), stringVariant.info().getLongDescriptions());
         assertEquals(List.of(), stringVariant.info().getUsages());
 
-        assertEquals("<string>", stringVariant.variant().value());
+        assertEquals("<string>", stringVariant.variant());
     }
 
     @Test
@@ -108,11 +107,101 @@ class SimpleVirtualTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            System.out.println(objectMapper.writeValueAsString(virtualCommand));
+            String json = objectMapper.writeValueAsString(virtualCommand);
+            Map<String, Object> map = objectMapper.readValue(json, new TypeReference<>() {});
+
+            assertTrue(areEqual(Map.of(
+                    "name", "simple",
+                    "aliases", List.of(),
+                    "info", Map.of(
+                            "descriptions", List.of("A simple description"),
+                            "usages", List.of(),
+                            "longDescriptions", List.of()
+                    ),
+                    "variants", List.of(
+                            Map.of(
+                                    "requirements", List.of(),
+                                    "info", Map.of(
+                                            "descriptions", List.of(),
+                                            "usages", List.of(),
+                                            "longDescriptions", List.of()
+                                    ),
+                                    "variant", "set <int>",
+                                    "ignoreCase", true
+                            ),
+                            Map.of(
+                                    "requirements", List.of(),
+                                    "info", Map.of(
+                                            "descriptions", List.of("Variant that clear stuff"),
+                                            "usages", List.of(),
+                                            "longDescriptions", List.of()
+                                    ),
+                                    "variant", "clear",
+                                    "ignoreCase", true
+                            ),
+                            Map.of(
+                                    "requirements", List.of(
+                                            Map.of(
+                                                    "className", "net.apartium.cocoabeans.commands.multilayered.Permission",
+                                                    "arguments", Map.of("value", "my.permission")
+                                            )
+                                    ),
+                                    "info", Map.of(
+                                            "descriptions", List.of(),
+                                            "usages", List.of(),
+                                            "longDescriptions", List.of()
+                                    ),
+                                    "variant", "<string>",
+                                    "ignoreCase", true
+                            )
+                    ),
+                    "requirements", List.of(
+                            Map.of(
+                                    "className", "net.apartium.cocoabeans.commands.multilayered.Permission",
+                                    "arguments", Map.of("value", "meow")
+                            )
+                    )
+            ), map));
         } catch (JsonProcessingException e) {
-            System.out.println("oh no: ");
-            e.printStackTrace();
+            fail();
         }
+    }
+
+    boolean areEqual(Map<String, Object> first, Map<String, Object> second) {
+        if (first.size() != second.size()) {
+            return false;
+        }
+
+        return first.entrySet().stream()
+                .allMatch(e -> {
+                    if (e.getValue() instanceof Map map)
+                        return areEqual(map, (Map<String, Object>) second.get(e.getKey()));
+
+                    if (e.getValue() instanceof List listA) {
+                        List<Object> listB = (List<Object>) second.get(e.getKey());
+                        if (listA.size() != listB.size())
+                            return false;
+
+                        Set<Object> setA = new HashSet<>(listA);
+                        Set<Object> setB = new HashSet<>(listB);
+
+                        Iterator<Object> iteratorA = setA.iterator();
+                        Iterator<Object> iteratorB = setB.iterator();
+                        while (iteratorA.hasNext() && iteratorB.hasNext()) {
+                            Object a = iteratorA.next();
+                            Object b = iteratorB.next();
+                            if (a instanceof Map map && !areEqual(map, (Map<String, Object>) b))
+                                return false;
+
+                            if (!a.equals(b))
+                                return false;
+                        }
+
+                        return true;
+                    }
+
+                    return e.getValue().equals(second.get(e.getKey()));
+                });
     }
 
     @Test

@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
@@ -15,50 +16,40 @@ public class CommandInfo {
     private final List<String> usages = new ArrayList<>();
     private final List<String[]> longDescriptions = new ArrayList<>();
 
-    private String description;
-    private String usage;
-    private String[] longDescription;
-
     /**
      * Get the first description
      * @return the first description
      */
+    @JsonIgnore
     public Optional<String> getDescription() {
         if (descriptions.isEmpty())
             return Optional.empty();
 
-        if (description == null)
-            description = descriptions.get(0);
-
-        return Optional.of(description);
+        return Optional.of(descriptions.get(0));
     }
 
     /**
      * Get the first usage
      * @return the first usage
      */
+    @JsonIgnore
     public Optional<String> getUsage() {
         if (usages.isEmpty())
             return Optional.empty();
 
-        if (usage == null)
-            usage = usages.get(0);
-
-        return Optional.of(usage);
+        return Optional.of(usages.get(0));
     }
 
     /**
      * Get the first long description
      * @return the first long description
      */
+    @JsonIgnore
     public Optional<String[]> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
 
-        if (longDescription == null)
-            longDescription = longDescriptions.get(0);
-
-        return Optional.of(longDescription);
+        return Optional.of(longDescriptions.get(0));
     }
 
     /**

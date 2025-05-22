@@ -147,7 +147,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         List<RegisterArgumentParser<?>> parsersResult = new ArrayList<>();
         for (CommandVariant variant : virtualCommand.variants()) {
-            List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant().value());
+            List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant());
 
             CommandOption currentOption = virtualOption;
             for (int i = 0; i < tokens.size(); i++) {
@@ -163,7 +163,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 if (token instanceof KeywordToken keywordToken) {
                     currentOption = createKeywordOption(
                             currentOption,
-                            variant.variant(),
+                            variant.ignoreCase(),
                             keywordToken,
                             requirements,
                             classRequirementsResult
@@ -320,7 +320,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             RequirementSet requirements = resolveRequirementsForBranch(i, methodRequirements);
 
             if (token instanceof KeywordToken keywordToken) {
-                currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand, keywordToken, requirements, requirementsResult);
+                currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand.ignoreCase(), keywordToken, requirements, requirementsResult);
                 continue;
             }
 
@@ -375,12 +375,12 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         return info;
     }
 
-    private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
-        Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
+    private CommandOption createKeywordOption(CommandOption currentCommandOption, boolean ignoreCase, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
+        Map<String, CommandBranchProcessor> keywordMap = ignoreCase
                 ? currentCommandOption.getKeywordIgnoreCaseMap()
                 : currentCommandOption.getKeywordMap();
 
-        String keyword = subCommand.ignoreCase()
+        String keyword = ignoreCase
                 ? keywordToken.getKeyword().toLowerCase()
                 : keywordToken.getKeyword();
 
