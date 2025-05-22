@@ -30,7 +30,7 @@ public abstract class CocoaBoard {
 
     /**
      * Component Entry
-     * wrapper around observable to be able to flag dirty and see if need to be updated
+     * wrapper around observable to be able to flag dirty and see Kif need to be updated
      */
     protected static class ComponentEntry implements Observer {
 
@@ -539,11 +539,9 @@ public abstract class CocoaBoard {
                     getLineByScore(this.numberStyles, i)
             );
             sendTeamPacket(i, TeamMode.CREATE, getLineByScore(i).component, null);
-            return oldLines.size();
         }
 
-        return linesSize;
-
+        return oldLines.size(); // No more than what we have
     }
 
     protected int getScoreByLine(int line) {

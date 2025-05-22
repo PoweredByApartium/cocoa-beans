@@ -10,24 +10,45 @@
 
 package net.apartium.cocoabeans.spigot;
 
+import net.apartium.cocoabeans.commands.CommandManager;
+import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
+import net.apartium.cocoabeans.spigot.board.BoardManager;
+import net.apartium.cocoabeans.spigot.commands.CocoaBoardCommand;
+import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
 import net.apartium.cocoabeans.state.spigot.SpigotProvidedState;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TestCocoaBeansSpigotLoader extends JavaPlugin {
 
     private SpigotProvidedState spigotProvidedState;
+    private CommandManager commandManager;
+    private BoardManager boardManager;
 
     @Override
     public void onEnable() {
         spigotProvidedState = new SpigotProvidedState(this);
         spigotProvidedState.startCprTask();
 
+        boardManager = new BoardManager();
+        boardManager.initialize(this);
 
+        commandManager = new SpigotCommandManager(this);
+        commandManager.registerArgumentTypeHandler(SpigotCommandManager.COMMON_PARSERS);
+        commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
+
+        commandManager.addCommand(new CocoaBoardCommand(boardManager));
+
+        ListenerAutoRegistration listenerAutoRegistration = new ListenerAutoRegistration(this, false);
+        listenerAutoRegistration.addInjectableObject(boardManager);
+
+        String packageName = getClass().getPackage().getName();
+        listenerAutoRegistration.register(packageName + ".listeners", true);
     }
 
     @Override
     public void onDisable() {
         spigotProvidedState.remove();
+        boardManager.disable();
     }
 
 }
