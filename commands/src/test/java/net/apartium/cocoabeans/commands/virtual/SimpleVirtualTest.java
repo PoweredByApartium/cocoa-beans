@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.apartium.cocoabeans.commands.*;
-import net.apartium.cocoabeans.commands.multilayered.Permission;
-import net.apartium.cocoabeans.commands.requirements.RequirementOption;
+import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
+import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static net.apartium.cocoabeans.CollectionHelpers.range;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleVirtualTest {
@@ -21,6 +20,7 @@ class SimpleVirtualTest {
         SimpleCommand simpleCommand = new SimpleCommand();
         VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
 
+        assertNotNull(virtualCommand);
         assertEquals("simple", virtualCommand.name());
         assertEquals(Set.of(), virtualCommand.aliases());
 
@@ -29,8 +29,6 @@ class SimpleVirtualTest {
         assertEquals(1, virtualCommand.info().getDescriptions().size());
 
         assertEquals("A simple description", virtualCommand.info().getDescriptions().get(0));
-
-        assertEquals(Set.of(new RequirementOption(Permission.class.getName(), Map.of("value", "meow"))), virtualCommand.requirements());
 
         assertEquals(3, virtualCommand.variants().size());
 
@@ -57,16 +55,12 @@ class SimpleVirtualTest {
         assertNotNull(stringVariant);
 
         // Set variant
-        assertEquals(Set.of(), setVariant.requirements());
-
         assertEquals(List.of(), setVariant.info().getDescriptions());
         assertEquals(List.of(), setVariant.info().getLongDescriptions());
         assertEquals(List.of(), setVariant.info().getUsages());
 
         assertEquals("set <int>", setVariant.variant());
         // clear variant
-        assertEquals(Set.of(), clearVariant.requirements());
-
         assertEquals(1, clearVariant.info().getDescriptions().size());
         assertEquals("Variant that clear stuff", clearVariant.info().getDescriptions().get(0));
         assertEquals(List.of(), clearVariant.info().getLongDescriptions());
@@ -74,11 +68,6 @@ class SimpleVirtualTest {
 
         assertEquals("clear", clearVariant.variant());
         // string variant
-        assertEquals(
-                Set.of(new RequirementOption(Permission.class.getName(), Map.of("value","my.permission"))),
-                stringVariant.requirements()
-        );
-
         assertEquals(List.of(), stringVariant.info().getDescriptions());
         assertEquals(List.of(), stringVariant.info().getLongDescriptions());
         assertEquals(List.of(), stringVariant.info().getUsages());
@@ -97,7 +86,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        });
+        }, new RequirementSet());
     }
 
     @Test
@@ -120,7 +109,6 @@ class SimpleVirtualTest {
                     ),
                     "variants", List.of(
                             Map.of(
-                                    "requirements", List.of(),
                                     "info", Map.of(
                                             "descriptions", List.of(),
                                             "usages", List.of(),
@@ -130,7 +118,6 @@ class SimpleVirtualTest {
                                     "ignoreCase", true
                             ),
                             Map.of(
-                                    "requirements", List.of(),
                                     "info", Map.of(
                                             "descriptions", List.of("Variant that clear stuff"),
                                             "usages", List.of(),
@@ -140,12 +127,6 @@ class SimpleVirtualTest {
                                     "ignoreCase", true
                             ),
                             Map.of(
-                                    "requirements", List.of(
-                                            Map.of(
-                                                    "className", "net.apartium.cocoabeans.commands.multilayered.Permission",
-                                                    "arguments", Map.of("value", "my.permission")
-                                            )
-                                    ),
                                     "info", Map.of(
                                             "descriptions", List.of(),
                                             "usages", List.of(),
@@ -153,12 +134,6 @@ class SimpleVirtualTest {
                                     ),
                                     "variant", "<string>",
                                     "ignoreCase", true
-                            )
-                    ),
-                    "requirements", List.of(
-                            Map.of(
-                                    "className", "net.apartium.cocoabeans.commands.multilayered.Permission",
-                                    "arguments", Map.of("value", "meow")
                             )
                     )
             ), map));
@@ -174,11 +149,11 @@ class SimpleVirtualTest {
 
         return first.entrySet().stream()
                 .allMatch(e -> {
-                    if (e.getValue() instanceof Map map)
-                        return areEqual(map, (Map<String, Object>) second.get(e.getKey()));
+                    if (e.getValue() instanceof Map<?, ?> map)
+                        return areEqual((Map<String, Object>) map, (Map<String, Object>) second.get(e.getKey()));
 
-                    if (e.getValue() instanceof List listA) {
-                        List<Object> listB = (List<Object>) second.get(e.getKey());
+                    if (e.getValue() instanceof List<?> listA) {
+                        List<?> listB = (List<?>) second.get(e.getKey());
                         if (listA.size() != listB.size())
                             return false;
 
@@ -190,7 +165,7 @@ class SimpleVirtualTest {
                         while (iteratorA.hasNext() && iteratorB.hasNext()) {
                             Object a = iteratorA.next();
                             Object b = iteratorB.next();
-                            if (a instanceof Map map && !areEqual(map, (Map<String, Object>) b))
+                            if (a instanceof Map<?, ?> map && !areEqual((Map<String, Object>) map, (Map<String, Object>) b))
                                 return false;
 
                             if (!a.equals(b))
@@ -215,7 +190,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        });
+        }, new RequirementSet());
 
         TestSender sender = new TestSender();
 
@@ -245,7 +220,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        });
+        }, new RequirementSet(new PermissionFactory.PermissionImpl(null, "meow")));
 
         TestSender sender = new TestSender();
         assertEquals(

@@ -279,18 +279,19 @@ public abstract class CommandManager {
      * Add Virtual command with consumer that get called every time someone is running that command
      * @param virtualCommand virtual command to be added
      * @param callback function to be called each time the command has been run
+     * @param requirements requirements for the command tab completion will not affect calling the callback
      */
     @ApiStatus.AvailableSince("0.0.39")
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback) {
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements) {
         if (virtualCommand == null || callback == null)
             return;
 
         commandMap.computeIfAbsent(virtualCommand.name(), (cmd) -> new RegisteredCommand(this))
-                .addVirtualCommand(virtualCommand, callback);
+                .addVirtualCommand(virtualCommand, callback, requirements);
 
         for (String alias : virtualCommand.aliases())
             commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
-                    .addVirtualCommand(virtualCommand, callback);
+                    .addVirtualCommand(virtualCommand, callback, requirements);
     }
 
     public CommandInfo getCommandInfo(String commandName) {

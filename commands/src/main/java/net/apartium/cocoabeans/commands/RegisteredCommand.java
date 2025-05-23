@@ -22,7 +22,6 @@ import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
@@ -133,14 +132,14 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     }
 
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback) {
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements) {
         commandInfo.fromCommandInfo(virtualCommand.info());
 
         this.virtualNodes.add(new VirtualCommandNode(virtualCommand, callback));
 
         List<Requirement> classRequirementsResult = new ArrayList<>();
         final CommandOption virtualOption = createCommandOption(
-                new RequirementSet(RequirementOption.getRequirements(virtualCommand.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories())),
+                requirements,
                 this.commandBranchProcessor,
                 classRequirementsResult
         );
@@ -150,22 +149,15 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant());
 
             CommandOption currentOption = virtualOption;
-            for (int i = 0; i < tokens.size(); i++) {
-                CommandToken token = tokens.get(i);
-                RequirementSet requirements = resolveRequirementsForBranch(
-                        i,
-                        new RequirementSet(
-                                RequirementOption.getRequirements(variant.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories()),
-                                RequirementOption.getRequirements(virtualCommand.requirements(), virtualCommand, commandManager.requirementFactories, commandManager.getExternalRequirementFactories())
-                        )
-                );
+            for (CommandToken token : tokens) {
+                RequirementSet methodRequirements = new RequirementSet();
 
                 if (token instanceof KeywordToken keywordToken) {
                     currentOption = createKeywordOption(
                             currentOption,
                             variant.ignoreCase(),
                             keywordToken,
-                            requirements,
+                            methodRequirements,
                             classRequirementsResult
                     );
                     continue;
@@ -176,7 +168,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                             currentOption,
                             argumentParserToken,
                             commandManager.argumentTypeHandlerMap,
-                            requirements,
+                            methodRequirements,
                             parsersResult,
                             classRequirementsResult
                     );
