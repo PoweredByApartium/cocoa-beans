@@ -86,7 +86,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet());
+        }, new RequirementSet(), Map.of());
     }
 
     @Test
@@ -190,7 +190,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet());
+        }, new RequirementSet(), Map.of());
 
         TestSender sender = new TestSender();
 
@@ -220,7 +220,7 @@ class SimpleVirtualTest {
         commandManager.addVirtualCommand(virtualCommand, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet(new PermissionFactory.PermissionImpl(null, "meow")));
+        }, new RequirementSet(new PermissionFactory.PermissionImpl(null, "meow")), Map.of());
 
         TestSender sender = new TestSender();
         assertEquals(

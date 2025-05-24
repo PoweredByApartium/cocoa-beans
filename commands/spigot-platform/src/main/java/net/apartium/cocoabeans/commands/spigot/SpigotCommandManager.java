@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.commands.spigot.requirements.factory.PermissionFactory;
@@ -98,8 +99,8 @@ public class SpigotCommandManager extends CommandManager {
     }
 
     @Override
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback) {
-        super.addVirtualCommand(virtualCommand, callback);
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements, Map<String, RequirementSet> variantRequirements) {
+        super.addVirtualCommand(virtualCommand, callback, requirements, variantRequirements);
 
         org.bukkit.command.Command cmd = new org.bukkit.command.Command(
                 virtualCommand.name(),
@@ -132,11 +133,10 @@ public class SpigotCommandManager extends CommandManager {
             }
         };
 
-        virtualCommand.requirements()
-                .stream()
-                .filter((option -> option.getClassName().equals(Permission.class.getName())))
-                .map(option -> option.getArguments().get("value"))
-                .map(String.class::cast)
+        requirements.stream()
+                .filter((requirement -> requirement.getClass().equals(PermissionFactory.PermissionImpl.class)))
+                .map(PermissionFactory.PermissionImpl.class::cast)
+                .map(PermissionFactory.PermissionImpl::permissionAsString)
                 .findAny()
                 .ifPresent(cmd::setPermission);
 

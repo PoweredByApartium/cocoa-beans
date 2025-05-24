@@ -132,7 +132,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     }
 
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements) {
+    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements, Map<String, RequirementSet> variantRequirements) {
         commandInfo.fromCommandInfo(virtualCommand.info());
 
         this.virtualNodes.add(new VirtualCommandNode(virtualCommand, callback));
@@ -149,15 +149,17 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant());
 
             CommandOption currentOption = virtualOption;
-            for (CommandToken token : tokens) {
-                RequirementSet methodRequirements = new RequirementSet();
+            RequirementSet methodRequirements = variantRequirements.getOrDefault(variant.variant(), new RequirementSet());
+
+            for (int i = 0; i < tokens.size(); i++) {
+                CommandToken token = tokens.get(i);
 
                 if (token instanceof KeywordToken keywordToken) {
                     currentOption = createKeywordOption(
                             currentOption,
                             variant.ignoreCase(),
                             keywordToken,
-                            methodRequirements,
+                            resolveRequirementsForBranch(i, methodRequirements),
                             classRequirementsResult
                     );
                     continue;
@@ -168,7 +170,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                             currentOption,
                             argumentParserToken,
                             commandManager.argumentTypeHandlerMap,
-                            methodRequirements,
+                            resolveRequirementsForBranch(i, methodRequirements),
                             parsersResult,
                             classRequirementsResult
                     );
