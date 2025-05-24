@@ -19,23 +19,19 @@ public record VirtualCommandDefinition(
         Map<String, Object> metadata
 ) implements GenericNode {
 
+    /**
+     * Create a new virtual command definition instance
+     * @param name name
+     * @param aliases aliases
+     * @param info info
+     * @param variants variants
+     * @param metadata metadata
+     */
     public VirtualCommandDefinition(String name, Set<String> aliases, CommandInfo info, Set<VirtualCommandVariant> variants, Map<String, Object> metadata) {
         this.name = name;
         this.aliases = Set.copyOf(aliases);
         this.info = info;
         this.variants = Set.copyOf(variants);
         this.metadata = Map.copyOf(metadata);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        VirtualCommandDefinition that = (VirtualCommandDefinition) o;
-        return Objects.equals(name, that.name) && Objects.equals(info, that.info) && Objects.equals(aliases, that.aliases) && Objects.equals(metadata, that.metadata) && Objects.equals(variants, that.variants);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, aliases, info, variants, metadata);
     }
 }

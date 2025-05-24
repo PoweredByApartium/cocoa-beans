@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleVirtualTest {
 
+    private static final String VIRTUAL_COMMAND_DEFINITION_JSON = "{\"name\":\"simple\",\"aliases\":[],\"info\":{\"descriptions\":[\"A simple description\"],\"usages\":[],\"longDescriptions\":[]},\"variants\":[{\"info\":{\"descriptions\":[],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"<string>\",\"ignoreCase\":true,\"metadata\":{}},{\"info\":{\"descriptions\":[],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"set <int>\",\"ignoreCase\":true,\"metadata\":{}},{\"info\":{\"descriptions\":[\"Variant that clear stuff\"],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"clear\",\"ignoreCase\":true,\"metadata\":{\"permission\":\"my.permission\"}}],\"metadata\":{\"permission\":\"meow\"}}";
+    
     @Test
     void createSimpleVirtualFromCommandNode() {
         SimpleCommand simpleCommand = new SimpleCommand();
@@ -28,66 +30,7 @@ class SimpleVirtualTest {
 
         VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
 
-        assertNotNull(virtualCommandDefinition);
-        assertEquals("simple", virtualCommandDefinition.name());
-        assertEquals(Set.of(), virtualCommandDefinition.aliases());
-
-        assertTrue(virtualCommandDefinition.info().getLongDescription().isEmpty());
-        assertTrue(virtualCommandDefinition.info().getUsage().isEmpty());
-        assertEquals(1, virtualCommandDefinition.info().getDescriptions().size());
-
-        assertEquals("A simple description", virtualCommandDefinition.info().getDescriptions().get(0));
-
-        assertEquals(3, virtualCommandDefinition.variants().size());
-        assertEquals(Map.of("permission", "meow"), virtualCommandDefinition.metadata());
-
-        VirtualCommandVariant setVariant = virtualCommandDefinition.variants()
-                .stream()
-                .filter(variant -> variant.variant().equals("set <int>"))
-                .findFirst()
-                .orElseGet(Assertions::fail);
-
-        VirtualCommandVariant clearVariant = virtualCommandDefinition.variants()
-                .stream()
-                .filter(variant -> variant.variant().equals("clear"))
-                .findFirst()
-                .orElseGet(Assertions::fail);
-
-        VirtualCommandVariant stringVariant = virtualCommandDefinition.variants()
-                .stream()
-                .filter(variant -> variant.variant().equals("<string>"))
-                .findFirst()
-                .orElseGet(Assertions::fail);
-
-        assertNotNull(setVariant);
-        assertNotNull(clearVariant);
-        assertNotNull(stringVariant);
-
-        // Set variant
-        assertEquals(List.of(), setVariant.info().getDescriptions());
-        assertEquals(List.of(), setVariant.info().getLongDescriptions());
-        assertEquals(List.of(), setVariant.info().getUsages());
-
-        assertEquals(Map.of(), setVariant.metadata());
-
-        assertEquals("set <int>", setVariant.variant());
-        // clear variant
-        assertEquals(1, clearVariant.info().getDescriptions().size());
-        assertEquals("Variant that clear stuff", clearVariant.info().getDescriptions().get(0));
-        assertEquals(List.of(), clearVariant.info().getLongDescriptions());
-        assertEquals(List.of(), clearVariant.info().getUsages());
-
-        assertEquals(Map.of("permission", "my.permission"), clearVariant.metadata());
-
-        assertEquals("clear", clearVariant.variant());
-        // string variant
-        assertEquals(List.of(), stringVariant.info().getDescriptions());
-        assertEquals(List.of(), stringVariant.info().getLongDescriptions());
-        assertEquals(List.of(), stringVariant.info().getUsages());
-
-        assertEquals(Map.of(), stringVariant.metadata());
-
-        assertEquals("<string>", stringVariant.variant());
+        testVirtualCommandDefinition(virtualCommandDefinition);
     }
 
     @Test
@@ -186,11 +129,77 @@ class SimpleVirtualTest {
 
             VirtualCommandDefinition other = objectMapper.readValue(json, VirtualCommandDefinition.class);
             assertEquals(virtualCommandDefinition, other);
+            
+            other = objectMapper.readValue(VIRTUAL_COMMAND_DEFINITION_JSON, VirtualCommandDefinition.class);
+            testVirtualCommandDefinition(other);
         } catch (JsonProcessingException e) {
             fail("JSON processing failed: " + e.getMessage(), e);
         }
     }
 
+    void testVirtualCommandDefinition(VirtualCommandDefinition virtualCommandDefinition) {
+        assertNotNull(virtualCommandDefinition);
+        assertEquals("simple", virtualCommandDefinition.name());
+        assertEquals(Set.of(), virtualCommandDefinition.aliases());
+
+        assertTrue(virtualCommandDefinition.info().getLongDescription().isEmpty());
+        assertTrue(virtualCommandDefinition.info().getUsage().isEmpty());
+        assertEquals(1, virtualCommandDefinition.info().getDescriptions().size());
+
+        assertEquals("A simple description", virtualCommandDefinition.info().getDescriptions().get(0));
+
+        assertEquals(3, virtualCommandDefinition.variants().size());
+        assertEquals(Map.of("permission", "meow"), virtualCommandDefinition.metadata());
+
+        VirtualCommandVariant setVariant = virtualCommandDefinition.variants()
+                .stream()
+                .filter(variant -> variant.variant().equals("set <int>"))
+                .findFirst()
+                .orElseGet(Assertions::fail);
+
+        VirtualCommandVariant clearVariant = virtualCommandDefinition.variants()
+                .stream()
+                .filter(variant -> variant.variant().equals("clear"))
+                .findFirst()
+                .orElseGet(Assertions::fail);
+
+        VirtualCommandVariant stringVariant = virtualCommandDefinition.variants()
+                .stream()
+                .filter(variant -> variant.variant().equals("<string>"))
+                .findFirst()
+                .orElseGet(Assertions::fail);
+
+        assertNotNull(setVariant);
+        assertNotNull(clearVariant);
+        assertNotNull(stringVariant);
+
+        // Set variant
+        assertEquals(List.of(), setVariant.info().getDescriptions());
+        assertEquals(List.of(), setVariant.info().getLongDescriptions());
+        assertEquals(List.of(), setVariant.info().getUsages());
+
+        assertEquals(Map.of(), setVariant.metadata());
+
+        assertEquals("set <int>", setVariant.variant());
+        // clear variant
+        assertEquals(1, clearVariant.info().getDescriptions().size());
+        assertEquals("Variant that clear stuff", clearVariant.info().getDescriptions().get(0));
+        assertEquals(List.of(), clearVariant.info().getLongDescriptions());
+        assertEquals(List.of(), clearVariant.info().getUsages());
+
+        assertEquals(Map.of("permission", "my.permission"), clearVariant.metadata());
+
+        assertEquals("clear", clearVariant.variant());
+        // string variant
+        assertEquals(List.of(), stringVariant.info().getDescriptions());
+        assertEquals(List.of(), stringVariant.info().getLongDescriptions());
+        assertEquals(List.of(), stringVariant.info().getUsages());
+
+        assertEquals(Map.of(), stringVariant.metadata());
+
+        assertEquals("<string>", stringVariant.variant());
+    }
+    
     boolean areEqual(Map<String, Object> first, Map<String, Object> second) {
         if (first.size() != second.size()) {
             return false;
