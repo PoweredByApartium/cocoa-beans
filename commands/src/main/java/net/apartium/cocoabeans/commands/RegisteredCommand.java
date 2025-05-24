@@ -18,6 +18,8 @@ import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandVariant;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
@@ -35,7 +37,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     private static final Comparator<HandleExceptionVariant> HANDLE_EXCEPTION_VARIANT_COMPARATOR = (a, b) -> Integer.compare(b.priority(), a.priority());
 
     public record RegisteredCommandNode(CommandNode listener, RequirementSet requirements) {}
-    public record VirtualCommandNode(VirtualCommand command, Function<CommandContext, Boolean> callback) {}
+    public record VirtualCommandNode(VirtualCommandDefinition command, Function<CommandContext, Boolean> callback) {}
 
     private final CommandManager commandManager;
 
@@ -132,24 +134,36 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     }
 
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements, Map<String, RequirementSet> variantRequirements) {
-        commandInfo.fromCommandInfo(virtualCommand.info());
+    private RequirementSet getVirtualRequirement(Map<String, Object> metadata) {
+        Set<Requirement> requirements = new HashSet<>();
 
-        this.virtualNodes.add(new VirtualCommandNode(virtualCommand, callback));
+        for (Function<Map<String, Object>, Set<Requirement>> metadataHandler : commandManager.getMetadataHandlers()) {
+            Set<Requirement> apply = metadataHandler.apply(metadata);
+            if (apply != null)
+                requirements.addAll(apply);
+        }
+
+        return new RequirementSet(requirements);
+    }
+
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        commandInfo.fromCommandInfo(virtualCommandDefinition.info());
+
+        this.virtualNodes.add(new VirtualCommandNode(virtualCommandDefinition, callback));
 
         List<Requirement> classRequirementsResult = new ArrayList<>();
         final CommandOption virtualOption = createCommandOption(
-                requirements,
+                getVirtualRequirement(virtualCommandDefinition.metadata()),
                 this.commandBranchProcessor,
                 classRequirementsResult
         );
 
         List<RegisterArgumentParser<?>> parsersResult = new ArrayList<>();
-        for (CommandVariant variant : virtualCommand.variants()) {
+        for (VirtualCommandVariant variant : virtualCommandDefinition.variants()) {
             List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant());
 
             CommandOption currentOption = virtualOption;
-            RequirementSet methodRequirements = variantRequirements.getOrDefault(variant.variant(), new RequirementSet());
+            RequirementSet methodRequirements = getVirtualRequirement(variant.metadata());
 
             for (int i = 0; i < tokens.size(); i++) {
                 CommandToken token = tokens.get(i);

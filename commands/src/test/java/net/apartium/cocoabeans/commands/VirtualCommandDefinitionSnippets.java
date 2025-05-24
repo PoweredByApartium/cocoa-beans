@@ -1,36 +1,79 @@
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.multilayered.Permission;
+import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandFactory;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class VirtualCommandSnippets {
+class VirtualCommandDefinitionSnippets {
+
+    @Test
+    void virtualCommandFactory() {
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+    }
 
     @Test
     void using() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
 
         TestCommandManager commandManager = new TestCommandManager();
         commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        commandManager.addMetadataHandler(metadata -> {
+            Set<Requirement> requirements = new HashSet<>();
+            if (metadata.containsKey("permission"))
+                requirements.add(new PermissionFactory.PermissionImpl(null, (String) metadata.get("permission")));
+
+            return requirements;
+        });
 
         commandManager.addVirtualCommand(
-                virtualCommand,
+                virtualCommandDefinition,
                 context -> {
                     context.sender().sendMessage("You run: " + String.join(" ", context.args()));
                     return true;
-                },
-                new RequirementSet(),
-                Map.of()
+                }
         );
 
         TestSender sender = new TestSender();
-
         // Tab competition
+        assertEquals(
+                List.of(),
+                commandManager.handleTabComplete(sender, "simple", new String[]{""})
+        );
+
+        sender.addPermission("my.permission1");
+        assertEquals(
+                List.of("set"),
+                commandManager.handleTabComplete(sender, "simple", new String[]{""})
+                        .stream()
+                        .sorted()
+                        .toList()
+        );
+
+        sender.addPermission("my.permission2");
         assertEquals(
                 List.of("clear", "set"),
                 commandManager.handleTabComplete(sender, "simple", new String[]{""})
@@ -74,6 +117,8 @@ class VirtualCommandSnippets {
     }
 
 
+
+    @Permission("my.permission1")
     @Command("simple")
     public class SimpleCommand implements CommandNode {
 
@@ -83,11 +128,11 @@ class VirtualCommandSnippets {
         }
 
         @Description("Variant that clear stuff")
+        @Permission("my.permission2")
         @SubCommand("clear")
         public void clear(Sender sender) {
             // Do something
         }
 
     }
-
 }

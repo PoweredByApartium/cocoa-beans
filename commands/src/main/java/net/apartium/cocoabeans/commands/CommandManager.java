@@ -16,6 +16,7 @@ import net.apartium.cocoabeans.commands.lexer.CommandLexer;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
@@ -45,6 +46,8 @@ public abstract class CommandManager {
     /* package-private */ final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
 
     private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories = new HashMap<>();
+    private final List<Function<Map<String, Object>, Set<Requirement>>> metadataHandlers = new ArrayList<>();
+
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     protected CommandManager(ArgumentMapper argumentMapper) {
@@ -275,24 +278,27 @@ public abstract class CommandManager {
         addCommand(commandNode, handler);
     }
 
+    @ApiStatus.AvailableSince("0.0.39")
+    public void addMetadataHandler(Function<Map<String, Object>, Set<Requirement>> metaDataHandler) {
+        metadataHandlers.add(metaDataHandler);
+    }
+
     /**
      * Add Virtual command with consumer that get called every time someone is running that command
-     * @param virtualCommand virtual command to be added
+     * @param virtualCommandDefinition virtual command to be added
      * @param callback function to be called each time the command has been run
-     * @param requirements requirements for the command tab completion will not affect calling the callback
-     * @param variantRequirements requirement per variant or else empty requirement set
      */
     @ApiStatus.AvailableSince("0.0.39")
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements, Map<String, RequirementSet> variantRequirements) {
-        if (virtualCommand == null || callback == null)
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        if (virtualCommandDefinition == null || callback == null)
             return;
 
-        commandMap.computeIfAbsent(virtualCommand.name(), (cmd) -> new RegisteredCommand(this))
-                .addVirtualCommand(virtualCommand, callback, requirements, variantRequirements);
+        commandMap.computeIfAbsent(virtualCommandDefinition.name(), (cmd) -> new RegisteredCommand(this))
+                .addVirtualCommand(virtualCommandDefinition, callback);
 
-        for (String alias : virtualCommand.aliases())
+        for (String alias : virtualCommandDefinition.aliases())
             commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
-                    .addVirtualCommand(virtualCommand, callback, requirements, variantRequirements);
+                    .addVirtualCommand(virtualCommandDefinition, callback);
     }
 
     public CommandInfo getCommandInfo(String commandName) {
@@ -311,6 +317,10 @@ public abstract class CommandManager {
 
     public CommandLexer getCommandLexer() {
         return commandLexer;
+    }
+
+    public List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
+        return Collections.unmodifiableList(metadataHandlers);
     }
 
     @ApiStatus.Internal

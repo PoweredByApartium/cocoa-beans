@@ -16,6 +16,7 @@ import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import net.apartium.cocoabeans.commands.spigot.requirements.factory.PermissionFactory;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -99,14 +100,14 @@ public class SpigotCommandManager extends CommandManager {
     }
 
     @Override
-    public void addVirtualCommand(VirtualCommand virtualCommand, Function<CommandContext, Boolean> callback, RequirementSet requirements, Map<String, RequirementSet> variantRequirements) {
-        super.addVirtualCommand(virtualCommand, callback, requirements, variantRequirements);
+    public void addVirtualCommand(VirtualCommandDefinition definition, Function<CommandContext, Boolean> callback) {
+        super.addVirtualCommand(definition, callback);
 
         org.bukkit.command.Command cmd = new org.bukkit.command.Command(
-                virtualCommand.name(),
-                virtualCommand.info().getDescription().orElse(""),
-                virtualCommand.info().getUsage().orElse(""),
-                List.copyOf(virtualCommand.aliases())
+                definition.name(),
+                definition.info().getDescription().orElse(""),
+                definition.info().getUsage().orElse(""),
+                List.copyOf(definition.aliases())
         ) {
             @Override
             public boolean execute(CommandSender sender, String invoke, String[] args) {
@@ -133,10 +134,12 @@ public class SpigotCommandManager extends CommandManager {
             }
         };
 
-        requirements.stream()
-                .filter((requirement -> requirement.getClass().equals(PermissionFactory.PermissionImpl.class)))
-                .map(PermissionFactory.PermissionImpl.class::cast)
-                .map(PermissionFactory.PermissionImpl::permissionAsString)
+        definition.metadata()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals("permission"))
+                .map(Map.Entry::getValue)
+                .map(String.class::cast)
                 .findAny()
                 .ifPresent(cmd::setPermission);
 

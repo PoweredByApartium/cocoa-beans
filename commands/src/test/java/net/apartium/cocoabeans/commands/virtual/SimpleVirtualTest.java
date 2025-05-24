@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.multilayered.Permission;
 import net.apartium.cocoabeans.commands.multilayered.PermissionFactory;
-import net.apartium.cocoabeans.commands.requirements.RequirementSet;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,33 +19,41 @@ class SimpleVirtualTest {
     @Test
     void createSimpleVirtualFromCommandNode() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
 
-        assertNotNull(virtualCommand);
-        assertEquals("simple", virtualCommand.name());
-        assertEquals(Set.of(), virtualCommand.aliases());
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
 
-        assertTrue(virtualCommand.info().getLongDescription().isEmpty());
-        assertTrue(virtualCommand.info().getUsage().isEmpty());
-        assertEquals(1, virtualCommand.info().getDescriptions().size());
+        assertNotNull(virtualCommandDefinition);
+        assertEquals("simple", virtualCommandDefinition.name());
+        assertEquals(Set.of(), virtualCommandDefinition.aliases());
 
-        assertEquals("A simple description", virtualCommand.info().getDescriptions().get(0));
+        assertTrue(virtualCommandDefinition.info().getLongDescription().isEmpty());
+        assertTrue(virtualCommandDefinition.info().getUsage().isEmpty());
+        assertEquals(1, virtualCommandDefinition.info().getDescriptions().size());
 
-        assertEquals(3, virtualCommand.variants().size());
+        assertEquals("A simple description", virtualCommandDefinition.info().getDescriptions().get(0));
 
-        CommandVariant setVariant = virtualCommand.variants()
+        assertEquals(3, virtualCommandDefinition.variants().size());
+        assertEquals(Map.of("permission", "meow"), virtualCommandDefinition.metadata());
+
+        VirtualCommandVariant setVariant = virtualCommandDefinition.variants()
                 .stream()
                 .filter(variant -> variant.variant().equals("set <int>"))
                 .findFirst()
                 .orElseGet(Assertions::fail);
 
-        CommandVariant clearVariant = virtualCommand.variants()
+        VirtualCommandVariant clearVariant = virtualCommandDefinition.variants()
                 .stream()
                 .filter(variant -> variant.variant().equals("clear"))
                 .findFirst()
                 .orElseGet(Assertions::fail);
 
-        CommandVariant stringVariant = virtualCommand.variants()
+        VirtualCommandVariant stringVariant = virtualCommandDefinition.variants()
                 .stream()
                 .filter(variant -> variant.variant().equals("<string>"))
                 .findFirst()
@@ -59,6 +68,8 @@ class SimpleVirtualTest {
         assertEquals(List.of(), setVariant.info().getLongDescriptions());
         assertEquals(List.of(), setVariant.info().getUsages());
 
+        assertEquals(Map.of(), setVariant.metadata());
+
         assertEquals("set <int>", setVariant.variant());
         // clear variant
         assertEquals(1, clearVariant.info().getDescriptions().size());
@@ -66,11 +77,15 @@ class SimpleVirtualTest {
         assertEquals(List.of(), clearVariant.info().getLongDescriptions());
         assertEquals(List.of(), clearVariant.info().getUsages());
 
+        assertEquals(Map.of("permission", "my.permission"), clearVariant.metadata());
+
         assertEquals("clear", clearVariant.variant());
         // string variant
         assertEquals(List.of(), stringVariant.info().getDescriptions());
         assertEquals(List.of(), stringVariant.info().getLongDescriptions());
         assertEquals(List.of(), stringVariant.info().getUsages());
+
+        assertEquals(Map.of(), stringVariant.metadata());
 
         assertEquals("<string>", stringVariant.variant());
     }
@@ -78,25 +93,48 @@ class SimpleVirtualTest {
     @Test
     void simpleRegistrationVirtualCommand() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
+
 
         TestCommandManager commandManager = new TestCommandManager();
         commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        commandManager.addMetadataHandler(metadata -> {
+            Set<Requirement> requirements = new HashSet<>();
+            if (metadata.containsKey("permission"))
+                requirements.add(new PermissionFactory.PermissionImpl(null, (String) metadata.get("permission")));
 
-        commandManager.addVirtualCommand(virtualCommand, context -> {
+            return requirements;
+        });
+
+        commandManager.addVirtualCommand(virtualCommandDefinition, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet(), Map.of());
+        });
     }
 
     @Test
     void jacksonTestVirtualCommand() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String json = objectMapper.writeValueAsString(virtualCommand);
+            String json = objectMapper.writeValueAsString(virtualCommandDefinition);
             Map<String, Object> map = objectMapper.readValue(json, new TypeReference<>() {});
 
             assertTrue(areEqual(Map.of(
@@ -115,6 +153,7 @@ class SimpleVirtualTest {
                                             "longDescriptions", List.of()
                                     ),
                                     "variant", "set <int>",
+                                    "metadata", Map.of(),
                                     "ignoreCase", true
                             ),
                             Map.of(
@@ -124,6 +163,9 @@ class SimpleVirtualTest {
                                             "longDescriptions", List.of()
                                     ),
                                     "variant", "clear",
+                                    "metadata", Map.of(
+                                            "permission", "my.permission"
+                                    ),
                                     "ignoreCase", true
                             ),
                             Map.of(
@@ -133,8 +175,12 @@ class SimpleVirtualTest {
                                             "longDescriptions", List.of()
                                     ),
                                     "variant", "<string>",
+                                    "metadata", Map.of(),
                                     "ignoreCase", true
                             )
+                    ),
+                    "metadata", Map.of(
+                            "permission", "meow"
                     )
             ), map));
         } catch (JsonProcessingException e) {
@@ -182,15 +228,29 @@ class SimpleVirtualTest {
     @Test
     void executeVirtualCommand() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
 
         TestCommandManager commandManager = new TestCommandManager();
         commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        commandManager.addMetadataHandler(metadata -> {
+            Set<Requirement> requirements = new HashSet<>();
+            if (metadata.containsKey("permission"))
+                requirements.add(new PermissionFactory.PermissionImpl(null, (String) metadata.get("permission")));
 
-        commandManager.addVirtualCommand(virtualCommand, context -> {
+            return requirements;
+        });
+
+        commandManager.addVirtualCommand(virtualCommandDefinition, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet(), Map.of());
+        });
 
         TestSender sender = new TestSender();
 
@@ -212,15 +272,30 @@ class SimpleVirtualTest {
     @Test
     void tabCompletionVirtualCommand() {
         SimpleCommand simpleCommand = new SimpleCommand();
-        VirtualCommand virtualCommand = VirtualCommand.create(simpleCommand);
+        VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
+        virtualCommandFactory.addMetadataMapper((element, metadata) -> {
+            Permission permission = element.getAnnotation(Permission.class);
+            if (permission != null)
+                metadata.put("permission", permission.value());
+        });
+
+        VirtualCommandDefinition virtualCommandDefinition = virtualCommandFactory.create(simpleCommand);
+
 
         TestCommandManager commandManager = new TestCommandManager();
         commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+        commandManager.addMetadataHandler(metadata -> {
+            Set<Requirement> requirements = new HashSet<>();
+            if (metadata.containsKey("permission"))
+                requirements.add(new PermissionFactory.PermissionImpl(null, (String) metadata.get("permission")));
 
-        commandManager.addVirtualCommand(virtualCommand, context -> {
+            return requirements;
+        });
+
+        commandManager.addVirtualCommand(virtualCommandDefinition, context -> {
             context.sender().sendMessage("You run: " + String.join(" ", context.args()));
             return true;
-        }, new RequirementSet(new PermissionFactory.PermissionImpl(null, "meow")), Map.of());
+        });
 
         TestSender sender = new TestSender();
         assertEquals(
@@ -232,6 +307,16 @@ class SimpleVirtualTest {
         );
 
         sender.addPermission("meow");
+
+        assertEquals(
+                List.of("set"),
+                commandManager.handleTabComplete(sender, "simple", new String[]{""})
+                        .stream()
+                        .sorted()
+                        .toList()
+        );
+
+        sender.addPermission("my.permission");
         assertEquals(
                 List.of("clear", "set"),
                 commandManager.handleTabComplete(sender, "simple", new String[]{""})

@@ -15,10 +15,10 @@ public class SimpleCommand implements CommandNode {
     public void set() { }
 
     @Description("Variant that clear stuff")
+    @Permission("my.permission")
     @SubCommand("clear")
     public void clear() { }
 
-    @Permission("my.permission")
     @SubCommand("<string>")
     public void everString() { }
 

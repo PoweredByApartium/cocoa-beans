@@ -76,7 +76,7 @@ public class CommandInfo {
         return Collections.unmodifiableList(longDescriptions);
     }
 
-    /* package-private */ void addDescription(final Description description, boolean first) {
+    public void addDescription(final Description description, boolean first) {
         if (first) {
             descriptions.add(0, description.value());
             return;
@@ -85,7 +85,7 @@ public class CommandInfo {
         descriptions.add(description.value());
     }
 
-    /* package-private */ void addUsage(final Usage usage, boolean first) {
+    public void addUsage(final Usage usage, boolean first) {
         if (first) {
             usages.add(0, usage.value());
             return;
@@ -94,7 +94,7 @@ public class CommandInfo {
         usages.add(usage.value());
     }
 
-    /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
+    public void addLongDescription(final LongDescription longDescription, boolean first) {
         if (first) {
             longDescriptions.add(0, longDescription.value());
             return;
@@ -103,7 +103,7 @@ public class CommandInfo {
         longDescriptions.add(longDescription.value());
     }
 
-    /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {
+    public void fromAnnotations(Annotation[] annotations, boolean first) {
         for (Annotation annotation : annotations) {
             if (annotation instanceof Description description) {
                 addDescription(description, first);
@@ -122,7 +122,7 @@ public class CommandInfo {
         }
     }
 
-    /* package-private */ void fromCommandInfo(CommandInfo other) {
+    public void fromCommandInfo(CommandInfo other) {
         descriptions.addAll(other.descriptions);
         usages.addAll(other.usages);
         longDescriptions.addAll(other.longDescriptions);
