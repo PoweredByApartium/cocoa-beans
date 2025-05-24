@@ -13,15 +13,6 @@ public class CommandInfo {
     private final List<String> usages = new ArrayList<>();
     private final List<String[]> longDescriptions = new ArrayList<>();
 
-    public CommandInfo() {
-
-    }
-
-    @JsonIgnore
-    public CommandInfo(Annotation... annotations) {
-        fromAnnotations(annotations, true);
-    }
-
     /**
      * Get the first description
      * @return the first description
@@ -109,7 +100,7 @@ public class CommandInfo {
         longDescriptions.add(longDescription.value());
     }
 
-    public void fromAnnotations(Annotation[] annotations, boolean first) {
+    /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {
         for (Annotation annotation : annotations) {
             if (annotation instanceof Description description) {
                 addDescription(description, first);
@@ -144,5 +135,14 @@ public class CommandInfo {
     @Override
     public int hashCode() {
         return Objects.hash(descriptions, usages, longDescriptions);
+    }
+
+    @JsonIgnore
+    public static CommandInfo createFromAnnotations(Collection<Annotation[]> collection) {
+        CommandInfo info = new CommandInfo();
+        for (Annotation[] annotations : collection)
+            info.fromAnnotations(annotations, false);
+
+        return info;
     }
 }

@@ -62,11 +62,41 @@ public class SpigotCommandManager extends CommandManager {
 
     @Override
     protected void addCommand(CommandNode commandNode, Command command) {
-        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
+        intoBukkitCommand(
                 command.value(),
+                List.of(command.aliases()),
                 Optional.ofNullable(commandNode.getClass().getAnnotation(Description.class)).map(Description::value).orElse(""),
                 Optional.ofNullable(commandNode.getClass().getAnnotation(Usage.class)).map(Usage::value).orElse(""),
-                Arrays.asList(command.aliases())
+                Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class)).map(Permission::value).orElse(null)
+        );
+    }
+
+    @Override
+    public void addVirtualCommand(VirtualCommandDefinition definition, Function<CommandContext, Boolean> callback) {
+        super.addVirtualCommand(definition, callback);
+        intoBukkitCommand(
+                definition.name(),
+                List.copyOf(definition.aliases()),
+                definition.info().getDescription().orElse(""),
+                definition.info().getUsage().orElse(""),
+                definition.metadata()
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey().equals("permission"))
+                        .map(Map.Entry::getValue)
+                        .map(String.class::cast)
+                        .findAny()
+                        .orElse(null)
+
+        );
+    }
+
+    private void intoBukkitCommand(String name, List<String> aliases, String description, String usage, String permission) {
+        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
+                name,
+                description,
+                usage,
+                aliases
         ) {
             @Override
             public boolean execute(CommandSender sender, String invoke, String[] args) {
@@ -93,55 +123,8 @@ public class SpigotCommandManager extends CommandManager {
             }
         };
 
-        Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class))
-                .map(Permission::value).ifPresent(cmd::setPermission);
-
-        Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
-    }
-
-    @Override
-    public void addVirtualCommand(VirtualCommandDefinition definition, Function<CommandContext, Boolean> callback) {
-        super.addVirtualCommand(definition, callback);
-
-        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
-                definition.name(),
-                definition.info().getDescription().orElse(""),
-                definition.info().getUsage().orElse(""),
-                List.copyOf(definition.aliases())
-        ) {
-            @Override
-            public boolean execute(CommandSender sender, String invoke, String[] args) {
-                {
-                    String[] split = invoke.split(":");
-                    invoke = split[1 % split.length];
-                }
-
-                try {
-                    return handle(new SpigotSender<>(sender), invoke, args);
-                } catch (Throwable e) {
-                    return false;
-                }
-            }
-
-            @Override
-            public @NotNull List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
-                {
-                    String[] split = invoke.split(":");
-                    invoke = split[1 % split.length];
-                }
-
-                return handleTabComplete(new SpigotSender<>(sender), invoke, args);
-            }
-        };
-
-        definition.metadata()
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().equals("permission"))
-                .map(Map.Entry::getValue)
-                .map(String.class::cast)
-                .findAny()
-                .ifPresent(cmd::setPermission);
+        if (permission != null)
+            cmd.setPermission(permission);
 
         Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
     }

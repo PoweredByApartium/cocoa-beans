@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -52,7 +53,7 @@ public class VirtualCommandFactory {
         return new VirtualCommandDefinition(
                 command.value(),
                 Set.of(command.aliases()),
-                new CommandInfo(clazz.getAnnotations()),
+                CommandInfo.createFromAnnotations(Collections.singleton(clazz.getAnnotations())),
                 getVariants(clazz),
                 getMetadata(clazz)
         );
@@ -97,14 +98,16 @@ public class VirtualCommandFactory {
     protected void getVariants(Method method, Set<VirtualCommandVariant> variants) {
         SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
-        CommandInfo info = new CommandInfo(method.getAnnotations());
+        List<Annotation[]> annotations = new ArrayList<>();
+        annotations.add(method.getAnnotations());
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method))
-            info.fromAnnotations(targetMethod.getAnnotations(), false);
+            annotations.add(targetMethod.getAnnotations());
 
         Map<String, Object> metadata = null;
+        CommandInfo info = null;
         for (SubCommand subCommand : subCommands)
             variants.add(new VirtualCommandVariant(
-                    info,
+                    info == null ? info = CommandInfo.createFromAnnotations(annotations) : info,
                     subCommand.value(),
                     subCommand.ignoreCase(),
                     metadata == null ? metadata = getMetadata(method) : metadata
@@ -114,7 +117,7 @@ public class VirtualCommandFactory {
             subCommands = targetMethod.getAnnotationsByType(SubCommand.class);
             for (SubCommand subCommand : subCommands)
                 variants.add(new VirtualCommandVariant(
-                        info,
+                        info == null ? info = CommandInfo.createFromAnnotations(annotations) : info,
                         subCommand.value(),
                         subCommand.ignoreCase(),
                         metadata == null ? metadata = getMetadata(method) : metadata
