@@ -18,6 +18,7 @@ import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
@@ -76,15 +77,9 @@ public class SpigotCommandManager extends CommandManager {
                 List.copyOf(definition.aliases()),
                 definition.info().getDescription().orElse(""),
                 definition.info().getUsage().orElse(""),
-                definition.metadata()
-                        .entrySet()
-                        .stream()
-                        .filter(entry -> entry.getKey().equals("permission"))
-                        .map(Map.Entry::getValue)
-                        .map(String.class::cast)
-                        .findAny()
+                Optional.ofNullable(definition.metadata().get("permission"))
+                        .map(Object::toString)
                         .orElse(null)
-
         );
     }
 
@@ -110,7 +105,7 @@ public class SpigotCommandManager extends CommandManager {
             }
 
             @Override
-            public List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
+            public @NotNull List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
                 {
                     String[] split = invoke.split(":");
                     invoke = split[1 % split.length];
