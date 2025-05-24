@@ -319,7 +319,7 @@ public abstract class CommandManager {
         return commandLexer;
     }
 
-    public List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
+    /* package-private */ List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
         return Collections.unmodifiableList(metadataHandlers);
     }
 

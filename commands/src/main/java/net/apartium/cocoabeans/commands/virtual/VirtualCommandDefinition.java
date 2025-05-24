@@ -27,4 +27,15 @@ public record VirtualCommandDefinition(
         this.metadata = Map.copyOf(metadata);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        VirtualCommandDefinition that = (VirtualCommandDefinition) o;
+        return Objects.equals(name, that.name) && Objects.equals(info, that.info) && Objects.equals(aliases, that.aliases) && Objects.equals(metadata, that.metadata) && Objects.equals(variants, that.variants);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, aliases, info, variants, metadata);
+    }
 }

@@ -49,13 +49,10 @@ public class VirtualCommandFactory {
         if (command == null)
             return null;
 
-        CommandInfo info = new CommandInfo();
-        info.fromAnnotations(clazz.getAnnotations(), false);
-
         return new VirtualCommandDefinition(
                 command.value(),
                 Set.of(command.aliases()),
-                info,
+                new CommandInfo(clazz.getAnnotations()),
                 getVariants(clazz),
                 getMetadata(clazz)
         );
@@ -100,9 +97,7 @@ public class VirtualCommandFactory {
     protected void getVariants(Method method, Set<VirtualCommandVariant> variants) {
         SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
-        CommandInfo info = new CommandInfo();
-
-        info.fromAnnotations(method.getAnnotations(), true);
+        CommandInfo info = new CommandInfo(method.getAnnotations());
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method))
             info.fromAnnotations(targetMethod.getAnnotations(), false);
 

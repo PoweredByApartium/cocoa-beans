@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @ApiStatus.AvailableSince("0.0.30")
 public class CommandInfo {
@@ -15,6 +12,15 @@ public class CommandInfo {
     private final List<String> descriptions = new ArrayList<>();
     private final List<String> usages = new ArrayList<>();
     private final List<String[]> longDescriptions = new ArrayList<>();
+
+    public CommandInfo() {
+
+    }
+
+    @JsonIgnore
+    public CommandInfo(Annotation... annotations) {
+        fromAnnotations(annotations, true);
+    }
 
     /**
      * Get the first description
@@ -76,7 +82,7 @@ public class CommandInfo {
         return Collections.unmodifiableList(longDescriptions);
     }
 
-    public void addDescription(final Description description, boolean first) {
+    /* package-private */ void addDescription(final Description description, boolean first) {
         if (first) {
             descriptions.add(0, description.value());
             return;
@@ -85,7 +91,7 @@ public class CommandInfo {
         descriptions.add(description.value());
     }
 
-    public void addUsage(final Usage usage, boolean first) {
+    /* package-private */ void addUsage(final Usage usage, boolean first) {
         if (first) {
             usages.add(0, usage.value());
             return;
@@ -94,7 +100,7 @@ public class CommandInfo {
         usages.add(usage.value());
     }
 
-    public void addLongDescription(final LongDescription longDescription, boolean first) {
+    /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
         if (first) {
             longDescriptions.add(0, longDescription.value());
             return;
@@ -122,9 +128,21 @@ public class CommandInfo {
         }
     }
 
-    public void fromCommandInfo(CommandInfo other) {
+    /* package-private */ void fromCommandInfo(CommandInfo other) {
         descriptions.addAll(other.descriptions);
         usages.addAll(other.usages);
         longDescriptions.addAll(other.longDescriptions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CommandInfo that = (CommandInfo) o;
+        return Objects.equals(descriptions, that.descriptions) && Objects.equals(usages, that.usages) && Objects.equals(longDescriptions, that.longDescriptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(descriptions, usages, longDescriptions);
     }
 }

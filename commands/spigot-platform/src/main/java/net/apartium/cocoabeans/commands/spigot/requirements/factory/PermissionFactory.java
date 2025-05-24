@@ -29,7 +29,7 @@ public class PermissionFactory implements RequirementFactory {
         return new PermissionImpl(permission, permission.value(), permission.invert());
     }
 
-    public record PermissionImpl(Permission permission, String permissionAsString, boolean invert) implements Requirement {
+    private record PermissionImpl(Permission permission, String permissionAsString, boolean invert) implements Requirement {
 
         @Override
         public RequirementResult meetsRequirement(RequirementEvaluationContext context) {

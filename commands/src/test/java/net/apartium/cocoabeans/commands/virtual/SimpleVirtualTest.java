@@ -183,8 +183,11 @@ class SimpleVirtualTest {
                             "permission", "meow"
                     )
             ), map));
+
+            VirtualCommandDefinition other = objectMapper.readValue(json, VirtualCommandDefinition.class);
+            assertEquals(virtualCommandDefinition, other);
         } catch (JsonProcessingException e) {
-            fail();
+            fail("JSON processing failed: " + e.getMessage(), e);
         }
     }
 
