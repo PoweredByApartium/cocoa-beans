@@ -14,14 +14,14 @@ import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * A command manager implementation for Spigot and Spigot-based platforms.
@@ -60,11 +60,35 @@ public class SpigotCommandManager extends CommandManager {
 
     @Override
     protected void addCommand(CommandNode commandNode, Command command) {
-        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
+        intoBukkitCommand(
                 command.value(),
+                List.of(command.aliases()),
                 Optional.ofNullable(commandNode.getClass().getAnnotation(Description.class)).map(Description::value).orElse(""),
                 Optional.ofNullable(commandNode.getClass().getAnnotation(Usage.class)).map(Usage::value).orElse(""),
-                Arrays.asList(command.aliases())
+                Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class)).map(Permission::value).orElse(null)
+        );
+    }
+
+    @Override
+    public void addVirtualCommand(VirtualCommandDefinition definition, Function<CommandContext, Boolean> callback) {
+        super.addVirtualCommand(definition, callback);
+        intoBukkitCommand(
+                definition.name(),
+                List.copyOf(definition.aliases()),
+                definition.info().getDescription().orElse(""),
+                definition.info().getUsage().orElse(""),
+                Optional.ofNullable(definition.metadata().get("permission"))
+                        .map(Object::toString)
+                        .orElse(null)
+        );
+    }
+
+    private void intoBukkitCommand(String name, List<String> aliases, String description, String usage, String permission) {
+        org.bukkit.command.Command cmd = new org.bukkit.command.Command(
+                name,
+                description,
+                usage,
+                aliases
         ) {
             @Override
             public boolean execute(CommandSender sender, String invoke, String[] args) {
@@ -81,7 +105,7 @@ public class SpigotCommandManager extends CommandManager {
             }
 
             @Override
-            public List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
+            public @NotNull List<String> tabComplete(CommandSender sender, String invoke, String[] args) {
                 {
                     String[] split = invoke.split(":");
                     invoke = split[1 % split.length];
@@ -91,8 +115,8 @@ public class SpigotCommandManager extends CommandManager {
             }
         };
 
-        Optional.ofNullable(commandNode.getClass().getAnnotation(Permission.class))
-                .map(Permission::value).ifPresent(cmd::setPermission);
+        if (permission != null)
+            cmd.setPermission(permission);
 
         Commands.getCommandMap().register(plugin.getName().toLowerCase(), cmd);
     }

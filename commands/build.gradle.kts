@@ -13,5 +13,6 @@ dependencies {
 
     testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api:${project.findProperty("versions.junit")}")
     testFixturesCompileOnly("org.jetbrains:annotations:${findProperty("versions.jetbrains.annotations")}")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:${project.findProperty("versions.jackson.annotations")}")
 
 }

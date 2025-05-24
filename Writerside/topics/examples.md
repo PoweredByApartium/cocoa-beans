@@ -16,3 +16,4 @@ You can find some examples of using the commands system in this page
 * [`Value Requirement`](value-requirement.md)
 * [`Named command arguments`](parameter-name.md)
 * [`Compound parser`](compound-parser.md)
+* [`Virtual command`](virtual-command.md)

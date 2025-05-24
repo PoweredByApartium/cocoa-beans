@@ -22,6 +22,7 @@
             <toc-element topic="value-requirement.md"/>
             <toc-element topic="parameter-name.md"/>
             <toc-element topic="compound-parser.md"/>
+            <toc-element topic="virtual-command.md"/>
         </toc-element>
     </toc-element>
     <toc-element topic="spigot.md">

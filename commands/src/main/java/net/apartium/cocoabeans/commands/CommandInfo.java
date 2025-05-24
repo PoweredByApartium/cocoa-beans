@@ -1,71 +1,59 @@
 package net.apartium.cocoabeans.commands;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @ApiStatus.AvailableSince("0.0.30")
 public class CommandInfo {
 
-    private final List<Description> descriptions = new ArrayList<>();
-    private final List<Usage> usages = new ArrayList<>();
-    private final List<LongDescription> longDescriptions = new ArrayList<>();
-
-    private Description description;
-    private Usage usage;
-    private LongDescription longDescription;
+    private final List<String> descriptions = new ArrayList<>();
+    private final List<String> usages = new ArrayList<>();
+    private final List<String[]> longDescriptions = new ArrayList<>();
 
     /**
      * Get the first description
      * @return the first description
      */
-    public Optional<Description> getDescription() {
+    @JsonIgnore
+    public Optional<String> getDescription() {
         if (descriptions.isEmpty())
             return Optional.empty();
 
-        if (description == null)
-            description = descriptions.get(0);
-
-        return Optional.of(description);
+        return Optional.of(descriptions.get(0));
     }
 
     /**
      * Get the first usage
      * @return the first usage
      */
-    public Optional<Usage> getUsage() {
+    @JsonIgnore
+    public Optional<String> getUsage() {
         if (usages.isEmpty())
             return Optional.empty();
 
-        if (usage == null)
-            usage = usages.get(0);
-
-        return Optional.of(usage);
+        return Optional.of(usages.get(0));
     }
 
     /**
      * Get the first long description
      * @return the first long description
      */
-    public Optional<LongDescription> getLongDescription() {
+    @JsonIgnore
+    public Optional<String[]> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
 
-        if (longDescription == null)
-            longDescription = longDescriptions.get(0);
-
-        return Optional.of(longDescription);
+        return Optional.of(longDescriptions.get(0));
     }
 
     /**
      * Get all descriptions
      * @return all descriptions
      */
-    public List<Description> getDescriptions() {
+    public List<String> getDescriptions() {
         return Collections.unmodifiableList(descriptions);
     }
 
@@ -73,7 +61,7 @@ public class CommandInfo {
      * Get all usages
      * @return all usages
      */
-    public List<Usage> getUsages() {
+    public List<String> getUsages() {
         return Collections.unmodifiableList(usages);
     }
 
@@ -81,35 +69,35 @@ public class CommandInfo {
      * Get all long descriptions
      * @return all long descriptions
      */
-    public List<LongDescription> getLongDescriptions() {
+    public List<String[]> getLongDescriptions() {
         return Collections.unmodifiableList(longDescriptions);
     }
 
     /* package-private */ void addDescription(final Description description, boolean first) {
         if (first) {
-            descriptions.add(0, description);
+            descriptions.add(0, description.value());
             return;
         }
 
-        descriptions.add(description);
+        descriptions.add(description.value());
     }
 
     /* package-private */ void addUsage(final Usage usage, boolean first) {
         if (first) {
-            usages.add(0, usage);
+            usages.add(0, usage.value());
             return;
         }
 
-        usages.add(usage);
+        usages.add(usage.value());
     }
 
     /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
         if (first) {
-            longDescriptions.add(0, longDescription);
+            longDescriptions.add(0, longDescription.value());
             return;
         }
 
-        longDescriptions.add(longDescription);
+        longDescriptions.add(longDescription.value());
     }
 
     /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {
@@ -135,5 +123,26 @@ public class CommandInfo {
         descriptions.addAll(other.descriptions);
         usages.addAll(other.usages);
         longDescriptions.addAll(other.longDescriptions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CommandInfo that = (CommandInfo) o;
+        return Objects.equals(descriptions, that.descriptions) && Objects.equals(usages, that.usages) && Objects.equals(longDescriptions, that.longDescriptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(descriptions, usages, longDescriptions);
+    }
+
+    @JsonIgnore
+    public static CommandInfo createFromAnnotations(Collection<Annotation[]> collection) {
+        CommandInfo info = new CommandInfo();
+        for (Annotation[] annotations : collection)
+            info.fromAnnotations(annotations, false);
+
+        return info;
     }
 }

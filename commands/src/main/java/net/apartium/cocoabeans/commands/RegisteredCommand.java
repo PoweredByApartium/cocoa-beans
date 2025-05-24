@@ -18,14 +18,16 @@ import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandVariant;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARIANT_COMPARATOR;
@@ -35,14 +37,16 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     private static final Comparator<HandleExceptionVariant> HANDLE_EXCEPTION_VARIANT_COMPARATOR = (a, b) -> Integer.compare(b.priority(), a.priority());
 
     public record RegisteredCommandNode(CommandNode listener, RequirementSet requirements) {}
+    public record VirtualCommandNode(VirtualCommandDefinition command, Function<CommandContext, Boolean> callback) {}
 
     private final CommandManager commandManager;
 
     private final List<RegisteredCommandNode> commands = new ArrayList<>();
+    private final List<VirtualCommandNode> virtualNodes = new ArrayList<>();
+
     private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
     private final CommandInfo commandInfo = new CommandInfo();
-
 
     RegisteredCommand(CommandManager commandManager) {
         this.commandManager = commandManager;
@@ -128,6 +132,68 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         }
 
+    }
+
+    private RequirementSet getVirtualRequirement(Map<String, Object> metadata) {
+        Set<Requirement> requirements = new HashSet<>();
+
+        for (Function<Map<String, Object>, Set<Requirement>> metadataHandler : commandManager.getMetadataHandlers()) {
+            Set<Requirement> apply = metadataHandler.apply(metadata);
+            if (apply != null)
+                requirements.addAll(apply);
+        }
+
+        return new RequirementSet(requirements);
+    }
+
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        commandInfo.fromCommandInfo(virtualCommandDefinition.info());
+
+        this.virtualNodes.add(new VirtualCommandNode(virtualCommandDefinition, callback));
+
+        List<Requirement> classRequirementsResult = new ArrayList<>();
+        CommandOption virtualOption = createCommandOption(
+                getVirtualRequirement(virtualCommandDefinition.metadata()),
+                this.commandBranchProcessor,
+                classRequirementsResult
+        );
+
+        List<RegisterArgumentParser<?>> parsersResult = new ArrayList<>();
+        for (VirtualCommandVariant variant : virtualCommandDefinition.variants()) {
+            List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(variant.variant());
+
+            CommandOption currentOption = virtualOption;
+            RequirementSet methodRequirements = getVirtualRequirement(variant.metadata());
+
+            for (int i = 0; i < tokens.size(); i++) {
+                CommandToken token = tokens.get(i);
+
+                if (token instanceof KeywordToken keywordToken) {
+                    currentOption = createKeywordOption(
+                            currentOption,
+                            variant.ignoreCase(),
+                            keywordToken,
+                            resolveRequirementsForBranch(i, methodRequirements),
+                            classRequirementsResult
+                    );
+                    continue;
+                }
+
+                if (token instanceof ArgumentParserToken argumentParserToken) {
+                    currentOption = createArgumentOption(
+                            currentOption,
+                            argumentParserToken,
+                            commandManager.argumentTypeHandlerMap,
+                            resolveRequirementsForBranch(i, methodRequirements),
+                            parsersResult,
+                            classRequirementsResult
+                    );
+                    continue;
+                }
+
+                throw new UnknownTokenException(token);
+            }
+        }
     }
 
     private void serializeExceptionHandles(Method method, CommandNode node, MethodHandles.Lookup publicLookup) throws IllegalAccessException {
@@ -262,7 +328,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             RequirementSet requirements = resolveRequirementsForBranch(i, methodRequirements);
 
             if (token instanceof KeywordToken keywordToken) {
-                currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand, keywordToken, requirements, requirementsResult);
+                currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand.ignoreCase(), keywordToken, requirements, requirementsResult);
                 continue;
             }
 
@@ -317,12 +383,12 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         return info;
     }
 
-    private CommandOption createKeywordOption(CommandOption currentCommandOption, SubCommand subCommand, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
-        Map<String, CommandBranchProcessor> keywordMap = subCommand.ignoreCase()
+    private CommandOption createKeywordOption(CommandOption currentCommandOption, boolean ignoreCase, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
+        Map<String, CommandBranchProcessor> keywordMap = ignoreCase
                 ? currentCommandOption.getKeywordIgnoreCaseMap()
                 : currentCommandOption.getKeywordMap();
 
-        String keyword = subCommand.ignoreCase()
+        String keyword = ignoreCase
                 ? keywordToken.getKeyword().toLowerCase()
                 : keywordToken.getKeyword();
 
@@ -436,6 +502,10 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     public List<RegisteredCommandNode> getCommands() {
         return commands;
+    }
+
+    public List<VirtualCommandNode> getVirtualNodes() {
+        return virtualNodes;
     }
 
     public CommandBranchProcessor getCommandBranchProcessor() {

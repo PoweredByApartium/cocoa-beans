@@ -7,6 +7,7 @@
 - [commands] Add Contextual Report for "Not Found" Results in `MapBasedParser` as `NoSuchElementInMapResponse`
 - [common] 📺 **Observable** api
 - [commands] Add ContextualMapBasedParser
+- [commands] Add `VirtualCommand`
 
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers

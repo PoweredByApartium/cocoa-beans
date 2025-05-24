@@ -16,8 +16,8 @@ public class CommandInfoForTest implements CommandNode {
     @Usage("just run it")
     @SubCommand
     public void info(Sender sender, CommandContext context) {
-        sender.sendMessage("Description: " + context.commandInfo().getDescription().map(Description::value).orElse(null));
-        sender.sendMessage("Usage: " + context.commandInfo().getUsage().map(Usage::value).orElse(null));
+        sender.sendMessage("Description: " + context.commandInfo().getDescription().orElse(null));
+        sender.sendMessage("Usage: " + context.commandInfo().getUsage().orElse(null));
     }
 
 }
