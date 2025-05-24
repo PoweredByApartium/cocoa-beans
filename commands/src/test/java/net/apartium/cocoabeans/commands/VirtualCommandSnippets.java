@@ -19,12 +19,12 @@ class VirtualCommandSnippets {
     void virtualCommandFactory() {
         VirtualCommandFactory virtualCommandFactory = new VirtualCommandFactory();
 
+        // Metadata mapper is for mapping requirement to metadata
         virtualCommandFactory.addMetadataMapper((element, metadata) -> {
-            Permission permission = element.getAnnotation(Permission.class);
+            Permission permission = element.getAnnotation(Permission.class); // Find permission
             if (permission != null)
                 metadata.put("permission", permission.value());
         });
-
     }
 
     @Test

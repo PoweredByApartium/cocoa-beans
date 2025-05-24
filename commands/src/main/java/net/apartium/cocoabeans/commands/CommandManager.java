@@ -266,11 +266,11 @@ public abstract class CommandManager {
             return;
 
 
-        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
+        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), cmd -> new RegisteredCommand(this));
         registeredCommand.addNode(commandNode);
 
         for (String alias : handler.aliases()) {
-            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
                     .addNode(commandNode);
 
         }
@@ -293,11 +293,11 @@ public abstract class CommandManager {
         if (virtualCommandDefinition == null || callback == null)
             return;
 
-        commandMap.computeIfAbsent(virtualCommandDefinition.name(), (cmd) -> new RegisteredCommand(this))
+        commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this))
                 .addVirtualCommand(virtualCommandDefinition, callback);
 
         for (String alias : virtualCommandDefinition.aliases())
-            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
                     .addVirtualCommand(virtualCommandDefinition, callback);
     }
 
