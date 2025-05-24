@@ -152,7 +152,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         this.virtualNodes.add(new VirtualCommandNode(virtualCommandDefinition, callback));
 
         List<Requirement> classRequirementsResult = new ArrayList<>();
-        final CommandOption virtualOption = createCommandOption(
+        CommandOption virtualOption = createCommandOption(
                 getVirtualRequirement(virtualCommandDefinition.metadata()),
                 this.commandBranchProcessor,
                 classRequirementsResult
