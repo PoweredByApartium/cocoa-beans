@@ -17,7 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class SimpleVirtualTest {
 
     private static final String VIRTUAL_COMMAND_DEFINITION_JSON = "{\"name\":\"simple\",\"aliases\":[],\"info\":{\"descriptions\":[\"A simple description\"],\"usages\":[],\"longDescriptions\":[]},\"variants\":[{\"info\":{\"descriptions\":[],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"<string>\",\"ignoreCase\":true,\"metadata\":{}},{\"info\":{\"descriptions\":[],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"set <int>\",\"ignoreCase\":true,\"metadata\":{}},{\"info\":{\"descriptions\":[\"Variant that clear stuff\"],\"usages\":[],\"longDescriptions\":[]},\"variant\":\"clear\",\"ignoreCase\":true,\"metadata\":{\"permission\":\"my.permission\"}}],\"metadata\":{\"permission\":\"meow\"}}";
-    
+
+    @Test
+    void notRealCommand() {
+        VirtualCommandFactory factory = new VirtualCommandFactory();
+        assertNull(factory.create(new CommandNode() {}));
+    }
+
     @Test
     void createSimpleVirtualFromCommandNode() {
         SimpleCommand simpleCommand = new SimpleCommand();
