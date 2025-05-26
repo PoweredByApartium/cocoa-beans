@@ -18,11 +18,26 @@ import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class PermissionFactory implements RequirementFactory {
 
     @Nullable
     @Override
     public Requirement getRequirement(GenericNode node, Object obj) {
+        if (obj instanceof Map<?, ?> map) {
+            Object permission = map.get("value");
+            Object invert = map.get("invert");
+
+            if (permission == null || invert == null)
+                return null;
+
+            if (permission instanceof String && invert instanceof Boolean)
+                return new PermissionImpl(null, (String) permission, (Boolean) invert);
+
+            return null;
+        }
+
         if (!(obj instanceof Permission permission))
             return null;
 

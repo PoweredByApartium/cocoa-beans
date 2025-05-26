@@ -16,10 +16,12 @@ import net.apartium.cocoabeans.commands.lexer.CommandLexer;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
+import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.function.Function;
 
 @ApiStatus.NonExtendable
 public abstract class CommandManager {
@@ -44,6 +46,8 @@ public abstract class CommandManager {
     /* package-private */ final Map<Class<? extends RequirementFactory>, RequirementFactory> requirementFactories = new HashMap<>();
 
     private final Map<Class<? extends Annotation>, RequirementFactory> externalRequirementFactories = new HashMap<>();
+    private final List<Function<Map<String, Object>, Set<Requirement>>> metadataHandlers = new ArrayList<>();
+
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     protected CommandManager(ArgumentMapper argumentMapper) {
@@ -141,13 +145,9 @@ public abstract class CommandManager {
             }
         }
 
-
         // fall back will be called even if sender doesn't meet requirements
-        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-            if (listener.listener().fallbackHandle(sender, commandName, args))
-                return true;
-
-        }
+        if (handleFallback(sender, commandName, args, registeredCommand))
+            return true;
 
         if (badCommandResponse != null) {
             if (handleError(null, sender, commandName, args, registeredCommand, badCommandResponse.getError()))
@@ -163,6 +163,12 @@ public abstract class CommandManager {
     private boolean handleFallback(Sender sender, String commandName, String[] args, RegisteredCommand registeredCommand) {
         for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
             if (listener.listener().fallbackHandle(sender, commandName, args))
+                return true;
+        }
+
+        CommandContext context = new CommandContext(sender, registeredCommand.getCommandInfo(), null, null, args, commandName, Map.of());
+        for (RegisteredCommand.VirtualCommandNode virtualNode : registeredCommand.getVirtualNodes()) {
+            if (virtualNode.callback().apply(context))
                 return true;
         }
 
@@ -183,10 +189,9 @@ public abstract class CommandManager {
                 return true;
         }
 
-        for (RegisteredCommand.RegisteredCommandNode listener : registeredCommand.getCommands()) {
-            if (listener.listener().fallbackHandle(sender, commandName, args))
-                return true;
-        }
+        if (handleFallback(sender, commandName, args, registeredCommand))
+            return true;
+
         return false;
     }
 
@@ -261,16 +266,39 @@ public abstract class CommandManager {
             return;
 
 
-        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), (cmd) -> new RegisteredCommand(this));
+        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), cmd -> new RegisteredCommand(this));
         registeredCommand.addNode(commandNode);
 
         for (String alias : handler.aliases()) {
-            commandMap.computeIfAbsent(alias.toLowerCase(), (cmd) -> new RegisteredCommand(this))
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
                     .addNode(commandNode);
 
         }
 
         addCommand(commandNode, handler);
+    }
+
+    @ApiStatus.AvailableSince("0.0.39")
+    public void addMetadataHandler(Function<Map<String, Object>, Set<Requirement>> metaDataHandler) {
+        metadataHandlers.add(metaDataHandler);
+    }
+
+    /**
+     * Add Virtual command with consumer that get called every time someone is running that command
+     * @param virtualCommandDefinition virtual command to be added
+     * @param callback function to be called each time the command has been run
+     */
+    @ApiStatus.AvailableSince("0.0.39")
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        if (virtualCommandDefinition == null || callback == null)
+            return;
+
+        commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this))
+                .addVirtualCommand(virtualCommandDefinition, callback);
+
+        for (String alias : virtualCommandDefinition.aliases())
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
+                    .addVirtualCommand(virtualCommandDefinition, callback);
     }
 
     public CommandInfo getCommandInfo(String commandName) {
@@ -289,6 +317,10 @@ public abstract class CommandManager {
 
     public CommandLexer getCommandLexer() {
         return commandLexer;
+    }
+
+    /* package-private */ List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
+        return Collections.unmodifiableList(metadataHandlers);
     }
 
     @ApiStatus.Internal
