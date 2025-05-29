@@ -27,7 +27,7 @@ public class SpigotCocoaBoard_1_8_R1 extends SpigotCocoaBoard {
 
     @Override
     protected void sendLineChange(int score, ComponentEntry entry) {
-        String line = entry.component() != null ? LegacyComponentSerializer.legacySection().serialize(entry.component().get()) : "";
+        String line = entry.component() != null && entry.component().get() != null ? LegacyComponentSerializer.legacySection().serialize(entry.component().get()) : "";
         String prefix;
         String suffix = "";
 

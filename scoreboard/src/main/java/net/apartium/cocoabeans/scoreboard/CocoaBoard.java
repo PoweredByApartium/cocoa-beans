@@ -538,7 +538,8 @@ public abstract class CocoaBoard {
                     ScoreboardAction.CREATE_OR_UPDATE,
                     getLineByScore(this.numberStyles, i)
             );
-            sendTeamPacket(i, TeamMode.CREATE, getLineByScore(i).component, null);
+            sendTeamPacket(i, TeamMode.CREATE, null, null);
+            sendLineChange(i);
         }
 
         return oldLines.size(); // No more than what we have

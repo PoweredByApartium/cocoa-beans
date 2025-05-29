@@ -41,35 +41,35 @@ public class CocoaBoardCommand implements CommandNode {
         this.boardManager = boardManager;
     }
 
-        @SubCommand("scoreboard")
+    @SubCommand("scoreboard")
     public void scoreboardTest(Player player) {
         player.sendMessage("Doing some test");
 
         CocoaBoard board = boardManager.getBoard(player);
     }
 
-        @SubCommand("scoreboard set <int> <strings>")
+    @SubCommand("scoreboard set <int> <strings>")
     public void setLine(Player player, int line, String text) {
         CocoaBoard board = boardManager.getBoard(player);
 
         board.line(line, Component.text(text));
     }
 
-        @SubCommand("scoreboard set <int> <quoted-string> <quoted-string>")
+    @SubCommand("scoreboard set <int> <quoted-string> <quoted-string>")
     public void setLine(Player player, int line, String text, String scoreDisplay) {
         CocoaBoard board = boardManager.getBoard(player);
 
         board.line(line, Component.text(text), Component.text(scoreDisplay));
     }
 
-        @SubCommand("scoreboard set display")
+    @SubCommand("scoreboard set display")
     public void setDisplay(Player player) {
         CocoaBoard board = boardManager.getBoard(player);
 
         board.setDisplay();
     }
 
-        @SubCommand("scoreboard clear")
+    @SubCommand("scoreboard clear")
     public void clear(Player player) {
         CocoaBoard board = boardManager.getBoard(player);
 
@@ -77,7 +77,7 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("Cleared");
     }
 
-        @SubCommand("scoreboard add-lines")
+    @SubCommand("scoreboard add-lines")
     public void addLines(Player player) {
         List<Observable<Component>> list = List.of(
                 boardManager.getNowFormated().map(s -> Component.text(s).color(NamedTextColor.GRAY)),
@@ -85,7 +85,6 @@ public class CocoaBoardCommand implements CommandNode {
                 Observable.immutable(Component.text("Welcome to Test")),
                 Observable.immutable(Component.text("Bla bla bla")),
                 Observable.empty(),
-                boardManager.getCurrentTick().map(tick -> MiniMessage.miniMessage().deserialize("<rainbow:!" + (tick % 50) + ">" + "|".repeat(50) + " </rainbow>")),
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
                 Observable.immutable(Component.text("§7example.com"))
@@ -97,13 +96,7 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("working");
     }
 
-//    @SubCommand("scoreboard heartbeat <boolean>")
-//    public void heartbeat(CommandSender sender, boolean b) {
-//        boardManager.setHeartbeatEnable(b);
-//        sender.sendMessage("heartbeat has been " + (b ? "enabled" : "disabled"));
-//    }
-
-        @SubCommand("scoreboard add-lines for")
+    @SubCommand("scoreboard add-lines for")
     public void addLinesFor(Player player) {
         List<Observable<Component>> list = List.of(
                 boardManager.getNowFormated().map(s -> Component.text(s).color(NamedTextColor.GRAY)),
@@ -111,7 +104,6 @@ public class CocoaBoardCommand implements CommandNode {
                 Observable.immutable(Component.text("Welcome to Test")),
                 Observable.immutable(Component.text("Bla bla bla")),
                 Observable.empty(),
-                boardManager.getCurrentTick().map(tick -> MiniMessage.miniMessage().deserialize("<rainbow:!" + (tick % 50) + ">" + "|".repeat(50) + " </rainbow>")),
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
                 Observable.immutable(Component.text("§7example.com"))
@@ -126,7 +118,7 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("working");
     }
 
-        @SubCommand("scoreboard set lines simple")
+    @SubCommand("scoreboard set lines simple")
     public void setLinesSimple(Player player) {
         CocoaBoard board = boardManager.getBoard(player);
 
@@ -145,7 +137,7 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("working");
     }
 
-        @SubCommand("scoreboard add <quoted-string>")
+    @SubCommand("scoreboard add <quoted-string>")
     public void addLine(Player player, String text) {
         player.sendMessage("mhm");
         boardManager.getBoard(player).add(Component.text(text));
@@ -153,7 +145,7 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("add line");
     }
 
-        @SubCommand("scoreboard add <quoted-string> <int>")
+    @SubCommand("scoreboard add <quoted-string> <int>")
     public void addLine(Player player, String text, int line) {
         boardManager.getBoard(player).add(Component.text(text), line);
 
@@ -182,34 +174,32 @@ public class CocoaBoardCommand implements CommandNode {
         );
     }
 
-        @SubCommand("scoreboard add <quoted-string> <color>")
+    @SubCommand("scoreboard add <quoted-string> <color>")
     public void addLine(Player player, String text, TextColor color) {
         boardManager.getBoard(player).add(Component.text(text), null, Style.style(color));
 
         player.sendMessage("add line");
     }
 
-        @SubCommand("scoreboard add <quoted-string> <color> <int>")
+    @SubCommand("scoreboard add <quoted-string> <color> <int>")
     public void addLine(Player player, String text, TextColor color, int line) {
         boardManager.getBoard(player).add(Component.text(text), null, Style.style(color), line);
 
         player.sendMessage("add line");
     }
 
-        @SubCommand("scoreboard set style <int> <color> <boolean>")
+    @SubCommand("scoreboard set style <int> <color> <boolean>")
     public void setStyle(Player player, int line, TextColor color, boolean boldOptional) {
         boardManager.getBoard(player).numberStyle(line, Style.style(color, boldOptional ? Set.of(TextDecoration.BOLD) : Set.of()));
-
-        CocoaBoard board = boardManager.getBoard(player);
     }
 
-        @SubCommand("money set <int>")
+    @SubCommand("money set <int>")
     public void setMoney(Player player, int money) {
         boardManager.getMoney().set(money);
         player.sendMessage("money has been set");
     }
 
-        @SubCommand("scoreboard remove <int>")
+    @SubCommand("scoreboard remove <int>")
     public void removeLines(Player player, int line) {
         CocoaBoard board = boardManager.getBoard(player);
         board.remove(line);
@@ -217,14 +207,14 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("Line has been removed");
     }
 
-        @SubCommand("name <string>")
+    @SubCommand("name <string>")
     public void nameTest(Player player, String name) {
         CocoaBoard board = boardManager.getBoard(player);
 
         board.title(Component.text(ChatColor.translateAlternateColorCodes('&', name)));
     }
 
-        @SubCommand("name animated <string>")
+    @SubCommand("name animated <string>")
     public void nameTestAnimated(Player player, String name) {
         CocoaBoard board = boardManager.getBoard(player);
 

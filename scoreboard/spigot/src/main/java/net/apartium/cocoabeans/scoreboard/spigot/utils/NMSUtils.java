@@ -74,8 +74,12 @@ public class NMSUtils {
     public static final Map<ObjectiveRenderType, Object> RENDER_TYPE_OBJECT_MAP;
 
     private static final Class<?> ENUM_SB_ACTION;
+    private static final Class<?> ENUM_VISIBILITY;
+    private static final Class<?> ENUM_COLLISION_RULE;
     private static final Object ENUM_SB_ACTION_CHANGE;
     private static final Object ENUM_SB_ACTION_REMOVE;
+    private static final Object ENUM_VISIBILITY_ALWAYS;
+    private static final Object ENUM_COLLISION_RULE_ALWAYS;
 
     private static final MethodHandle COMPONENT_METHOD;
     private static final Object EMPTY_COMPONENT;
@@ -239,7 +243,6 @@ public class NMSUtils {
                             }
                         })
                         .orElse(null);
-
             } else if (VERSION.isHigherThanOrEqual(V1_17)) {
                 Class<?> enumSbAction = findNMSClass("server", "ScoreboardServer$Action", "ServerScoreboard$Method").orElseThrow();
                 MethodType scoreType = MethodType.methodType(void.class, enumSbAction, String.class, String.class, int.class);
@@ -248,11 +251,23 @@ public class NMSUtils {
                 packetSbSetScore = lookup.findConstructor(packetSbScoreClass, MethodType.methodType(void.class));
             }
 
+            if (VERSION.isHigherThanOrEqual(V1_17)) {
+                ENUM_VISIBILITY = findNMSClass("world.scores", "ScoreboardTeamBase$EnumNameTagVisibility", "Team$Visibility").orElseThrow();
+                ENUM_COLLISION_RULE = findNMSClass("world.scores", "ScoreboardTeamBase$EnumTeamPush", "Team$CollisionRule").orElseThrow();
+
+                ENUM_VISIBILITY_ALWAYS = findEnumValueOf(ENUM_VISIBILITY, "ALWAYS", 0);
+                ENUM_COLLISION_RULE_ALWAYS = findEnumValueOf(ENUM_COLLISION_RULE, "ALWAYS", 0);
+            } else {
+                ENUM_VISIBILITY = null;
+                ENUM_COLLISION_RULE = null;
+                ENUM_VISIBILITY_ALWAYS = null;
+                ENUM_COLLISION_RULE_ALWAYS = null;
+            }
+
             PACKET_SB_UPDATE_SCORE = packetSbSetScore;
             PACKET_SB_RESET_SCORE = packetSbResetScore;
 
             SCORE_OPTIONAL_COMPONENTS = scoreOptionalComponents;
-
             FIXED_NUMBER_FORMAT = fixedFormatConstructor;
             STYLE_NUMBER_FORMAT = styledFormatConstructor;
             BLANK_NUMBER_FORMAT = blankNumberFormat;
@@ -481,7 +496,7 @@ public class NMSUtils {
     }
 
     public static Object toMinecraftComponent(Observable<Component> text) throws Throwable {
-        if (text == null || text == Observable.<Component>empty() || text.get() == Component.empty())
+        if (text == null || text == Observable.<Component>empty() || text.get() == Component.empty() || text.get() == null)
             return EMPTY_COMPONENT;
 
         if (!ADVENTURE_SUPPORT || VERSION.isLowerThan(V1_13))
@@ -494,7 +509,7 @@ public class NMSUtils {
 
     /* package-private */ static void setComponentField(Object packet, Observable<Component> component, int index) throws Throwable {
         if (VERSION.isLowerThan(V1_13)) {
-            setField(packet, String.class, LegacyComponentSerializer.legacySection().serialize(component.get()), index);
+            setField(packet, String.class, LegacyComponentSerializer.legacySection().serialize(Optional.ofNullable(component).map(Observable::get).orElse(Component.empty())), index);
             return;
         }
 
@@ -579,7 +594,8 @@ public class NMSUtils {
             setComponentField(team, suffix, 2); // Suffix
             setField(team, String.class, MODE_ALWAYS, 0); // Visibility // TODO add option to change it
             setField(team, String.class, MODE_ALWAYS, 1); // Collision // TODO add option to change it
-
+            setField(team, ENUM_VISIBILITY, ENUM_VISIBILITY_ALWAYS, 0); // 1.21.5+ // TODO add option to change it
+            setField(team, ENUM_COLLISION_RULE, ENUM_COLLISION_RULE_ALWAYS, 0); // 1.21.5+ // TODO add option to change it
             setField(packet, Optional.class, Optional.of(team));
         } else {
             setComponentField(packet, prefix, 2); // Prefix

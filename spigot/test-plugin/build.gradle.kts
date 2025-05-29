@@ -11,6 +11,12 @@ version = parent!!.version
 dependencies {
     compileOnly(libs.paper)
 
+    // TEMP - START
+    implementation(libs.adventure)
+    implementation(libs.adventure.legacy)
+    implementation(libs.adventure.minimessage)
+    // TEMP - END
+
     implementation(project(":spigot"))
     implementation(project(":spigot:spigot-1-8"))
     implementation(project(":spigot:spigot-1-20"))
