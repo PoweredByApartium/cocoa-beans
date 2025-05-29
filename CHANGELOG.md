@@ -7,6 +7,7 @@
 - [commands] Add Contextual Report for "Not Found" Results in `MapBasedParser` as `NoSuchElementInMapResponse`
 - [common] 📺 **Observable** api
 - [commands] Add ContextualMapBasedParser
+- [commands] Add `VirtualCommand`
 - [minecraft] Added minecraft module
 - [spigot] Scoreboard api
 
