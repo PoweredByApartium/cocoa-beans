@@ -8,11 +8,10 @@ version = parent!!.project.version
 
 dependencies {
     api(project.project(":common"))
-    testImplementation(platform("org.junit:junit-bom:${project.findProperty("versions.junit.bom")}"))
+    testImplementation(platform("org.junit:junit-bom:${libs.junit.bom.get().version}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:${project.findProperty("versions.jackson.annotations")}")
+    testImplementation(libs.jackson.databind)
 
-    testFixturesCompileOnly(platform(libs.junit.bom))
-    testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api")
+    testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api:${libs.junit.bom.get().version}")
     testFixturesCompileOnly(libs.jetbrains.annotations)
 }

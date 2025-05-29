@@ -98,6 +98,7 @@ public abstract class CocoaBoard {
 
         /**
          * If the entry is dirty or not
+         *
          * @return isDirty
          */
         public boolean isDirty() {
@@ -113,6 +114,7 @@ public abstract class CocoaBoard {
 
         /**
          * Return the component
+         *
          * @return component
          */
         public Observable<Component> component() {
@@ -122,10 +124,11 @@ public abstract class CocoaBoard {
 
     /**
      * Constructor for CocoaBoard
-     * @apiNote If you implement call CocoaBoard#createBoardAndDisplay
-     * @param objectiveId scoreboard objective id (Should be unique to support player receiving multiple CocoaBoard)
-     * @param title title of the scoreboard
+     *
+     * @param objectiveId            scoreboard objective id (Should be unique to support player receiving multiple CocoaBoard)
+     * @param title                  title of the scoreboard
      * @param isCustomScoreSupported whether the version support custom score display or not
+     * @apiNote If you implement call CocoaBoard#createBoardAndDisplay
      */
     protected CocoaBoard(String objectiveId, Observable<Component> title, boolean isCustomScoreSupported) {
         this.objectiveId = objectiveId;
@@ -171,7 +174,7 @@ public abstract class CocoaBoard {
                 continue;
 
             entry.clean();
-            sendLineChange(getScoreByLine(score), entry);
+            sendLineChange(getScoreByLine(score), entry, TeamMode.UPDATE);
         }
 
         if (isCustomScoreSupported) {
@@ -194,7 +197,8 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with simple component
-     * @param line line number (0 is the top)
+     *
+     * @param line      line number (0 is the top)
      * @param component the static content
      */
     public void line(int line, Component component) {
@@ -203,7 +207,8 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with observable component
-     * @param line line number (0 is the top)
+     *
+     * @param line      line number (0 is the top)
      * @param component the observable content
      */
     public void line(int line, Observable<Component> component) {
@@ -212,8 +217,9 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with simple component & scoreDisplay
-     * @param line line number (0 is the top)
-     * @param component the static content
+     *
+     * @param line         line number (0 is the top)
+     * @param component    the static content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      */
     public void line(int line, Component component, Component scoreDisplay) {
@@ -222,8 +228,9 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with simple component & scoreDisplay
-     * @param line line number (0 is the top)
-     * @param component the observable content
+     *
+     * @param line         line number (0 is the top)
+     * @param component    the observable content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      */
     public void line(int line, Observable<Component> component, Observable<Component> scoreDisplay) {
@@ -232,10 +239,11 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with simple component & scoreDisplay or custom numberStyle
-     * @param line line number (0 is the top)
-     * @param component the static content
+     *
+     * @param line         line number (0 is the top)
+     * @param component    the static content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
-     * @param numberStyle the side number style if scoreDisplay is null - Note: (+1.20.3)
+     * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
      * @apiNote If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Component component, Component scoreDisplay, Style numberStyle) {
@@ -244,10 +252,11 @@ public abstract class CocoaBoard {
 
     /**
      * Set a line in the scoreboard with simple component & scoreDisplay or custom numberStyle
-     * @param line line number (0 is the top)
-     * @param component the observable content
+     *
+     * @param line         line number (0 is the top)
+     * @param component    the observable content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
-     * @param numberStyle the side number style if scoreDisplay is null - Note: (+1.20.3)
+     * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
      * @apiNote If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Observable<Component> component, Observable<Component> scoreDisplay, Style numberStyle) {
@@ -538,8 +547,7 @@ public abstract class CocoaBoard {
                     ScoreboardAction.CREATE_OR_UPDATE,
                     getLineByScore(this.numberStyles, i)
             );
-            sendTeamPacket(i, TeamMode.CREATE, null, null);
-            sendLineChange(i);
+            sendLineChange(i, TeamMode.CREATE);
         }
 
         return oldLines.size(); // No more than what we have
@@ -553,7 +561,7 @@ public abstract class CocoaBoard {
         return getLineByScore(this.lines, score);
     }
 
-    protected  <E> E getLineByScore(List<E> lines, int score) {
+    protected <E> E getLineByScore(List<E> lines, int score) {
         return score < lines.size() ? lines.get(lines.size() - score - 1) : null;
     }
 
@@ -596,13 +604,20 @@ public abstract class CocoaBoard {
     }
 
     protected abstract void sendObjectivePacket(ObjectiveMode mode, Observable<Component> displayName);
-    protected abstract void sendDisplayPacket();
-    protected abstract void sendScorePacket(int score, Observable<Component> displayName, ScoreboardAction action, Style numberStyle);
-    protected abstract void sendTeamPacket(int score, TeamMode mode, Observable<Component> prefix, Observable<Component> suffix);
-    protected abstract void sendLineChange(int score, ComponentEntry line);
 
-    protected void sendLineChange(int score) {
-        sendLineChange(score, getLineByScore(score));
+    protected abstract void sendDisplayPacket();
+
+    protected abstract void sendScorePacket(int score, Observable<Component> displayName, ScoreboardAction action, Style numberStyle);
+
+    protected abstract void sendTeamPacket(int score, TeamMode mode, Observable<Component> prefix, Observable<Component> suffix);
+
+    protected abstract void sendLineChange(int score, ComponentEntry line, TeamMode mode);
+
+    protected void sendLineChange(int score, TeamMode mode) {
+        sendLineChange(score, getLineByScore(score), mode);
     }
 
+    protected void sendLineChange(int score) {
+        sendLineChange(score, TeamMode.UPDATE);
+    }
 }

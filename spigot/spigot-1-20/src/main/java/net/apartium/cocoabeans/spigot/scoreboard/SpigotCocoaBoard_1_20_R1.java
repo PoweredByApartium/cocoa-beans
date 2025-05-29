@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.scoreboard.spigot.SpigotCocoaBoard;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -18,8 +19,8 @@ public class SpigotCocoaBoard_1_20_R1 extends SpigotCocoaBoard {
     }
 
     @Override
-    protected void sendLineChange(int score, CocoaBoard.ComponentEntry line) {
-        sendTeamPacket(score, TeamMode.UPDATE, line.component(), null);
+    protected void sendLineChange(int score, CocoaBoard.ComponentEntry line, TeamMode mode) {
+        sendTeamPacket(score, mode, line.component(), null);
     }
 
 }

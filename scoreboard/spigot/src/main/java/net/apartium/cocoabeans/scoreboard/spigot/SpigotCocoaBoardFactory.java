@@ -24,7 +24,7 @@ public interface SpigotCocoaBoardFactory {
     }
 
     default SpigotCocoaBoard create(Player player, Observable<Component> title) {
-        return create(player, "cocoa-" + player.getUniqueId(), title);
+        return create(player, "cocoa-" + player.getUniqueId().toString().substring(0, 4), title);
     }
 
     default SpigotCocoaBoard create(Player player, Component title) {
@@ -32,7 +32,7 @@ public interface SpigotCocoaBoardFactory {
     }
 
     default SpigotCocoaBoard create(Player player) {
-        return create(player, "cocoa-" + player.getUniqueId(), toObservable(Component.text("CocoaBoard")));
+        return create(player, "cocoa-" + player.getUniqueId().toString().substring(0, 4), toObservable(Component.text("CocoaBoard")));
     }
 
 }

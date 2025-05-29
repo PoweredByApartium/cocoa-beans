@@ -78,8 +78,8 @@ public class MinestomCocoaBoard extends CocoaBoard {
     }
 
     @Override
-    protected void sendLineChange(int score, ComponentEntry line) {
-        sendTeamPacket(score, TeamMode.UPDATE, line.component(), null);
+    protected void sendLineChange(int score, ComponentEntry line, TeamMode mode) {
+        sendTeamPacket(score, mode, line.component(), null);
     }
 
     private String colorName(int score) {

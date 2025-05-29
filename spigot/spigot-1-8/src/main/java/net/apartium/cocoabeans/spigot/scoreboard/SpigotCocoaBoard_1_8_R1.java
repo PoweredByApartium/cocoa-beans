@@ -26,7 +26,7 @@ public class SpigotCocoaBoard_1_8_R1 extends SpigotCocoaBoard {
     }
 
     @Override
-    protected void sendLineChange(int score, ComponentEntry entry) {
+    protected void sendLineChange(int score, ComponentEntry entry, TeamMode mode) {
         String line = entry.component() != null && entry.component().get() != null ? LegacyComponentSerializer.legacySection().serialize(entry.component().get()) : "";
         String prefix;
         String suffix = "";
@@ -51,7 +51,7 @@ public class SpigotCocoaBoard_1_8_R1 extends SpigotCocoaBoard {
             suffix = suffix.substring(0, Math.min(MAX_LENGTH, suffix.length()));
         }
 
-        sendTeamPacket(score, TeamMode.UPDATE, toObservable(Component.text(prefix)), toObservable(Component.text(suffix)));
+        sendTeamPacket(score, mode, toObservable(Component.text(prefix)), toObservable(Component.text(suffix)));
     }
 
     private String addColor(String prefix, ChatColor chatColor) {
