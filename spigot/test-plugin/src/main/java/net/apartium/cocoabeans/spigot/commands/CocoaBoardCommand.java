@@ -153,6 +153,48 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("add line");
     }
 
+    @SubCommand("document scoreboard animated name <quoted-string>")
+    public void animatedName(Player player, String text) {
+        int stayTickStart = 60;
+        int characterDelay = 2;
+        int blinkTimes = 3;
+        int blinkLength = 7;
+        int textAnimationLength = text.length() * characterDelay;
+        int animationLength = textAnimationLength + stayTickStart + blinkTimes * blinkLength;
+
+        boardManager.getBoard(player).title(boardManager.getCurrentTick().map(tick -> {
+            int currentTick = tick % animationLength;
+            if (currentTick <= stayTickStart)
+                return Component.text(text)
+                        .style(Style.style(NamedTextColor.YELLOW, TextDecoration.BOLD));
+
+            if (textAnimationLength + stayTickStart <= currentTick)
+                return Component.text(text).style(Style.style(
+                        ((currentTick - textAnimationLength - stayTickStart) / blinkLength) % 2 == 0
+                                ? NamedTextColor.WHITE
+                                : NamedTextColor.YELLOW,
+                        TextDecoration.BOLD
+                ));
+
+            int index = (currentTick - stayTickStart) / characterDelay;
+            if (index == 0)
+                return Component.text(ChatColor.GOLD.toString() + ChatColor.BOLD + text.charAt(0)
+                        + ChatColor.YELLOW + ChatColor.BOLD + text.substring(1)
+                );
+
+            if (index == text.length() - 1)
+                return Component.text(
+                        ChatColor.WHITE.toString() + ChatColor.BOLD + text.substring(0, text.length() - 1)
+                                + ChatColor.GOLD + ChatColor.BOLD + text.charAt(text.length() - 1)
+                );
+
+            return Component.text(ChatColor.WHITE.toString() + ChatColor.BOLD + text.substring(0, index)
+                    + ChatColor.GOLD + ChatColor.BOLD + text.charAt(index)
+                    + ChatColor.YELLOW + ChatColor.BOLD + text.substring(index + 1)
+            );
+        }));
+    }
+
     @SubCommand("document scoreboard typing <quoted-string>")
     public void addTyping(Player player, String text) {
         int stayTick = 50;
@@ -169,7 +211,7 @@ public class CocoaBoardCommand implements CommandNode {
                 return Component.text(text);
 
             if (currentTick >= stayTick * 2 + textAnimationLength)
-                return Component.text(typeByIndex(text, text.length() - (currentTick - stayTick * 2 - textAnimationLength) / characterDelay));
+                return Component.text(typeByIndex(text, text.length() - 1 - (currentTick - stayTick * 2 - textAnimationLength) / characterDelay));
 
             return Component.text(typeByIndex(text, (currentTick - stayTick) / characterDelay));
         }));

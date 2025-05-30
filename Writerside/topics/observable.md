@@ -246,4 +246,4 @@ dependencies {
     * [](set-observable.md) <sub> Set that could be observer </sub>
 * [](observer.md) <sub><a href="https://refactoring.guru/design-patterns/observer"> Observer pattern </a></sub>
 * [](watcher.md) <sub> Observer any changes and run the function on heartbeat </sub>
-* [Javadocs](https://cocoa-beans.apartium.net/%version%/common/net/apartium/cocoabeans/state/package-summary.html)
+* [Javadocs](https://cocoa-beans.apartium.net/%version%/state/net/apartium/cocoabeans/state/package-summary.html)
