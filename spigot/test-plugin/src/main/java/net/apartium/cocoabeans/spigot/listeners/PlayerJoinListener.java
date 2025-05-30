@@ -3,7 +3,6 @@ package net.apartium.cocoabeans.spigot.listeners;
 import net.apartium.cocoabeans.scoreboard.CocoaBoard;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
 import net.apartium.cocoabeans.spigot.state.DoubleTimeJumpObservable;
-import net.apartium.cocoabeans.state.MutableObservable;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,22 +27,8 @@ public class PlayerJoinListener implements Listener {
                 .map(bpm -> Component.text(bpm + " bpm", NamedTextColor.RED));
     }
 
-    public static double lerp(double a, double b, double t) {
-        return a + (b - a) * t;
-    }
-
-    public static TextColor lerp(TextColor a, TextColor b, double t) {
-        return TextColor.color(
-                (int) lerp(a.red(), b.red(), t),
-                (int) lerp(a.green(), b.green(), t),
-                (int) lerp(a.blue(), b.blue(), t)
-        );
-    }
-
     @EventHandler
     public void on(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
         CocoaBoard board = boardManager.getBoard(event.getPlayer());
 
         board.lines(List.of(

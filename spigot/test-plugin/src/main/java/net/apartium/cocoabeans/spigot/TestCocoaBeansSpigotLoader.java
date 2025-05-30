@@ -20,16 +20,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class TestCocoaBeansSpigotLoader extends JavaPlugin {
 
-//    private SpigotProvidedState spigotProvidedState;
+    private SpigotProvidedState spigotProvidedState;
     private CommandManager commandManager;
     private BoardManager boardManager;
 
     @Override
     public void onEnable() {
-//        spigotProvidedState = new SpigotProvidedState(this);
-//        spigotProvidedState.startCprTask();
+        spigotProvidedState = new SpigotProvidedState(this);
+        spigotProvidedState.startCprTask();
 
-        boardManager = new BoardManager();
+        boardManager = new BoardManager(spigotProvidedState);
         boardManager.initialize(this);
 
         commandManager = new SpigotCommandManager(this);

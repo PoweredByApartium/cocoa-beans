@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -33,8 +34,8 @@ public class SpigotProvidedState {
     public SpigotProvidedState(JavaPlugin plugin) {
         this.plugin = plugin;
 
-        this.onlinePlayers = Observable.set(getOnlinePlayers());
-        this.currentTick = Observable.mutable(Bukkit.getCurrentTick());
+        this.onlinePlayers = Observable.set(new HashSet<>(getOnlinePlayers()));
+        this.currentTick = Observable.mutable(0);
 
         playerQuitListener = new PlayerQuitListener(onlinePlayers);
         playerJoinListener = new PlayerJoinListener(onlinePlayers);
@@ -44,7 +45,7 @@ public class SpigotProvidedState {
     }
 
     public void heartbeat() {
-        this.currentTick.set(Bukkit.getCurrentTick());
+        this.currentTick.set(this.currentTick.get() + 1);
     }
 
     public void startCprTask() {

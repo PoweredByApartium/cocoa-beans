@@ -580,10 +580,20 @@ public abstract class CocoaBoard {
 
         sendObjectivePacket(ObjectiveMode.REMOVE, null);
 
-        lines.forEach(ComponentEntry::delete);
+        lines.forEach(line -> {
+            if (line == null)
+                return;
+
+            line.delete();
+        });
         lines.clear();
 
-        scores.forEach(ComponentEntry::delete);
+        scores.forEach(score -> {
+            if (score == null)
+                return;
+
+            score.delete();
+        });
         scores.clear();
 
         numberStyles.clear();

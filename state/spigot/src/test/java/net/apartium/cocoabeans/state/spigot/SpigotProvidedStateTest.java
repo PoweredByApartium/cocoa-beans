@@ -56,12 +56,10 @@ class SpigotProvidedStateTest {
         Observable<Integer> currentTickObservable = providedState.currentTickObservable();
         assertEquals(0, currentTickObservable.get());
         providedState.heartbeat();
-        assertEquals(0, currentTickObservable.get());
-
-        server.setCurrentTick(1);
-        assertEquals(0, currentTickObservable.get());
+        assertEquals(1, currentTickObservable.get());
+        assertEquals(1, currentTickObservable.get());
 
         providedState.heartbeat();
-        assertEquals(1, currentTickObservable.get());
+        assertEquals(2, currentTickObservable.get());
     }
 }

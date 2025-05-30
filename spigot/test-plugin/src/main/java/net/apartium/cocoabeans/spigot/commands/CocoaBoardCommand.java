@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 @WithParser(value = QuotedStringParser.class)
 @WithParser(value = StringParser.class, priority = -1)
 @SenderLimit(SenderType.PLAYER)
@@ -45,7 +44,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void scoreboardTest(Player player) {
         player.sendMessage("Doing some test");
 
-        CocoaBoard board = boardManager.getBoard(player);
+        boardManager.getBoard(player);
     }
 
     @SubCommand("scoreboard set <int> <strings>")
@@ -85,6 +84,7 @@ public class CocoaBoardCommand implements CommandNode {
                 Observable.immutable(Component.text("Welcome to Test")),
                 Observable.immutable(Component.text("Bla bla bla")),
                 Observable.empty(),
+                boardManager.getCurrentTick().map(tick -> MiniMessage.miniMessage().deserialize("<rainbow:" + tick + ">" + "|".repeat(16) + "</rainbow>")),
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
                 Observable.immutable(Component.text("§7example.com"))
@@ -104,6 +104,7 @@ public class CocoaBoardCommand implements CommandNode {
                 Observable.immutable(Component.text("Welcome to Test")),
                 Observable.immutable(Component.text("Bla bla bla")),
                 Observable.empty(),
+                boardManager.getCurrentTick().map(tick -> MiniMessage.miniMessage().deserialize("<rainbow:" + tick + ">" + "|".repeat(16) + "</rainbow>")),
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
                 Observable.immutable(Component.text("§7example.com"))
@@ -219,7 +220,7 @@ public class CocoaBoardCommand implements CommandNode {
         CocoaBoard board = boardManager.getBoard(player);
 
         board.title(boardManager.getCurrentTick()
-                .map((tick) -> Component.text(animated(name, ChatColor.WHITE, ChatColor.GOLD, ChatColor.YELLOW, 60, 3, tick)))
+                .map(tick -> Component.text(animated(name, ChatColor.WHITE, ChatColor.GOLD, ChatColor.YELLOW, 60, 3, tick)))
         );
     }
 

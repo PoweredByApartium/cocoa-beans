@@ -6,7 +6,6 @@ import net.apartium.cocoabeans.scoreboard.spigot.SpigotCocoaBoard;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
