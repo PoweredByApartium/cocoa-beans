@@ -4,7 +4,7 @@
 
 <instance-profile id="cb"
                  name="Cocoa Beans"
-                 start-page="Home.md">
+                 start-page="home.md">
 
     <toc-element topic="home.md"/>
     <toc-element topic="commands.md">
