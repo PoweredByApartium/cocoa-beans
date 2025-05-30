@@ -153,6 +153,39 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("add line");
     }
 
+    @SubCommand("document scoreboard typing <quoted-string>")
+    public void addTyping(Player player, String text) {
+        int stayTick = 50;
+        int characterDelay = 2;
+        int textAnimationLength = text.length() * characterDelay;
+        int animationLength = textAnimationLength * 2 + stayTick * 2;
+
+        boardManager.getBoard(player).add(boardManager.getCurrentTick().map(tick -> {
+            int currentTick = tick % animationLength;
+            if (currentTick <= stayTick)
+                return Component.empty();
+
+            if (textAnimationLength + stayTick <= currentTick && currentTick <= textAnimationLength + stayTick * 2)
+                return Component.text(text);
+
+            if (currentTick >= stayTick * 2 + textAnimationLength)
+                return Component.text(typeByIndex(text, text.length() - (currentTick - stayTick * 2 - textAnimationLength) / characterDelay));
+
+            return Component.text(typeByIndex(text, (currentTick - stayTick) / characterDelay));
+        }));
+
+    }
+
+    private String typeByIndex(String text, int index) {
+        if (index == 0)
+            return "§k" + text.charAt(0);
+
+        if (index == text.length() - 1)
+            return text.substring(0, text.length() - 1) + "§k" + text.charAt(text.length() - 1);
+
+        return text.substring(0, index) + "§k" + text.charAt(index);
+    }
+
     @SourceParser(keyword = "color", clazz = TextColor.class, resultMaxAgeInMills = -1, ignoreCase = true)
     public Map<String, TextColor> getColor() {
         return Map.ofEntries(

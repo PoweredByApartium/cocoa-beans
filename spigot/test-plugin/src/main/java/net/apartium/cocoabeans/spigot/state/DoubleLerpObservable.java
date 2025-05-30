@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-public class DoubleTimeJumpObservable implements Observable<Double>, Observer {
+public class DoubleLerpObservable implements Observable<Double>, Observer {
 
     private final Observable<Double> source;
     private final Observable<Integer> tick;
@@ -23,7 +23,7 @@ public class DoubleTimeJumpObservable implements Observable<Double>, Observer {
 
     private boolean dirty = false;
 
-    public DoubleTimeJumpObservable(Observable<Double> source, Observable<Integer> tick, Duration duration, Duration tickRate) {
+    public DoubleLerpObservable(Observable<Double> source, Observable<Integer> tick, Duration duration, Duration tickRate) {
         this.source = source;
         this.tick = tick;
         last = this.source.get();
