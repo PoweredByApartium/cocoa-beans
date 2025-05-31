@@ -13,8 +13,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import static net.apartium.cocoabeans.state.animation.FadingColorBlinkObservable.getComponent;
+import static net.apartium.cocoabeans.state.animation.AnimationHelpers.fading;
 
+/**
+ * An animation implementation based on the state api.
+ * See the relevant docs for a demonstration.
+ */
 @ApiStatus.AvailableSince("0.0.39")
 public class FadingColorInOutObservable implements Observable<Component>, Observer {
 
@@ -39,6 +43,17 @@ public class FadingColorInOutObservable implements Observable<Component>, Observ
     private String lastText = null;
     private long lastTick = -1;
 
+    /**
+     * Constructs a new instance of this class
+     * @param textObservable original text
+     * @param nowObservable current time observable
+     * @param stayAtStart time to start at start of cycle
+     * @param stayAtEnd time to start at end of cycle
+     * @param characterDelay delay of transition between each character
+     * @param in text style for in
+     * @param fade text style for fade
+     * @param out text style for out
+     */
     public FadingColorInOutObservable(Observable<String> textObservable, Observable<Instant> nowObservable, Duration stayAtStart, Duration stayAtEnd, Duration characterDelay, Style in, Style fade, Style out) {
         this.textObservable = textObservable;
         this.nowObservable = nowObservable;
@@ -59,6 +74,9 @@ public class FadingColorInOutObservable implements Observable<Component>, Observ
         this.nowObservable.observe(this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Component get() {
         if (!dirty)
@@ -94,20 +112,29 @@ public class FadingColorInOutObservable implements Observable<Component>, Observ
     }
 
     private Component fadeByIndex(String text, int index) {
-        return getComponent(text, index, fade, in, out);
+        return fading(text, index, fade, in, out);
 
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void observe(Observer observer) {
         observers.add(observer);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean removeObserver(Observer observer) {
         return observers.remove(observer);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void flagAsDirty(Observable<?> observable) {
         if (textObservable != observable && nowObservable != observable)

@@ -20,11 +20,13 @@ class FixedDoubleLerpObservableTest {
         MutableObservable<Double> source = Observable.mutable(0.0);
         MutableObservable<Instant> now = Observable.mutable(Instant.ofEpochMilli(0L));
 
+        Duration tickRate = Duration.ofMillis(50);
+        Duration duration = Duration.ofMillis(1000);
+
         FixedDoubleLerpObservable lerpObservable = new FixedDoubleLerpObservable(
                 source,
                 now,
-                Duration.ofMillis(1000),
-                Duration.ofMillis(50)
+                duration
         );
 
         assertEquals(0, lerpObservable.get());
@@ -32,8 +34,9 @@ class FixedDoubleLerpObservableTest {
         assertEquals(0, lerpObservable.get());
 
         for (int i = 1; i <= 20; i++) {
-            now.set(Instant.ofEpochMilli(50 * i));
-            assertEquals(Mathf.lerp(0, 100, i * 0.05), lerpObservable.get());
+            now.set(Instant.ofEpochMilli(tickRate.toMillis() * i));
+            double millis = Duration.between(Instant.ofEpochMilli(0), now.get()).toMillis();
+            assertEquals(Mathf.lerp(0, 100, Math.min(1.0, Math.max(0.0, millis / duration.toMillis()))), lerpObservable.get());
         }
 
         Observable<Double> map = lerpObservable.map(d -> d);
@@ -42,6 +45,14 @@ class FixedDoubleLerpObservableTest {
         assertEquals(Mathf.lerp(100, 0, 0), map.get());
         now.set(Instant.ofEpochMilli(50));
         assertEquals(Mathf.lerp(100, 0, 0.05), map.get());
+        now.set(Instant.ofEpochMilli(56));
+        assertEquals(Mathf.lerp(100, 0, 0.056), map.get());
+
+        for (int i = 0; i <= 1000; i++) {
+            now.set(Instant.ofEpochMilli(i));
+            assertEquals(Mathf.lerp(100, 0, i / 1000.0), map.get());
+
+        }
 
         lerpObservable.flagAsDirty(map);
 
