@@ -18,10 +18,12 @@ The Scoreboard Api work with [Observable Api](observable.md) as it accept observ
 
 (as for now we only support sidebar scoreboard but there are plan to make it work with list and below-name also with teams)
 
-## 
+## Showcase
 
 <video src="scoreboard-showcase.mp4" preview-src="scoreboard-showcase.png" />
+
 <video src="scoreboard-helloworld.mp4" preview-src="scoreboard-hellowolrd.png" />
+
 <video src="scoreboard-system-info.mp4" preview-src="scoreboard-system-info.png" />
 
 ## Usage
