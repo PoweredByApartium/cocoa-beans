@@ -8,7 +8,6 @@ plugins {
 val alternateModuleNames = mapOf(
     "spigot-1-8" to "spigot-1.8",
     "spigot-1-20" to "spigot-1.20",
-    "spigot-platform" to "commands-spigot",
 )
 
 val root = project.rootProject == project
