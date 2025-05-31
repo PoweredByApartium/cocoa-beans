@@ -252,8 +252,7 @@ public class CocoaBoardCommand implements CommandNode {
         boardManager.getBoard(player).add(new FixedDoubleLerpObservable(
                 boardManager.getMoney().map(i -> i + 0.0),
                 boardManager.getNow(),
-                Duration.ofMillis(750),
-                Duration.ofMillis(50)
+                Duration.ofMillis(750)
         ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
                 .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
         ));
@@ -264,8 +263,7 @@ public class CocoaBoardCommand implements CommandNode {
         boardManager.getBoard(target).add(new FixedDoubleLerpObservable(
                 boardManager.getMoney().map(i -> i + 0.0),
                 boardManager.getNow(),
-                Duration.ofMillis(750),
-                Duration.ofMillis(50)
+                Duration.ofMillis(750)
         ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
                 .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
         ));

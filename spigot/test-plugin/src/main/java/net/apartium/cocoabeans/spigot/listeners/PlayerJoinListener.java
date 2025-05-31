@@ -35,7 +35,7 @@ public class PlayerJoinListener implements Listener {
                 heartbeatComponent,
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
-                new FixedDoubleLerpObservable(boardManager.getMoney().map(i -> i + 0.0), boardManager.getNow(), Duration.ofMillis(750), Duration.ofMillis(50))
+                new FixedDoubleLerpObservable(boardManager.getMoney().map(i -> i + 0.0), boardManager.getNow(), Duration.ofMillis(750))
                         .map(money -> Component.text("Money ", NamedTextColor.GRAY).append(Component.text(String.format("%.1f", money), NamedTextColor.RED))),
                 Observable.immutable(Component.text("§7example.com"))
         ));
