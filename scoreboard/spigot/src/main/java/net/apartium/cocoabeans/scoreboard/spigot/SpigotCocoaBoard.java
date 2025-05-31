@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.scoreboard.spigot;
 
 
 import net.apartium.cocoabeans.scoreboard.*;
-import net.apartium.cocoabeans.scoreboard.spigot.utils.NMSUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;

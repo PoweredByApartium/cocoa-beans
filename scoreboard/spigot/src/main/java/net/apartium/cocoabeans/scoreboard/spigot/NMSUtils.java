@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.spigot.utils;
+package net.apartium.cocoabeans.scoreboard.spigot;
 
 import net.apartium.cocoabeans.scoreboard.*;
 import net.apartium.cocoabeans.spigot.ServerUtils;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
 
-public class NMSUtils {
+/* package-private */ class NMSUtils {
 
     private static final Map<Class<?>, Field[]> PACKETS = new HashMap<>(16);
 
