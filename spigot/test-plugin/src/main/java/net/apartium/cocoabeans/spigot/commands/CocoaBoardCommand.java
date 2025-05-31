@@ -29,7 +29,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -255,6 +254,55 @@ public class CocoaBoardCommand implements CommandNode {
                 Duration.ofMillis(750)
         ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
                 .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
+        ));
+    }
+
+    @SubCommand("scoreboard onJoin")
+    public void onJoin(Player player) {
+        onJoin(boardManager.getBoard(player));
+    }
+
+    public void onJoin(CocoaBoard board) {
+        board.title(new FadingColorInOutObservable(
+                Observable.immutable("ProjectZero"),
+                boardManager.getNow(),
+                Duration.ofSeconds(3),
+                Duration.ofMillis(750),
+                Duration.ofMillis(2 * 50L),
+                Style.style(NamedTextColor.GREEN, TextDecoration.BOLD),
+                Style.style(NamedTextColor.DARK_GREEN, TextDecoration.BOLD),
+                Style.style(NamedTextColor.DARK_GREEN, TextDecoration.BOLD)
+        ));
+
+        board.add(Component.text("Simple scoreboard animations"));
+
+        board.add(new FixedDoubleLerpObservable(
+                boardManager.getMoney().map(i -> i + 0.0),
+                boardManager.getNow(),
+                Duration.ofMillis(750)
+        ).map(money -> Component.text("Money ")
+                .color(NamedTextColor.GRAY)
+                .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
+        ));
+
+        board.add(new TypingObservable(
+                Observable.immutable("Hello, World!"),
+                boardManager.getNow(),
+                Duration.ofMillis(50 * 50L),
+                Duration.ofMillis(50 * 50L),
+                Duration.ofMillis(2 * 50L),
+                "§k"
+        ).map(Component::text));
+
+        board.add(new FadingColorInOutObservable(
+                Observable.immutable("example.com"),
+                boardManager.getNow(),
+                Duration.ofSeconds(3),
+                Duration.ofMillis(750),
+                Duration.ofMillis(2 * 50L),
+                Style.style(NamedTextColor.YELLOW, TextDecoration.BOLD),
+                Style.style(NamedTextColor.GOLD, TextDecoration.BOLD),
+                Style.style(NamedTextColor.WHITE, TextDecoration.BOLD)
         ));
     }
 

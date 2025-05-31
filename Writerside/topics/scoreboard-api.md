@@ -289,4 +289,5 @@ dependencies {
 </tabs>
 
 ## What next
+* [](animation.md)
 * [Javadocs](https://cocoa-beans.apartium.net/%version%/scoreboard/net/apartium/cocoabeans/scoreboard/package-summary.html)

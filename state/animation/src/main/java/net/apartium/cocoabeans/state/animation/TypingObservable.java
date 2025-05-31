@@ -10,6 +10,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+/**
+ * An animation implementation based on the state api.
+ * See the relevant docs for a demonstration.
+ */
 @ApiStatus.AvailableSince("0.0.39")
 public class TypingObservable implements Observable<String>, Observer {
 
@@ -31,6 +35,15 @@ public class TypingObservable implements Observable<String>, Observer {
 
     private final String prefix;
 
+    /**
+     * Constructs a new instance of this class
+     * @param textObservable source number
+     * @param nowObservable current time observable
+     * @param stayAtStart time to start at start of cycle
+     * @param stayAtEnd time to start at end of cycle
+     * @param writingSpeedPerCharacter writing speed per character
+     * @param prefix add before each new character
+     */
     public TypingObservable(Observable<String> textObservable, Observable<Instant> nowObservable, Duration stayAtStart, Duration stayAtEnd, Duration writingSpeedPerCharacter, String prefix) {
         this.textObservable = textObservable;
         this.nowObservable = nowObservable;
@@ -49,6 +62,9 @@ public class TypingObservable implements Observable<String>, Observer {
         this.nowObservable.observe(this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public String get() {
         if (!dirty)
@@ -96,16 +112,25 @@ public class TypingObservable implements Observable<String>, Observer {
         return text.substring(0, index) + prefix + text.charAt(index);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void observe(Observer observer) {
         observers.add(observer);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean removeObserver(Observer observer) {
         return observers.remove(observer);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void flagAsDirty(Observable<?> observable) {
         if (textObservable != observable && nowObservable != observable)

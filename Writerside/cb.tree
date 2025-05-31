@@ -41,6 +41,7 @@
         </toc-element>
         <toc-element topic="observer.md"/>
         <toc-element topic="watcher.md"/>
+        <toc-element topic="animation.md"/>
     </toc-element>
     <toc-element topic="scoreboard-api.md"/>
     <toc-element topic="spaces.md"/>
