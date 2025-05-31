@@ -2,8 +2,8 @@ package net.apartium.cocoabeans.spigot.listeners;
 
 import net.apartium.cocoabeans.scoreboard.CocoaBoard;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
-import net.apartium.cocoabeans.spigot.state.DoubleLerpObservable;
 import net.apartium.cocoabeans.state.Observable;
+import net.apartium.cocoabeans.state.animation.FixedDoubleLerpObservable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
@@ -35,7 +35,7 @@ public class PlayerJoinListener implements Listener {
                 heartbeatComponent,
                 boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
                 Observable.empty(),
-                new DoubleLerpObservable(boardManager.getMoney().map(i -> i + 0.0), boardManager.getCurrentTick(), Duration.ofMillis(750), Duration.ofMillis(50))
+                new FixedDoubleLerpObservable(boardManager.getMoney().map(i -> i + 0.0), boardManager.getNow(), Duration.ofMillis(750), Duration.ofMillis(50))
                         .map(money -> Component.text("Money ", NamedTextColor.GRAY).append(Component.text(String.format("%.1f", money), NamedTextColor.RED))),
                 Observable.immutable(Component.text("§7example.com"))
         ));

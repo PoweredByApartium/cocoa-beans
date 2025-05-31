@@ -26,8 +26,87 @@ The Scoreboard Api work with [Observable Api](observable.md) as it accept observ
 
 <video src="scoreboard-system-info.mp4" preview-src="scoreboard-system-info.png" />
 
-## Usage
+<img src="scoreboard-animation.gif"  alt="Scoreboard-animation.gif"/>
 
+## Usage
+First we will want to create BoardManager
+<tabs>
+<tab title="BoardManager.java">
+
+```java
+public class BoardManager {
+    private final Map<UUID, CocoaBoard> boards = new HashMap<>();
+    private final MutableObservable<Long> heartbeatTime;
+    private BukkitTask cprTask;
+
+    public BoardManager() {
+        this.heartbeatTime = Observable.mutable(0L);
+    }
+
+    public void initialize(JavaPlugin plugin) {
+        if (cprTask != null)
+            return;
+
+        cprTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                heartbeat();
+            }
+        }.runTaskTimer(plugin, 0, 1);
+    }
+
+    public void heartbeat() {
+        long startTime = System.currentTimeMillis();
+
+        for (CocoaBoard board : boards.values())
+            board.heartbeat();
+
+        long endTime = System.currentTimeMillis();
+        
+        // can be used to get duration of heartbeat
+        heartbeatTime.set(endTime - startTime); 
+    }
+
+    public CocoaBoard getBoard(Player player) {
+        return boards.computeIfAbsent(
+                player.getUniqueId(), 
+                uuid -> SpigotCocoaBoard.create(
+                        player, // Player to create scoreboard for
+                        "example", // Objective id
+                        Component.text("Test") // name could be observable
+                )
+        );
+    }
+
+    public void unregisterBoard(UUID targetUUID) {
+        CocoaBoard board = boards.remove(targetUUID);
+        if (board != null)
+            board.delete();
+    }
+    
+    public void disable() {
+        if (cprTask == null)
+            return;
+
+        cprTask.cancel();
+        cprTask = null;
+
+        for (CocoaBoard board : boards.values())
+            board.delete();
+
+
+        boards.clear();
+    }
+
+    // Getters
+    public Observable<Long> getHeartbeatTime() {
+        return heartbeatTime;
+    }
+}
+```
+
+</tab>
+</tabs>
 
 ## Advantages
 

@@ -26,6 +26,7 @@ public class BoardManager {
     private final Observable<Integer> playerCount;
 
     private final Observable<Integer> currentTick;
+    private final Observable<Instant> now;
     private final MutableObservable<Long> heartbeatTime;
 
     private final MutableObservable<Integer> money;
@@ -33,6 +34,7 @@ public class BoardManager {
 
     public BoardManager(SpigotProvidedState spigotProvidedState) {
         currentTick = spigotProvidedState.currentTickObservable();
+        now = spigotProvidedState.getNow();
         heartbeatTime = Observable.mutable(0L);
         money = Observable.mutable(100);
         playerCount = spigotProvidedState.getOnlinePlayersObservable().map(Collection::size);
@@ -55,20 +57,20 @@ public class BoardManager {
     }
 
     public void unregisterBoard(UUID targetUUID) {
-        boards.remove(targetUUID);
+        CocoaBoard board = boards.remove(targetUUID);
+        if (board != null)
+            board.delete();
     }
 
     public void heartbeat() {
         long startTime = System.currentTimeMillis();
-
-        boards.values().forEach(CocoaBoard::heartbeat);
-        long endTime = System.currentTimeMillis();
-        heartbeatTime.set(endTime - startTime);
-
         nowState.set(Instant.now());
 
         for (CocoaBoard board : boards.values())
             board.heartbeat();
+
+        long endTime = System.currentTimeMillis();
+        heartbeatTime.set(endTime - startTime);
     }
 
     public void disable() {
@@ -101,6 +103,10 @@ public class BoardManager {
 
     public Observable<String> getNowFormated() {
         return nowFormated;
+    }
+
+    public Observable<Instant> getNow() {
+        return now;
     }
 
     public MutableObservable<Integer> getMoney() {

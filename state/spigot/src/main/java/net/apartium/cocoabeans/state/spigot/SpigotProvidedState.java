@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,12 +31,14 @@ public class SpigotProvidedState {
 
     private SetObservable<Player> onlinePlayers;
     private MutableObservable<Integer> currentTick;
+    private MutableObservable<Instant> now;
 
     public SpigotProvidedState(JavaPlugin plugin) {
         this.plugin = plugin;
 
         this.onlinePlayers = Observable.set(new HashSet<>(getOnlinePlayers()));
         this.currentTick = Observable.mutable(0);
+        this.now = Observable.mutable(Instant.now());
 
         playerQuitListener = new PlayerQuitListener(onlinePlayers);
         playerJoinListener = new PlayerJoinListener(onlinePlayers);
@@ -46,13 +49,10 @@ public class SpigotProvidedState {
 
     public void heartbeat() {
         this.currentTick.set(this.currentTick.get() + 1);
+        this.now.set(Instant.now());
     }
 
     public void startCprTask() {
-        startCprTask(1, 1);
-    }
-
-    public void startCprTask(long delay, long period) {
         if (cprTask != null) {
             cprTask.cancel();
             cprTask = null;
@@ -65,8 +65,10 @@ public class SpigotProvidedState {
                 heartbeat();
             }
 
-        }.runTaskTimer(plugin, delay, period);
+        }.runTaskTimer(plugin, 1, 1);
     }
+
+
 
     private Set<Player> getOnlinePlayers() {
         Set<Player> players = Collections.newSetFromMap(new WeakHashMap<>());
@@ -80,6 +82,10 @@ public class SpigotProvidedState {
 
     public Observable<Integer> currentTickObservable() {
         return currentTick;
+    }
+
+    public Observable<Instant> getNow() {
+        return now;
     }
 
     public void remove() {

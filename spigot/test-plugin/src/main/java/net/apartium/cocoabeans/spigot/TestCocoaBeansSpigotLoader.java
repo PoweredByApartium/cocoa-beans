@@ -48,6 +48,7 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
     @Override
     public void onDisable() {
         boardManager.disable();
+        spigotProvidedState.remove();
     }
 
 }

@@ -14,6 +14,10 @@ import net.apartium.cocoabeans.scoreboard.CocoaBoard;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
 import net.apartium.cocoabeans.state.Observable;
+import net.apartium.cocoabeans.state.animation.FadingColorBlinkObservable;
+import net.apartium.cocoabeans.state.animation.FadingColorInOutObservable;
+import net.apartium.cocoabeans.state.animation.FixedDoubleLerpObservable;
+import net.apartium.cocoabeans.state.animation.TypingObservable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -24,8 +28,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @WithParser(value = QuotedStringParser.class)
@@ -96,6 +103,26 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("working");
     }
 
+    @SubCommand("player <player> add-lines")
+    public void addLines(Player player, Player target) {
+        List<Observable<Component>> list = List.of(
+                boardManager.getNowFormated().map(s -> Component.text(s).color(NamedTextColor.GRAY)),
+                Observable.empty(),
+                Observable.immutable(Component.text("Welcome to Test")),
+                Observable.immutable(Component.text("Bla bla bla")),
+                Observable.empty(),
+                boardManager.getCurrentTick().map(tick -> MiniMessage.miniMessage().deserialize("<rainbow:" + tick + ">" + "|".repeat(16) + "</rainbow>")),
+                boardManager.getPlayerCount().map(playerCount -> Component.text("Players: ").append(Component.text(playerCount).color(NamedTextColor.GREEN))),
+                Observable.empty(),
+                Observable.immutable(Component.text("§7example.com"))
+        );
+
+        CocoaBoard board = boardManager.getBoard(target);
+
+        board.lines(list);
+        player.sendMessage("working");
+    }
+
     @SubCommand("scoreboard add-lines for")
     public void addLinesFor(Player player) {
         List<Observable<Component>> list = List.of(
@@ -153,79 +180,95 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("add line");
     }
 
-    @SubCommand("document scoreboard animated name <quoted-string>")
-    public void animatedName(Player player, String text) {
-        int stayTickStart = 60;
-        int characterDelay = 2;
-        int blinkTimes = 3;
-        int blinkLength = 7;
-        int textAnimationLength = text.length() * characterDelay;
-        int animationLength = textAnimationLength + stayTickStart + blinkTimes * blinkLength;
+    @SubCommand("document scoreboard animated name <quoted-string> <?color> <?color> <?color>")
+    public void animatedTitle(Player player, String text, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
+        boardManager.getBoard(player).title(new FadingColorBlinkObservable(
+                        Observable.immutable(text),
+                        boardManager.getNow(),
+                        Duration.ofMillis(60 * 50L),
+                        Duration.ofMillis(2 * 50L),
+                        3,
+                        Duration.ofMillis(7 * 50L),
+                        Style.style(in.orElse(NamedTextColor.YELLOW), TextDecoration.BOLD),
+                        Style.style(fade.orElse(NamedTextColor.GOLD), TextDecoration.BOLD),
+                        Style.style(out.orElse(NamedTextColor.WHITE), TextDecoration.BOLD)
+                )
+        );
+    }
 
-        boardManager.getBoard(player).title(boardManager.getCurrentTick().map(tick -> {
-            int currentTick = tick % animationLength;
-            if (currentTick <= stayTickStart)
-                return Component.text(text)
-                        .style(Style.style(NamedTextColor.YELLOW, TextDecoration.BOLD));
+    @SubCommand("document scoreboard animated line <quoted-string> <?color> <?color> <?color>")
+    public void animatedLine(Player player, String text, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
+        boardManager.getBoard(player).add(new FadingColorBlinkObservable(
+                        Observable.immutable(text),
+                        boardManager.getNow(),
+                        Duration.ofMillis(60 * 50L),
+                        Duration.ofMillis(2 * 50L),
+                        3,
+                        Duration.ofMillis(7 * 50L),
+                        Style.style(in.orElse(NamedTextColor.YELLOW), TextDecoration.BOLD),
+                        Style.style(fade.orElse(NamedTextColor.GOLD), TextDecoration.BOLD),
+                        Style.style(out.orElse(NamedTextColor.WHITE), TextDecoration.BOLD)
+                )
+        );
+    }
 
-            if (textAnimationLength + stayTickStart <= currentTick)
-                return Component.text(text).style(Style.style(
-                        ((currentTick - textAnimationLength - stayTickStart) / blinkLength) % 2 == 0
-                                ? NamedTextColor.WHITE
-                                : NamedTextColor.YELLOW,
-                        TextDecoration.BOLD
-                ));
-
-            int index = (currentTick - stayTickStart) / characterDelay;
-            if (index == 0)
-                return Component.text(ChatColor.GOLD.toString() + ChatColor.BOLD + text.charAt(0)
-                        + ChatColor.YELLOW + ChatColor.BOLD + text.substring(1)
-                );
-
-            if (index == text.length() - 1)
-                return Component.text(
-                        ChatColor.WHITE.toString() + ChatColor.BOLD + text.substring(0, text.length() - 1)
-                                + ChatColor.GOLD + ChatColor.BOLD + text.charAt(text.length() - 1)
-                );
-
-            return Component.text(ChatColor.WHITE.toString() + ChatColor.BOLD + text.substring(0, index)
-                    + ChatColor.GOLD + ChatColor.BOLD + text.charAt(index)
-                    + ChatColor.YELLOW + ChatColor.BOLD + text.substring(index + 1)
-            );
-        }));
+    @SubCommand("document scoreboard typing animated <quoted-string> <?color> <?color> <?color>")
+    public void animatedTyping(Player player, String text, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
+        boardManager.getBoard(player).add(new FadingColorBlinkObservable(
+                        new TypingObservable(
+                                Observable.immutable(text),
+                                boardManager.getNow(),
+                                Duration.ofMillis(1200),
+                                Duration.ofSeconds(10),
+                                Duration.ofMillis(100),
+                                "§k"
+                        ),
+                        boardManager.getNow(),
+                        Duration.ofMillis(60 * 50L),
+                        Duration.ofMillis(2 * 50L),
+                        3,
+                        Duration.ofMillis(7 * 50L),
+                        Style.style(in.orElse(NamedTextColor.YELLOW), TextDecoration.BOLD),
+                        Style.style(fade.orElse(NamedTextColor.GOLD), TextDecoration.BOLD),
+                        Style.style(out.orElse(NamedTextColor.WHITE), TextDecoration.BOLD)
+                )
+        );
     }
 
     @SubCommand("document scoreboard typing <quoted-string>")
     public void addTyping(Player player, String text) {
-        int stayTick = 50;
-        int characterDelay = 2;
-        int textAnimationLength = text.length() * characterDelay;
-        int animationLength = textAnimationLength * 2 + stayTick * 2;
-
-        boardManager.getBoard(player).add(boardManager.getCurrentTick().map(tick -> {
-            int currentTick = tick % animationLength;
-            if (currentTick <= stayTick)
-                return Component.empty();
-
-            if (textAnimationLength + stayTick <= currentTick && currentTick <= textAnimationLength + stayTick * 2)
-                return Component.text(text);
-
-            if (currentTick >= stayTick * 2 + textAnimationLength)
-                return Component.text(typeByIndex(text, text.length() - 1 - (currentTick - stayTick * 2 - textAnimationLength) / characterDelay));
-
-            return Component.text(typeByIndex(text, (currentTick - stayTick) / characterDelay));
-        }));
-
+        boardManager.getBoard(player).add(new TypingObservable(
+                Observable.immutable(text),
+                boardManager.getNow(),
+                Duration.ofMillis(50 * 50L),
+                Duration.ofMillis(50 * 50L),
+                Duration.ofMillis(2 * 50L),
+                "§k"
+        ).map(Component::text));
     }
 
-    private String typeByIndex(String text, int index) {
-        if (index == 0)
-            return "§k" + text.charAt(0);
+    @SubCommand("scoreboard add-money")
+    public void addMoney(Player player) {
+        boardManager.getBoard(player).add(new FixedDoubleLerpObservable(
+                boardManager.getMoney().map(i -> i + 0.0),
+                boardManager.getNow(),
+                Duration.ofMillis(750),
+                Duration.ofMillis(50)
+        ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
+                .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
+        ));
+    }
 
-        if (index == text.length() - 1)
-            return text.substring(0, text.length() - 1) + "§k" + text.charAt(text.length() - 1);
-
-        return text.substring(0, index) + "§k" + text.charAt(index);
+    @SubCommand("scoreboard add-money <player>")
+    public void addMoney(Player player, Player target) {
+        boardManager.getBoard(target).add(new FixedDoubleLerpObservable(
+                boardManager.getMoney().map(i -> i + 0.0),
+                boardManager.getNow(),
+                Duration.ofMillis(750),
+                Duration.ofMillis(50)
+        ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
+                .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
+        ));
     }
 
     @SourceParser(keyword = "color", clazz = TextColor.class, resultMaxAgeInMills = -1, ignoreCase = true)
@@ -290,44 +333,36 @@ public class CocoaBoardCommand implements CommandNode {
         board.title(Component.text(ChatColor.translateAlternateColorCodes('&', name)));
     }
 
-    @SubCommand("name animated <string>")
-    public void nameTestAnimated(Player player, String name) {
+    @SubCommand("name animated <string> <?color> <?color> <?color>")
+    public void nameTestAnimated(Player player, String name, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
         CocoaBoard board = boardManager.getBoard(player);
 
-        board.title(boardManager.getCurrentTick()
-                .map(tick -> Component.text(animated(name, ChatColor.WHITE, ChatColor.GOLD, ChatColor.YELLOW, 60, 3, tick)))
-        );
+        board.title(new FadingColorInOutObservable(
+                Observable.immutable(name),
+                boardManager.getNow(),
+                Duration.ofSeconds(3),
+                Duration.ofMillis(750),
+                Duration.ofMillis(2 * 50L),
+                Style.style(in.orElse(NamedTextColor.YELLOW), TextDecoration.BOLD),
+                Style.style(fade.orElse(NamedTextColor.GOLD), TextDecoration.BOLD),
+                Style.style(out.orElse(NamedTextColor.WHITE), TextDecoration.BOLD)
+        ));
     }
 
-    private String animated(String text, ChatColor in, ChatColor fade, ChatColor out, int stayTime, int characterDelay, int currentTick) {
-        int textAnimationTime = text.length() * characterDelay;
-        int animationTime = stayTime * 2 + textAnimationTime * 2;
+    @SubCommand("player <player> name animated <string> <?color> <?color> <?color>")
+    public void nameForOtherTestAnimated(Player player, Player target, String name, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
+        CocoaBoard board = boardManager.getBoard(target);
 
-        currentTick = currentTick % animationTime;
-
-        if (currentTick <= stayTime)
-            return in + text;
-
-        if (textAnimationTime + stayTime <= currentTick && currentTick <= textAnimationTime + stayTime * 2)
-            return out + text;
-
-        if (currentTick >= stayTime * 2 + textAnimationTime) {
-            int index = (currentTick - stayTime * 2 - textAnimationTime) / characterDelay;
-            return fadeInByIndex(text, out, fade, in, index);
-        }
-
-        int index = (currentTick - stayTime) / characterDelay;
-        return fadeInByIndex(text, in, fade, out, index);
-    }
-
-    private String fadeInByIndex(String text, ChatColor in, ChatColor fade, ChatColor out, int index) {
-        if (index == 0)
-            return fade + text.substring(0, 1) + in + text.substring(1);
-
-        if (index == text.length() - 1)
-            return out + text.substring(0, text.length() - 1) + fade + text.charAt(text.length() - 1);
-
-        return out + text.substring(0, index) + fade + text.charAt(index) + in + text.substring(index + 1);
+        board.title(new FadingColorInOutObservable(
+                Observable.immutable(name),
+                boardManager.getNow(),
+                Duration.ofSeconds(3),
+                Duration.ofMillis(750),
+                Duration.ofMillis(2 * 50L),
+                Style.style(in.orElse(NamedTextColor.YELLOW), TextDecoration.BOLD),
+                Style.style(fade.orElse(NamedTextColor.GOLD), TextDecoration.BOLD),
+                Style.style(out.orElse(NamedTextColor.WHITE), TextDecoration.BOLD)
+        ));
     }
 
     @SubCommand("get version")
