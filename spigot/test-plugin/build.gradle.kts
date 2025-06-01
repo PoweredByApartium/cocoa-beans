@@ -39,3 +39,9 @@ tasks {
         }
     }
 }
+
+sonar {
+    properties {
+        property("sonar.exclusions", "**/*.java")
+    }
+}
