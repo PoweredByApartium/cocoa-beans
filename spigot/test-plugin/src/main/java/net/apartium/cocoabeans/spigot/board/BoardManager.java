@@ -21,12 +21,11 @@ public class BoardManager {
     private static final ZoneId zoneId = ZoneId.systemDefault();
 
     private final Map<UUID, CocoaBoard> boards = new HashMap<>();
-    private final MutableObservable<Instant> nowState = Observable.mutable(Instant.now());
-    private final Observable<String> nowFormated = nowState.map(now -> now.atZone(zoneId).format(TIME_FORMATTER));
+    private final Observable<String> nowFormated;
     private final Observable<Integer> playerCount;
 
     private final Observable<Integer> currentTick;
-    private final Observable<Instant> now;
+    private final Observable<Instant> nowObservable;
     private final MutableObservable<Long> heartbeatTime;
 
     private final MutableObservable<Integer> money;
@@ -34,7 +33,8 @@ public class BoardManager {
 
     public BoardManager(SpigotProvidedState spigotProvidedState) {
         currentTick = spigotProvidedState.currentTickObservable();
-        now = spigotProvidedState.getNow();
+        nowObservable = spigotProvidedState.getNow();
+        nowFormated = nowObservable.map(now -> now.atZone(zoneId).format(TIME_FORMATTER));
         heartbeatTime = Observable.mutable(0L);
         money = Observable.mutable(100);
         playerCount = spigotProvidedState.getOnlinePlayersObservable().map(Collection::size);
@@ -64,7 +64,6 @@ public class BoardManager {
 
     public void heartbeat() {
         long startTime = System.currentTimeMillis();
-        nowState.set(Instant.now());
 
         for (CocoaBoard board : boards.values())
             board.heartbeat();
@@ -105,8 +104,8 @@ public class BoardManager {
         return nowFormated;
     }
 
-    public Observable<Instant> getNow() {
-        return now;
+    public Observable<Instant> getNowObservable() {
+        return nowObservable;
     }
 
     public MutableObservable<Integer> getMoney() {

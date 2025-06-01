@@ -183,7 +183,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void animatedTitle(Player player, String text, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
         boardManager.getBoard(player).title(new FadingColorBlinkObservable(
                         Observable.immutable(text),
-                        boardManager.getNow(),
+                        boardManager.getNowObservable(),
                         Duration.ofMillis(60 * 50L),
                         Duration.ofMillis(2 * 50L),
                         3,
@@ -199,7 +199,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void animatedLine(Player player, String text, Optional<TextColor> in, Optional<TextColor> fade, Optional<TextColor> out) {
         boardManager.getBoard(player).add(new FadingColorBlinkObservable(
                         Observable.immutable(text),
-                        boardManager.getNow(),
+                        boardManager.getNowObservable(),
                         Duration.ofMillis(60 * 50L),
                         Duration.ofMillis(2 * 50L),
                         3,
@@ -216,13 +216,13 @@ public class CocoaBoardCommand implements CommandNode {
         boardManager.getBoard(player).add(new FadingColorBlinkObservable(
                         new TypingObservable(
                                 Observable.immutable(text),
-                                boardManager.getNow(),
+                                boardManager.getNowObservable(),
                                 Duration.ofMillis(1200),
                                 Duration.ofSeconds(10),
                                 Duration.ofMillis(100),
                                 "§k"
                         ),
-                        boardManager.getNow(),
+                        boardManager.getNowObservable(),
                         Duration.ofMillis(60 * 50L),
                         Duration.ofMillis(2 * 50L),
                         3,
@@ -238,7 +238,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void addTyping(Player player, String text) {
         boardManager.getBoard(player).add(new TypingObservable(
                 Observable.immutable(text),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofMillis(50 * 50L),
                 Duration.ofMillis(50 * 50L),
                 Duration.ofMillis(2 * 50L),
@@ -250,7 +250,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void addMoney(Player player) {
         boardManager.getBoard(player).add(new FixedDoubleLerpObservable(
                 boardManager.getMoney().map(i -> i + 0.0),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofMillis(750)
         ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
                 .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
@@ -265,7 +265,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void onJoin(CocoaBoard board) {
         board.title(new FadingColorInOutObservable(
                 Observable.immutable("ProjectZero"),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofSeconds(3),
                 Duration.ofMillis(750),
                 Duration.ofMillis(2 * 50L),
@@ -278,7 +278,7 @@ public class CocoaBoardCommand implements CommandNode {
 
         board.add(new FixedDoubleLerpObservable(
                 boardManager.getMoney().map(i -> i + 0.0),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofMillis(750)
         ).map(money -> Component.text("Money ")
                 .color(NamedTextColor.GRAY)
@@ -287,7 +287,7 @@ public class CocoaBoardCommand implements CommandNode {
 
         board.add(new TypingObservable(
                 Observable.immutable("Hello, World!"),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofMillis(50 * 50L),
                 Duration.ofMillis(50 * 50L),
                 Duration.ofMillis(2 * 50L),
@@ -296,7 +296,7 @@ public class CocoaBoardCommand implements CommandNode {
 
         board.add(new FadingColorInOutObservable(
                 Observable.immutable("example.com"),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofSeconds(3),
                 Duration.ofMillis(750),
                 Duration.ofMillis(2 * 50L),
@@ -310,7 +310,7 @@ public class CocoaBoardCommand implements CommandNode {
     public void addMoney(Player player, Player target) {
         boardManager.getBoard(target).add(new FixedDoubleLerpObservable(
                 boardManager.getMoney().map(i -> i + 0.0),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofMillis(750)
         ).map(money -> Component.text("Money ", NamedTextColor.GRAY)
                 .append(Component.text(String.format("%.1f", money), NamedTextColor.RED))
@@ -385,7 +385,7 @@ public class CocoaBoardCommand implements CommandNode {
 
         board.title(new FadingColorInOutObservable(
                 Observable.immutable(name),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofSeconds(3),
                 Duration.ofMillis(750),
                 Duration.ofMillis(2 * 50L),
@@ -401,7 +401,7 @@ public class CocoaBoardCommand implements CommandNode {
 
         board.title(new FadingColorInOutObservable(
                 Observable.immutable(name),
-                boardManager.getNow(),
+                boardManager.getNowObservable(),
                 Duration.ofSeconds(3),
                 Duration.ofMillis(750),
                 Duration.ofMillis(2 * 50L),

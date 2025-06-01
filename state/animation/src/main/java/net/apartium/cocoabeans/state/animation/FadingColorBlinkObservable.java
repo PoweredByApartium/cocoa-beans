@@ -68,7 +68,7 @@ public class FadingColorBlinkObservable implements Observable<Component>, Observ
         this.out = out;
 
         this.textAnimationLength = textObservable.map(text -> text.length() * this.characterDelay);
-        this.animationLength = textAnimationLength.map(textLength -> textLength + this.stayAtStart + (long) this.blinkTimes * this.blinkLength);
+        this.animationLength = textAnimationLength.map(textLength -> textLength + this.stayAtStart + this.blinkTimes * this.blinkLength);
 
         // Observers
         this.textObservable.observe(this);

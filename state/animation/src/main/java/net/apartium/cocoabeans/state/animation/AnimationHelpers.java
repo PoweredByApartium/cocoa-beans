@@ -6,6 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 /* package-private */ class AnimationHelpers {
 
+    private AnimationHelpers() {
+
+    }
+
     @NotNull
     /* package-private */ static Component fading(String text, int index, Style fade, Style in, Style out) {
         if (index == 0)
