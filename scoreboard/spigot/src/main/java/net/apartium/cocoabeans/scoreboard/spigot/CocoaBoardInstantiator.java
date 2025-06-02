@@ -1,14 +1,15 @@
 package net.apartium.cocoabeans.scoreboard.spigot;
 
 import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 
 /**
  * @hidden
  */
-/* package-private */ class VersionedImplInstantiator {
+/* package-private */ class CocoaBoardInstantiator {
 
-    private VersionedImplInstantiator() {}
+    private CocoaBoardInstantiator() {}
 
     public static SpigotCocoaBoardFactory createCocoaBoardFactory() {
         MinecraftVersion minecraftVersion = ServerUtils.getVersion();
@@ -19,19 +20,7 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
     }
 
     private static SpigotCocoaBoardFactory constructCocoaBoardFactory(String clazz) {
-        return construct(clazz, SpigotCocoaBoardFactory.class);
-    }
-
-    /* package-private */ static <T> T construct(String name, Class<T> type) {
-        try {
-            Class<? extends T> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.%s", name), true, SpigotCocoaBoardFactory.class.getClassLoader())
-                    .asSubclass(type);
-            return cls.getConstructor().newInstance();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return VersionedImplInstantiator.construct(clazz, SpigotCocoaBoardFactory.class);
     }
 
 }

@@ -12,9 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.39")
 public class Mathf {
 
-    private Mathf () {
-
-    }
+    private Mathf () { }
 
     /**
      * Performs linear interpolation between two {@code int} values.

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public abstract class SpigotCocoaBoard extends CocoaBoard {
 
-    private static final SpigotCocoaBoardFactory factory = VersionedImplInstantiator.createCocoaBoardFactory();
+    private static final SpigotCocoaBoardFactory factory = CocoaBoardInstantiator.createCocoaBoardFactory();
 
     /**
      * Create a new SpigotCocoaBoard with {@link SpigotCocoaBoardFactory} that will return new instance base on {@link net.apartium.cocoabeans.structs.MinecraftVersion}

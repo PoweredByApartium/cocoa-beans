@@ -497,7 +497,7 @@ public abstract class CocoaBoard {
 
         for (int i = 0; i < end; i++) {
             if (hasChange(getLineByScore(oldLines, i), getLineByScore(i))) {
-                Optional.ofNullable(getLineByScore(i)).ifPresent(ComponentEntry::clean);;
+                Optional.ofNullable(getLineByScore(i)).ifPresent(ComponentEntry::clean);
                 sendLineChange(i);
             }
 

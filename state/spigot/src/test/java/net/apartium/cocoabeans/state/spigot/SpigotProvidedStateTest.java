@@ -8,7 +8,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class SpigotProvidedStateTest {
 
@@ -59,5 +61,27 @@ class SpigotProvidedStateTest {
 
         providedState.heartbeat();
         assertEquals(2, currentTickObservable.get());
+    }
+
+    @Test
+    void now() {
+        Instant before = providedState.getNow().get();
+        providedState.startCprTask();
+        server.getScheduler().performOneTick();
+        assertNotEquals(before, providedState.getNow().get());
+    }
+
+    @Test
+    void remove() {
+        providedState.startCprTask();
+        server.getScheduler().performOneTick();
+
+        Instant before = providedState.getNow().get();
+
+        providedState.remove();
+
+        server.getScheduler().performOneTick();
+        assertEquals(before, providedState.getNow().get());
+
     }
 }
