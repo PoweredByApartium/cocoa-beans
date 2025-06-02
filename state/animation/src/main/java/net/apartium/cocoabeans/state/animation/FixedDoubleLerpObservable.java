@@ -52,7 +52,7 @@ public class FixedDoubleLerpObservable implements Observable<Double>, Observer {
 
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Double get() {
@@ -79,7 +79,7 @@ public class FixedDoubleLerpObservable implements Observable<Double>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void observe(Observer observer) {
@@ -87,7 +87,7 @@ public class FixedDoubleLerpObservable implements Observable<Double>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean removeObserver(Observer observer) {
@@ -95,7 +95,7 @@ public class FixedDoubleLerpObservable implements Observable<Double>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void flagAsDirty(Observable<?> observable) {
