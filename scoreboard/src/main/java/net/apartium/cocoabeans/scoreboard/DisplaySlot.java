@@ -1,5 +1,11 @@
 package net.apartium.cocoabeans.scoreboard;
 
+import org.jetbrains.annotations.ApiStatus;
+
+/**
+ * Display slot to put scoreboard
+ */
+@ApiStatus.AvailableSince("0.0.39")
 public enum DisplaySlot {
     LIST(0),
     SIDEBAR(1),

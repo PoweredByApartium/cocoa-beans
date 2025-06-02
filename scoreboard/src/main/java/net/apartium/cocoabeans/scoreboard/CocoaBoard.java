@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.Observer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -12,9 +13,9 @@ import java.util.*;
  * CocoaBoard is an easier way to work with scoreboard
  * Support the Observable api that let you make dynamic data change by itself without worrying about it
  * CocoaBoard support multiple server software like (paper, minestom)
- * <br/>
  * CocoaBoard could be for a couple of players or single player also you can change between them
  */
+@ApiStatus.AvailableSince("0.0.39")
 public abstract class CocoaBoard {
 
     public static final int MAX_LINES = 15;
@@ -128,7 +129,7 @@ public abstract class CocoaBoard {
      * @param objectiveId            scoreboard objective id (Should be unique to support player receiving multiple CocoaBoard)
      * @param title                  title of the scoreboard
      * @param isCustomScoreSupported whether the version support custom score display or not
-     * @apiNote If you implement call CocoaBoard#createBoardAndDisplay
+     * note: If you implement call CocoaBoard#createBoardAndDisplay
      */
     protected CocoaBoard(String objectiveId, Observable<Component> title, boolean isCustomScoreSupported) {
         this.objectiveId = objectiveId;
@@ -244,7 +245,7 @@ public abstract class CocoaBoard {
      * @param component    the static content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
-     * @apiNote If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
+     * note: If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Component component, Component scoreDisplay, Style numberStyle) {
         line(line, toObservable(component), toObservable(scoreDisplay), numberStyle);
@@ -257,7 +258,7 @@ public abstract class CocoaBoard {
      * @param component    the observable content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
-     * @apiNote If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
+     * note: If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Observable<Component> component, Observable<Component> scoreDisplay, Style numberStyle) {
         ensuresLineNumber(line, false, false);
