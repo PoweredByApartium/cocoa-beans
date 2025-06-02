@@ -1,14 +1,14 @@
+import org.gradle.kotlin.dsl.maven
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
-        gradlePluginPortal()
-        mavenCentral()
+        maven {
+            name = "apartium-plugins"
+            url = uri("https://nexus.apartium.net/repository/gradle-public/")
+        }
     }
 }
-
-//plugins {
-//    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-//}
 
 rootProject.name = "cocoa-beans"
 
