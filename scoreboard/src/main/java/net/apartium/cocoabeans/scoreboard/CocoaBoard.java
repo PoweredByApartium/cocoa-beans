@@ -497,7 +497,7 @@ public abstract class CocoaBoard {
 
         for (int i = 0; i < end; i++) {
             if (hasChange(getLineByScore(oldLines, i), getLineByScore(i))) {
-                getLineByScore(i).clean();
+                Optional.ofNullable(getLineByScore(i)).ifPresent(ComponentEntry::clean);;
                 sendLineChange(i);
             }
 
@@ -508,7 +508,7 @@ public abstract class CocoaBoard {
                     getLineByScore(oldNumberStyles, i),
                     getLineByScore(this.numberStyles, i))
             ) {
-                getLineByScore(this.scores, i).clean();
+                Optional.ofNullable(getLineByScore(this.scores, i)).ifPresent(ComponentEntry::clean);
                 sendScorePacket(
                         i,
                         Optional.ofNullable(getLineByScore(this.scores, i))
