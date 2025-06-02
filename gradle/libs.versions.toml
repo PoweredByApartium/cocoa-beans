@@ -1,0 +1,20 @@
+[versions]
+jackson = "2.13.4"
+adventure = "4.20.0"
+
+[libraries]
+mock-bukkit = { group = "com.github.seeseemelk", name = "MockBukkit-v1.20", version = "3.9.0" }
+paper = { group = "io.papermc.paper", name = "paper-api", version = "1.19-R0.1-SNAPSHOT" }
+spigot = { group = "org.spigotmc", name = "spigot-api", version = "1.18.1-R0.1-SNAPSHOT" }
+authlib = { group = "com.mojang", name = "authlib", version = "3.11.49" }
+panda = { group = "com.hpfxd.pandaspigot", name = "pandaspigot-api", version = "1.8.8-R0.1-SNAPSHOT" }
+minestom = { group = "net.minestom", name = "minestom-snapshots", version = "a1d1920a04" }
+adventure = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
+adventure-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
+adventure-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventure" }
+
+junit-bom = { group = "org.junit", name = "junit-bom", version = "5.9.1" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jackson" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2" }
+commons-codec = { group = "commons-codec", name = "commons-codec", version = "1.17.0" }

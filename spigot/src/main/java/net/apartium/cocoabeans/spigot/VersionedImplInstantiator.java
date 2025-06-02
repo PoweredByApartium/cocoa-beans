@@ -76,7 +76,7 @@ public class VersionedImplInstantiator {
         return construct(clazz, PlayerVisibilityController.class);
     }
 
-    /* package-private */ static <T> T construct(String name, Class<T> type) {
+    public static <T> T construct(String name, Class<T> type) {
         try {
             Class<? extends T> cls = Class.forName(String.format("net.apartium.cocoabeans.spigot.%s", name), true, ItemFactory.class.getClassLoader())
                     .asSubclass(type);

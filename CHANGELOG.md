@@ -8,6 +8,9 @@
 - [common] 📺 **Observable** api
 - [commands] Add ContextualMapBasedParser
 - [commands] Add `VirtualCommand`
+- [minecraft] Add minecraft module
+- [scoreboard] Add Scoreboard api for Spigot & Minestom
+- [animation] Add Animation state
 
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers

@@ -9,6 +9,7 @@ Available Since 0.0.39
 - [Usage](#usage)
 - [How it works](#how-it-works)
 - [Advantages](#advantages)
+- [](#include-in-your-project)
 - [What next](#what-next)
 
 ## Introduction
@@ -19,8 +20,8 @@ Observables are designed to be either immutable or mutable, with support for com
 This system is designed to be lightweight, composable, and extensible.
 
 ## Usage
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="example"/>
-<code-block lang="java" src="common/CodeSnippets.java" include-symbol="listExample"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="example"/>
+<code-block lang="java" src="state/CodeSnippets.java" include-symbol="listExample"/>
 
 ## How it works
 ```plantuml
@@ -176,6 +177,65 @@ AttachedWatcher *-- WatcherOperator::detach
 
 🚀 Designed for performance and clarity with lazy re-computation and controlled observers.
 
+## Include in your project
+
+<tabs>
+<tab title="Maven">
+
+```xml
+<repositories>
+    <repository>
+        <id>apartium-releases</id>
+        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>net.apartium.cocoa-beans</groupId>
+        <artifactId>state</artifactId>
+        <version>%version%</version>
+    </dependency>
+</dependencies>
+```
+
+</tab>
+
+<tab title="Gradle">
+
+```groovy
+repositories {
+    maven {
+        name 'apartium-releases'
+        url 'https://nexus.voigon.dev/repository/apartium-releases'
+    }
+}
+
+dependencies {
+    compileOnly("net.apartium.cocoa-beans:state:%version%")
+}
+```
+
+</tab>
+
+<tab title="Gradle - Kotlin">
+
+```kotlin
+repositories {
+    maven {
+        name = "apartium-releases"
+        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
+    }
+}
+
+dependencies {
+    compileOnly("net.apartium.cocoa-beans:state:%version%")
+}
+```
+
+</tab>
+</tabs>
+
 ## What next
 * [](immutable-observable.md) <sub> Static observable value </sub>
 * [](mutable-observable.md) <sub> Dynamic observable value </sub>
@@ -186,4 +246,4 @@ AttachedWatcher *-- WatcherOperator::detach
     * [](set-observable.md) <sub> Set that could be observer </sub>
 * [](observer.md) <sub><a href="https://refactoring.guru/design-patterns/observer"> Observer pattern </a></sub>
 * [](watcher.md) <sub> Observer any changes and run the function on heartbeat </sub>
-* [Javadocs](https://cocoa-beans.apartium.net/%version%/common/net/apartium/cocoabeans/state/package-summary.html)
+* [Javadocs](https://cocoa-beans.apartium.net/%version%/state/net/apartium/cocoabeans/state/package-summary.html)

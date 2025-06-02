@@ -1,0 +1,5 @@
+name: CocoaBeansTest
+version: '${version}'
+main: net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader
+authors: [Thebotgame]
+website: https://cocoa-beans.apartium.net
