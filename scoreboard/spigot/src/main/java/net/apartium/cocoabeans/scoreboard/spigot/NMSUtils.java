@@ -1,6 +1,9 @@
 package net.apartium.cocoabeans.scoreboard.spigot;
 
 import net.apartium.cocoabeans.scoreboard.*;
+import net.apartium.cocoabeans.scoreboard.team.CollisionRule;
+import net.apartium.cocoabeans.scoreboard.team.NameTagVisibilityRule;
+import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
@@ -63,7 +66,6 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
     private static final MethodHandle STYLE_METHOD_WITH_OBFUSCATED;
 
     private static final Class<?> CHAT_FORMAT_ENUM;
-    private static final Object RESET_FORMATTING;
 
     private static volatile Object unsafeObject;
 
@@ -173,7 +175,6 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
             Class<?> packetSbScoreClass = findNMSClass(gameProtocolPackage, "PacketPlayOutScoreboardScore", "ClientboundSetScorePacket").orElseThrow();
 
             CHAT_FORMAT_ENUM = findNMSClass(null, "EnumChatFormat", "ChatFormatting").orElseThrow();
-            RESET_FORMATTING = findEnumValueOf(CHAT_FORMAT_ENUM, "RESET", 21);
 
             MethodHandle packetSbSetScore;
             MethodHandle packetSbResetScore = null;
@@ -422,9 +423,8 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
     public static Object createDisplayPacket(String id, DisplaySlot slot) throws Throwable {
         Object packet = PACKET_SB_DISPLAY_OBJ.createInstance();
 
-        setField(packet, String.class, id);
-        setField(packet, DISPLAY_SLOT_TYPE, DISPLAY_SLOT_OBJECT_MAP.get(slot)
-        );
+        setField(packet, String.class, Optional.ofNullable(id).orElse(""));
+        setField(packet, DISPLAY_SLOT_TYPE, slot == null ? null : DISPLAY_SLOT_OBJECT_MAP.get(slot));
 
         return packet;
     }
@@ -569,18 +569,50 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
         return createTeamPacket(name, mode, null, null);
     }
 
+    public static Object createTeamPacket(String name, TeamMode mode, Collection<String> entities) throws Throwable {
+        return createTeamPacket(name, mode, null, null, entities);
+    }
+
     public static Object createTeamPacket(String name, TeamMode mode, Observable<Component> prefix, Observable<Component> suffix) throws Throwable {
         return createTeamPacket(name, mode, prefix, suffix, Collections.emptyList());
     }
 
     public static Object createTeamPacket(String name, TeamMode mode, Observable<Component> prefix, Observable<Component> suffix, Collection<String> entities) throws Throwable {
-        if (mode == TeamMode.ADD_PLAYERS || mode == TeamMode.REMOVE_PLAYERS)
-            throw new UnsupportedOperationException("TeamMode.ADD_PLAYERS and TeamMode.REMOVE_PLAYERS are not supported yet"); // TODO support those in the future...
+        return createTeamPacket(
+                name,
+                mode,
+                Component.empty(),
+                (byte) 0x00,
+                NameTagVisibilityRule.ALWAYS,
+                CollisionRule.ALWAYS,
+                ChatFormatting.RESET,
+                Optional.ofNullable(prefix).map(Observable::get).orElse(Component.empty()),
+                Optional.ofNullable(suffix).map(Observable::get).orElse(Component.empty()),
+                entities
+        );
+    }
 
+    public static Object createTeamPacket(
+            String name,
+            TeamMode mode,
+            Component displayName,
+            byte friendlyFire,
+            NameTagVisibilityRule nameTagVisibilityRule,
+            CollisionRule collisionRule,
+            ChatFormatting chatFormatting,
+            Component prefix,
+            Component suffix,
+            Collection<String> entities
+    ) throws Throwable {
         Object packet = PACKET_SB_TEAM.createInstance();
 
         setField(packet, String.class, name); // Team name
         setField(packet, int.class, mode.ordinal(), VERSION.isHigherThanOrEqual(V1_8) && VERSION.isLowerThanOrEqual(V1_8_9) ? 1 : 0); // Update mode
+
+        if (mode == TeamMode.ADD_PLAYERS || mode == TeamMode.REMOVE_PLAYERS) {
+            setField(packet, Collection.class, entities); // Players in the team
+            return packet;
+        }
 
         if (mode == TeamMode.REMOVE)
             return packet;
@@ -588,20 +620,24 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
         if (VERSION.isHigherThanOrEqual(V1_17)) {
             Object team = PACKET_SB_SERIALIZABLE_TEAM.createInstance();
 
-            setComponentField(team, Observable.empty(), 0); // Display name
-            setField(team, CHAT_FORMAT_ENUM, RESET_FORMATTING); // Color
-            setComponentField(team, prefix, 1); // Prefix
-            setComponentField(team, suffix, 2); // Suffix
-            setField(team, String.class, MODE_ALWAYS, 0); // Visibility // TODO add option to change it
-            setField(team, String.class, MODE_ALWAYS, 1); // Collision // TODO add option to change it
-            setField(team, ENUM_VISIBILITY, ENUM_VISIBILITY_ALWAYS, 0); // 1.21.5+ // TODO add option to change it
-            setField(team, ENUM_COLLISION_RULE, ENUM_COLLISION_RULE_ALWAYS, 0); // 1.21.5+ // TODO add option to change it
+            setComponentField(team, Observable.immutable(displayName), 0); // Display name
+            setField(team, CHAT_FORMAT_ENUM, findEnumValueOf(CHAT_FORMAT_ENUM, chatFormatting.name(), chatFormatting.ordinal())); // Color
+            setField(team, int.class, friendlyFire); // friendly fire
+            setComponentField(team, Observable.immutable(prefix), 1); // Prefix
+            setComponentField(team, Observable.immutable(suffix), 2); // Suffix
+            setField(team, String.class, nameTagVisibilityRule.getSerializedName(), 0); // Visibility
+            setField(team, String.class, collisionRule.getSerializedName(), 1); // Collision
+            setField(team, ENUM_VISIBILITY, findEnumValueOf(ENUM_VISIBILITY, nameTagVisibilityRule.name(), nameTagVisibilityRule.ordinal()), 0); // 1.21.5+
+            setField(team, ENUM_COLLISION_RULE, findEnumValueOf(ENUM_COLLISION_RULE, collisionRule.name(), collisionRule.ordinal()), 0); // 1.21.5+
+
             setField(packet, Optional.class, Optional.of(team));
         } else {
-            setComponentField(packet, prefix, 2); // Prefix
-            setComponentField(packet, suffix, 3); // Suffix
-            setField(packet, String.class, MODE_ALWAYS, 4); // Visibility for 1.8+ // TODO add option to change it
-            setField(packet, String.class, MODE_ALWAYS, 5); // Collision for 1.9+ // TODO add option to change it
+            setField(packet, String.class, Observable.immutable(displayName), 1); // Visibility for 1.8+
+            setField(packet, int.class, friendlyFire, 2); // friendly fire
+            setComponentField(packet, Observable.immutable(prefix), 2); // Prefix
+            setComponentField(packet, Observable.immutable(suffix), 3); // Suffix
+            setField(packet, String.class, nameTagVisibilityRule.getSerializedName(), 4); // Visibility for 1.8+
+            setField(packet, String.class, collisionRule.getSerializedName(), 5); // Collision for 1.9+
         }
 
         if (mode == TeamMode.CREATE)

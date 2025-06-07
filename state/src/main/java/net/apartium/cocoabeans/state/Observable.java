@@ -341,4 +341,10 @@ public interface Observable<T> {
         return watcherManager.watch(this, consumer);
     }
 
+    default DirtyWatcher<T> watch() {
+        DirtyWatcher<T> dirtyWatcher = new DirtyWatcher<>(this);
+        observe(dirtyWatcher);
+        return dirtyWatcher;
+    }
+
 }

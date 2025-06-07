@@ -50,7 +50,12 @@ public class WatcherManager implements WatcherOperator {
      * @see Watcher
      */
     public <T> AttachedWatcher<T> watch(Observable<T> depends, Consumer<T> consumer) {
-        AttachedWatcher<T> watcher = new AttachedWatcher<>(depends, consumer);
+        AttachedWatcher<T> watcher = new AttachedWatcher<>(depends) {
+            @Override
+            public void onChange(T newValue) {
+                consumer.accept(newValue);
+            }
+        };
         lock.writeLock().lock();
         try {
             watchers.add(watcher);
