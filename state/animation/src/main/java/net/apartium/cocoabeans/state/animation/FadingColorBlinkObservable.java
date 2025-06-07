@@ -76,7 +76,7 @@ public class FadingColorBlinkObservable implements Observable<Component>, Observ
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Component get() {
@@ -118,7 +118,7 @@ public class FadingColorBlinkObservable implements Observable<Component>, Observ
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void observe(Observer observer) {
@@ -126,7 +126,7 @@ public class FadingColorBlinkObservable implements Observable<Component>, Observ
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean removeObserver(Observer observer) {
@@ -134,7 +134,7 @@ public class FadingColorBlinkObservable implements Observable<Component>, Observ
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void flagAsDirty(Observable<?> observable) {

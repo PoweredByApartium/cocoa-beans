@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.state.animation;
 
-import net.apartium.cocoabeans.state.*;
+import net.apartium.cocoabeans.state.Observable;
+import net.apartium.cocoabeans.state.Observer;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.time.Duration;
@@ -63,7 +64,7 @@ public class TypingObservable implements Observable<String>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public String get() {
@@ -113,7 +114,7 @@ public class TypingObservable implements Observable<String>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void observe(Observer observer) {
@@ -121,7 +122,7 @@ public class TypingObservable implements Observable<String>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean removeObserver(Observer observer) {
@@ -129,7 +130,7 @@ public class TypingObservable implements Observable<String>, Observer {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void flagAsDirty(Observable<?> observable) {

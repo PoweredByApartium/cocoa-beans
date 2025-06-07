@@ -217,7 +217,7 @@ public abstract class CocoaBoard {
     }
 
     /**
-     * Set a line in the scoreboard with simple component & scoreDisplay
+     * Set a line in the scoreboard with simple component &amp; scoreDisplay
      *
      * @param line         line number (0 is the top)
      * @param component    the static content
@@ -228,7 +228,7 @@ public abstract class CocoaBoard {
     }
 
     /**
-     * Set a line in the scoreboard with simple component & scoreDisplay
+     * Set a line in the scoreboard with simple component &amp; scoreDisplay
      *
      * @param line         line number (0 is the top)
      * @param component    the observable content
@@ -239,26 +239,26 @@ public abstract class CocoaBoard {
     }
 
     /**
-     * Set a line in the scoreboard with simple component & scoreDisplay or custom numberStyle
+     * Set a line in the scoreboard with simple component &amp; scoreDisplay or custom numberStyle
      *
      * @param line         line number (0 is the top)
      * @param component    the static content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
-     * note: If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
+     * note: If scoreDisplay &amp; numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Component component, Component scoreDisplay, Style numberStyle) {
         line(line, toObservable(component), toObservable(scoreDisplay), numberStyle);
     }
 
     /**
-     * Set a line in the scoreboard with simple component & scoreDisplay or custom numberStyle
+     * Set a line in the scoreboard with simple component &amp; scoreDisplay or custom numberStyle
      *
      * @param line         line number (0 is the top)
      * @param component    the observable content
      * @param scoreDisplay custom score display - Note: (+1.20.3)
      * @param numberStyle  the side number style if scoreDisplay is null - Note: (+1.20.3)
-     * note: If scoreDisplay & numberStyle are null will be blank instead of number - Note: (+1.20.3)
+     * note: If scoreDisplay &amp; numberStyle are null will be blank instead of number - Note: (+1.20.3)
      */
     public void line(int line, Observable<Component> component, Observable<Component> scoreDisplay, Style numberStyle) {
         ensuresLineNumber(line, false, false);
