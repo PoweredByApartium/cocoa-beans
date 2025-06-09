@@ -186,6 +186,7 @@ public class ParserAssertions {
 
         if (expected.getAsInt() != result.getAsInt()) {
             failMessage("Expected different result", message, expected.getAsInt(), result.getAsInt());
+            return;
         }
     }
 
