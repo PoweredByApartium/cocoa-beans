@@ -70,7 +70,9 @@ public class MaterialParser extends ArgumentParser<Material> {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
 
-        if (Material.getMaterial(args.get(startIndex)) == null) return OptionalInt.empty();
+        if (findMaterial(args.get(startIndex)).isEmpty())
+            return OptionalInt.empty();
+
         return OptionalInt.of(startIndex + 1);
     }
 
@@ -78,22 +80,22 @@ public class MaterialParser extends ArgumentParser<Material> {
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
+        String arg = args.get(startIndex);
 
-        Set<String> result = Arrays.stream(Material.values())
-                .map((type) -> {
-                    if (type.isLegacy())
-                        return type.name();
 
-                    return type.getKey().asString();
-                })
-                .collect(Collectors.toSet());
+        Set<String> result = new HashSet<>();
 
-        return Optional.of(new TabCompletionResult(
-                Arrays.stream(Material.values())
-                        .map(Material::name)
-                        .filter(s -> s.toLowerCase().startsWith(args.get(startIndex).toLowerCase()))
-                        .collect(Collectors.toSet()),
-                startIndex + 1
-        ));
+        for (Material material : Material.values()) {
+            String name = material.name().toLowerCase();
+            if (name.startsWith(arg.toLowerCase())) {
+                result.add(name);
+            } else if (!arg.contains("_")) {
+                name = name.replace("_", "");
+                if (name.startsWith(arg.toLowerCase()))
+                    result.add(name);
+            }
+        }
+
+        return Optional.of(new TabCompletionResult(Collections.unmodifiableSet(result), startIndex + 1));
     }
 }
