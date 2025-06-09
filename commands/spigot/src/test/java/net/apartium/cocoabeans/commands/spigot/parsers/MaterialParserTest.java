@@ -43,7 +43,7 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
     }
 
     @Test
-    void testTabCompletion() {
+    void testTabCompletionWithUnderscores() {
         MaterialParser parser = new MaterialParser(0);
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("diamond_sw"), 0,
@@ -63,6 +63,11 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
                 Set.of("diamond_sword"), 1);
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMOND_SWORD"), 0,
                 Set.of("diamond_sword"), 1);
+    }
+
+    @Test
+    void testTabCompletionWithoutUnderscores() {
+        MaterialParser parser = new MaterialParser(0);
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("diamondsw"), 0,
                 Set.of("diamondsword"), 1);
@@ -74,6 +79,19 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
                 Set.of("diamondsword"), 1);
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("diamondsword"), 0,
+                Set.of("diamondsword"), 1);
+
+
+        ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMONDSW"), 0,
+                Set.of("diamondsword"), 1);
+
+        ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMONDSWO"), 0,
+                Set.of("diamondsword"), 1);
+
+        ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMONDSWOR"), 0,
+                Set.of("diamondsword"), 1);
+
+        ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMONDSWORD"), 0,
                 Set.of("diamondsword"), 1);
     }
 
