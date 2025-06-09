@@ -25,7 +25,7 @@ public class MaterialParser extends ArgumentParser<Material> {
      * Creates a new MaterialParser
      *
      * @param priority parser priority of which should be higher than others or lower
-     * @param keyword  parser keyword
+     * @param keyword parser keyword
      */
     @ApiStatus.AvailableSince("0.0.36")
     public MaterialParser(int priority, String keyword) {
