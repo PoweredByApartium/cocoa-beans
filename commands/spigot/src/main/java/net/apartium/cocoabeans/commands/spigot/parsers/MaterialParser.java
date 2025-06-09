@@ -16,7 +16,6 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MaterialParser extends ArgumentParser<Material> {
 
