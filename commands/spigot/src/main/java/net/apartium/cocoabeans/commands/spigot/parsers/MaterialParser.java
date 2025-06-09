@@ -87,13 +87,11 @@ public class MaterialParser extends ArgumentParser<Material> {
 
         for (Material material : Material.values()) {
             String name = material.name().toLowerCase();
-            if (name.startsWith(arg.toLowerCase())) {
-                result.add(name);
-            } else if (!arg.contains("_")) {
+            if (!arg.contains("_"))
                 name = name.replace("_", "");
-                if (name.startsWith(arg.toLowerCase()))
-                    result.add(name);
-            }
+
+            if (name.startsWith(arg.toLowerCase()))
+                result.add(name);
         }
 
         return Optional.of(new TabCompletionResult(Collections.unmodifiableSet(result), startIndex + 1));
