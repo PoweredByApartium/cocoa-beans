@@ -22,6 +22,16 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
     }
 
     @Test
+    void testParseIgnoreCase() {
+        MaterialParser parser = new MaterialParser(0);
+
+        ParserAssertions.assertParserResult(parser, null, null, args("DIAMONDSWORD"),
+                new ArgumentParser.ParseResult<>(Material.DIAMOND_SWORD, 1));
+        ParserAssertions.assertParserResult(parser, null, null, args("DiAmOnD_sWoRd"),
+                new ArgumentParser.ParseResult<>(Material.DIAMOND_SWORD, 1));
+    }
+
+    @Test
     void testParseWithUnderscore() {
         MaterialParser parser = new MaterialParser(0);
 
