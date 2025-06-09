@@ -29,7 +29,6 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
                 new ArgumentParser.ParseResult<>(Material.DIAMOND_SWORD, 1));
     }
 
-
     @Test
     void testTryParse() {
         MaterialParser parser = new MaterialParser(0);
@@ -54,6 +53,11 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
                 Set.of("diamond_sword"), 1);
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("diamond_sword"), 0,
                 Set.of("diamond_sword"), 1);
+    }
+
+    @Test
+    void testTabCompletionWithUnderscoresCaseSensitive() {
+        MaterialParser parser = new MaterialParser(0);
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMOND_SW"), 0,
                 Set.of("diamond_sword"), 1);
@@ -80,7 +84,11 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("diamondsword"), 0,
                 Set.of("diamondsword"), 1);
+    }
 
+    @Test
+    void testTabCompletionWithoutUnderscoresCaseSensitive() {
+        MaterialParser parser = new MaterialParser(0);
 
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("DIAMONDSW"), 0,
                 Set.of("diamondsword"), 1);
