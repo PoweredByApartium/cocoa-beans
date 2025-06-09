@@ -32,6 +32,21 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
     }
 
     @Test
+    void testParseVariousMaterials() {
+        MaterialParser parser = new MaterialParser(0);
+
+        // Test material without underscores in enum name
+        ParserAssertions.assertParserResult(parser, null, null, args("stone"),
+                new ArgumentParser.ParseResult<>(Material.STONE, 1));
+
+        // Test material with multiple underscores
+        ParserAssertions.assertParserResult(parser, null, null, args("ironingot"),
+                new ArgumentParser.ParseResult<>(Material.IRON_INGOT, 1));
+        ParserAssertions.assertParserResult(parser, null, null, args("iron_ingot"),
+                new ArgumentParser.ParseResult<>(Material.IRON_INGOT, 1));
+    }
+
+    @Test
     void testParseWithUnderscore() {
         MaterialParser parser = new MaterialParser(0);
 
