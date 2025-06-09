@@ -24,8 +24,9 @@ public class MaterialParser extends ArgumentParser<Material> {
 
     /**
      * Creates a new MaterialParser
+     *
      * @param priority parser priority of which should be higher than others or lower
-     * @param keyword parser keyword
+     * @param keyword  parser keyword
      */
     @ApiStatus.AvailableSince("0.0.36")
     public MaterialParser(int priority, String keyword) {
@@ -34,6 +35,7 @@ public class MaterialParser extends ArgumentParser<Material> {
 
     /**
      * Creates a new MaterialParser
+     *
      * @param priority parser priority of which should be higher than others or lower
      */
     public MaterialParser(int priority) {
@@ -45,12 +47,22 @@ public class MaterialParser extends ArgumentParser<Material> {
         List<String> args = processingContext.args();
         int startIndex = processingContext.index();
 
-        Material material = Material.getMaterial(args.get(startIndex));
-        if (material == null) return Optional.empty();
-        return Optional.of(new ParseResult<>(
+        Optional<Material> materialOpt = findMaterial(args.get(startIndex));
+        return materialOpt.map(material -> new ParseResult<>(
                 material,
                 startIndex + 1
         ));
+
+    }
+
+    private Optional<Material> findMaterial(String name) {
+        if (!name.contains("_")) {
+            return Arrays.stream(Material.values())
+                    .filter(material -> material.name().replace("_", "").equalsIgnoreCase(name))
+                    .findFirst();
+        }
+
+        return Optional.ofNullable(Material.getMaterial(name.toUpperCase()));
     }
 
     @Override
