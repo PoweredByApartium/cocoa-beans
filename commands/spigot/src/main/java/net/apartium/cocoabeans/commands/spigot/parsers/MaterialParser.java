@@ -68,6 +68,9 @@ public class MaterialParser extends ArgumentParser<Material> {
     @Override
     public OptionalInt tryParse(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
+        if (args.isEmpty())
+            return OptionalInt.empty();
+
         int startIndex = processingContext.index();
 
         if (findMaterial(args.get(startIndex)).isEmpty())

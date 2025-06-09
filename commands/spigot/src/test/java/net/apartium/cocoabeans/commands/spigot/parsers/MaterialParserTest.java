@@ -42,6 +42,24 @@ public class MaterialParserTest extends CommandsSpigotTestBase {
     }
 
     @Test
+    void testTryParseEdgeCases() {
+        MaterialParser parser = new MaterialParser(0);
+
+        // Empty string
+        ParserAssertions.assertTryParseResult(parser, null, null, args(""), OptionalInt.empty());
+
+        // Whitespace only
+        ParserAssertions.assertTryParseResult(parser, null, null, args("   "), OptionalInt.empty());
+
+        // Partial match that doesn't exist
+        ParserAssertions.assertTryParseResult(parser, null, null, args("diamond_xyz"), OptionalInt.empty());
+
+        // Numbers and special characters
+        ParserAssertions.assertTryParseResult(parser, null, null, args("diamond123"), OptionalInt.empty());
+        ParserAssertions.assertTryParseResult(parser, null, null, args("diamond-sword"), OptionalInt.empty());
+    }
+
+    @Test
     void testTabCompletionWithUnderscores() {
         MaterialParser parser = new MaterialParser(0);
 
