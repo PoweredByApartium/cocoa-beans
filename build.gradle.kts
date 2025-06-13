@@ -43,8 +43,7 @@ allprojects {
             if (isCi || project.findProperty("apartium.nexus.username") != null) {
                 maven {
                     name = "ApartiumMaven"
-                    url = uri("http://nexus.voigon.dev/repository/apartium-releases")
-                    setAllowInsecureProtocol(true)
+                    url = uri("https://nexus.voigon.dev/repository/apartium-releases")
                     credentials {
                         username = (System.getenv("APARTIUM_NEXUS_USERNAME")
                             ?: project.findProperty("apartium.nexus.username")).toString()
