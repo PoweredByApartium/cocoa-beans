@@ -29,6 +29,7 @@ allprojects {
 
     publishing {
         repositories {
+
             if (isCi) {
                 maven {
                     name = "GitHubPackages"
@@ -43,6 +44,7 @@ allprojects {
                 maven {
                     name = "ApartiumMaven"
                     url = uri("http://nexus.voigon.dev/repository/apartium-releases")
+                    setAllowInsecureProtocol(true)
                     credentials {
                         username = (System.getenv("APARTIUM_NEXUS_USERNAME")
                             ?: project.findProperty("apartium.nexus.username")).toString()
