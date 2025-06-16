@@ -93,25 +93,56 @@ public class CocoaBoardCommand implements CommandNode {
         player.sendMessage("removeDisplaySlot");
     }
 
+    @SubCommand("numeric cool <string>")
+    public void setCool(Player player, String id) {
+        scoreboardNumericManager.getDisplay(id).set(
+                player.getName(),
+                Observable.immutable(10),
+                Observable.immutable(
+                        Component.text()
+                                .append(player.name())
+                                .append(Component.text(" <-> "))
+                                .append(Component.score(player.getName(), id))
+                                .build()
+                ),
+                null
+        );
+    }
+
+    @SubCommand("numeric cool2 <string>")
+    public void setCool2(Player player, String id) {
+        scoreboardNumericManager.getDisplay(id).set(
+                player.getName(),
+                Observable.immutable(6),
+                Observable.immutable(
+                        Component.text()
+                                .append(player.name())
+                                .append(Component.text(" <-> "))
+                                .build()
+                ),
+                null
+        );
+    }
+
     @SubCommand("numeric displayName <string> <quoted-string>")
     public void removeDisplaySlot(Player player, String id, String text) {
         scoreboardNumericManager.getDisplay(id).displayName(Observable.immutable(Component.text(ChatColor.translateAlternateColorCodes('&', text))));
         player.sendMessage("new name");
     }
 
-    @SubCommand("numeric <string> audience add <player>")
+    @SubCommand("numeric audience <string> add <player>")
     public void addAudience(Player player, String id, Player target) {
         scoreboardNumericManager.getDisplay(id).getGroup().add(target);
         player.sendMessage("addAudience");
     }
 
-    @SubCommand("numeric <string> audience remove <player>")
+    @SubCommand("numeric audience <string> remove <player>")
     public void removeAudience(Player player, String id, Player target) {
         scoreboardNumericManager.getDisplay(id).getGroup().remove(target);
         player.sendMessage("removeAudience");
     }
 
-    @SubCommand("numeric <string> renderType <render-type>")
+    @SubCommand("numeric renderType <string> <render-type>")
     public void setRenderType(Player player, String id, ObjectiveRenderType renderType) {
         scoreboardNumericManager.getDisplay(id).renderType(renderType);
         player.sendMessage("setRenderType");
@@ -276,6 +307,17 @@ public class CocoaBoardCommand implements CommandNode {
         team.heartbeat();
         player.sendMessage("Heartbeat");
     }
+
+    @SubCommand("scoreboard delete")
+    public void deleteScoreboard(Player player) {
+        boardManager.unregisterBoard(player.getUniqueId());
+    }
+
+    @SubCommand("scoreboard sidebar")
+    public void sidebar(Player player) {
+        boardManager.getBoard(player).setDisplay();
+    }
+
 
     @SubCommand("scoreboard set <int> <strings>")
     public void setLine(Player player, int line, String text) {

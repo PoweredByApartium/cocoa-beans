@@ -3,8 +3,10 @@ package net.apartium.cocoabeans.scoreboard;
 import net.apartium.cocoabeans.state.CompoundRecords;
 import net.apartium.cocoabeans.state.DirtyWatcher;
 import net.apartium.cocoabeans.state.Observable;
+import net.apartium.cocoabeans.state.SetObservable;
 import net.apartium.cocoabeans.structs.Entry;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 
 import java.util.*;
@@ -25,7 +27,10 @@ public abstract class ScoreboardNumericDisplay<P> {
         this.objectiveId = objectiveId;
         this.group = group;
 
-        this.groupWatcher = new DirtyWatcher<>(group.observePlayers());
+        SetObservable<P> players = group.observePlayers();
+        this.groupWatcher = new DirtyWatcher<>(players);
+        players.observe(this.groupWatcher);
+
         this.displaySlots = Collections.newSetFromMap(new IdentityHashMap<>());
         this.displayName = displayName.watch();
     }
@@ -35,19 +40,17 @@ public abstract class ScoreboardNumericDisplay<P> {
     }
 
     public void set(String entity, Observable<Integer> score, Observable<Component> fixedComponent, Observable<Style> style) {
-        DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> watcher = entities.put(
-                entity,
-                Observable.compound(
-                        Optional.ofNullable(score).orElse(Observable.immutable(0)),
-                        Optional.ofNullable(fixedComponent).orElse(Observable.immutable(null)),
-                        Optional.ofNullable(style).orElse(Observable.immutable(null))
-                ).watch()
+        Observable<CompoundRecords.RecordOf3<Integer, Component, Style>> compound = Observable.compound(
+                Optional.ofNullable(score).orElse(Observable.immutable(0)),
+                Optional.ofNullable(fixedComponent).orElse(Observable.immutable(null)),
+                Optional.ofNullable(style).orElse(Observable.immutable(Style.style(NamedTextColor.RED)))
         );
+        DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> watcher = compound.watch();
 
-        System.out.println(watcher.get().getClass());
-
-        if (watcher == null)
-            return;
+        entities.put(
+                entity,
+                watcher
+        );
 
         CompoundRecords.RecordOf3<Integer, Component, Style> record = watcher.get().key();
         sendScorePacket(group.players(), entity, record.arg0(), ScoreboardAction.CREATE_OR_UPDATE,  record.arg1(), record.arg2());

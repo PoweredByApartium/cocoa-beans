@@ -22,6 +22,9 @@ public class SpigotDisplayTeam extends DisplayTeam<Player> {
     public void heartbeat() {
         if (groupWatcher.isDirty()) {
             Set<Player> cache = groupWatcher.getCache();
+            if (cache == null)
+                cache = Set.of();
+
             Entry<Set<Player>, Boolean> entry = groupWatcher.get();
 
             if (!entry.value())

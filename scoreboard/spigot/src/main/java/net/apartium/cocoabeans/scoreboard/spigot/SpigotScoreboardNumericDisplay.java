@@ -71,9 +71,11 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
 
     @Override
     public void sendDisplayPacket(Set<Player> audience, DisplaySlot slot, String objectiveId) {
-        try {
-                Object packet = NMSUtils.createDisplayPacket(objectiveId, slot);
+        if (audience.isEmpty())
+            return;
 
+        try {
+            Object packet = NMSUtils.createDisplayPacket(objectiveId, slot);
             for (Player player : audience)
                 NMSUtils.sendPacket(player, packet);
 
@@ -84,6 +86,9 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
 
     @Override
     public void sendScorePacket(Set<Player> audience, String entity, int score, ScoreboardAction action, Component fixedContent, Style numberStyle) {
+        if (audience.isEmpty())
+            return;
+
         try {
             Object packet = NMSUtils.createScorePacket(
                     entity,
@@ -103,6 +108,9 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
 
     @Override
     public void sendObjectivePacket(Set<Player> audience, ObjectiveMode mode, Component displayName) {
+        if (audience.isEmpty())
+            return;
+
         try {
             Object packet = NMSUtils.createObjectivePacket(
                     objectiveId,
