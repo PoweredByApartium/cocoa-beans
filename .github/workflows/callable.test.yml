@@ -2,6 +2,9 @@ name: Run tests
 
 on:
   workflow_call:
+    secrets:
+      SONAR_PROP_TOKEN:
+        required: true
 
 permissions:
     contents: read
