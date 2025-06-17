@@ -47,4 +47,3 @@ jobs:
     uses: ./.github/workflows/callable.build.yml
     with:
       VERSION: ${{ github.event.inputs.name || 'dev' }}
-
