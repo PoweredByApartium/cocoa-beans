@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.virtual;
 
+import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
@@ -10,6 +11,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Used to construct instances of {@link VirtualCommandDefinition}
@@ -41,21 +43,39 @@ public class VirtualCommandFactory {
 
     /**
      * Map a command node into a virtual command
-     * @param node command node to represent
+     * @param nodes command nodes to represent
      * @return a new virtual command instance
      */
-    public VirtualCommandDefinition create(CommandNode node) {
-        Class<?> clazz = node.getClass();
-        Command command = clazz.getAnnotation(Command.class);
-        if (command == null)
+    public VirtualCommandDefinition create(CommandNode... nodes) {
+        if (nodes.length == 0)
             return null;
 
+
+        Class<?> baseClass = nodes[0].getClass();
+        Command baseCommand = baseClass.getAnnotation(Command.class);
+        if (baseCommand == null)
+            return null;
+
+        for (int i = 1; i < nodes.length; i++) {
+            Class<?> clazz = nodes[i].getClass();
+            Command command = clazz.getAnnotation(Command.class);
+            if (command == null)
+                throw new IllegalArgumentException("Command " + clazz.getName() + " is not annotated with @Command");
+
+            if (!baseCommand.value().equals(command.value()))
+                throw new IllegalArgumentException("Command name aren't same \nExpected: " + baseCommand.value() + "\nActual: " + command.value());
+
+            if (!CollectionHelpers.equalsArray(baseCommand.aliases(), command.aliases()))
+                throw new IllegalArgumentException("Command alias aren't same \nExpected: " + Arrays.toString(baseCommand.aliases()) + "\nActual: " + Arrays.toString(command.aliases()));
+        }
+
+        List<Class<?>> classes = Arrays.stream(nodes).map(Object::getClass).collect(Collectors.toList());
         return new VirtualCommandDefinition(
-                command.value(),
-                Set.of(command.aliases()),
-                CommandInfo.createFromAnnotations(Collections.singleton(clazz.getAnnotations())),
-                getVariants(clazz),
-                getMetadata(clazz)
+                baseCommand.value(),
+                Set.of(baseCommand.aliases()),
+                CommandInfo.createFromAnnotations(classes.stream().map(Class::getAnnotations).toList()),
+                getVariants(classes),
+                getMetadata(classes)
         );
     }
 
@@ -67,11 +87,13 @@ public class VirtualCommandFactory {
             metadata.put(virtualMetadata.key(), virtualMetadata.value());
     }
 
-    protected Map<String, Object> getMetadata(Class<?> clazz) {
+    protected Map<String, Object> getMetadata(Collection<Class<?>> classes) {
         Map<String, Object> metadata = new HashMap<>();
 
-        for (Class<?> targetClass : ClassUtils.getSuperClassAndInterfaces(clazz))
-            metaDataMap(targetClass, metadata);
+        for (Class<?> clazz : classes) {
+            for (Class<?> targetClass : ClassUtils.getSuperClassAndInterfaces(clazz))
+                metaDataMap(targetClass, metadata);
+        }
 
         return metadata;
     }
@@ -86,12 +108,12 @@ public class VirtualCommandFactory {
         return metadata;
     }
 
-    protected Set<VirtualCommandVariant> getVariants(Class<?> clazz) {
+    protected Set<VirtualCommandVariant> getVariants(Collection<Class<?>> classes) {
         Set<VirtualCommandVariant> variants = new HashSet<>();
-
-        for (Method method : MethodUtils.getAllMethods(clazz))
-            getVariants(method, variants);
-
+        for (Class<?> clazz : classes) {
+            for (Method method : MethodUtils.getAllMethods(clazz))
+                getVariants(method, variants);
+        }
         return variants;
     }
 
