@@ -17,8 +17,19 @@ val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.y
 val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
+val versionBase = System.getenv("VERSION") ?: "dev"
+val isPullRequest = System.getenv("GITHUB_HEAD_REF") != null
+val prNumber = System.getenv("GITHUB_REF")?.let {
+    val match = Regex("""refs/pull/(\d+)/.*""").find(it)
+    match?.groupValues?.get(1)
+}
+
 group = "net.apartium.cocoa-beans"
-version = (if (System.getenv("VERSION") == null) "dev" else System.getenv("VERSION")) + (if (snapshot) "-SNAPSHOT" else "")
+version = buildString {
+    append(versionBase)
+    if (snapshot) append("-SNAPSHOT")
+    if (isPullRequest && prNumber != null) append("-PR$prNumber")
+}
 
 allprojects {
 
