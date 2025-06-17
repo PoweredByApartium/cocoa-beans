@@ -29,6 +29,7 @@ allprojects {
 
     publishing {
         repositories {
+
             if (isCi) {
                 maven {
                     name = "GitHubPackages"

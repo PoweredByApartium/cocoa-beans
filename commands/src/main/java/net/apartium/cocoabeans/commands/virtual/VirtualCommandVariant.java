@@ -13,6 +13,7 @@ import java.util.Map;
  * @param metadata variant metadata
  * @see VirtualCommandDefinition
  */
+@ApiStatus.Experimental
 @ApiStatus.AvailableSince("0.0.39")
 public record VirtualCommandVariant(
         CommandInfo info,

@@ -1,7 +1,10 @@
 package net.apartium.cocoabeans.commands.virtual;
 
 import net.apartium.cocoabeans.CollectionHelpers;
-import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.Command;
+import net.apartium.cocoabeans.commands.CommandInfo;
+import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
  * @see VirtualMetadata
  */
 @ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.Experimental
 public class VirtualCommandFactory {
 
     private final List<BiConsumer<AnnotatedElement, Map<String, Object>>> mappers = new ArrayList<>();
