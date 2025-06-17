@@ -637,7 +637,7 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
         if (USE_PACKAGE_WITH_VERSION) {
             String[] split = newFQDN.split("\\.");
             String clazzName = split[split.length - 1];
-            return String.format("net.minecraft.server.%s.%s", VERSION, clazzName);
+            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, clazzName);
         }
 
         return newFQDN;
