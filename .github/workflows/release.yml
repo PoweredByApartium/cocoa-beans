@@ -1,12 +1,12 @@
-name: Github release 
+name: Github release
 
 on:
-    workflow_call:
-      inputs:
-        VERSION:
-          description: 'Version name'
-          required: true
-          type: string
+  workflow_call:
+    inputs:
+      VERSION:
+        description: 'Version name'
+        required: true
+        type: string
 
 permissions:
   pull-requests: write
@@ -34,7 +34,7 @@ jobs:
 
       - name: Publish to maven repository
         run: ./gradlew publishPluginPublicationToHangar publish
-        env: 
+        env:
           VERSION: ${{ github.event.inputs.name }}
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,16 +26,12 @@ val prNumber = System.getenv("GITHUB_REF")?.let {
     match?.groupValues?.get(1)
 }
 
-fun figureVersion() : String {
-    return buildString {
-        append(versionBase)
-        if (snapshot) append("-SNAPSHOT")
-        if (isPullRequest && prNumber != null) append("-PR$prNumber")
-    }
-}
-
 group = "net.apartium.cocoa-beans"
-version = figureVersion()
+version = buildString {
+    append(versionBase)
+    if (snapshot) append("-SNAPSHOT")
+    if (isPullRequest && prNumber != null) append("-PR$prNumber")
+}
 
 allprojects {
     apply(plugin = "signing")

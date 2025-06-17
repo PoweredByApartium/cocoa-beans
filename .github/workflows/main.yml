@@ -47,15 +47,38 @@ jobs:
       VERSION: ${{ github.event.inputs.name || 'snapshot' }}
     secrets:
       GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-  
+
   run_tests:
     needs: checkout
     uses: ./.github/workflows/callable.test.yml
     secrets:
       SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   build:
     needs: run_tests
     uses: ./.github/workflows/callable.build.yml
     with:
       VERSION: ${{ github.event.inputs.name || 'dev' }}
+
+  release:
+    #if: github.event_name == 'workflow_dispatch'
+    needs: run_tests
+    uses: ./.github/workflows/callable.release.yml
+    with:
+      VERSION: ${{ github.event.inputs.name }}
+
+  maven:
+    #if: github.event_name == 'workflow_dispatch'
+    needs: release
+    uses: ./.github/workflows/callable.maven.yml
+    with:
+      VERSION: ${{ github.event.inputs.name || 'dev' }}
+    secrets:
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
