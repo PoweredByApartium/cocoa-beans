@@ -40,10 +40,10 @@ public class NMSUtils {
     }
 
     public static String fixNMSFQDNForNonMappedFormat(String newFQDN) {
-        System.out.println(SERVER_VERSION);
-
         if (USE_PACKAGE_WITH_VERSION && isMinecraftVersion(SERVER_VERSION)) {
-            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, newFQDN);
+            String[] split = newFQDN.split("\\.");
+            String className = split[split.length - 1];
+            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, className);
         }
 
         return String.format("net.minecraft.server.%s", newFQDN);
