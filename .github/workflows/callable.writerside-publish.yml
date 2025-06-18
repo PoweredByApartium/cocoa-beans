@@ -32,13 +32,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-         fetch-depth: true
-         token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN  }}
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
 
       - uses: actions/setup-java@v3
         with:
@@ -47,7 +47,7 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-    
+
       - name: Setup git
         run: |
           git remote rm origin
@@ -99,14 +99,20 @@ jobs:
           version: ${{ inputs.VERSION }}
         run: |
           git reset --hard
+          git clean -fdx  # ✅ Clean working directory to prevent untracked file issues
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git config pull.rebase false  # ✅ Set default pull strategy
           git pull origin gh-pages || true
-          
-          sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
-          
-          git add index.html
-          git commit -m "Update index.html"
+
+          if [ -f "index.html" ]; then
+            sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
+            git add index.html
+            git commit -m "Update index.html"
+          else
+            echo "index.html not found"
+            exit 1
+          fi
 
       - name: Override docs
         if: steps.determine_version.outputs.is_minor == 'true'
@@ -117,40 +123,41 @@ jobs:
           git fetch origin || true
           git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
-          
+
           if [ -d "$perv_version" ]; then
             echo "Creating old version directory for version $perv_version"
             git rm -rf $perv_version/
             git commit -m "Removed old version"
-          
+
             git add $version/
             json_file="help-versions.json"
 
             new_element=$(cat <<EOF
           {
-          "version": "$version",
-          "url": "/\($version)\/",
-          "isCurrent": true
-          } 
+            "version": "$version",
+            "url": "/$version/",
+            "isCurrent": true
+          }
           EOF
           )
 
             updated_json=$(jq --arg version "$version" '
-                  .[-1].version = $version |
-                  .[-1].url = "/\($version)\/" |
-                  .[-1].isCurrent = true |
-                  .[0:-1] |= map(.isCurrent = false)
-              ' "$json_file")
+              .[-1].version = $version |
+              .[-1].url = "/" + $version + "/" |
+              .[-1].isCurrent = true |
+              .[0:-1] |= map(.isCurrent = false)
+            ' "$json_file")
 
             echo "$updated_json" > "$json_file"
-          
+
             git add help-versions.json
-            git commit -m "Overide docs in github pages branch" || echo "No changes to commit"
+            git commit -m "Override docs in github pages branch" || echo "No changes to commit"
             git push origin gh-pages
           else
-              echo "NOT GOOD"
-              exit 1
+            echo "Previous version directory ($perv_version) does not exist. Aborting."
+            exit 1
           fi
+
       - name: Update docs
         if: steps.determine_version.outputs.is_minor == 'false'
         env:
@@ -159,25 +166,25 @@ jobs:
           git fetch origin
           git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
-          
+
           json_file="help-versions.json"
 
-            new_element=$(cat <<EOF
+          new_element=$(cat <<EOF
           {
-          "version": "$version",
-          "url": "/$version/",
-          "isCurrent": true
-          } 
+            "version": "$version",
+            "url": "/$version/",
+            "isCurrent": true
+          }
           EOF
           )
-          
-           updated_json=$(jq --argjson new "$new_element" '
-               map(.isCurrent = false) + [$new]
-           ' "$json_file")
-          
-           echo "$updated_json" > "$json_file"
-          
-           git add $version/
-           git add help-versions.json
-           git commit -m "Update docs in github pages branch" || echo "No changes to commit"
-           git push origin gh-pages
+
+          updated_json=$(jq --argjson new "$new_element" '
+            map(.isCurrent = false) + [$new]
+          ' "$json_file")
+
+          echo "$updated_json" > "$json_file"
+
+          git add $version/
+          git add help-versions.json
+          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+          git push origin gh-pages
