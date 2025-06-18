@@ -19,6 +19,12 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  INSTANCE: 'Writerside/cb'
+  ARTIFACT: 'webHelpHI2-all.zip'
+  DOCKER_VERSION: '233.14938'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   setup:
     runs-on: ubuntu-latest
