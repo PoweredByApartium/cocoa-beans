@@ -13,7 +13,7 @@ plugins {
     jacoco
 }
 
-val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
+val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/callable.writerside-publish.yml"
 val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
