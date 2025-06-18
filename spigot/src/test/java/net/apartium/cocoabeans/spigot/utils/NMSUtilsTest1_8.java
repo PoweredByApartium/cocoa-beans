@@ -36,7 +36,7 @@ public class NMSUtilsTest1_8 {
     }
 
     @Test
-    void testFixNMSFQDNForNonMappedFormat() {
+    void testFormatNMS1_8() {
         assertEquals("net.minecraft.server.v1_8_R3.PlayerList",
                 NMSUtils.fixNMSFQDNForNonMappedFormat("players.PlayerList"));
     }

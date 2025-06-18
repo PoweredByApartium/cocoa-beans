@@ -2,8 +2,7 @@ package net.apartium.cocoabeans.spigot.utils;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
-import be.seeseemelk.mockbukkit.ServerMock;
-import net.apartium.cocoabeans.spigot.SpigotServerMock;
+import org.bukkit.craftbukkit.SpigotServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ public class NMSUtilsTest {
     }
 
     @Test
-    void testFixNMSFQDNForNonMappedFormat_1_20() {
+    void testFormatNMS1_20() {
         assertEquals("net.minecraft.server.players.PlayerList",
                 NMSUtils.fixNMSFQDNForNonMappedFormat("players.PlayerList"));
     }
@@ -39,7 +38,7 @@ public class NMSUtilsTest {
         tearDown();
         MockBukkit.mock();
 
-        assertThrows(ExceptionInInitializerError.class, () -> NMSUtils.formatOBC("command.VanillaCommandWrapper"),
+        assertThrows(RuntimeException.class, () -> NMSUtils.fixNMSFQDNForNonMappedFormat("command.VanillaCommandWrapper"),
                 "Could not find method getHandle of class be.seeseemelk.mockbukkit.ServerMock");
     }
 }

@@ -7,19 +7,22 @@ import java.lang.reflect.Method;
 
 public class NMSUtils {
 
-    private final static String
-            PACKAGE_NAME = Bukkit.getServer().getClass().getPackage().getName(),
-            SERVER_VERSION = PACKAGE_NAME.substring(PACKAGE_NAME.lastIndexOf(".") + 1);
+    public static String getPackageName() {
+        return Bukkit.getServer().getClass().getPackage().getName();
+    }
 
-    private static final boolean USE_PACKAGE_WITH_VERSION = shouldUsePackageWithVersion();
+    public static String getServerVersion() {
+        String packageName = getPackageName();
+        return packageName.substring(packageName.lastIndexOf(".") + 1);
+    }
 
-    private static boolean shouldUsePackageWithVersion() {
+    public static boolean usePackageWithVersion() {
         try {
             Method getHandle = Bukkit.getServer().getClass().getMethod("getHandle");
-            return getHandle.getReturnType().getName().contains(SERVER_VERSION);
+            return getHandle.getReturnType().getName().contains(getServerVersion());
         } catch (NoSuchMethodException e) {
-            String className = Bukkit.getServer().getClass().getName();
-            throw new RuntimeException("Could not find method getHandle of class %s".formatted(className), e);
+            throw new RuntimeException("Could not find method getHandle of class " +
+                    Bukkit.getServer().getClass().getName(), e);
         }
     }
 
@@ -40,16 +43,17 @@ public class NMSUtils {
     }
 
     public static String fixNMSFQDNForNonMappedFormat(String newFQDN) {
-        if (USE_PACKAGE_WITH_VERSION && isMinecraftVersion(SERVER_VERSION)) {
+        String serverVersion = getServerVersion();
+        if (usePackageWithVersion() && isMinecraftVersion(serverVersion)) {
             String[] split = newFQDN.split("\\.");
             String className = split[split.length - 1];
-            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, className);
+            return String.format("net.minecraft.server.%s.%s", serverVersion, className);
         }
 
         return String.format("net.minecraft.server.%s", newFQDN);
     }
 
     public static String formatOBC(String path) {
-        return String.format("%s.%s", PACKAGE_NAME, path);
+        return String.format("%s.%s", getPackageName(), path);
     }
 }

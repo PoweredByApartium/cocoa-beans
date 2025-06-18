@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.v1_8_R3;
 
-import net.apartium.cocoabeans.spigot.SpigotServerMock;
+import org.bukkit.craftbukkit.SpigotServerMock;
 
 public class SpigotServerMock_1_8 extends SpigotServerMock {
 

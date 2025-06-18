@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.spigot;
+package org.bukkit.craftbukkit;
 
 import be.seeseemelk.mockbukkit.ServerMock;
 
