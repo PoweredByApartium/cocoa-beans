@@ -40,12 +40,23 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.GH_PAGES_TOKEN  }}
 
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+    
       - name: Setup git
         run: |
           git remote rm origin
           git remote add origin git@github.com:${{ github.repository }}
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
+
+      - name: Generate javadoc
+        run: ./gradlew javadoc
 
       - name: Fetch previous version
         id: perv_version
