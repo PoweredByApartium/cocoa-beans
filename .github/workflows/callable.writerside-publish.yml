@@ -45,7 +45,7 @@ jobs:
         id: perv_version
         run: |
           git fetch origin
-          echo "::set-output name=version::$(git tag -l | sort -V | tail -n 
+          echo "::set-output name=version::$(git tag -l | sort -V | tail -n )
 
       - name: Determine version changes
         id: determine_version
