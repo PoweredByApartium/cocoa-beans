@@ -36,6 +36,18 @@ jobs:
       - name: Output version
         run: echo "The version is ${{ steps.get_version.outputs.VERSION }}"
 
+  test_writerside:
+    needs: checkout
+    uses: ./.github/workflows/callable.writerside.yml
+
+  publish_writerside:
+    needs: test_writerside
+    uses: ./.github/workflows/callable.writerside-publish.yml
+    with:
+      VERSION: ${{ github.event.inputs.name || 'dev' }}
+    secrets:
+      GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
+  
   run_tests:
     needs: checkout
     uses: ./.github/workflows/callable.test.yml
