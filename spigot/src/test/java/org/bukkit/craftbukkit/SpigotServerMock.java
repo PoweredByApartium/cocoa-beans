@@ -6,7 +6,7 @@ public class SpigotServerMock extends ServerMock {
 
     public MethodMock getHandle() {
         // empty
-        return null;
+        return new MethodMock();
     }
 
     public class MethodMock {
