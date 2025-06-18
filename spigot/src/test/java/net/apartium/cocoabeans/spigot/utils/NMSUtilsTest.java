@@ -48,6 +48,26 @@ public class NMSUtilsTest {
         assertEquals("net.minecraft.server.players.PlayerList",
                 NMSUtils.formatNMS("players.PlayerList"));
     }
+
+    @Test
+    void testFormatNMSWithNullPath() {
+        assertThrows(IllegalArgumentException.class, () -> NMSUtils.formatNMS(null), "Path cannot be null or empty");
+    }
+
+    @Test
+    void testFormatNMSWithEmptyPath() {
+        assertThrows(IllegalArgumentException.class, () -> NMSUtils.formatNMS(""), "Path cannot be null or empty");
+    }
+
+    @Test
+    void testFormatOBCNullPath() {
+        assertThrows(IllegalArgumentException.class, () -> NMSUtils.formatOBC(null), "Path cannot be null or empty");
+    }
+
+    @Test
+    void testFormatOBCEmptyPath() {
+        assertThrows(IllegalArgumentException.class, () -> NMSUtils.formatOBC(""), "Path cannot be null or empty");
+    }
 }
 
 

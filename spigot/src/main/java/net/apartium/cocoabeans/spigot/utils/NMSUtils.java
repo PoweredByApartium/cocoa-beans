@@ -38,9 +38,8 @@ public class NMSUtils {
                 .replaceAll("r", "");
 
         String[] args = version.split("_");
-        if (args.length < 3) {
+        if (args.length < 3)
             return false;
-        }
 
         MinecraftVersion minecraftVersion;
         try {
@@ -59,6 +58,9 @@ public class NMSUtils {
      * @return the formatted path
      */
     public static String formatNMS(String path) {
+        if (path == null || path.trim().isEmpty())
+            throw new IllegalArgumentException("Path cannot be null or empty");
+
         String serverVersion = getServerVersion();
 
         if (isMinecraftVersion(serverVersion)) {
@@ -77,6 +79,9 @@ public class NMSUtils {
      * @return the formatted path
      */
     public static String formatOBC(String path) {
+        if (path == null || path.trim().isEmpty())
+            throw new IllegalArgumentException("Path cannot be null or empty");
+
         return String.format("%s.%s", getPackageName(), path);
     }
 }
