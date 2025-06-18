@@ -14,7 +14,7 @@ public abstract class SpigotTestBase {
 
     @BeforeEach
     public void setup() {
-        server = MockBukkit.mock();
+        server = MockBukkit.mock(new SpigotServerMock());
         plugin = MockBukkit.createMockPlugin();
 
         initialize();

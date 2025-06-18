@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.utils;
 
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Method;
@@ -22,19 +23,33 @@ public class NMSUtils {
         }
     }
 
-    public static String fixNMSFQDNForNonMappedFormat(String newFQDN) {
-        if (USE_PACKAGE_WITH_VERSION) {
-            String[] split = newFQDN.split("\\.");
-            String clazzName = split[split.length - 1];
-            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, clazzName);
+    private static boolean isMinecraftVersion(String version) {
+        version = version.toLowerCase().replaceAll("v", "")
+                .replaceAll("r", "");
+
+        String[] args = version.split("_");
+        MinecraftVersion minecraftVersion;
+        try {
+            minecraftVersion = MinecraftVersion.getVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                    Integer.parseInt(args[2]));
+        } catch (NumberFormatException e) {
+            minecraftVersion = MinecraftVersion.UNKNOWN;
         }
 
-        return newFQDN;
+        return minecraftVersion != MinecraftVersion.UNKNOWN;
+    }
+
+    public static String fixNMSFQDNForNonMappedFormat(String newFQDN) {
+        System.out.println(SERVER_VERSION);
+
+        if (USE_PACKAGE_WITH_VERSION && isMinecraftVersion(SERVER_VERSION)) {
+            return String.format("net.minecraft.server.%s.%s", SERVER_VERSION, newFQDN);
+        }
+
+        return String.format("net.minecraft.server.%s", newFQDN);
     }
 
     public static String formatOBC(String path) {
         return String.format("%s.%s", PACKAGE_NAME, path);
     }
-
-
 }
