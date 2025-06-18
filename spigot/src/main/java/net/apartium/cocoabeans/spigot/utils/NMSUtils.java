@@ -31,6 +31,10 @@ public class NMSUtils {
                 .replaceAll("r", "");
 
         String[] args = version.split("_");
+        if (args.length < 3) {
+            return false;
+        }
+
         MinecraftVersion minecraftVersion;
         try {
             minecraftVersion = MinecraftVersion.getVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
@@ -42,15 +46,16 @@ public class NMSUtils {
         return minecraftVersion != MinecraftVersion.UNKNOWN;
     }
 
-    public static String fixNMSFQDNForNonMappedFormat(String newFQDN) {
+    public static String fixNMSFQDNForNonMappedFormat(String path) {
         String serverVersion = getServerVersion();
         if (usePackageWithVersion() && isMinecraftVersion(serverVersion)) {
-            String[] split = newFQDN.split("\\.");
+            String[] split = path.split("\\.");
             String className = split[split.length - 1];
             return String.format("net.minecraft.server.%s.%s", serverVersion, className);
         }
 
-        return String.format("net.minecraft.server.%s", newFQDN);
+        return path.startsWith("net.minecraft.server.") ? path
+                : String.format("net.minecraft.server.%s", path);
     }
 
     public static String formatOBC(String path) {

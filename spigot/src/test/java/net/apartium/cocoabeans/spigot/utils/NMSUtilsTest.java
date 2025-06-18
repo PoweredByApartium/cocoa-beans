@@ -35,7 +35,7 @@ public class NMSUtilsTest {
 
     @Test
     void testShouldUsePackageWithVersionGetHandleNotFound() {
-        tearDown();
+        MockBukkit.unmock();
         MockBukkit.mock();
 
         assertThrows(RuntimeException.class, () -> NMSUtils.fixNMSFQDNForNonMappedFormat("command.VanillaCommandWrapper"),
