@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.utils;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import org.bukkit.craftbukkit.SpigotServerMock;
-import org.bukkit.craftbukkit_more_args.vi_ds_ds.SpigotServerMoreArgsMock;
+import org.bukkit.craftbukkit_more_args.SpigotServerMockMoreArgs;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class NMSUtilsTest {
     @Test
     void testFormatNMSShouldReturnUnknownVersion() {
         MockBukkit.unmock();
-        MockBukkit.mock(new SpigotServerMoreArgsMock());
+        MockBukkit.mock(new SpigotServerMockMoreArgs());
 
         assertEquals("net.minecraft.server.players.PlayerList",
                 NMSUtils.formatNMS("players.PlayerList"));
