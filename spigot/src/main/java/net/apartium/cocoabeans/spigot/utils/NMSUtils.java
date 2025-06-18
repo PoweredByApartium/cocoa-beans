@@ -4,6 +4,8 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.reflect.Method;
+
 /**
  * NMSUtils is a utility class for validating NMS/OBC class loading in runtime
  */
@@ -28,28 +30,18 @@ public class NMSUtils {
     }
 
     /**
-     * Determines if the specified version is a minecraft version
-     * @see MinecraftVersion
+     * Determines if the getHandle method return type contains the specified version
      * @param version the specified version
-     * @return true if a specified version is a minecraft version, otherwise false
+     * @return true if getHandle method return type contains the specified version, otherwise false
      */
-    private static boolean isMinecraftVersion(String version) {
-        version = version.toLowerCase().replaceAll("v", "")
-                .replaceAll("r", "");
-
-        String[] args = version.split("_");
-        if (args.length < 3)
-            return false;
-
-        MinecraftVersion minecraftVersion;
+    private static boolean containsVersion(String version) {
         try {
-            minecraftVersion = MinecraftVersion.getVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
-                    Integer.parseInt(args[2]));
-        } catch (NumberFormatException e) {
-            minecraftVersion = MinecraftVersion.UNKNOWN;
+            Method getHandle = Bukkit.getServer().getClass().getMethod("getHandle");
+            return getHandle.getReturnType().getName().contains(version);
+        } catch (NoSuchMethodException e) {
+            String className = Bukkit.getServer().getClass().getName();
+            throw new RuntimeException("Could not find method getHandle of class %s".formatted(className), e);
         }
-
-        return minecraftVersion != MinecraftVersion.UNKNOWN;
     }
 
     /**
@@ -63,7 +55,7 @@ public class NMSUtils {
 
         String serverVersion = getServerVersion();
 
-        if (isMinecraftVersion(serverVersion)) {
+        if (containsVersion(serverVersion)) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
             return String.format("net.minecraft.server.%s.%s", serverVersion, className);

@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_8_R3;
 
+import net.apartium.cocoabeans.spigot.stubs.MethodMock_v1_8_R3;
 import org.bukkit.craftbukkit.SpigotServerMock;
 
 /**
@@ -10,4 +11,7 @@ import org.bukkit.craftbukkit.SpigotServerMock;
  */
 public class SpigotServerMock_1_8 extends SpigotServerMock {
 
+    public MethodMock_v1_8_R3 getHandle() {
+        return new MethodMock_v1_8_R3();
+    }
 }
