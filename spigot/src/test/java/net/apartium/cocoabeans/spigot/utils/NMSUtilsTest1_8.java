@@ -17,7 +17,6 @@ public class NMSUtilsTest1_8 {
 
     @BeforeEach
     void setUp() {
-
         server = MockBukkit.mock(new SpigotServerMock_1_8());
         plugin = MockBukkit.createMockPlugin();
     }
@@ -38,6 +37,12 @@ public class NMSUtilsTest1_8 {
     @Test
     void testFormatNMS1_8() {
         assertEquals("net.minecraft.server.v1_8_R3.PlayerList",
-                NMSUtils.fixNMSFQDNForNonMappedFormat("players.PlayerList"));
+                NMSUtils.formatNMS("players.PlayerList"));
+    }
+
+    @Test
+    void testFormatNMSWithFullPath1_8() {
+        assertEquals("net.minecraft.server.v1_8_R3.PlayerList",
+                NMSUtils.formatNMS("net.minecraft.server.players.PlayerList"));
     }
 }

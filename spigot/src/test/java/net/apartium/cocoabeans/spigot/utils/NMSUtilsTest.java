@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.spigot.utils;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import org.bukkit.craftbukkit.SpigotServerMock;
+import org.bukkit.craftbukkit_more_args.vi_ds_ds.SpigotServerMoreArgsMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,16 +31,22 @@ public class NMSUtilsTest {
     @Test
     void testFormatNMS1_20() {
         assertEquals("net.minecraft.server.players.PlayerList",
-                NMSUtils.fixNMSFQDNForNonMappedFormat("players.PlayerList"));
+                NMSUtils.formatNMS("players.PlayerList"));
     }
 
     @Test
-    void testShouldUsePackageWithVersionGetHandleNotFound() {
-        MockBukkit.unmock();
-        MockBukkit.mock();
+    void testFormatNMSWithFullPath1_20() {
+        assertEquals("net.minecraft.server.players.PlayerList",
+                NMSUtils.formatNMS("net.minecraft.server.players.PlayerList"));
+    }
 
-        assertThrows(RuntimeException.class, () -> NMSUtils.fixNMSFQDNForNonMappedFormat("command.VanillaCommandWrapper"),
-                "Could not find method getHandle of class be.seeseemelk.mockbukkit.ServerMock");
+    @Test
+    void testFormatNMSShouldReturnUnknownVersion() {
+        MockBukkit.unmock();
+        MockBukkit.mock(new SpigotServerMoreArgsMock());
+
+        assertEquals("net.minecraft.server.players.PlayerList",
+                NMSUtils.formatNMS("players.PlayerList"));
     }
 }
 

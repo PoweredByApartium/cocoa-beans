@@ -4,7 +4,7 @@ import org.bukkit.craftbukkit.SpigotServerMock;
 
 public class SpigotServerMock_1_8 extends SpigotServerMock {
 
-    class Method_v_1_8_R3 extends MethodMock {
+    public class Method_v_1_8_R3 extends MethodMock {
 
     }
 
