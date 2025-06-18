@@ -44,7 +44,7 @@ jobs:
     needs: test_writerside
     uses: ./.github/workflows/callable.writerside-publish.yml
     with:
-      VERSION: ${{ github.event.inputs.name || 'dev' }}
+      VERSION: ${{ github.event.inputs.name || 'snapshot' }}
     secrets:
       GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
   
