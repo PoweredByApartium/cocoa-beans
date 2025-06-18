@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.utils;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
+import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.craftbukkit.SpigotServerMock;
 import org.bukkit.craftbukkit_more_args.SpigotServerMockMoreArgs;
 import org.junit.jupiter.api.AfterEach;
@@ -47,6 +48,15 @@ public class NMSUtilsTest {
 
         assertEquals("net.minecraft.server.players.PlayerList",
                 NMSUtils.formatNMS("players.PlayerList"));
+    }
+
+
+    @Test
+    void testFormatNMSThrowsException() {
+        MockBukkit.unmock();
+        MockBukkit.mock();
+        assertThrows(RuntimeException.class, () -> NMSUtils.formatNMS("players.PlayerList"),
+                "Could not find method getHandle of class be.seeseemelk.mockbukkit.ServerMock");
     }
 
     @Test

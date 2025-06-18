@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.spigot.utils;
 
-import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 
