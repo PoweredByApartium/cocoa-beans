@@ -76,7 +76,7 @@ allprojects {
     repositories {
         maven {
             name = "ApartiumNexus"
-            url = uri("https://nexus.apartium.net/repository/maven-public")
+            url = uri("https://nexus-de.apartium.net/repository/maven-public")
         }
     }
 
