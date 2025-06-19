@@ -35,6 +35,12 @@ public class NMSUtilsTest1_8 {
     }
 
     @Test
+    void testFormatOBCWithFullPathProvided() {
+        assertEquals("org.bukkit.craftbukkit.v1_8_R3.command.VanillaCommandWrapper",
+                NMSUtils.formatOBC("org.bukkit.craftbukkit.command.VanillaCommandWrapper"));
+    }
+
+    @Test
     void testFormatNMS1_8() {
         assertEquals("net.minecraft.server.v1_8_R3.PlayerList",
                 NMSUtils.formatNMS("players.PlayerList"));

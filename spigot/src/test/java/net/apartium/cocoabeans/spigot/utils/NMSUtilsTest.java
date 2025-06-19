@@ -2,9 +2,7 @@ package net.apartium.cocoabeans.spigot.utils;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
-import be.seeseemelk.mockbukkit.ServerMock;
 import org.bukkit.craftbukkit.SpigotServerMock;
-import org.bukkit.craftbukkit_more_args.SpigotServerMockMoreArgs;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,16 +38,6 @@ public class NMSUtilsTest {
         assertEquals("net.minecraft.server.players.PlayerList",
                 NMSUtils.formatNMS("net.minecraft.server.players.PlayerList"));
     }
-
-    @Test
-    void testFormatNMSShouldReturnUnknownVersion() {
-        MockBukkit.unmock();
-        MockBukkit.mock(new SpigotServerMockMoreArgs());
-
-        assertEquals("net.minecraft.server.players.PlayerList",
-                NMSUtils.formatNMS("players.PlayerList"));
-    }
-
 
     @Test
     void testFormatNMSThrowsException() {

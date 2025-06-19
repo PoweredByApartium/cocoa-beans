@@ -11,6 +11,11 @@ import java.lang.reflect.Method;
 @ApiStatus.AvailableSince("0.0.39")
 public class NMSUtils {
 
+    private static final String
+            NMS_PATH = "net.minecraft.server",
+            OBC_PATH = "org.bukkit.craftbukkit";
+
+
     /**
      * Gets the server's package name
      * @return the server package name
@@ -57,11 +62,10 @@ public class NMSUtils {
         if (containsVersion(serverVersion)) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
-            return String.format("net.minecraft.server.%s.%s", serverVersion, className);
+            return String.format("%s.%s.%s", NMS_PATH, serverVersion, className);
         }
 
-        return path.startsWith("net.minecraft.server.") ? path
-                : String.format("net.minecraft.server.%s", path);
+        return path.startsWith(NMS_PATH) ? path: String.format("%s.%s", NMS_PATH, path);
     }
 
     /**
@@ -72,6 +76,9 @@ public class NMSUtils {
     public static String formatOBC(String path) {
         if (path == null || path.trim().isEmpty())
             throw new IllegalArgumentException("Path cannot be null or empty");
+
+        if (path.startsWith(OBC_PATH))
+            path = path.substring(OBC_PATH.length() + 1);
 
         return String.format("%s.%s", getPackageName(), path);
     }
