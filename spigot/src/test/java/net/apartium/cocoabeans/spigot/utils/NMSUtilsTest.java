@@ -2,6 +2,8 @@ package net.apartium.cocoabeans.spigot.utils;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
+import net.apartium.cocoabeans.spigot.NMSUtils;
+import net.apartium.cocoabeans.spigot.SpigotServerCache;
 import org.bukkit.craftbukkit.SpigotServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,7 @@ public class NMSUtilsTest {
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
+        SpigotServerCache.flush();
         server = null;
         plugin = null;
     }

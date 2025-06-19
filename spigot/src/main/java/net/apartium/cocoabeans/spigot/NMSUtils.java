@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.spigot.utils;
+package net.apartium.cocoabeans.spigot;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
@@ -14,23 +14,6 @@ public class NMSUtils {
     private static final String
             NMS_PATH = "net.minecraft.server",
             OBC_PATH = "org.bukkit.craftbukkit";
-
-    /**
-     * Gets the server's package name
-     * @return the server package name
-     */
-    private static String getPackageName() {
-        return Bukkit.getServer().getClass().getPackage().getName();
-    }
-
-    /**
-     * Gets the server version format by the server package name
-     * @return tne server version format
-     */
-    private static String getServerVersion() {
-        String packageName = getPackageName();
-        return packageName.substring(packageName.lastIndexOf(".") + 1);
-    }
 
     /**
      * Determines if the getHandle method return type contains the specified version
@@ -53,10 +36,11 @@ public class NMSUtils {
      * @return the formatted path
      */
     public static String formatNMS(String path) {
-        if (path == null || path.trim().isEmpty())
+        if (path == null || path.trim().isEmpty()) {
             throw new IllegalArgumentException("Path cannot be null or empty");
+        }
 
-        String serverVersion = getServerVersion();
+        String serverVersion = SpigotServerCache.getInstance().getServerVersion();
 
         if (containsVersion(serverVersion)) {
             String[] split = path.split("\\.");
@@ -79,6 +63,6 @@ public class NMSUtils {
         if (path.startsWith(OBC_PATH))
             path = path.substring(OBC_PATH.length() + 1);
 
-        return String.format("%s.%s", getPackageName(), path);
+        return String.format("%s.%s", SpigotServerCache.getInstance().getPackageName(), path);
     }
 }
