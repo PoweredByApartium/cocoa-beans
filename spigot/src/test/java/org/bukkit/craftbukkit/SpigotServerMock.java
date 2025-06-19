@@ -14,7 +14,7 @@ public class SpigotServerMock extends ServerMock {
     /**
      * A method stub for the getHandle method
      * @see net.apartium.cocoabeans.spigot.utils.NMSUtils#containsVersion(String)
-     * @return
+     * @return a fake method stub
      */
     public MethodMock getHandle() {
         return new MethodMock();

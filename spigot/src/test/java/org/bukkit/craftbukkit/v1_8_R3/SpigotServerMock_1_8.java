@@ -11,6 +11,11 @@ import org.bukkit.craftbukkit.SpigotServerMock;
  */
 public class SpigotServerMock_1_8 extends SpigotServerMock {
 
+    /**
+     * A method stub for the getHandle method
+     * @see net.apartium.cocoabeans.spigot.utils.NMSUtils#containsVersion(String)
+     * @return a fake method stub
+     */
     public MethodMock_v1_8_R3 getHandle() {
         return new MethodMock_v1_8_R3();
     }
