@@ -1,9 +1,6 @@
 package net.apartium.cocoabeans.spigot;
 
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.lang.reflect.Method;
 
 /**
  * NMSUtils is a utility class for validating NMS/OBC class loading in runtime
@@ -14,21 +11,6 @@ public class NMSUtils {
     private static final String
             NMS_PATH = "net.minecraft.server",
             OBC_PATH = "org.bukkit.craftbukkit";
-
-    /**
-     * Determines if the getHandle method return type contains the specified version
-     * @param version the specified version
-     * @return true if getHandle method return type contains the specified version, otherwise false
-     */
-    private static boolean containsVersion(String version) {
-        try {
-            Method getHandle = Bukkit.getServer().getClass().getMethod("getHandle");
-            return getHandle.getReturnType().getName().contains(version);
-        } catch (NoSuchMethodException e) {
-            String className = Bukkit.getServer().getClass().getName();
-            throw new RuntimeException("Could not find method getHandle of class %s".formatted(className), e);
-        }
-    }
 
     /**
      * Formats the 'net.minecraft.server' path into a formatted path
@@ -42,7 +24,7 @@ public class NMSUtils {
 
         String serverVersion = SpigotServerCache.getInstance().getServerVersion();
 
-        if (containsVersion(serverVersion)) {
+        if (SpigotServerCache.getInstance().containsVersion()) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
             return String.format("%s.%s.%s", NMS_PATH, serverVersion, className);

@@ -3,6 +3,8 @@ package net.apartium.cocoabeans.spigot;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.reflect.Method;
+
 /**
  @hidden
  */
@@ -34,4 +36,15 @@ public class SpigotServerCache {
     public String getServerVersion() {
         return serverVersion;
     }
+
+    public boolean containsVersion() {
+        try {
+            Method getHandle = Bukkit.getServer().getClass().getMethod("getHandle");
+            return getHandle.getReturnType().getName().contains(serverVersion);
+        } catch (NoSuchMethodException e) {
+            String className = Bukkit.getServer().getClass().getName();
+            throw new RuntimeException("Could not find method getHandle of class %s".formatted(className), e);
+        }
+    }
+
 }
