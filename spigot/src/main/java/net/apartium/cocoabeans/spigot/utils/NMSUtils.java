@@ -15,7 +15,6 @@ public class NMSUtils {
             NMS_PATH = "net.minecraft.server",
             OBC_PATH = "org.bukkit.craftbukkit";
 
-
     /**
      * Gets the server's package name
      * @return the server package name
