@@ -13,8 +13,10 @@ package net.apartium.cocoabeans.spigot;
 import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
+import net.apartium.cocoabeans.spigot.board.ScoreboardNumericManager;
 import net.apartium.cocoabeans.spigot.commands.CocoaBoardCommand;
 import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
+import net.apartium.cocoabeans.spigot.team.TeamManager;
 import net.apartium.cocoabeans.state.spigot.SpigotProvidedState;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +25,8 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
     private SpigotProvidedState spigotProvidedState;
     private CommandManager commandManager;
     private BoardManager boardManager;
+    private TeamManager teamManager;
+    private ScoreboardNumericManager scoreboardNumericManager;
 
     @Override
     public void onEnable() {
@@ -32,14 +36,22 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
         boardManager = new BoardManager(spigotProvidedState);
         boardManager.initialize(this);
 
+        teamManager = new TeamManager();
+        teamManager.initialize(this);
+
+        scoreboardNumericManager = new ScoreboardNumericManager(spigotProvidedState);
+        scoreboardNumericManager.initialize(this);
+
         commandManager = new SpigotCommandManager(this);
         commandManager.registerArgumentTypeHandler(SpigotCommandManager.COMMON_PARSERS);
         commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
 
-        commandManager.addCommand(new CocoaBoardCommand(boardManager));
+        commandManager.addCommand(new CocoaBoardCommand(boardManager, teamManager, scoreboardNumericManager));
 
         ListenerAutoRegistration listenerAutoRegistration = new ListenerAutoRegistration(this, false);
         listenerAutoRegistration.addInjectableObject(boardManager);
+        listenerAutoRegistration.addInjectableObject(teamManager);
+        listenerAutoRegistration.addInjectableObject(scoreboardNumericManager);
 
         String packageName = getClass().getPackage().getName();
         listenerAutoRegistration.register(packageName + ".listeners", true);
@@ -49,6 +61,7 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
     public void onDisable() {
         boardManager.disable();
         spigotProvidedState.remove();
+        teamManager.disable();
     }
 
 }
