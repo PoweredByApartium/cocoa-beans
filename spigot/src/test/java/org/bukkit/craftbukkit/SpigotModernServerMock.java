@@ -3,14 +3,16 @@ package org.bukkit.craftbukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import net.apartium.cocoabeans.spigot.NMSUtils;
 import net.apartium.cocoabeans.spigot.stubs.MethodMock;
+import net.apartium.cocoabeans.spigot.utils.NMSUtilsLegacyTest;
+import net.apartium.cocoabeans.spigot.utils.NMSUtilsModernTest;
 
 /**
  * A ServerMock implementation for checking code that requires 'newer' server version
  * @see NMSUtils
- * @see net.apartium.cocoabeans.spigot.utils.NMSUtilsTest
- * @see net.apartium.cocoabeans.spigot.utils.NMSUtilsTest1_8
+ * @see NMSUtilsModernTest
+ * @see NMSUtilsLegacyTest
  */
-public class SpigotServerMock extends ServerMock {
+public class SpigotModernServerMock extends ServerMock {
 
     /**
      * A method stub for the getHandle method

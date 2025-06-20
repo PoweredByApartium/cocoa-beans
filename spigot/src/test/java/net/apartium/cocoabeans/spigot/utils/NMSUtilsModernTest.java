@@ -4,21 +4,22 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import net.apartium.cocoabeans.spigot.NMSUtils;
 import net.apartium.cocoabeans.spigot.SpigotServerCache;
-import org.bukkit.craftbukkit.SpigotServerMock;
+import org.bukkit.craftbukkit.SpigotModernServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NMSUtilsTest {
+public class NMSUtilsModernTest {
 
-    SpigotServerMock server;
+    SpigotModernServerMock server;
     MockPlugin plugin;
 
     @BeforeEach
     void setUp() {
-        server = MockBukkit.mock(new SpigotServerMock());
+        SpigotServerCache.flush();
+        server = MockBukkit.mock(new SpigotModernServerMock());
         plugin = MockBukkit.createMockPlugin();
     }
 

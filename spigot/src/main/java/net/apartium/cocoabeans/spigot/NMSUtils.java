@@ -1,9 +1,10 @@
 package net.apartium.cocoabeans.spigot;
 
+import net.apartium.cocoabeans.Ensures;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * NMSUtils is a utility class for validating NMS/OBC class loading in runtime
+ * General utility methods for interacting with NMS
  */
 @ApiStatus.AvailableSince("0.0.39")
 public class NMSUtils {
@@ -18,15 +19,12 @@ public class NMSUtils {
      * @return the formatted path
      */
     public static String formatNMS(String path) {
-        if (path == null || path.trim().isEmpty()) {
-            throw new IllegalArgumentException("Path cannot be null or empty");
-        }
-
-        String serverVersion = SpigotServerCache.getInstance().getServerVersion();
+        Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
 
         if (SpigotServerCache.getInstance().containsVersion()) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
+            String serverVersion = SpigotServerCache.getInstance().getServerVersion();
             return String.format("%s.%s.%s", NMS_PATH, serverVersion, className);
         }
 
@@ -39,12 +37,11 @@ public class NMSUtils {
      * @return the formatted path
      */
     public static String formatOBC(String path) {
-        if (path == null || path.trim().isEmpty())
-            throw new IllegalArgumentException("Path cannot be null or empty");
+        Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
 
         if (path.startsWith(OBC_PATH))
             path = path.substring(OBC_PATH.length() + 1);
 
-        return String.format("%s.%s", SpigotServerCache.getInstance().getPackageName(), path);
+        return String.format("%s.%s", SpigotServerCache.getInstance().getOBCPackageName(), path);
     }
 }

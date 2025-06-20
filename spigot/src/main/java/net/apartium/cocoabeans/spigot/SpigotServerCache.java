@@ -29,7 +29,7 @@ public class SpigotServerCache {
         instance = null;
     }
 
-    public String getPackageName() {
+    public String getOBCPackageName() {
         return packageName;
     }
 

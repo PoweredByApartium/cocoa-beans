@@ -214,5 +214,10 @@ public class Ensures {
 
     }
 
+    public static void isFalse(boolean bool, RuntimeException ex) {
+        if (bool)
+            throw ex == null ? new RuntimeException() : ex;
+    }
+
 
 }
