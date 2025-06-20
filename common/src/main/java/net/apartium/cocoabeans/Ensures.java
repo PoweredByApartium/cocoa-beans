@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -222,6 +224,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      *
      */
+    @ApiStatus.AvailableSince("0.0.39")
     public static void isFalse(boolean bool, RuntimeException ex) {
         if (bool)
             throw ex == null ? new RuntimeException() : ex;
@@ -234,6 +237,7 @@ public class Ensures {
      * @param bool the condition
      * @throws RuntimeException if argument does not match requested precondition
      */
+    @ApiStatus.AvailableSince("0.0.39")
     public static void isFalse(boolean bool) {
         isFalse(bool, new RuntimeException());
     }
@@ -246,6 +250,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      *
      */
+    @ApiStatus.AvailableSince("0.0.39")
     public static void isFalse(boolean bool, String message) {
         message = message.replaceAll("\\+-", "must be false");
         isFalse(bool, new RuntimeException(message));
