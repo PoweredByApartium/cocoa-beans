@@ -21,10 +21,10 @@ public class NMSUtils {
     public static String formatNMS(String path) {
         Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
 
-        if (SpigotServerCache.getInstance().containsVersion()) {
+        if (ServerInfoStore.getInstance().containsVersion()) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
-            String serverVersion = SpigotServerCache.getInstance().getServerVersion();
+            String serverVersion = ServerInfoStore.getInstance().getServerVersion();
             return String.format("%s.%s.%s", NMS_PATH, serverVersion, className);
         }
 
@@ -45,6 +45,6 @@ public class NMSUtils {
         if (path.startsWith(OBC_PATH))
             path = path.substring(OBC_PATH.length() + 1);
 
-        return String.format("%s.%s", SpigotServerCache.getInstance().getOBCPackageName(), path);
+        return String.format("%s.%s", ServerInfoStore.getInstance().getOBCPackageName(), path);
     }
 }

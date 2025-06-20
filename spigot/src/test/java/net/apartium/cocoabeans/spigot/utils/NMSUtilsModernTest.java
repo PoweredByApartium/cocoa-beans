@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.utils;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import net.apartium.cocoabeans.spigot.NMSUtils;
-import net.apartium.cocoabeans.spigot.SpigotServerCache;
+import net.apartium.cocoabeans.spigot.ServerInfoStore;
 import org.bukkit.craftbukkit.SpigotModernServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ public class NMSUtilsModernTest {
 
     @BeforeEach
     void setUp() {
-        SpigotServerCache.flush();
+        ServerInfoStore.flush();
         server = MockBukkit.mock(new SpigotModernServerMock());
         plugin = MockBukkit.createMockPlugin();
     }
@@ -26,7 +26,7 @@ public class NMSUtilsModernTest {
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
-        SpigotServerCache.flush();
+        ServerInfoStore.flush();
         server = null;
         plugin = null;
     }

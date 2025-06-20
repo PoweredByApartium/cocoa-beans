@@ -4,7 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import net.apartium.cocoabeans.spigot.NMSUtils;
-import net.apartium.cocoabeans.spigot.SpigotServerCache;
+import net.apartium.cocoabeans.spigot.ServerInfoStore;
 import org.bukkit.craftbukkit.v1_8_R3.SpigotLegacyServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ public class NMSUtilsLegacyTest {
 
     @BeforeEach
     void setUp() {
-        SpigotServerCache.flush();
+        ServerInfoStore.flush();
         server = MockBukkit.mock(new SpigotLegacyServerMock());
         plugin = MockBukkit.createMockPlugin();
     }
@@ -27,7 +27,7 @@ public class NMSUtilsLegacyTest {
     @AfterEach
     void tearDown() {
         MockBukkit.unmock();
-        SpigotServerCache.flush();
+        ServerInfoStore.flush();
         server = null;
         plugin = null;
     }

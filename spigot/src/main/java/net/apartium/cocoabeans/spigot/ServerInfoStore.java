@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.TestOnly;
 
 import java.lang.reflect.Method;
 
@@ -9,22 +10,23 @@ import java.lang.reflect.Method;
  @hidden
  */
 @ApiStatus.Internal
-public class SpigotServerCache {
+public class ServerInfoStore {
 
-    private static SpigotServerCache instance;
+    private static ServerInfoStore instance;
 
     private final String packageName;
     private final String serverVersion;
 
-    public SpigotServerCache() {
+    public ServerInfoStore() {
         packageName = Bukkit.getServer().getClass().getPackage().getName();
         serverVersion = packageName.substring(packageName.lastIndexOf(".") + 1);
     }
 
-    public static SpigotServerCache getInstance() {
-        return instance == null ? (instance = new SpigotServerCache()) : instance;
+    public static ServerInfoStore getInstance() {
+        return instance == null ? (instance = new ServerInfoStore()) : instance;
     }
 
+    @TestOnly
     public static void flush() {
         instance = null;
     }
