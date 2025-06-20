@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit;
 
 import be.seeseemelk.mockbukkit.ServerMock;
 import net.apartium.cocoabeans.spigot.NMSUtils;
-import net.apartium.cocoabeans.spigot.stubs.MethodMock;
+import net.apartium.cocoabeans.spigot.craftserver.SpigotCraftServer;
 import net.apartium.cocoabeans.spigot.utils.NMSUtilsLegacyTest;
 import net.apartium.cocoabeans.spigot.utils.NMSUtilsModernTest;
 
@@ -19,7 +19,7 @@ public class SpigotModernServerMock extends ServerMock {
      * @see NMSUtils#containsVersion(String)
      * @return a fake method stub
      */
-    public MethodMock getHandle() {
-        return new MethodMock();
+    public SpigotCraftServer getHandle() {
+        return new SpigotCraftServer();
     }
 }

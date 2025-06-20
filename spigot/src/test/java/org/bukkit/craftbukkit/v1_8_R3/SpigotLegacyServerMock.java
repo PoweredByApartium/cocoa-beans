@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.v1_8_R3;
 
 import net.apartium.cocoabeans.spigot.NMSUtils;
-import net.apartium.cocoabeans.spigot.stubs.MethodMock_v1_8_R3;
+import net.apartium.cocoabeans.spigot.craftserver.SpigotCraftServer_v1_8_R3;
 import net.apartium.cocoabeans.spigot.utils.NMSUtilsLegacyTest;
 import net.apartium.cocoabeans.spigot.utils.NMSUtilsModernTest;
 import org.bukkit.craftbukkit.SpigotModernServerMock;
@@ -19,7 +19,7 @@ public class SpigotLegacyServerMock extends SpigotModernServerMock {
      * @see NMSUtils#containsVersion(String)
      * @return a fake method stub
      */
-    public MethodMock_v1_8_R3 getHandle() {
-        return new MethodMock_v1_8_R3();
+    public SpigotCraftServer_v1_8_R3 getHandle() {
+        return new SpigotCraftServer_v1_8_R3();
     }
 }
