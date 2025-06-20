@@ -11,6 +11,7 @@
 - [minecraft] Add minecraft module
 - [scoreboard] Add Scoreboard api for Spigot & Minestom
 - [animation] Add Animation state
+- [spigot] Add NMSUtils
 
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers
