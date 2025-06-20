@@ -228,4 +228,27 @@ public class Ensures {
     }
 
 
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @throws RuntimeException if argument does not match requested precondition
+     */
+    public static void isFalse(boolean bool) {
+        isFalse(bool, new RuntimeException());
+    }
+
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @param message the message to send with the exception, "+-" will be replaced with "must be false"
+     * @throws RuntimeException if argument does not match requested precondition
+     *
+     */
+    public static void isFalse(boolean bool, String message) {
+        message = message.replaceAll("\\+-", "must be false");
+        isFalse(bool, new RuntimeException(message));
+    }
+
 }
