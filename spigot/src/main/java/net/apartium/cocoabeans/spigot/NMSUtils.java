@@ -39,6 +39,9 @@ public class NMSUtils {
     public static String formatOBC(String path) {
         Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
 
+        if (path.equals(OBC_PATH))
+            throw new RuntimeException("Not enough information to format path");
+
         if (path.startsWith(OBC_PATH))
             path = path.substring(OBC_PATH.length() + 1);
 

@@ -70,6 +70,11 @@ public class NMSUtilsModernTest {
     void testFormatOBCEmptyPath() {
         assertThrows(IllegalArgumentException.class, () -> NMSUtils.formatOBC(""), "Path cannot be null or empty");
     }
+
+    @Test
+    void testFormatOBCWhenPathLengthIsEqualToOBCPathLength() {
+        assertThrows(RuntimeException.class, () -> NMSUtils.formatOBC("org.bukkit.craftbukkit"), "Not enough information to format path");
+    }
 }
 
 
