@@ -11,7 +11,6 @@
 package net.apartium.cocoabeans;
 
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Collection;
 import java.util.Map;
 
