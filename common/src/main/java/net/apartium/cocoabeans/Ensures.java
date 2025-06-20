@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * Helper class used to validate conditions
+ *
  * @author Voigon
  */
 public class Ensures {
@@ -200,11 +201,10 @@ public class Ensures {
     }
 
     /**
-     *
      * Makes sure given condition is true
      *
      * @param bool the condition
-     * @param ex the exception to throw if the boolean is false
+     * @param ex   the exception to throw if the boolean is false
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void isTrue(boolean bool, RuntimeException ex) {
@@ -214,6 +214,14 @@ public class Ensures {
 
     }
 
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @param ex   the exception to throw if the boolean is true
+     * @throws RuntimeException ex if argument does not match requested precondition
+     *                          +
+     */
     public static void isFalse(boolean bool, RuntimeException ex) {
         if (bool)
             throw ex == null ? new RuntimeException() : ex;
