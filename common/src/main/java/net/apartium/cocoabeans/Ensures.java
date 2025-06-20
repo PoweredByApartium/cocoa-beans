@@ -211,7 +211,6 @@ public class Ensures {
         if (!bool)
             throw ex == null ? new RuntimeException() : ex;
 
-
     }
 
     /**
