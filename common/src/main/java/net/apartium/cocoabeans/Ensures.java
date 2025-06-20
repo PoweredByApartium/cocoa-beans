@@ -220,7 +220,7 @@ public class Ensures {
      * @param bool the condition
      * @param ex   the exception to throw if the boolean is true
      * @throws RuntimeException ex if argument does not match requested precondition
-     *                          +
+     *
      */
     public static void isFalse(boolean bool, RuntimeException ex) {
         if (bool)
