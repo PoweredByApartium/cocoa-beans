@@ -17,7 +17,7 @@ public class ServerInfoStore {
     private final String packageName;
     private final String serverVersion;
 
-    private Method getHandleMethod; // Cached method
+    private boolean containsVersion;
 
     public ServerInfoStore() {
         packageName = Bukkit.getServer().getClass().getPackage().getName();
@@ -42,11 +42,14 @@ public class ServerInfoStore {
     }
 
     public boolean containsVersion() {
-        try {
-            if (getHandleMethod == null)
-                getHandleMethod = Bukkit.getServer().getClass().getMethod("getHandle");
+        if (this.containsVersion) {
+            return true;
+        }
 
-            return getHandleMethod.getReturnType().getName().contains(serverVersion);
+        try {
+            Method method = Bukkit.getServer().getClass().getMethod("getHandle");
+            this.containsVersion = method.getReturnType().getName().contains(serverVersion);
+            return containsVersion;
         } catch (NoSuchMethodException e) {
             String className = Bukkit.getServer().getClass().getName();
             throw new RuntimeException("Could not find method getHandle of class %s".formatted(className), e);

@@ -12,6 +12,7 @@
 - [scoreboard] Add Scoreboard api for Spigot & Minestom
 - [animation] Add Animation state
 - [spigot] Add NMSUtils
+- [common] Add Ensures#isFalse
 
 ## 0.0.38
 - [commands] Add `WrappedArgumentParser` for better handling of argument parsers
