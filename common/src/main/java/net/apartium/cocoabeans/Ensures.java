@@ -20,6 +20,8 @@ import java.util.Map;
  */
 public class Ensures {
 
+    public static final String CANNOT_BE_NULL_MESSAGE = "cannot be null or empty";
+
     /**
      * Validates if a String is empty or not
      *
@@ -70,7 +72,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Collection<?> collection, String message) {
-        notEmpty(collection, new NullPointerException(message.replace("\\+-", "cannot be null or empty")));
+        notEmpty(collection, new NullPointerException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
@@ -97,7 +99,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void notEmpty(Map<?, ?> map, String message) {
-        notEmpty(map, new RuntimeException(message.replace("\\+-", "cannot be null or empty")));
+        notEmpty(map, new RuntimeException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
@@ -123,7 +125,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Object[] array, String message) {
-        notEmpty(array, new RuntimeException(message.replace("\\+-", "cannot be null or empty")));
+        notEmpty(array, new RuntimeException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
