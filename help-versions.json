@@ -37,6 +37,11 @@
   {
     "version": "snapshot",
     "url": "/snapshot/",
+    "isCurrent": false
+  },
+  {
+    "version": "0.0.39",
+    "url": "/0.0.39/",
     "isCurrent": true
   }
 ]
