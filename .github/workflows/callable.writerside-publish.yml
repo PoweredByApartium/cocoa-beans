@@ -99,10 +99,10 @@ jobs:
           version: ${{ inputs.VERSION }}
         run: |
           git reset --hard
-          git clean -fdx  # ✅ Clean working directory to prevent untracked file issues
+          git clean -fdx
           git fetch origin
           git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
-          git config pull.rebase false  # ✅ Set default pull strategy
+          git config pull.rebase false
           git pull origin gh-pages || true
 
           if [ -f "index.html" ]; then
@@ -125,33 +125,38 @@ jobs:
           git pull origin gh-pages || true
 
           if [ -d "$perv_version" ]; then
-            echo "Creating old version directory for version $perv_version"
+            echo "Removing previous version: $perv_version"
             git rm -rf $perv_version/
-            git commit -m "Removed old version"
+            git commit -m "Removed old version $perv_version"
 
             git add $version/
-            json_file="help-versions.json"
 
-            new_element=$(cat <<EOF
-          {
-            "version": "$version",
-            "url": "/$version/",
-            "isCurrent": true
-          }
-          EOF
-          )
+            if [[ ! "$version" =~ [Ss]napshot ]]; then
+              json_file="help-versions.json"
 
-            updated_json=$(jq --arg version "$version" '
-              .[-1].version = $version |
-              .[-1].url = "/" + $version + "/" |
-              .[-1].isCurrent = true |
-              .[0:-1] |= map(.isCurrent = false)
-            ' "$json_file")
+              new_element=$(cat <<EOF
+              {
+                "version": "$version",
+                "url": "/$version/",
+                "isCurrent": true
+              }
+              EOF
+              )
 
-            echo "$updated_json" > "$json_file"
+              updated_json=$(jq --arg version "$version" '
+                .[-1].version = $version |
+                .[-1].url = "/" + $version + "/" |
+                .[-1].isCurrent = true |
+                .[0:-1] |= map(.isCurrent = false)
+              ' "$json_file")
 
-            git add help-versions.json
-            git commit -m "Override docs in github pages branch" || echo "No changes to commit"
+              echo "$updated_json" > "$json_file"
+              git add help-versions.json
+              git commit -m "Override docs in github pages branch" || echo "No changes to commit"
+            else
+              echo "Skipping help-versions.json update for snapshot version"
+            fi
+
             git push origin gh-pages
           else
             echo "Previous version directory ($perv_version) does not exist. Aborting."
@@ -167,24 +172,29 @@ jobs:
           git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git pull origin gh-pages || true
 
-          json_file="help-versions.json"
-
-          new_element=$(cat <<EOF
-          {
-            "version": "$version",
-            "url": "/$version/",
-            "isCurrent": true
-          }
-          EOF
-          )
-
-          updated_json=$(jq --argjson new "$new_element" '
-            map(.isCurrent = false) + [$new]
-          ' "$json_file")
-
-          echo "$updated_json" > "$json_file"
-
           git add $version/
-          git add help-versions.json
-          git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+
+          if [[ ! "$version" =~ [Ss]napshot ]]; then
+            json_file="help-versions.json"
+
+            new_element=$(cat <<EOF
+            {
+              "version": "$version",
+              "url": "/$version/",
+              "isCurrent": true
+            }
+            EOF
+            )
+
+            updated_json=$(jq --argjson new "$new_element" '
+              map(.isCurrent = false) + [$new]
+            ' "$json_file")
+
+            echo "$updated_json" > "$json_file"
+            git add help-versions.json
+            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+          else
+            echo "Skipping help-versions.json update for snapshot version"
+          fi
+
           git push origin gh-pages
