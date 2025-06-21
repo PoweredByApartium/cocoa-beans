@@ -1,4 +1,5 @@
 import io.papermc.hangarpublishplugin.model.Platforms
+import nmcp.NmcpPlugin
 import org.sonarqube.gradle.SonarQubePlugin
 import org.sonarqube.gradle.SonarTask
 
@@ -26,19 +27,37 @@ val prNumber = System.getenv("GITHUB_REF")?.let {
     match?.groupValues?.get(1)
 }
 
-group = "net.apartium.cocoa-beans"
-version = buildString {
-    append(versionBase)
-    if (snapshot) append("-SNAPSHOT")
-    if (isPullRequest && prNumber != null) append("-PR$prNumber")
+fun figureVersion() : String {
+    return buildString {
+        append(versionBase)
+        if (snapshot) append("-SNAPSHOT")
+        if (isPullRequest && prNumber != null) append("-PR$prNumber")
+    }
 }
 
+group = "net.apartium.cocoa-beans"
+version = figureVersion()
+
+val sonaTypeUsername = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
+val sonatypePassword = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password").toString()
+
 allprojects {
-    apply(plugin = "signing")
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
     apply<JacocoPlugin>()
     apply<SonarQubePlugin>()
+    apply<SigningPlugin>()
+    apply<NmcpPlugin>()
+
+    if (sonaTypeUsername != null && sonatypePassword != null) {
+        nmcp {
+            publishAllPublications {
+                username = sonaTypeUsername
+                password = sonatypePassword
+                publicationType = "AUTOMATIC"
+            }
+        }
+    }
 
     publishing {
         repositories {
@@ -68,45 +87,50 @@ allprojects {
 
         }
 
-        publications {
-            create<MavenPublication>("mavenCentral") {
-                pom {
-                    name = "Cocoa Beans"
-                    description = "General purpose library for Java & Spigot"
-                    url = "https://cocoa-beans.apartium.net/"
+        afterEvaluate {
+            publications {
+                forEach {
+                    (it as MavenPublication).pom {
+                        name = "Cocoa Beans"
+                        description = "General purpose library for Java & Spigot"
+                        url = "https://cocoa-beans.apartium.net/"
 
-                    licenses {
-                        license {
-                            name = "MIT License"
-                            url = "https://github.com/PoweredByApartium/cocoa-beans/blob/master/LICENSE.md"
+                        licenses {
+                            license {
+                                name = "MIT License"
+                                url = "https://github.com/PoweredByApartium/cocoa-beans/blob/master/LICENSE.md"
+                            }
                         }
+
+                        developers {
+                            developer {
+                                id = "idankoblik"
+                                name = "Idan Koblik"
+                                email = "me@idank.dev"
+                            }
+                            developer {
+                                id = "liorslak"
+                                name = "Lior Slakman"
+                                email = "me@voigon.dev"
+                            }
+                            developer {
+                                id = "ikfir"
+                                name = "Kfir botnik"
+                                email = "me@kfirbot.dev"
+                            }
+                        }
+
+                        scm {
+                            connection = "scm:git:git://github.com/PoweredByApartium/cocoa-beans.git"
+                            developerConnection = "scm:git:ssh://github.com:PoweredByApartium/cocoa-beans.git"
+                            url = "https://github.com/PoweredByApartium/cocoa-beans"
+                        }
+
                     }
 
-                    developers {
-                        developer {
-                            id = "IdanKoblik"
-                            name = "Idan Koblik"
-                            email = "me@idank.dev"
-                        }
-                        developer {
-                            id = "LiorSl"
-                            name = "Lior Slakman"
-                            email = "me@voigon.dev"
-                        }
-                        developer {
-                            id = "ikfir"
-                            name = "Kfir botnik"
-                            email = "me@kfirbot.dev"
-                        }
-                    }
-
-                    scm {
-                        connection = "scm:git:git://github.com/PoweredByApartium/cocoa-beans.git"
-                        developerConnection = "scm:git:ssh://github.com:PoweredByApartium/cocoa-beans.git"
-                        url = "http://github.com/PoweredByApartium/cocoa-beans"
-                    }
                 }
             }
+
         }
     }
 
@@ -171,7 +195,15 @@ allprojects {
             useGpgCmd()
 
 
-        sign(publishing.publications["mavenCentral"])
+        sign(publishing.publications)
+    }
+
+    nmcp {
+        publishAllPublications {
+            this.username = username
+            this.password = password
+            this.publicationType = "AUTOMATIC"
+        }
     }
 }
 
@@ -198,7 +230,7 @@ hangarPublish {
 
 publishing {
     publications {
-        create<MavenPublication>("platform") {
+        create<MavenPublication>("bom") {
             groupId = rootProject.group.toString()
             artifactId = "platform"
 
