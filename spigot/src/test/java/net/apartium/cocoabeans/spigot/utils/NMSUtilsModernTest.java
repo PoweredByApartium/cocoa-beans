@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NMSUtilsModernTest {
+class NMSUtilsModernTest {
 
     SpigotModernServerMock server;
     MockPlugin plugin;

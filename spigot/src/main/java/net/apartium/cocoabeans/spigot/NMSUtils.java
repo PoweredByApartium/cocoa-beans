@@ -13,6 +13,10 @@ public class NMSUtils {
             NMS_PATH = "net.minecraft.server",
             OBC_PATH = "org.bukkit.craftbukkit";
 
+    private NMSUtils() {
+
+    }
+
     /**
      * Formats the 'net.minecraft.server' path into a formatted path
      * @param path the provided path
@@ -38,9 +42,7 @@ public class NMSUtils {
      */
     public static String formatOBC(String path) {
         Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
-
-        if (path.equals(OBC_PATH))
-            throw new RuntimeException("Not enough information to format path");
+        Ensures.isFalse(path.equals(OBC_PATH), new IllegalArgumentException("Not enough information to format path"));
 
         if (path.startsWith(OBC_PATH))
             path = path.substring(OBC_PATH.length() + 1);
