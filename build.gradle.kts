@@ -10,18 +10,35 @@ plugins {
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
     id("idea")
+    id("com.gradleup.nmcp").version("0.0.8")
+    signing
     jacoco
 }
 
-val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
+val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/callable.writerside-publish.yml"
 val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
+val versionBase = System.getenv("VERSION") ?: "dev"
+val isPullRequest = System.getenv("GITHUB_HEAD_REF") != null
+val prNumber = System.getenv("GITHUB_REF")?.let {
+    val match = Regex("""refs/pull/(\d+)/.*""").find(it)
+    match?.groupValues?.get(1)
+}
+
+fun figureVersion() : String {
+    return buildString {
+        append(versionBase)
+        if (snapshot) append("-SNAPSHOT")
+        if (isPullRequest && prNumber != null) append("-PR$prNumber")
+    }
+}
+
 group = "net.apartium.cocoa-beans"
-version = (if (System.getenv("VERSION") == null) "dev" else System.getenv("VERSION")) + (if (snapshot) "-SNAPSHOT" else "")
+version = figureVersion()
 
 allprojects {
-
+    apply(plugin = "signing")
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
     apply<JacocoPlugin>()
@@ -29,7 +46,6 @@ allprojects {
 
     publishing {
         repositories {
-
             if (isCi) {
                 maven {
                     name = "GitHubPackages"
@@ -55,6 +71,51 @@ allprojects {
 
         }
 
+        publications {
+            create<MavenPublication>("mavenCentral") {
+                groupId = rootProject.group.toString()
+                version = figureVersion()
+
+                from(components["java"])
+
+                pom {
+                    name = "Cocoa Beans"
+                    description = "General purpose library for Java & Spigot"
+                    url = "https://cocoa-beans.apartium.net/"
+
+                    licenses {
+                        license {
+                            name = "MIT License"
+                            url = "https://github.com/PoweredByApartium/cocoa-beans/blob/master/LICENSE.md"
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = "IdanKoblik"
+                            name = "Idan Koblik"
+                            email = "me@idank.dev"
+                        }
+                        developer {
+                            id = "LiorSl"
+                            name = "Lior Slakman"
+                            email = "me@voigon.dev"
+                        }
+                        developer {
+                            id = "ikfir"
+                            name = "Kfir botnik"
+                            email = "me@kfirbot.dev"
+                        }
+                    }
+
+                    scm {
+                        connection = "scm:git:git://github.com/PoweredByApartium/cocoa-beans.git"
+                        developerConnection = "scm:git:ssh://github.com:PoweredByApartium/cocoa-beans.git"
+                        url = "http://github.com/PoweredByApartium/cocoa-beans"
+                    }
+                }
+            }
+        }
     }
 
     dependencies {
@@ -108,6 +169,18 @@ allprojects {
         }
     }
 
+    signing {
+        if (isCi) {
+            val signingSecret: String = System.getenv("SIGNING_SECRET")
+            val signingPassword: String = System.getenv("SIGNING_PASSWORD")
+
+            useInMemoryPgpKeys(signingSecret, signingPassword)
+        } else
+            useGpgCmd()
+
+
+        sign(publishing.publications["mavenCentral"])
+    }
 }
 
 hangarPublish {
