@@ -70,7 +70,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Collection<?> collection, String message) {
-        notEmpty(collection, new NullPointerException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(collection, new NullPointerException(message.replace("\\+-", "cannot be null or empty")));
     }
 
     /**
@@ -97,7 +97,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void notEmpty(Map<?, ?> map, String message) {
-        notEmpty(map, new RuntimeException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(map, new RuntimeException(message.replace("\\+-", "cannot be null or empty")));
     }
 
     /**
@@ -123,7 +123,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Object[] array, String message) {
-        notEmpty(array, new RuntimeException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(array, new RuntimeException(message.replace("\\+-", "cannot be null or empty")));
     }
 
     /**
@@ -134,7 +134,7 @@ public class Ensures {
      * @throws NullPointerException ex if argument does not match requested precondition
      */
     public static void notNull(Object obj, String message) {
-        notNull(obj, new NullPointerException(message.replaceAll("\\+-", "cannot be null")));
+        notNull(obj, new NullPointerException(message.replace("\\+-", "cannot be null")));
     }
 
     /**
@@ -145,7 +145,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void notEmpty(String string, String message) {
-        notEmpty(string, new RuntimeException(message.replaceAll("\\+-", "cannot be empty / null")));
+        notEmpty(string, new RuntimeException(message.replace("\\+-", "cannot be empty / null")));
     }
 
     /**
@@ -171,7 +171,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void largerThan(int num1, int num2, String message) {
-        largerThan(num1, num2, new RuntimeException(message.replaceAll("\\+-", "must be larger than")));
+        largerThan(num1, num2, new RuntimeException(message.replace("\\+-", "must be larger than")));
 
     }
 
@@ -194,7 +194,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void isTrue(boolean bool, String message) {
-        message = message.replaceAll("\\+-", "must be true");
+        message = message.replace("\\+-", "must be true");
 
         isTrue(bool, new NullPointerException(message));
 
@@ -249,7 +249,7 @@ public class Ensures {
      */
     @ApiStatus.AvailableSince("0.0.39")
     public static void isFalse(boolean bool, String message) {
-        message = message.replaceAll("\\+-", "must be false");
+        message = message.replace("\\+-", "must be false");
         isFalse(bool, new RuntimeException(message));
     }
 
