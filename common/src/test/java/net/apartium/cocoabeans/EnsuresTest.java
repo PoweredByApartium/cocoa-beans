@@ -202,7 +202,7 @@ class EnsuresTest {
     }
 
     @Test
-    void testisFalse() {
+    void testIsFalse() {
         RuntimeException e = new RuntimeException("test");
 
         assertThrows(RuntimeException.class, () -> Ensures.isFalse(true));
