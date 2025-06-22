@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * General utility methods for interacting with NMS
  */
-@ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.AvailableSince("0.0.40")
 public class NMSUtils {
 
     private static final String
@@ -25,6 +25,8 @@ public class NMSUtils {
     public static String formatNMS(String path) {
         Ensures.isFalse(path == null || path.trim().isEmpty(), new IllegalArgumentException("Path cannot be null or empty"));
 
+        // Older server versions use obfuscated package structure.
+        // The entire NMS package is flat, so we must adapt accordingly.
         if (ServerInfoStore.getInstance().containsVersion()) {
             String[] split = path.split("\\.");
             String className = split[split.length - 1];
@@ -32,7 +34,7 @@ public class NMSUtils {
             return String.format("%s.%s.%s", NMS_PATH, serverVersion, className);
         }
 
-        return path.startsWith(NMS_PATH) ? path: String.format("%s.%s", NMS_PATH, path);
+        return path.startsWith(NMS_PATH) ? path : String.format("%s.%s", NMS_PATH, path);
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class Ensures {
 
-    public static final String CANNOT_BE_NULL_MESSAGE = "cannot be null or empty";
+    private static final String CANNOT_BE_NULL_MESSAGE = "cannot be null or empty";
 
     /**
      * Validates if a String is empty or not
