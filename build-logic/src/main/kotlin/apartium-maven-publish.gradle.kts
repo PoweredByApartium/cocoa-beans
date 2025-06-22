@@ -5,11 +5,6 @@ plugins {
     `java-library`
 }
 
-val alternateModuleNames = mapOf(
-    "spigot-1-8" to "spigot-1.8",
-    "spigot-1-20" to "spigot-1.20",
-)
-
 val root = project.rootProject == project
 
 tasks {
@@ -44,11 +39,7 @@ if (!root) {
         publications {
             create<MavenPublication>("maven") {
                 groupId = rootProject.group.toString()
-                artifactId = if (alternateModuleNames.containsKey(proj.name)) {
-                    alternateModuleNames[proj.name]
-                } else {
-                    proj.name
-                }
+                artifactId = proj.mavenName
 
                 artifact(tasks.getByName("packageJavadoc"))
                 artifact(tasks.jar)
