@@ -17,7 +17,7 @@ public class ServerInfoStore {
     private final String packageName;
     private final String serverVersion;
 
-    private boolean containsVersion;
+    private Boolean containsVersion = null;
 
     public ServerInfoStore() {
         packageName = Bukkit.getServer().getClass().getPackage().getName();
@@ -42,8 +42,8 @@ public class ServerInfoStore {
     }
 
     public boolean containsVersion() {
-        if (this.containsVersion) {
-            return true;
+        if (containsVersion != null) {
+            return containsVersion;
         }
 
         try {
