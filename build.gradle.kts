@@ -43,7 +43,8 @@ allprojects {
             if (isCi || project.findProperty("apartium.nexus.username") != null) {
                 maven {
                     name = "ApartiumMaven"
-                    url = uri("https://nexus.voigon.dev/repository/apartium-releases")
+                    val base = if (isCi) "nexus-de-push.apartium.net" else "nexus.voigon.dev"
+                    url = uri("https://$base/repository/apartium-releases")
                     credentials {
                         username = (System.getenv("APARTIUM_NEXUS_USERNAME")
                             ?: project.findProperty("apartium.nexus.username")).toString()
@@ -76,7 +77,7 @@ allprojects {
     repositories {
         maven {
             name = "ApartiumNexus"
-            url = uri("https://nexus.apartium.net/repository/maven-public")
+            url = uri("https://nexus-de.apartium.net/repository/maven-public")
         }
     }
 
@@ -127,6 +128,34 @@ hangarPublish {
                 jar.set(project(":plugin").tasks.shadowJar.flatMap { it.archiveFile })
                 platformVersions = listOf("1.17", "1.19", "1.20")
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("platform") {
+            groupId = rootProject.group.toString()
+            artifactId = "platform"
+
+            pom.withXml {
+                val dependencyManagement = asNode().appendNode("dependencyManagement")
+                val dependencies = dependencyManagement.appendNode("dependencies")
+
+                // Include all sub-projects in the BOM
+                project.allprojects.forEach {
+                    if (rootProject == it || !it.plugins.hasPlugin("apartium-maven-publish"))
+                        return@forEach
+
+                    val dependency = dependencies.appendNode("dependency")
+                    dependency.appendNode("groupId", it.group)
+                    dependency.appendNode("artifactId", it.mavenName)
+                    dependency.appendNode("version", it.version)
+
+                }
+
+            }
+
         }
     }
 }
