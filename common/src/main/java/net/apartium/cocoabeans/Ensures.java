@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans;
 
+import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import java.util.Map;
  * @author Voigon
  */
 public class Ensures {
+
+    private static final String CANNOT_BE_NULL_MESSAGE = "cannot be null or empty";
 
     /**
      * Validates if a String is empty or not
@@ -69,7 +72,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Collection<?> collection, String message) {
-        notEmpty(collection, new NullPointerException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(collection, new NullPointerException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
@@ -96,7 +99,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void notEmpty(Map<?, ?> map, String message) {
-        notEmpty(map, new RuntimeException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(map, new RuntimeException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
@@ -122,7 +125,7 @@ public class Ensures {
      * @throws RuntimeException ex if argument does not match requested precondition
      */
     public static void notEmpty(Object[] array, String message) {
-        notEmpty(array, new RuntimeException(message.replaceAll("\\+-", "cannot be null or empty")));
+        notEmpty(array, new RuntimeException(message.replace("\\+-", CANNOT_BE_NULL_MESSAGE)));
     }
 
     /**
@@ -133,7 +136,7 @@ public class Ensures {
      * @throws NullPointerException ex if argument does not match requested precondition
      */
     public static void notNull(Object obj, String message) {
-        notNull(obj, new NullPointerException(message.replaceAll("\\+-", "cannot be null")));
+        notNull(obj, new NullPointerException(message.replace("\\+-", "cannot be null")));
     }
 
     /**
@@ -144,7 +147,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void notEmpty(String string, String message) {
-        notEmpty(string, new RuntimeException(message.replaceAll("\\+-", "cannot be empty / null")));
+        notEmpty(string, new RuntimeException(message.replace("\\+-", "cannot be empty / null")));
     }
 
     /**
@@ -170,7 +173,7 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void largerThan(int num1, int num2, String message) {
-        largerThan(num1, num2, new RuntimeException(message.replaceAll("\\+-", "must be larger than")));
+        largerThan(num1, num2, new RuntimeException(message.replace("\\+-", "must be larger than")));
 
     }
 
@@ -193,14 +196,13 @@ public class Ensures {
      * @throws RuntimeException if argument does not match requested precondition
      */
     public static void isTrue(boolean bool, String message) {
-        message = message.replaceAll("\\+-", "must be true");
+        message = message.replace("\\+-", "must be true");
 
         isTrue(bool, new NullPointerException(message));
 
     }
 
     /**
-     *
      * Makes sure given condition is true
      *
      * @param bool the condition
@@ -211,8 +213,46 @@ public class Ensures {
         if (!bool)
             throw ex == null ? new RuntimeException() : ex;
 
-
     }
 
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @param ex   the exception to throw if the boolean is true
+     * @throws RuntimeException ex if argument does not match requested precondition
+     *
+     */
+    @ApiStatus.AvailableSince("0.0.40")
+    public static void isFalse(boolean bool, RuntimeException ex) {
+        if (bool)
+            throw ex == null ? new RuntimeException() : ex;
+    }
+
+
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @throws RuntimeException if argument does not match requested precondition
+     */
+    @ApiStatus.AvailableSince("0.0.40")
+    public static void isFalse(boolean bool) {
+        isFalse(bool, new RuntimeException());
+    }
+
+    /**
+     * Makes sure given condition is false
+     *
+     * @param bool the condition
+     * @param message the message to send with the exception, "+-" will be replaced with "must be false"
+     * @throws RuntimeException if argument does not match requested precondition
+     *
+     */
+    @ApiStatus.AvailableSince("0.0.40")
+    public static void isFalse(boolean bool, String message) {
+        message = message.replace("\\+-", "must be false");
+        isFalse(bool, new RuntimeException(message));
+    }
 
 }

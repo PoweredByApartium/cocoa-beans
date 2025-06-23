@@ -1,4 +1,9 @@
 # CHANGELOG
+## 0.0.40
+- [spigot] Add NMSUtils
+- [common] Add Ensures#isFalse
+- [repo] Add platform maven artifact
+
 ## 0.0.39
 - [commands-spigot] Add `PluginParser`
 - [commands-spigot] Add `WorldParser` to SpigotParsers

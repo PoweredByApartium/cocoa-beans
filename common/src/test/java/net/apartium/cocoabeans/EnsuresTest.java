@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -38,6 +39,20 @@ class EnsuresTest {
     }
 
     @Test
+    void testNotEmpty() {
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.notEmpty("", new RuntimeException());
+        });
+    }
+
+    @Test
+    void testNotEmptyNullException() {
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.notEmpty("", (RuntimeException) null);
+        });
+    }
+
+    @Test
     void notNull() {
         RuntimeException e = new RuntimeException("test");
 
@@ -51,6 +66,14 @@ class EnsuresTest {
         assertThrows(RuntimeException.class, () -> {
             Ensures.notNull(null, e);
         }, "test");
+
+    }
+
+    @Test
+    void testNotNullWithNullMessage() {
+        assertThrows(NullPointerException.class, () -> {
+            Ensures.notNull(null, (RuntimeException) null);
+        });
 
     }
 
@@ -146,6 +169,12 @@ class EnsuresTest {
     }
 
     @Test
+    void testLargerThan() {
+        assertDoesNotThrow(() -> Ensures.largerThan(10, 12,
+                (RuntimeException) null));
+    }
+
+    @Test
     void isTrue() {
         RuntimeException e = new RuntimeException("test");
 
@@ -158,6 +187,49 @@ class EnsuresTest {
             Ensures.isTrue(false, "arg +-");
         }, "arg must be true");
 
+    }
+
+    @Test
+    void testIsTrueExceptionNull() {
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.isTrue(false, (RuntimeException) null);
+        });
+    }
+
+    @Test
+    void testIsTrueDoesNotThrow() {
+        assertDoesNotThrow(() -> Ensures.isTrue(true, "test"));
+    }
+
+    @Test
+    void testIsFalse() {
+        RuntimeException e = new RuntimeException("test");
+
+        assertThrows(RuntimeException.class, () -> Ensures.isFalse(true));
+
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.isFalse(true, e);
+        }, "test");
+
+        assertThrows(RuntimeException.class, () -> {
+            Ensures.isFalse(true, "arg +-");
+        }, "arg must be false");
+    }
+
+    @Test
+    void testIsFalseExceptionNull() {
+        assertThrows(RuntimeException.class,
+                () -> Ensures.isFalse(true, (RuntimeException) null));
+    }
+
+    @Test
+    void testIsFalseDoesNotThrow() {
+        assertDoesNotThrow(() -> Ensures.isFalse(false));
+    }
+
+    @Test
+    void testIsFalseDoesNotThrowWithMessage() {
+        assertDoesNotThrow(() -> Ensures.isFalse(false, "arg +-"));
     }
 
 }
