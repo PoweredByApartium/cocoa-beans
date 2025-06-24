@@ -16,7 +16,7 @@ public class PluginParser extends MapBasedParser<Plugin> {
     }
 
     public PluginParser(int priority) {
-        this("<plugin>", priority);
+        this("plugin", priority);
     }
 
     @Override
