@@ -11,12 +11,14 @@ import java.util.Map;
 @ApiStatus.AvailableSince("0.0.39")
 public class PluginParser extends MapBasedParser<Plugin> {
 
+    public static final String DEFAULT_KEYWORD = "plugin";
+
     public PluginParser(String keyword, int priority) {
         super(keyword, Plugin.class, priority);
     }
 
     public PluginParser(int priority) {
-        this("plugin", priority);
+        this(DEFAULT_KEYWORD, priority);
     }
 
     @Override
