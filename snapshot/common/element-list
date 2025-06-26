@@ -1,0 +1,10 @@
+net.apartium.cocoabeans
+net.apartium.cocoabeans.collect
+net.apartium.cocoabeans.encode
+net.apartium.cocoabeans.functions
+net.apartium.cocoabeans.reflect
+net.apartium.cocoabeans.security
+net.apartium.cocoabeans.security.totp
+net.apartium.cocoabeans.space
+net.apartium.cocoabeans.structs
+net.apartium.cocoabeans.utils
