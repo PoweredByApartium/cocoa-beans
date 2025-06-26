@@ -3,6 +3,7 @@
 - [spigot] Add NMSUtils
 - [common] Add Ensures#isFalse
 - [repo] Add platform maven artifact
+- [commands] Make PluginParser case insensitive
 
 ## 0.0.39
 - [commands-spigot] Add `PluginParser`
