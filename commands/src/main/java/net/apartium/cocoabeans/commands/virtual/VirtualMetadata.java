@@ -12,6 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Repeatable(VirtualMetadataCollection.class)
 @ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.Experimental
 public @interface VirtualMetadata {
 
     /**

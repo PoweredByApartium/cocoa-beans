@@ -154,11 +154,7 @@ class CommandsSpigotTest extends CommandsSpigotTestBase {
 
     @Test
     void tabCompletionMaterial() {
-
-        assertTrue(CollectionHelpers.equalsList(
-                evaluateTabCompletion(ikfir, "test", "give ikfir dirt"),
-                List.of("DIRT", "DIRT_PATH")
-        ));
+        assertEquals(List.of("dirt", "dirtpath"), evaluateTabCompletion(ikfir, "test", "give ikfir dirt"));
     }
 
     @Test

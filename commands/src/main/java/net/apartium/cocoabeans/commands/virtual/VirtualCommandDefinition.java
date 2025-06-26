@@ -1,15 +1,18 @@
 package net.apartium.cocoabeans.commands.virtual;
 
-import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.CommandInfo;
+import net.apartium.cocoabeans.commands.GenericNode;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A DTO for commands, a serializable form of commands used to send command definition between applications
  * @see VirtualMetadata
  * @see VirtualCommandFactory
  */
+@ApiStatus.Experimental
 @ApiStatus.AvailableSince("0.0.39")
 public record VirtualCommandDefinition(
         String name,
