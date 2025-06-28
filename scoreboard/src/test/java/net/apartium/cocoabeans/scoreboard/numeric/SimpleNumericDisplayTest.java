@@ -30,17 +30,17 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void create() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
     }
 
     @Test
     void addAudience() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         player.assertNoMorePackets();
     }
@@ -48,11 +48,11 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void addAudienceWithHeartbeat() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         player.assertNoMorePackets();
         heartbeat();
@@ -69,11 +69,11 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void addAndRemoveWithHeartbeat() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         player.assertNoMorePackets();
         heartbeat();
@@ -86,7 +86,7 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
             player.assertNoMorePackets();
         }
 
-        test.getGroup().remove(player);
+        test.getViewers().remove(player);
         player.assertNoMorePackets();
 
         heartbeat();
@@ -97,11 +97,11 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void setDisplayForAudience() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         player.assertNoMorePackets();
         heartbeat();
@@ -129,13 +129,13 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void setDisplayForNewAudience() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         test.addDisplaySlot(DisplaySlot.BELOW_NAME);
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         player.assertNoMorePackets();
         heartbeat();
@@ -153,19 +153,19 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void fakeLeave() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         heartbeat();
 
         player.assertNextPacket(new ObjectivePacket(ObjectiveMode.CREATE, ObjectiveRenderType.INTEGER, Component.empty()));
         player.assertNoMorePackets();
 
-        test.getGroup().remove(player);
-        test.getGroup().add(player);
+        test.getViewers().remove(player);
+        test.getViewers().add(player);
 
         heartbeat();
         player.assertNoMorePackets();
@@ -174,11 +174,11 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
     @Test
     void setScore() {
         TestNumericDisplay test = manager.getDisplay(ID);
-        assertTrue(test.getGroup().players().isEmpty());
+        assertTrue(test.getViewers().players().isEmpty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         heartbeat();
 
@@ -254,8 +254,8 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.set(secondEntityId, Observable.immutable(333), Observable.empty(), Observable.empty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         heartbeat();
 
@@ -277,8 +277,8 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.set(secondEntityId, Observable.immutable(333), Observable.empty(), Observable.empty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         heartbeat();
 
@@ -307,8 +307,8 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.set(secondEntityId, Observable.immutable(333), Observable.empty(), Observable.empty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
-        assertEquals(Set.of(player), test.getGroup().players());
+        test.getViewers().add(player);
+        assertEquals(Set.of(player), test.getViewers().players());
 
         heartbeat();
 
@@ -338,7 +338,7 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.set(secondEntityId, Observable.immutable(333), Observable.empty(), Observable.empty());
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
+        test.getViewers().add(player);
 
         heartbeat();
 
@@ -360,7 +360,7 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.addDisplaySlot(DisplaySlot.BELOW_NAME);
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
+        test.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new ObjectivePacket(ObjectiveMode.CREATE, ObjectiveRenderType.INTEGER, Component.empty()));
@@ -381,7 +381,7 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.displayName(displayName);
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
+        test.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new ObjectivePacket(ObjectiveMode.CREATE, ObjectiveRenderType.INTEGER, Component.text("test")));
@@ -406,7 +406,7 @@ class SimpleNumericDisplayTest extends NumericDisplayBase {
         test.renderType(ObjectiveRenderType.HEARTS);
 
         MockPlayer player = new MockPlayer();
-        test.getGroup().add(player);
+        test.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new ObjectivePacket(ObjectiveMode.CREATE, ObjectiveRenderType.HEARTS, Component.empty()));

@@ -6,27 +6,27 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Objects;
 
 /**
- * Dirty watcher are just flagging them self dirty until someone calling get() and they return if they had change or not
- * --Should only have one ref to instance--
+ * Watcher implementation that contains the last manually updated value.
+ * Updating the value occurs through the {@link #getOrUpdate()} method
  * @param <T> T as type
  */
 @ApiStatus.AvailableSince("0.0.41")
-public class DirtyWatcher<T> implements Observer {
+public class LazyWatcher<T> implements Observer {
 
     private Observable<T> dependsOn;
     private T value;
     private boolean first = true;
     private boolean isDirty = true;
 
-    private DirtyWatcher(Observable<T> dependsOn) {
+    private LazyWatcher(Observable<T> dependsOn) {
         this.dependsOn = dependsOn;
     }
 
-    public static <T> DirtyWatcher<T> create(Observable<T> observable) {
+    public static <T> LazyWatcher<T> create(Observable<T> observable) {
         if (observable == null)
             observable = Observable.empty();
 
-        DirtyWatcher<T> dirtyWatcher = new DirtyWatcher<>(observable);
+        LazyWatcher<T> dirtyWatcher = new LazyWatcher<>(observable);
         observable.observe(dirtyWatcher);
         return dirtyWatcher;
     }
@@ -54,15 +54,19 @@ public class DirtyWatcher<T> implements Observer {
         return isDirty;
     }
 
-    public T getCache() {
+    /**
+     * Get the value applied from last {@link #getOrUpdate()} call.
+     * @return last applied value
+     */
+    public T getLastValue() {
         return value;
     }
 
     /**
-     * Get current value
-     * @return entry of value and if it had changed
+     * If the current watcher is dirty, update it if necessary, then return the new value.
+     * @return entry containing the up-to-date value (key) and if it was changed since previous call (value).
      */
-    public Entry<T, Boolean> get() {
+    public Entry<T, Boolean> getOrUpdate() {
         if (!isDirty)
             return new Entry<>(value, false);
 

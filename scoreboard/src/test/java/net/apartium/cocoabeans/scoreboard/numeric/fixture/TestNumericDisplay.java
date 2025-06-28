@@ -6,7 +6,7 @@ import net.apartium.cocoabeans.scoreboard.numeric.packet.DisplayPacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ObjectivePacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ScorePacket;
 import net.apartium.cocoabeans.state.CompoundRecords;
-import net.apartium.cocoabeans.state.DirtyWatcher;
+import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
@@ -50,7 +50,7 @@ public class TestNumericDisplay extends ScoreboardNumericDisplay<MockPlayer> {
             player.sendPacket(packet);
     }
 
-    public Map<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> getEntities() {
+    public Map<String, LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> getEntities() {
         return entities;
     }
 

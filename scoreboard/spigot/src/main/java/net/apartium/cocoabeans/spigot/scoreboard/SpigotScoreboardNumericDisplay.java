@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+/**
+ * @see ScoreboardNumericDisplay
+ */
 public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Player> {
 
     public SpigotScoreboardNumericDisplay(String objectiveId, BoardPlayerGroup<Player> group, Observable<Component> displayName) {

@@ -1,24 +1,29 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
+import org.jetbrains.annotations.ApiStatus;
+
+/**
+ * Collision configuration
+ */
+@ApiStatus.AvailableSince("0.0.41")
 public enum CollisionRule {
-    ALWAYS("always", 0),
-    NEVER("never", 1),
-    PUSH_OTHER_TEAMS("pushOtherTeams", 2),
-    PUSH_OWN_TEAM("pushOwnTeam", 3);
+    ALWAYS("always"),
+    NEVER("never"),
+    PUSH_OTHER_TEAMS("pushOtherTeams"),
+    PUSH_OWN_TEAM("pushOwnTeam");
 
     private final String name;
-    private final int id;
 
-    CollisionRule(String name, int id) {
+    CollisionRule(String name) {
         this.name = name;
-        this.id = id;
     }
 
-    public int getId() {
-        return id;
-    }
-
+    /**
+     * Get the serialized value of the rule
+     * @return serialized value of th rule
+     */
     public String getSerializedName() {
         return this.name;
     }
+
 }

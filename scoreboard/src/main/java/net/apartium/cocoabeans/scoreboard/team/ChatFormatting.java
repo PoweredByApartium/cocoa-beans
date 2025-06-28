@@ -1,7 +1,12 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a chat format for player names in newer versions
+ */
+@ApiStatus.AvailableSince("0.0.41")
 public enum ChatFormatting {
     BLACK('0'),
     DARK_BLUE('1'),

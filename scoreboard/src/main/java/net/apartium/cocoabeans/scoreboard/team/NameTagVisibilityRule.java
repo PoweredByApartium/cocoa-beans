@@ -1,14 +1,20 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
+import org.jetbrains.annotations.ApiStatus;
+
+/**
+ * Name tag visibility configuration
+ */
+@ApiStatus.AvailableSince("0.0.41")
 public enum NameTagVisibilityRule {
-    ALWAYS("always", 0),
-    NEVER("never", 1),
-    HIDE_FOR_OTHER_TEAMS("hideForOtherTeams", 2),
-    HIDE_FOR_OWN_TEAM("hideForOwnTeam", 3);
+    ALWAYS("always"),
+    NEVER("never"),
+    HIDE_FOR_OTHER_TEAMS("hideForOtherTeams"),
+    HIDE_FOR_OWN_TEAM("hideForOwnTeam");
 
     private final String name;
 
-    NameTagVisibilityRule(String name, int id) {
+    NameTagVisibilityRule(String name) {
         this.name = name;
     }
 
@@ -19,4 +25,5 @@ public enum NameTagVisibilityRule {
     public String getSerializedName() {
         return this.name;
     }
+
 }

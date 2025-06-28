@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.scoreboard;
 
 import net.apartium.cocoabeans.state.CompoundRecords;
-import net.apartium.cocoabeans.state.DirtyWatcher;
+import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 import net.apartium.cocoabeans.structs.Entry;
@@ -12,17 +12,23 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+/**
+ * Represents a numeric display in game scoreboard (hearts / score)
+ * @see ObjectiveRenderType
+ * @see DisplaySlot
+ * @param <P>
+ */
 @ApiStatus.AvailableSince("0.0.41")
 public abstract class ScoreboardNumericDisplay<P> {
 
     protected final String objectiveId;
 
     protected final BoardPlayerGroup<P> group;
-    protected final DirtyWatcher<Set<P>> groupWatcher;
+    protected final LazyWatcher<Set<P>> groupWatcher;
 
     protected final Set<DisplaySlot> displaySlots;
-    protected final Map<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entities = new HashMap<>();
-    protected final DirtyWatcher<Component> displayName;
+    protected final Map<String, LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entities = new HashMap<>();
+    protected final LazyWatcher<Component> displayName;
     protected ObjectiveRenderType renderType = ObjectiveRenderType.INTEGER;
 
     protected ScoreboardNumericDisplay(String objectiveId, BoardPlayerGroup<P> group, Observable<Component> displayName) {
@@ -30,56 +36,70 @@ public abstract class ScoreboardNumericDisplay<P> {
         this.group = group;
 
         SetObservable<P> players = group.observePlayers();
-        this.groupWatcher = DirtyWatcher.create(players);
+        this.groupWatcher = LazyWatcher.create(players);
 
         this.displaySlots = Collections.newSetFromMap(new IdentityHashMap<>());
         this.displayName = displayName.watch();
     }
 
-    public BoardPlayerGroup<P> getGroup() {
+    /**
+     * Get the group of players that is able to view this object
+     * @return display audience
+     */
+    public BoardPlayerGroup<P> getViewers() {
         return group;
     }
 
     protected Set<P> currentWatcher() {
-        return Optional.ofNullable(groupWatcher.getCache())
+        return Optional.ofNullable(groupWatcher.getLastValue())
                 .orElse(Set.of());
     }
 
-    public void set(String entity, Observable<Integer> score, Observable<Component> fixedComponent, Observable<Style> style) {
-        Observable<CompoundRecords.RecordOf3<Integer, Component, Style>> compound = Observable.compound(
+    /**
+     * Adds an entity to this display
+     * @param entity entity name (such as player name)
+     * @param score score observable
+     * @param suffix observable of text to come after the score
+     * @param style text style observable
+     */
+    public void set(String entity, Observable<Integer> score, Observable<Component> suffix, Observable<Style> style) {
+        var compound = Observable.compound(
                 score == Observable.<Integer>empty()
                         ? Observable.immutable(0)
                         : Optional.ofNullable(score).orElse(Observable.immutable(0)),
-                fixedComponent == Observable.<Component>empty()
+                suffix == Observable.<Component>empty()
                         ? Observable.immutable(null)
-                        : Optional.ofNullable(fixedComponent).orElse(Observable.immutable(null)),
+                        : Optional.ofNullable(suffix).orElse(Observable.immutable(null)),
                 style == Observable.<Style>empty()
                         ? Observable.immutable(null)
                         : Optional.ofNullable(style).orElse(Observable.immutable(Style.style(NamedTextColor.RED)))
         );
-        DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> watcher = compound.watch();
+        var watcher = compound.watch();
 
         entities.put(
                 entity,
                 watcher
         );
 
-        CompoundRecords.RecordOf3<Integer, Component, Style> record = watcher.get().key();
+        var record = watcher.getOrUpdate().key();
         sendScorePacket(currentWatcher(), entity, record.arg0(), ScoreboardAction.CREATE_OR_UPDATE,  record.arg1(), record.arg2());
     }
 
+    /**
+     * Send board updates to all viewers if its values has changed
+     */
     public void heartbeat() {
         if (displayName.isDirty()) {
-            Entry<Component, Boolean> entry = displayName.get();
+            Entry<Component, Boolean> entry = displayName.getOrUpdate();
             if (entry.value())
                 sendObjectivePacket(currentWatcher(), ObjectiveMode.UPDATE, Optional.ofNullable(entry.key()).orElse(Component.empty()));
         }
 
-        for (Map.Entry<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entry : entities.entrySet()) {
+        for (Map.Entry<String, LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entry : entities.entrySet()) {
             if (!entry.getValue().isDirty())
                 continue;
 
-            Entry<CompoundRecords.RecordOf3<Integer, Component, Style>, Boolean> record = entry.getValue().get();
+            Entry<CompoundRecords.RecordOf3<Integer, Component, Style>, Boolean> record = entry.getValue().getOrUpdate();
             if (!record.value())
                 continue;
 
@@ -97,8 +117,8 @@ public abstract class ScoreboardNumericDisplay<P> {
 
     private void handleNewAudience() {
         if (groupWatcher.isDirty()) {
-            Set<P> cache = Optional.ofNullable(groupWatcher.getCache()).orElse(Collections.emptySet());
-            Entry<Set<P>, Boolean> entry = groupWatcher.get();
+            Set<P> cache = Optional.ofNullable(groupWatcher.getLastValue()).orElse(Collections.emptySet());
+            Entry<Set<P>, Boolean> entry = groupWatcher.getOrUpdate();
 
             if (!entry.value())
                 return;
@@ -114,7 +134,7 @@ public abstract class ScoreboardNumericDisplay<P> {
             sendObjectivePacket(
                     toAdd,
                     ObjectiveMode.CREATE,
-                    Optional.ofNullable(displayName.getCache()).orElse(Component.empty())
+                    Optional.ofNullable(displayName.getLastValue()).orElse(Component.empty())
             );
 
             for (DisplaySlot slot : displaySlots)
@@ -124,14 +144,14 @@ public abstract class ScoreboardNumericDisplay<P> {
                         objectiveId
                 );
 
-            for (Map.Entry<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entity : entities.entrySet()) {
+            for (Map.Entry<String, LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entity : entities.entrySet()) {
                 sendScorePacket(
                         toAdd,
                         entity.getKey(),
-                        entity.getValue().getCache().arg0(),
+                        entity.getValue().getLastValue().arg0(),
                         ScoreboardAction.CREATE_OR_UPDATE,
-                        entity.getValue().getCache().arg1(),
-                        entity.getValue().getCache().arg2()
+                        entity.getValue().getLastValue().arg1(),
+                        entity.getValue().getLastValue().arg2()
                 );
             }
 
@@ -145,8 +165,12 @@ public abstract class ScoreboardNumericDisplay<P> {
         }
     }
 
+    /**
+     * Remove an entity from the board
+     * @param entity entity name to remove
+     */
     public void remove(String entity) {
-        DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> record = entities.remove(entity);
+        var record = entities.remove(entity);
         if (record == null)
             return;
 
@@ -154,6 +178,10 @@ public abstract class ScoreboardNumericDisplay<P> {
         record.delete();
     }
 
+    /**
+     * Add display slot to the current display
+     * @param slot slot to add
+     */
     public void addDisplaySlot(DisplaySlot slot) {
         if (!displaySlots.add(slot))
             return;
@@ -161,6 +189,10 @@ public abstract class ScoreboardNumericDisplay<P> {
         sendDisplayPacket(currentWatcher(), slot, objectiveId);
     }
 
+    /**
+     * Remove a display slot from the current display
+     * @param slot slot to remove
+     */
     public void removeDisplaySlot(DisplaySlot slot) {
         if (!displaySlots.remove(slot))
             return;
@@ -168,22 +200,33 @@ public abstract class ScoreboardNumericDisplay<P> {
         sendDisplayPacket(currentWatcher(), slot, null);
     }
 
+    /**
+     * Sets the render type for the current display
+     * @param type new render type
+     */
     public void renderType(ObjectiveRenderType type) {
         if (renderType == type)
             return;
 
         renderType = type;
-        sendObjectivePacket(currentWatcher(), ObjectiveMode.UPDATE, Optional.ofNullable(displayName.get().key()).orElse(Component.empty()));
+        sendObjectivePacket(currentWatcher(), ObjectiveMode.UPDATE, Optional.ofNullable(displayName.getOrUpdate().key()).orElse(Component.empty()));
     }
 
+    /**
+     * Sets the display name observable of the current display
+     * @param displayName new display name observable
+     */
     public void displayName(Observable<Component> displayName) {
         this.displayName.setDependsOn(displayName);
     }
 
+    /**
+     * Delete the current view, removing itself from all its viewers and clearing its own content
+     */
     public void delete() {
         sendObjectivePacket(currentWatcher(), ObjectiveMode.REMOVE, null);
 
-        for (DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> value : entities.values())
+        for (LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> value : entities.values())
             value.delete();
 
         entities.clear();
@@ -193,8 +236,10 @@ public abstract class ScoreboardNumericDisplay<P> {
         groupWatcher.delete();
     }
 
-    public abstract void sendDisplayPacket(Set<P> audience, DisplaySlot slot, String objectiveId);
-    public abstract void sendScorePacket(Set<P> audience, String entity, int score, ScoreboardAction action, Component fixedContent, Style numberStyle);
-    public abstract void sendObjectivePacket(Set<P> audience, ObjectiveMode mode, Component displayName);
+    protected abstract void sendDisplayPacket(Set<P> audience, DisplaySlot slot, String objectiveId);
+
+    protected abstract void sendScorePacket(Set<P> audience, String entity, int score, ScoreboardAction action, Component fixedContent, Style numberStyle);
+
+    protected abstract void sendObjectivePacket(Set<P> audience, ObjectiveMode mode, Component displayName);
 
 }

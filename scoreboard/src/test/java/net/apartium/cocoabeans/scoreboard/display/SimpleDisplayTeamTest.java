@@ -21,7 +21,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
     void create() {
         TestDisplayTeam team = manager.getTeam("myTeam");
         assertTrue(team.getEntities().get().isEmpty());
-        assertTrue(team.getGroup().players().isEmpty());
+        assertTrue(team.getViewers().players().isEmpty());
     }
 
     @Test
@@ -29,7 +29,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
         player.assertNoMorePackets();
 
         heartbeat();
@@ -54,7 +54,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
         player.assertNoMorePackets();
 
         heartbeat();
@@ -83,7 +83,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
         player.assertNoMorePackets();
 
         heartbeat();
@@ -121,7 +121,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -156,7 +156,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -189,7 +189,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -244,7 +244,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -298,7 +298,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -342,8 +342,8 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
 
         heartbeat();
 
-        team.getGroup().add(player);
-        team.getGroup().remove(player);
+        team.getViewers().add(player);
+        team.getViewers().remove(player);
 
         heartbeat();
         player.assertNoMorePackets();
@@ -354,7 +354,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -383,7 +383,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -445,7 +445,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -489,7 +489,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -533,7 +533,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(
@@ -575,7 +575,7 @@ class SimpleDisplayTeamTest extends DisplayTeamTestBase {
         TestDisplayTeam team = manager.getTeam("myTeam");
         MockPlayer player = new MockPlayer();
 
-        team.getGroup().add(player);
+        team.getViewers().add(player);
 
         heartbeat();
         player.assertNextPacket(new CreateTeamPacket(

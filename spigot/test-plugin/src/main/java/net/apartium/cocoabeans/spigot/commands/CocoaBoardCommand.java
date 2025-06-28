@@ -132,13 +132,13 @@ public class CocoaBoardCommand implements CommandNode {
 
     @SubCommand("numeric audience <string> add <player>")
     public void addAudience(Player player, String id, Player target) {
-        scoreboardNumericManager.getDisplay(id).getGroup().add(target);
+        scoreboardNumericManager.getDisplay(id).getViewers().add(target);
         player.sendMessage("addAudience");
     }
 
     @SubCommand("numeric audience <string> remove <player>")
     public void removeAudience(Player player, String id, Player target) {
-        scoreboardNumericManager.getDisplay(id).getGroup().remove(target);
+        scoreboardNumericManager.getDisplay(id).getViewers().remove(target);
         player.sendMessage("removeAudience");
     }
 
@@ -284,13 +284,13 @@ public class CocoaBoardCommand implements CommandNode {
 
     @SubCommand("team modify <team> audience add <player>")
     public void addAudience(Player player, SpigotDisplayTeam team, Player target) {
-        team.getGroup().add(target);
+        team.getViewers().add(target);
         player.sendMessage("Joined");
     }
 
     @SubCommand("team modify <team> audience remove <player>")
     public void removeAudience(Player player, SpigotDisplayTeam team, Player target) {
-        team.getGroup().remove(target);
+        team.getViewers().remove(target);
         player.sendMessage("Leaved");
     }
 
