@@ -11,6 +11,11 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+/**
+ * DisplayTeam is Packet-level NMS-driven team display
+ * that let you make custom Team easier with Observable fields
+ * @param <P> type of player
+ */
 @ApiStatus.AvailableSince("0.0.41")
 public abstract class DisplayTeam<P> {
 

@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
@@ -11,7 +11,7 @@ import static net.apartium.cocoabeans.scoreboard.CocoaBoard.toObservable;
  * @hidden
  */
 @ApiStatus.Internal
-public interface SpigotCocoaBoardFactory {
+/* package-private */ interface SpigotCocoaBoardFactory {
 
     SpigotCocoaBoard create(Player player, String objectiveId, Observable<Component> title);
 

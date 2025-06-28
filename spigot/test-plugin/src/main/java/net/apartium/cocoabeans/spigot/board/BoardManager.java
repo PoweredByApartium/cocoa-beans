@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.spigot.board;
 
 import net.apartium.cocoabeans.scoreboard.CocoaBoard;
-import net.apartium.cocoabeans.scoreboard.spigot.SpigotCocoaBoard;
+import net.apartium.cocoabeans.spigot.scoreboard.SpigotCocoaBoard;
 import net.apartium.cocoabeans.state.MutableObservable;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.spigot.SpigotProvidedState;

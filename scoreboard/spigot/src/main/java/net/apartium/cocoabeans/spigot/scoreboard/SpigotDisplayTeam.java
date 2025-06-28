@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
 import net.apartium.cocoabeans.scoreboard.TeamMode;
@@ -8,10 +8,14 @@ import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import net.apartium.cocoabeans.scoreboard.team.NameTagVisibilityRule;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-
+/**
+ * @see DisplayTeam
+ */
+@ApiStatus.AvailableSince("0.0.41")
 public class SpigotDisplayTeam extends DisplayTeam<Player> {
 
     public SpigotDisplayTeam(String name, BoardPlayerGroup<Player> group) {

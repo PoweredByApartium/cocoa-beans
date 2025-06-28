@@ -1,10 +1,7 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.*;
-import net.apartium.cocoabeans.state.CompoundRecords;
-import net.apartium.cocoabeans.state.DirtyWatcher;
 import net.apartium.cocoabeans.state.Observable;
-import net.apartium.cocoabeans.structs.Entry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.entity.Player;
@@ -41,7 +38,7 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
             Object packet = NMSUtils.createScorePacket(
                     entity,
                     objectiveId,
-                    Observable.immutable(fixedContent),
+                    fixedContent,
                     score,
                     action,
                     numberStyle
@@ -64,7 +61,7 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
                     objectiveId,
                     mode,
                     renderType,
-                    Observable.immutable(displayName)
+                    displayName
             );
 
             for (Player player : audience)

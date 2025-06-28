@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

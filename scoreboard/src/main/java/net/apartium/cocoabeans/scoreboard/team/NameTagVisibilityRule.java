@@ -7,17 +7,15 @@ public enum NameTagVisibilityRule {
     HIDE_FOR_OWN_TEAM("hideForOwnTeam", 3);
 
     private final String name;
-    private final int id;
 
     NameTagVisibilityRule(String name, int id) {
         this.name = name;
-        this.id = id;
     }
 
-    public int getId() {
-        return id;
-    }
-
+    /**
+     * Get the serialized value of the rule
+     * @return serialized value of th rule
+     */
     public String getSerializedName() {
         return this.name;
     }

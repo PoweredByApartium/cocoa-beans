@@ -1,13 +1,18 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * @see BoardPlayerGroup
+ */
+@ApiStatus.AvailableSince("0.0.41")
 public class SpigotBoardPlayerGroup implements BoardPlayerGroup<Player> {
 
     private final SetObservable<Player> playerSetObservable;
