@@ -17,7 +17,7 @@ public class DirtyWatcher<T> implements Observer {
     private boolean first = true;
     private boolean isDirty = true;
 
-    public DirtyWatcher(Observable<T> dependsOn) {
+    private DirtyWatcher(Observable<T> dependsOn) {
         this.dependsOn = dependsOn;
     }
 
@@ -26,7 +26,7 @@ public class DirtyWatcher<T> implements Observer {
             observable = Observable.empty();
 
         DirtyWatcher<T> dirtyWatcher = new DirtyWatcher<>(observable);
-        dirtyWatcher.dependsOn.observe(dirtyWatcher);
+        observable.observe(dirtyWatcher);
         return dirtyWatcher;
     }
 

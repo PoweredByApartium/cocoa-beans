@@ -11,31 +11,31 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-@ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.AvailableSince("0.0.41")
 public abstract class DisplayTeam<P> {
 
     protected final String name;
-    protected final DirtyWatcher<Set<String>> entities = new DirtyWatcher<>(Observable.set());
+    protected final DirtyWatcher<Set<String>> entities = DirtyWatcher.create(Observable.set());
     protected final BoardPlayerGroup<P> group;
     protected final DirtyWatcher<Set<P>> groupWatcher;
 
-    protected DirtyWatcher<Component> displayName = new DirtyWatcher<>(Observable.empty());
+    protected DirtyWatcher<Component> displayName = DirtyWatcher.create(Observable.empty());
 
-    protected DirtyWatcher<NameTagVisibilityRule> nameTagVisibilityRule = new DirtyWatcher<>(Observable.immutable(NameTagVisibilityRule.ALWAYS));
-    protected DirtyWatcher<CollisionRule> collisionRule = new DirtyWatcher<>(Observable.immutable(CollisionRule.ALWAYS));
+    protected DirtyWatcher<NameTagVisibilityRule> nameTagVisibilityRule = DirtyWatcher.create(Observable.immutable(NameTagVisibilityRule.ALWAYS));
+    protected DirtyWatcher<CollisionRule> collisionRule = DirtyWatcher.create(Observable.immutable(CollisionRule.ALWAYS));
 
-    protected DirtyWatcher<Component> prefix = new DirtyWatcher<>(Observable.empty());
-    protected DirtyWatcher<Component> suffix = new DirtyWatcher<>(Observable.empty());
+    protected DirtyWatcher<Component> prefix = DirtyWatcher.create(Observable.empty());
+    protected DirtyWatcher<Component> suffix = DirtyWatcher.create(Observable.empty());
 
-    protected DirtyWatcher<ChatFormatting> formatting = new DirtyWatcher<>(Observable.immutable(ChatFormatting.RESET));
+    protected DirtyWatcher<ChatFormatting> formatting = DirtyWatcher.create(Observable.immutable(ChatFormatting.RESET));
 
-    protected DirtyWatcher<Byte> friendlyFire = new DirtyWatcher<>(Observable.immutable((byte) 0x00));
+    protected DirtyWatcher<Byte> friendlyFire = DirtyWatcher.create(Observable.immutable((byte) 0x00));
 
     public DisplayTeam(String name, BoardPlayerGroup<P> group) {
         this.name = name;
         this.group = group;
 
-        this.groupWatcher = new DirtyWatcher<>(group.observePlayers());
+        this.groupWatcher = DirtyWatcher.create(group.observePlayers());
     }
 
     protected boolean isDirty() {

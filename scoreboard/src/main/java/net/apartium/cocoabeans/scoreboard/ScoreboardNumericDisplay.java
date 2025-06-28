@@ -8,9 +8,11 @@ import net.apartium.cocoabeans.structs.Entry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+@ApiStatus.AvailableSince("0.0.41")
 public abstract class ScoreboardNumericDisplay<P> {
 
     protected final String objectiveId;
@@ -28,8 +30,7 @@ public abstract class ScoreboardNumericDisplay<P> {
         this.group = group;
 
         SetObservable<P> players = group.observePlayers();
-        this.groupWatcher = new DirtyWatcher<>(players);
-        players.observe(this.groupWatcher);
+        this.groupWatcher = DirtyWatcher.create(players);
 
         this.displaySlots = Collections.newSetFromMap(new IdentityHashMap<>());
         this.displayName = displayName.watch();

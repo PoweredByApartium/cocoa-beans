@@ -342,9 +342,7 @@ public interface Observable<T> {
     }
 
     default DirtyWatcher<T> watch() {
-        DirtyWatcher<T> dirtyWatcher = new DirtyWatcher<>(this);
-        observe(dirtyWatcher);
-        return dirtyWatcher;
+        return DirtyWatcher.create(this);
     }
 
 }

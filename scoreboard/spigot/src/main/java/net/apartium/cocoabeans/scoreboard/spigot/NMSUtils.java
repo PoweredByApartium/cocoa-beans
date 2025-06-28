@@ -632,7 +632,7 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
 
             setField(packet, Optional.class, Optional.of(team));
         } else {
-            setField(packet, String.class, Observable.immutable(displayName), 1); // Visibility for 1.8+
+            setComponentField(packet, Observable.immutable(displayName), 1); // Visibility for 1.8+
             setField(packet, int.class, friendlyFire, 2); // friendly fire
             setComponentField(packet, Observable.immutable(prefix), 2); // Prefix
             setComponentField(packet, Observable.immutable(suffix), 3); // Suffix
