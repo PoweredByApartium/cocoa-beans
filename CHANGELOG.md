@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.41
+- [scoreboard] Added Numeric display & team
+
 ## 0.0.40
 - [spigot] Add NMSUtils
 - [common] Add Ensures#isFalse

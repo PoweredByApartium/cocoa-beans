@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.listeners;
 
 import net.apartium.cocoabeans.spigot.board.BoardManager;
+import net.apartium.cocoabeans.spigot.team.TeamManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -16,6 +17,7 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void on(PlayerQuitEvent event) {
         boardManager.unregisterBoard(event.getPlayer().getUniqueId());
+
     }
 
 }

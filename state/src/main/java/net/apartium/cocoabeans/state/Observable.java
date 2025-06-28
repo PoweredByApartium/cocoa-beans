@@ -341,4 +341,14 @@ public interface Observable<T> {
         return watcherManager.watch(this, consumer);
     }
 
+    @ApiStatus.AvailableSince("0.0.41")
+    /**
+     * Create a watcher for the observable that will be working on dirty machination
+     * @see LazyWatcher
+     * @return new Instance of DirtyWatcher
+     */
+    default LazyWatcher<T> watch() {
+        return LazyWatcher.create(this);
+    }
+
 }

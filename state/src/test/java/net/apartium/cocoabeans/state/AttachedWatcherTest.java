@@ -9,7 +9,12 @@ class AttachedWatcherTest {
     @Test
     void attachAndDetach() {
         Observable<Integer> num = Observable.mutable(5);
-        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num, System.out::println);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                System.out.println(newValue);
+            }
+        };
 
         WatcherOperator operator = w -> {};
 
@@ -26,7 +31,12 @@ class AttachedWatcherTest {
     @Test
     void attachToAlreadyAttached() {
         Observable<Integer> num = Observable.mutable(5);
-        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num, System.out::println);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                System.out.println(newValue);
+            }
+        };
 
         WatcherOperator operator = w -> {};
 
@@ -41,7 +51,12 @@ class AttachedWatcherTest {
     @Test
     void detachFromNotAttached() {
         Observable<Integer> num = Observable.mutable(5);
-        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num, System.out::println);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                System.out.println(newValue);
+            }
+        };
         assertThrowsExactly(IllegalArgumentException.class, watcher::detach);
     }
 

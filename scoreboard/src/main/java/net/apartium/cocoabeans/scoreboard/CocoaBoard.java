@@ -44,13 +44,13 @@ public abstract class CocoaBoard {
             if (component == null)
                 return null;
 
-            return new ComponentEntry(component);
+            ComponentEntry componentEntry = new ComponentEntry(component);
+            component.observe(componentEntry);
+            return componentEntry;
         }
 
         private ComponentEntry(Observable<Component> component) {
             this.component = component;
-
-            this.component.observe(this);
         }
 
         @Override
@@ -436,8 +436,8 @@ public abstract class CocoaBoard {
             throw new IllegalArgumentException("Number styles and line must be the same size");
 
         lines0(
-                lines.stream().map(ComponentEntry::new).toList(),
-                scores == null ? null : scores.stream().map(ComponentEntry::new).toList(),
+                lines.stream().map(ComponentEntry::create).toList(),
+                scores == null ? null : scores.stream().map(ComponentEntry::create).toList(),
                 numberStyles
         );
     }
