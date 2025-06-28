@@ -40,11 +40,22 @@ public abstract class ScoreboardNumericDisplay<P> {
         return group;
     }
 
+    protected Set<P> currentWatcher() {
+        return Optional.ofNullable(groupWatcher.getCache())
+                .orElse(Set.of());
+    }
+
     public void set(String entity, Observable<Integer> score, Observable<Component> fixedComponent, Observable<Style> style) {
         Observable<CompoundRecords.RecordOf3<Integer, Component, Style>> compound = Observable.compound(
-                Optional.ofNullable(score).orElse(Observable.immutable(0)),
-                Optional.ofNullable(fixedComponent).orElse(Observable.immutable(null)),
-                Optional.ofNullable(style).orElse(Observable.immutable(Style.style(NamedTextColor.RED)))
+                score == Observable.<Integer>empty()
+                        ? Observable.immutable(0)
+                        : Optional.ofNullable(score).orElse(Observable.immutable(0)),
+                fixedComponent == Observable.<Component>empty()
+                        ? Observable.immutable(null)
+                        : Optional.ofNullable(fixedComponent).orElse(Observable.immutable(null)),
+                style == Observable.<Style>empty()
+                        ? Observable.immutable(null)
+                        : Optional.ofNullable(style).orElse(Observable.immutable(Style.style(NamedTextColor.RED)))
         );
         DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> watcher = compound.watch();
 
@@ -54,34 +65,82 @@ public abstract class ScoreboardNumericDisplay<P> {
         );
 
         CompoundRecords.RecordOf3<Integer, Component, Style> record = watcher.get().key();
-        sendScorePacket(group.players(), entity, record.arg0(), ScoreboardAction.CREATE_OR_UPDATE,  record.arg1(), record.arg2());
+        sendScorePacket(currentWatcher(), entity, record.arg0(), ScoreboardAction.CREATE_OR_UPDATE,  record.arg1(), record.arg2());
     }
 
     public void heartbeat() {
         if (displayName.isDirty()) {
             Entry<Component, Boolean> entry = displayName.get();
             if (entry.value())
-                sendObjectivePacket(group.players(), ObjectiveMode.UPDATE, entry.key());
+                sendObjectivePacket(currentWatcher(), ObjectiveMode.UPDATE, Optional.ofNullable(entry.key()).orElse(Component.empty()));
         }
 
         for (Map.Entry<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entry : entities.entrySet()) {
             if (!entry.getValue().isDirty())
                 continue;
 
-            Entry<?, Boolean> record = entry.getValue().get();
+            Entry<CompoundRecords.RecordOf3<Integer, Component, Style>, Boolean> record = entry.getValue().get();
             if (!record.value())
                 continue;
 
-            if (!(record.key() instanceof CompoundRecords.RecordOf3<?, ?, ?> rec))
-                throw new IllegalStateException("TF: " + record.key().getClass());
-
             sendScorePacket(
-                    group.players(),
+                    currentWatcher(),
                     entry.getKey(),
-                    (int) rec.arg0(),
+                    record.key().arg0(),
                     ScoreboardAction.CREATE_OR_UPDATE,
-                    (Component) rec.arg1(),
-                    (Style) rec.arg2()
+                    record.key().arg1(),
+                    record.key().arg2()
+            );
+        }
+        handleNewAudience();
+    }
+
+    private void handleNewAudience() {
+        if (groupWatcher.isDirty()) {
+            Set<P> cache = Optional.ofNullable(groupWatcher.getCache()).orElse(Collections.emptySet());
+            Entry<Set<P>, Boolean> entry = groupWatcher.get();
+
+            if (!entry.value())
+                return;
+
+            Set<P> toAdd = new HashSet<>(entry.key());
+            toAdd.removeAll(cache);
+
+            Set<P> toRemove = new HashSet<>(cache);
+            toRemove.removeAll(entry.key());
+
+            // Add
+
+            sendObjectivePacket(
+                    toAdd,
+                    ObjectiveMode.CREATE,
+                    Optional.ofNullable(displayName.getCache()).orElse(Component.empty())
+            );
+
+            for (DisplaySlot slot : displaySlots)
+                sendDisplayPacket(
+                        toAdd,
+                        slot,
+                        objectiveId
+                );
+
+            for (Map.Entry<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entity : entities.entrySet()) {
+                sendScorePacket(
+                        toAdd,
+                        entity.getKey(),
+                        entity.getValue().getCache().arg0(),
+                        ScoreboardAction.CREATE_OR_UPDATE,
+                        entity.getValue().getCache().arg1(),
+                        entity.getValue().getCache().arg2()
+                );
+            }
+
+            // Remove
+
+            sendObjectivePacket(
+                    toRemove,
+                    ObjectiveMode.REMOVE,
+                    null
             );
         }
     }
@@ -91,7 +150,7 @@ public abstract class ScoreboardNumericDisplay<P> {
         if (record == null)
             return;
 
-        sendScorePacket(group.players(), entity, 0, ScoreboardAction.REMOVE, null, null);
+        sendScorePacket(currentWatcher(), entity, 0, ScoreboardAction.REMOVE, null, null);
         record.delete();
     }
 
@@ -99,14 +158,14 @@ public abstract class ScoreboardNumericDisplay<P> {
         if (!displaySlots.add(slot))
             return;
 
-        sendDisplayPacket(group.players(), slot, objectiveId);
+        sendDisplayPacket(currentWatcher(), slot, objectiveId);
     }
 
     public void removeDisplaySlot(DisplaySlot slot) {
         if (!displaySlots.remove(slot))
             return;
 
-        sendDisplayPacket(group.players(), slot, null);
+        sendDisplayPacket(currentWatcher(), slot, null);
     }
 
     public void renderType(ObjectiveRenderType type) {
@@ -114,7 +173,7 @@ public abstract class ScoreboardNumericDisplay<P> {
             return;
 
         renderType = type;
-        sendObjectivePacket(group.players(), ObjectiveMode.UPDATE, displayName.get().key());
+        sendObjectivePacket(currentWatcher(), ObjectiveMode.UPDATE, Optional.ofNullable(displayName.get().key()).orElse(Component.empty()));
     }
 
     public void displayName(Observable<Component> displayName) {
@@ -125,7 +184,7 @@ public abstract class ScoreboardNumericDisplay<P> {
     }
 
     public void delete() {
-        sendObjectivePacket(group.players(), ObjectiveMode.REMOVE, null);
+        sendObjectivePacket(currentWatcher(), ObjectiveMode.REMOVE, null);
 
         for (DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>> value : entities.values())
             value.delete();

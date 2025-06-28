@@ -19,44 +19,6 @@ public class SpigotDisplayTeam extends DisplayTeam<Player> {
     }
 
     @Override
-    public void heartbeat() {
-        if (groupWatcher.isDirty()) {
-            Set<Player> cache = groupWatcher.getCache();
-            if (cache == null)
-                cache = Set.of();
-
-            Entry<Set<Player>, Boolean> entry = groupWatcher.get();
-
-            if (!entry.value())
-                return;
-
-            Set<Player> toAdd = new HashSet<>(entry.key());
-            toAdd.removeAll(cache);
-
-            Set<Player> toRemove = new HashSet<>(cache);
-            toRemove.removeAll(entry.key());
-
-            sendCreateTeamPacket(
-                    toAdd,
-                    displayName.getCache(),
-                    Optional.ofNullable(friendlyFire.getCache()).orElse((byte) 0x01),
-                    nameTagVisibilityRule.getCache(),
-                    collisionRule.getCache(),
-                    formatting.getCache(),
-                    prefix.getCache(),
-                    suffix.getCache(),
-                    Optional.ofNullable(entities.getCache()).orElse(Set.of())
-            );
-
-            sendRemoveTeamPacket(
-                    toRemove
-            );
-        }
-
-        super.heartbeat();
-    }
-
-    @Override
     public void sendUpdateTeamPacket(Set<Player> audience, Component displayName, byte friendlyFire, NameTagVisibilityRule nameTagVisibilityRule, CollisionRule collisionRule, ChatFormatting formatting, Component prefix, Component suffix) {
         for (Player target : audience) {
             try {

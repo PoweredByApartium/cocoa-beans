@@ -38,6 +38,11 @@ public abstract class DisplayTeam<P> {
         this.groupWatcher = DirtyWatcher.create(group.observePlayers());
     }
 
+    protected Set<P> currentWatcher() {
+        return Optional.ofNullable(groupWatcher.getCache())
+                .orElse(Set.of());
+    }
+
     protected boolean isDirty() {
         return displayName.isDirty()
                 || nameTagVisibilityRule.isDirty()
@@ -104,7 +109,7 @@ public abstract class DisplayTeam<P> {
             return;
 
         sendUpdateTeamPacket(
-                group.players(),
+                currentWatcher(),
                 displayName,
                 friendlyFire,
                 nameTagVisibilityRule,
@@ -112,6 +117,42 @@ public abstract class DisplayTeam<P> {
                 formatting,
                 prefix,
                 suffix
+        );
+    }
+
+    private void heartbeatAudience() {
+        if (!groupWatcher.isDirty())
+            return;
+
+        Set<P> cache = groupWatcher.getCache();
+        if (cache == null)
+            cache = Set.of();
+
+        Entry<Set<P>, Boolean> entry = groupWatcher.get();
+
+        if (!entry.value())
+            return;
+
+        Set<P> toAdd = new HashSet<>(entry.key());
+        toAdd.removeAll(cache);
+
+        Set<P> toRemove = new HashSet<>(cache);
+        toRemove.removeAll(entry.key());
+
+        sendCreateTeamPacket(
+                toAdd,
+                displayName.getCache(),
+                Optional.ofNullable(friendlyFire.getCache()).orElse((byte) 0x01),
+                nameTagVisibilityRule.getCache(),
+                collisionRule.getCache(),
+                formatting.getCache(),
+                prefix.getCache(),
+                suffix.getCache(),
+                Optional.ofNullable(entities.getCache()).orElse(Set.of())
+        );
+
+        sendRemoveTeamPacket(
+                toRemove
         );
     }
 
@@ -132,10 +173,10 @@ public abstract class DisplayTeam<P> {
         toRemove.removeAll(entry.key());
 
         if (!toAdd.isEmpty())
-            sendAddEntitiesPacket(group.players(), toAdd);
+            sendAddEntitiesPacket(currentWatcher(), toAdd);
 
         if (!toRemove.isEmpty())
-            sendRemoveEntitiesPacket(group.players(), toRemove);
+            sendRemoveEntitiesPacket(currentWatcher(), toRemove);
     }
 
     public BoardPlayerGroup<P> getGroup() {
@@ -217,7 +258,7 @@ public abstract class DisplayTeam<P> {
     }
 
     public void delete() {
-        sendRemoveTeamPacket(group.players());
+        sendRemoveTeamPacket(currentWatcher());
 
         entities.delete();
         displayName.delete();
