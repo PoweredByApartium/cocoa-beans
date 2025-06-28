@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a chat format for player names in newer versions

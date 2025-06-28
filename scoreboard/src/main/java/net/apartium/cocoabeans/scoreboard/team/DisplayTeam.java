@@ -227,7 +227,6 @@ public abstract class DisplayTeam<P> {
     }
 
     /**
-     * TODO what tf is that
      * Set display name of the current team
      * @param displayName display name
      * @return current instance
