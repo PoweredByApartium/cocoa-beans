@@ -19,7 +19,7 @@ While giving you more free control over who see your teams
 
 ![tab-animation.gif](tab-animation.gif)
 
-<sub>Animation support using <code><sub>Observable</sub></code></sub>
+<sub>Animation support using Observable</sub>
 
 ## Usage
 
