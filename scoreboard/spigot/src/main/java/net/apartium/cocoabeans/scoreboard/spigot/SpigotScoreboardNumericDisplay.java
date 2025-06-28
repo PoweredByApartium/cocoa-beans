@@ -18,58 +18,6 @@ public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Pla
     }
 
     @Override
-    public void heartbeat() {
-        super.heartbeat();
-        if (groupWatcher.isDirty()) {
-            Set<Player> cache = Optional.ofNullable(groupWatcher.getCache()).orElse(Collections.emptySet());
-            Entry<Set<Player>, Boolean> entry = groupWatcher.get();
-
-            if (!entry.value())
-                return;
-
-            Set<Player> toAdd = new HashSet<>(entry.key());
-            toAdd.removeAll(cache);
-
-            Set<Player> toRemove = new HashSet<>(cache);
-            toRemove.removeAll(entry.key());
-
-            // Add
-
-            sendObjectivePacket(
-                    toAdd,
-                    ObjectiveMode.CREATE,
-                    Optional.ofNullable(displayName.getCache()).orElse(Component.empty())
-            );
-
-            for (DisplaySlot slot : displaySlots)
-                sendDisplayPacket(
-                        toAdd,
-                        slot,
-                        objectiveId
-                );
-
-            for (Map.Entry<String, DirtyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entity : entities.entrySet()) {
-                sendScorePacket(
-                        toAdd,
-                        entity.getKey(),
-                        entity.getValue().getCache().arg0(),
-                        ScoreboardAction.CREATE_OR_UPDATE,
-                        entity.getValue().getCache().arg1(),
-                        entity.getValue().getCache().arg2()
-                );
-            }
-
-            // Remove
-
-            sendObjectivePacket(
-                    toRemove,
-                    ObjectiveMode.REMOVE,
-                    null
-            );
-        }
-    }
-
-    @Override
     public void sendDisplayPacket(Set<Player> audience, DisplaySlot slot, String objectiveId) {
         if (audience.isEmpty())
             return;

@@ -19,23 +19,28 @@ public abstract class DisplayTeam<P> {
     protected final BoardPlayerGroup<P> group;
     protected final DirtyWatcher<Set<P>> groupWatcher;
 
-    protected DirtyWatcher<Component> displayName = DirtyWatcher.create(Observable.empty());
+    protected final DirtyWatcher<Component> displayName = DirtyWatcher.create(Observable.empty());
 
-    protected DirtyWatcher<NameTagVisibilityRule> nameTagVisibilityRule = DirtyWatcher.create(Observable.immutable(NameTagVisibilityRule.ALWAYS));
-    protected DirtyWatcher<CollisionRule> collisionRule = DirtyWatcher.create(Observable.immutable(CollisionRule.ALWAYS));
+    protected final DirtyWatcher<NameTagVisibilityRule> nameTagVisibilityRule = DirtyWatcher.create(Observable.immutable(NameTagVisibilityRule.ALWAYS));
+    protected final DirtyWatcher<CollisionRule> collisionRule = DirtyWatcher.create(Observable.immutable(CollisionRule.ALWAYS));
 
-    protected DirtyWatcher<Component> prefix = DirtyWatcher.create(Observable.empty());
-    protected DirtyWatcher<Component> suffix = DirtyWatcher.create(Observable.empty());
+    protected final DirtyWatcher<Component> prefix = DirtyWatcher.create(Observable.empty());
+    protected final DirtyWatcher<Component> suffix = DirtyWatcher.create(Observable.empty());
 
-    protected DirtyWatcher<ChatFormatting> formatting = DirtyWatcher.create(Observable.immutable(ChatFormatting.RESET));
+    protected final DirtyWatcher<ChatFormatting> formatting = DirtyWatcher.create(Observable.immutable(ChatFormatting.RESET));
 
-    protected DirtyWatcher<Byte> friendlyFire = DirtyWatcher.create(Observable.immutable((byte) 0x00));
+    protected final DirtyWatcher<Byte> friendlyFire = DirtyWatcher.create(Observable.immutable((byte) 0x00));
 
     public DisplayTeam(String name, BoardPlayerGroup<P> group) {
         this.name = name;
         this.group = group;
 
         this.groupWatcher = DirtyWatcher.create(group.observePlayers());
+    }
+
+    protected Set<P> currentWatcher() {
+        return Optional.ofNullable(groupWatcher.getCache())
+                .orElse(Set.of());
     }
 
     protected boolean isDirty() {
@@ -49,11 +54,12 @@ public abstract class DisplayTeam<P> {
     }
 
     public void heartbeat() {
-        if (entities.isDirty()) {
-            heartbeatEntities();
-            return;
-        }
+        heartbeatEntities();
+        heartbeatSettings();
+        heartbeatAudience();
+    }
 
+    private void heartbeatSettings() {
         if (!isDirty())
             return;
 
@@ -104,7 +110,7 @@ public abstract class DisplayTeam<P> {
             return;
 
         sendUpdateTeamPacket(
-                group.players(),
+                currentWatcher(),
                 displayName,
                 friendlyFire,
                 nameTagVisibilityRule,
@@ -115,7 +121,46 @@ public abstract class DisplayTeam<P> {
         );
     }
 
+    private void heartbeatAudience() {
+        if (!groupWatcher.isDirty())
+            return;
+
+        Set<P> cache = groupWatcher.getCache();
+        if (cache == null)
+            cache = Set.of();
+
+        Entry<Set<P>, Boolean> entry = groupWatcher.get();
+
+        if (!entry.value())
+            return;
+
+        Set<P> toAdd = new HashSet<>(entry.key());
+        toAdd.removeAll(cache);
+
+        Set<P> toRemove = new HashSet<>(cache);
+        toRemove.removeAll(entry.key());
+
+        sendCreateTeamPacket(
+                toAdd,
+                displayName.getCache(),
+                Optional.ofNullable(friendlyFire.getCache()).orElse((byte) 0x01),
+                nameTagVisibilityRule.getCache(),
+                collisionRule.getCache(),
+                formatting.getCache(),
+                prefix.getCache(),
+                suffix.getCache(),
+                Optional.ofNullable(entities.getCache()).orElse(Set.of())
+        );
+
+        sendRemoveTeamPacket(
+                toRemove
+        );
+    }
+
     private void heartbeatEntities() {
+        if (!entities.isDirty())
+            return;
+
         Set<String> cacheEntities = entities.getCache();
         if (cacheEntities == null)
             cacheEntities = Set.of();
@@ -132,10 +177,10 @@ public abstract class DisplayTeam<P> {
         toRemove.removeAll(entry.key());
 
         if (!toAdd.isEmpty())
-            sendAddEntitiesPacket(group.players(), toAdd);
+            sendAddEntitiesPacket(currentWatcher(), toAdd);
 
         if (!toRemove.isEmpty())
-            sendRemoveEntitiesPacket(group.players(), toRemove);
+            sendRemoveEntitiesPacket(currentWatcher(), toRemove);
     }
 
     public BoardPlayerGroup<P> getGroup() {
@@ -157,67 +202,46 @@ public abstract class DisplayTeam<P> {
     }
 
     public DisplayTeam<P> setDisplayName(Observable<Component> displayName) {
-        if (this.displayName != null && this.displayName != displayName)
-            this.displayName.delete();
-
-        this.displayName = DirtyWatcher.create(displayName);
+        this.displayName.setDependsOn(displayName);
         return this;
     }
 
     public DisplayTeam<P> setNameTagVisibilityRule(Observable<NameTagVisibilityRule> nameTagVisibilityRule) {
-        if (this.nameTagVisibilityRule != null && this.nameTagVisibilityRule != nameTagVisibilityRule)
-            this.nameTagVisibilityRule.delete();
-
-        this.nameTagVisibilityRule = DirtyWatcher.create(nameTagVisibilityRule);
+        this.nameTagVisibilityRule.setDependsOn(nameTagVisibilityRule);
         return this;
     }
 
     public DisplayTeam<P> setCollisionRule(Observable<CollisionRule> collisionRule) {
-        if (this.collisionRule != null && this.collisionRule != collisionRule)
-            this.collisionRule.delete();
-
-        this.collisionRule = DirtyWatcher.create(collisionRule);
+        this.collisionRule.setDependsOn(collisionRule);
         return this;
     }
 
     public DisplayTeam<P> setPrefix(Observable<Component> prefix) {
-        if (this.prefix != null && this.prefix != prefix)
-            this.prefix.delete();
-
-        this.prefix = DirtyWatcher.create(prefix);
+        this.prefix.setDependsOn(prefix);
         return this;
     }
 
     public DisplayTeam<P> setSuffix(Observable<Component> suffix) {
-        if (this.suffix != null && this.suffix != suffix)
-            this.suffix.delete();
-
-        this.suffix = DirtyWatcher.create(suffix);
+        this.suffix.setDependsOn(suffix);
         return this;
     }
 
     public DisplayTeam<P> setFormatting(Observable<ChatFormatting> formatting) {
-        if (this.formatting != null && this.formatting != formatting)
-            this.formatting.delete();
-
-        this.formatting = DirtyWatcher.create(formatting);
+        this.formatting.setDependsOn(formatting);
         return this;
     }
 
     /**
-     * Bit mask. 0x01: Allow friendly fire, 0x02: can see invisible entities on same team.
+     * Bit mask. 0b01: Allow friendly fire, 0b10: can see invisible entities on same team.
      * @param friendlyFire friendlyFire
      */
     public DisplayTeam<P> setFriendlyFire(Observable<Byte> friendlyFire) {
-        if (this.friendlyFire != null && this.friendlyFire != friendlyFire)
-            this.friendlyFire.delete();
-
-        this.friendlyFire = DirtyWatcher.create(friendlyFire);
+        this.friendlyFire.setDependsOn(friendlyFire);
         return this;
     }
 
     public void delete() {
-        sendRemoveTeamPacket(group.players());
+        sendRemoveTeamPacket(currentWatcher());
 
         entities.delete();
         displayName.delete();

@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.spigot.team;
 
+import net.apartium.cocoabeans.scoreboard.spigot.SpigotBoardPlayerGroup;
 import net.apartium.cocoabeans.scoreboard.spigot.SpigotDisplayTeam;
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -43,8 +45,8 @@ public class TeamManager {
         teams.clear();
     }
 
-    public DisplayTeam getTeam(String name) {
-        return teams.computeIfAbsent(name, SpigotDisplayTeam::new);
+    public DisplayTeam<Player> getTeam(String name) {
+        return teams.computeIfAbsent(name, key -> new SpigotDisplayTeam(key, new SpigotBoardPlayerGroup(Collections.newSetFromMap(new WeakHashMap<>()))));
     }
 
     public Map<String, SpigotDisplayTeam> getTeams() {

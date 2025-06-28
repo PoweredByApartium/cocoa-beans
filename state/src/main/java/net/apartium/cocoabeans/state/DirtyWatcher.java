@@ -6,13 +6,14 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Objects;
 
 /**
- * Should only have one instance
+ * Dirty watcher are just flagging them self dirty until someone calling get() and they return if they had change or not
+ * --Should only have one ref to instance--
  * @param <T> T as type
  */
-@ApiStatus.AvailableSince("0.0.39")
+@ApiStatus.AvailableSince("0.0.41")
 public class DirtyWatcher<T> implements Observer {
 
-    private final Observable<T> dependsOn;
+    private Observable<T> dependsOn;
     private T value;
     private boolean first = true;
     private boolean isDirty = true;
@@ -34,6 +35,17 @@ public class DirtyWatcher<T> implements Observer {
     public void flagAsDirty(Observable<?> observable) {
         if (dependsOn != observable)
             return;
+
+        isDirty = true;
+    }
+
+    public void setDependsOn(Observable<T> dependsOn) {
+        if (this.dependsOn == dependsOn)
+            return;
+
+        this.dependsOn.removeObserver(this);
+        this.dependsOn = dependsOn;
+        this.dependsOn.observe(this);
 
         isDirty = true;
     }
