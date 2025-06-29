@@ -74,6 +74,11 @@ allprojects {
 
         publications {
             create<MavenPublication>("mavenCentral") {
+                groupId = rootProject.group.toString()
+                version = figureVersion()
+
+                from(components["java"])
+
                 pom {
                     name = "Cocoa Beans"
                     description = "General purpose library for Java & Spigot"
