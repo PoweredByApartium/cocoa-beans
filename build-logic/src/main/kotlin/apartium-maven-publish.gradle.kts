@@ -24,10 +24,14 @@ tasks {
             }
         }
     } else {
-        register<Jar>("packageJavadoc") {
-            dependsOn("javadoc")
-            from(javadoc.get().destinationDir)
+        register<Jar>("javadocJar") {
             archiveClassifier = "javadoc"
+            from(javadoc)
+        }
+
+        register<Jar>("sourcesJar") {
+            archiveClassifier = "sources"
+            from(sourceSets.main.get().allSource)
         }
     }
 }
@@ -41,7 +45,8 @@ if (!root) {
                 groupId = rootProject.group.toString()
                 artifactId = proj.mavenName
 
-                artifact(tasks.getByName("packageJavadoc"))
+                artifact(tasks.getByName("javadocJar"))
+                artifact(tasks.getByName("sourcesJar"))
                 artifact(tasks.jar)
                 tasks.findByName("testFixturesJar")?.let {
                     artifact(it, {

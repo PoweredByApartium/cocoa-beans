@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:
@@ -49,6 +50,7 @@ jobs:
           with:
             name: docs
             path: artifacts
+            
         - name: Test documentation
           uses: JetBrains/writerside-checker-action@v1
           with:

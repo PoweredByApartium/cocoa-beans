@@ -12,4 +12,3 @@ val Project.mavenName: String?
         } else {
             project.name
         }
-
