@@ -778,7 +778,7 @@ class ObservableTest {
 
         AtomicInteger current = new AtomicInteger(9);
 
-        number.watch(watcherManager, num -> {
+        number.lazyWatch(watcherManager, num -> {
             assertEquals(current.get(), num);
         });
 

@@ -13,17 +13,16 @@ import java.util.function.Consumer;
  * @see WatcherOperator
  */
 @ApiStatus.AvailableSince("0.0.39")
-public class AttachedWatcher<T> extends Watcher<T> {
+public abstract class AttachedWatcher<T> extends Watcher<T> {
 
     private WatcherOperator manager;
 
     /**
      * Constructs a new instance.
      * @param depends the {@link Observable<T>} state that this watcher is observing.
-     * @param consumer the action to perform when the observed state changes.
      */
-    public AttachedWatcher(Observable<T> depends, Consumer<T> consumer) {
-        super(depends, consumer);
+    public AttachedWatcher(Observable<T> depends) {
+        super(depends);
     }
 
     /**

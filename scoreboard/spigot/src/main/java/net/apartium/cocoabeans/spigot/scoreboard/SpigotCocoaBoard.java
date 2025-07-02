@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
 
 import net.apartium.cocoabeans.scoreboard.*;
@@ -8,12 +8,15 @@ import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
+@ApiStatus.AvailableSince("0.0.39")
 public abstract class SpigotCocoaBoard extends CocoaBoard {
 
     private static final SpigotCocoaBoardFactory factory = CocoaBoardInstantiator.createCocoaBoardFactory();
@@ -111,7 +114,14 @@ public abstract class SpigotCocoaBoard extends CocoaBoard {
     @Override
     protected void sendObjectivePacket(ObjectiveMode mode, Observable<Component> displayName) {
         try {
-            NMSUtils.sendPacket(getPlayer(), NMSUtils.createObjectivePacket(objectiveId, mode, ObjectiveRenderType.INTEGER, displayName));
+            NMSUtils.sendPacket(getPlayer(), NMSUtils.createObjectivePacket(
+                    objectiveId,
+                    mode,
+                    ObjectiveRenderType.INTEGER,
+                    Optional.ofNullable(displayName)
+                            .map(Observable::get)
+                            .orElse(null)
+            ));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -134,7 +144,9 @@ public abstract class SpigotCocoaBoard extends CocoaBoard {
                     NMSUtils.createScorePacket(
                             COLOR_CODES[score],
                             objectiveId,
-                            displayName,
+                            Optional.ofNullable(displayName)
+                                    .map(Observable::get)
+                                    .orElse(null),
                             score,
                             action,
                             numberStyle
@@ -153,8 +165,12 @@ public abstract class SpigotCocoaBoard extends CocoaBoard {
                     NMSUtils.createTeamPacket(
                             intoTeamName(score),
                             mode,
-                            prefix,
-                            suffix,
+                            Optional.ofNullable(prefix)
+                                    .map(Observable::get)
+                                    .orElse(null),
+                            Optional.ofNullable(suffix)
+                                    .map(Observable::get)
+                                    .orElse(null),
                             mode == TeamMode.CREATE
                                     ? Collections.singleton(COLOR_CODES[score])
                                     : Collections.emptyList()

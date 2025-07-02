@@ -13,10 +13,9 @@ import java.util.function.Consumer;
  * @see AttachedWatcher
  */
 @ApiStatus.AvailableSince("0.0.39")
-public class Watcher<T> implements Observer {
+public abstract class Watcher<T> implements Observer {
 
     protected final Observable<T> depends;
-    private final Consumer<T> consumer;
     private boolean first = true;
     private boolean isDirty = true;
     private T prevValue;
@@ -24,13 +23,11 @@ public class Watcher<T> implements Observer {
     /**
      * Constructs a new instance
      * @param depends parent state
-     * @param consumer action to perform on change
      */
-    public Watcher(Observable<T> depends, Consumer<T> consumer) {
+    public Watcher(Observable<T> depends) {
         depends.observe(this);
 
         this.depends = depends;
-        this.consumer = consumer;
     }
 
     /**
@@ -49,8 +46,15 @@ public class Watcher<T> implements Observer {
         first = false;
         isDirty = false;
 
-        consumer.accept(value);
+        onChange(value);
     }
+
+    /**
+     * Being called by heartbeat when value has been changed
+     * @param newValue the new value that has been set to it
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    public abstract void onChange(T newValue);
 
     /**
      * Detaches the current watcher from its target observable.
@@ -66,4 +70,5 @@ public class Watcher<T> implements Observer {
     public void flagAsDirty(Observable<?> observable) {
         isDirty = true;
     }
+
 }

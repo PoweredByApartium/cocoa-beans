@@ -11,8 +11,18 @@ import net.apartium.cocoabeans.commands.parsers.WithParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import net.apartium.cocoabeans.scoreboard.CocoaBoard;
+import net.apartium.cocoabeans.scoreboard.DisplaySlot;
+import net.apartium.cocoabeans.scoreboard.ObjectiveRenderType;
+import net.apartium.cocoabeans.spigot.scoreboard.SpigotDisplayTeam;
+import net.apartium.cocoabeans.spigot.scoreboard.SpigotScoreboardNumericDisplay;
+import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
+import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
+import net.apartium.cocoabeans.scoreboard.team.CollisionRule;
+import net.apartium.cocoabeans.scoreboard.team.NameTagVisibilityRule;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
+import net.apartium.cocoabeans.spigot.board.ScoreboardNumericManager;
+import net.apartium.cocoabeans.spigot.team.TeamManager;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.animation.FadingColorBlinkObservable;
 import net.apartium.cocoabeans.state.animation.FadingColorInOutObservable;
@@ -24,15 +34,15 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @WithParser(value = QuotedStringParser.class)
 @WithParser(value = StringParser.class, priority = -1)
@@ -41,9 +51,13 @@ import java.util.Set;
 public class CocoaBoardCommand implements CommandNode {
 
     private final BoardManager boardManager;
+    private final TeamManager teamManager;
+    private final ScoreboardNumericManager scoreboardNumericManager;
 
-    public CocoaBoardCommand(BoardManager boardManager) {
+    public CocoaBoardCommand(BoardManager boardManager, TeamManager teamManager, ScoreboardNumericManager scoreboardNumericManager) {
         this.boardManager = boardManager;
+        this.teamManager = teamManager;
+        this.scoreboardNumericManager = scoreboardNumericManager;
     }
 
     @SubCommand("scoreboard")
@@ -52,6 +66,258 @@ public class CocoaBoardCommand implements CommandNode {
 
         boardManager.getBoard(player);
     }
+
+    @SubCommand("numeric set <string> all hp")
+    public void setNumber(Player player, String id) {
+        SpigotScoreboardNumericDisplay display = scoreboardNumericManager.getDisplay(id);
+        for (Player target : Bukkit.getOnlinePlayers()) {
+            display.set(
+                    target.getName(),
+                    scoreboardNumericManager.getHp(target.getName()),
+                    null,
+                    null
+            );
+        }
+        player.sendMessage("setHP");
+    }
+
+    @SubCommand("numeric display <string> add <display-slot>")
+    public void addDisplaySlot(Player player, String id, DisplaySlot displaySlot) {
+        scoreboardNumericManager.getDisplay(id).addDisplaySlot(displaySlot);
+        player.sendMessage("addDisplaySlot");
+    }
+
+    @SubCommand("numeric display <string> remove <display-slot>")
+    public void removeDisplaySlot(Player player, String id, DisplaySlot displaySlot) {
+        scoreboardNumericManager.getDisplay(id).removeDisplaySlot(displaySlot);
+        player.sendMessage("removeDisplaySlot");
+    }
+
+    @SubCommand("numeric cool <string>")
+    public void setCool(Player player, String id) {
+        scoreboardNumericManager.getDisplay(id).set(
+                player.getName(),
+                Observable.immutable(10),
+                Observable.immutable(
+                        Component.text()
+                                .append(player.name())
+                                .append(Component.text(" <-> "))
+                                .append(Component.score(player.getName(), id))
+                                .build()
+                ),
+                null
+        );
+    }
+
+    @SubCommand("numeric cool2 <string>")
+    public void setCool2(Player player, String id) {
+        scoreboardNumericManager.getDisplay(id).set(
+                player.getName(),
+                Observable.immutable(6),
+                Observable.immutable(
+                        Component.text()
+                                .append(player.name())
+                                .append(Component.text(" <-> "))
+                                .build()
+                ),
+                null
+        );
+    }
+
+    @SubCommand("numeric displayName <string> <quoted-string>")
+    public void removeDisplaySlot(Player player, String id, String text) {
+        scoreboardNumericManager.getDisplay(id).displayName(Observable.immutable(Component.text(ChatColor.translateAlternateColorCodes('&', text))));
+        player.sendMessage("new name");
+    }
+
+    @SubCommand("numeric audience <string> add <player>")
+    public void addAudience(Player player, String id, Player target) {
+        scoreboardNumericManager.getDisplay(id).getViewers().add(target);
+        player.sendMessage("addAudience");
+    }
+
+    @SubCommand("numeric audience <string> remove <player>")
+    public void removeAudience(Player player, String id, Player target) {
+        scoreboardNumericManager.getDisplay(id).getViewers().remove(target);
+        player.sendMessage("removeAudience");
+    }
+
+    @SubCommand("numeric renderType <string> <render-type>")
+    public void setRenderType(Player player, String id, ObjectiveRenderType renderType) {
+        scoreboardNumericManager.getDisplay(id).renderType(renderType);
+        player.sendMessage("setRenderType");
+    }
+
+    @SubCommand("team myInit <string>")
+    public void create(Player player, String name) {
+        try {
+            DisplayTeam team = teamManager.getTeam(name)
+                    .setPrefix(Observable.compound(
+                            new FadingColorInOutObservable(
+                                    Observable.immutable("Project"),
+                                    boardManager.getNowObservable(),
+                                    Duration.ofSeconds(5),
+                                    Duration.ofSeconds(5),
+                                    Duration.ofMillis(4 * 10),
+                                    Style.style(NamedTextColor.DARK_GREEN, TextDecoration.BOLD),
+                                    Style.style(NamedTextColor.GREEN, TextDecoration.BOLD),
+                                    Style.style(NamedTextColor.GREEN, TextDecoration.BOLD)
+                            ),
+                            new FadingColorInOutObservable(
+                                    Observable.immutable("Zero"),
+                                    boardManager.getNowObservable(),
+                                    Duration.ofSeconds(5),
+                                    Duration.ofSeconds(5),
+                                    Duration.ofMillis(7 * 10),
+                                    Style.style(NamedTextColor.GREEN, TextDecoration.BOLD),
+                                    Style.style(NamedTextColor.DARK_GREEN, TextDecoration.BOLD),
+                                    Style.style(NamedTextColor.DARK_GREEN, TextDecoration.BOLD)
+                            )
+                    ).map(args -> Component.text()
+                            .append(args.arg0())
+                            .append(args.arg1())
+                            .append(Component.text(" "))
+                            .build()
+                    ))
+                    .setFormatting(Observable.immutable(ChatFormatting.RESET));
+
+            player.sendMessage("Nice");
+        } catch (Exception e) {
+            e.printStackTrace();
+            player.sendMessage("Error: " + e.getMessage());
+        }
+    }
+
+    @SourceParser(keyword = "team", clazz = SpigotDisplayTeam.class)
+    public Map<String, SpigotDisplayTeam> getCocoaTeams() {
+        return teamManager.getTeams();
+    }
+
+    @SourceParser(keyword = "collision-rule", clazz = CollisionRule.class, lax = true, ignoreCase = true, resultMaxAgeInMills = -1)
+    public Map<String, CollisionRule> getCollisionRule() {
+        return Arrays.stream(CollisionRule.values())
+                .collect(Collectors.toMap(
+                        collisionRule -> collisionRule.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
+    @SourceParser(keyword = "name-tag-visibility-rule", clazz = NameTagVisibilityRule.class, lax = true, ignoreCase = true, resultMaxAgeInMills = -1)
+    public Map<String, NameTagVisibilityRule> getNameTagVisibilityRule() {
+        return Arrays.stream(NameTagVisibilityRule.values())
+                .collect(Collectors.toMap(
+                        nameTagVisibilityRule -> nameTagVisibilityRule.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
+    @SourceParser(keyword = "chat-formatting", clazz = ChatFormatting.class, lax = true, ignoreCase = true, resultMaxAgeInMills = -1)
+    public Map<String, ChatFormatting> getChatFormatting() {
+        return Arrays.stream(ChatFormatting.values())
+                .collect(Collectors.toMap(
+                        formatting -> formatting.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
+    @SourceParser(keyword = "display-slot", clazz = DisplaySlot.class, lax = true, ignoreCase = true, resultMaxAgeInMills = -1)
+    public Map<String, DisplaySlot> getDisplaySlot() {
+        return Arrays.stream(DisplaySlot.values())
+                .collect(Collectors.toMap(
+                        slot -> slot.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
+    @SourceParser(keyword = "render-type", clazz = ObjectiveRenderType.class, lax = true, ignoreCase = true, resultMaxAgeInMills = -1)
+    public Map<String, ObjectiveRenderType> getObjectiveRenderType() {
+        return Arrays.stream(ObjectiveRenderType.values())
+                .collect(Collectors.toMap(
+                        type -> type.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
+    @SubCommand("team modify <team> formatting <chat-formatting>")
+    public void setChatFormatting(Player player, SpigotDisplayTeam team, ChatFormatting formatting) {
+        team.setFormatting(Observable.immutable(formatting));
+        player.sendMessage("§6Set formatting to §c" + formatting.name().toLowerCase());
+    }
+
+    @SubCommand("team modify <team> displayName <quoted-string>")
+    public void setDisplayName(Player player, SpigotDisplayTeam team, String displayName) {
+        team.setDisplayName(Observable.immutable(Component.text(ChatColor.translateAlternateColorCodes('&', displayName))));
+        player.sendMessage("§aSet displayName");
+    }
+
+    @SubCommand("team modify <team> collision <collision-rule>")
+    public void setCollisionRule(Player player, SpigotDisplayTeam team, CollisionRule collisionRule) {
+        team.setCollisionRule(Observable.immutable(collisionRule));
+        player.sendMessage("§6Set collision to §c" + collisionRule.getSerializedName());
+    }
+
+    @SubCommand("team modify <team> nametag <name-tag-visibility-rule>")
+    public void setNameTagRule(Player player, SpigotDisplayTeam team, NameTagVisibilityRule nameTagVisibilityRule) {
+        team.setNameTagVisibilityRule(Observable.immutable(nameTagVisibilityRule));
+        player.sendMessage("§6Set name tag to §c" + nameTagVisibilityRule.getSerializedName());
+    }
+
+    @SubCommand("team modify <team> prefix <quoted-string>")
+    public void setPrefix(Player player, SpigotDisplayTeam team, String prefix) {
+        team.setPrefix(Observable.mutable(Component.text(ChatColor.translateAlternateColorCodes('&', prefix))));
+    }
+
+    @SubCommand("team modify <team> suffix <quoted-string>")
+    public void setSuffix(Player player, SpigotDisplayTeam team, String suffix) {
+        team.setSuffix(Observable.mutable(Component.text(ChatColor.translateAlternateColorCodes('&', suffix))));
+    }
+
+    @SubCommand("team modify <team> join <player>")
+    public void teamJoin(Player player, SpigotDisplayTeam team, Player target) {
+        team.addEntity(target.getName());
+    }
+
+    @SubCommand("team modify <team> leave <player>")
+    public void teamLeave(Player player, SpigotDisplayTeam team, Player target) {
+        team.removeEntity(target.getName());
+    }
+
+    @SubCommand("team modify <team> audience add <player>")
+    public void addAudience(Player player, SpigotDisplayTeam team, Player target) {
+        team.getViewers().add(target);
+        player.sendMessage("Joined");
+    }
+
+    @SubCommand("team modify <team> audience remove <player>")
+    public void removeAudience(Player player, SpigotDisplayTeam team, Player target) {
+        team.getViewers().remove(target);
+        player.sendMessage("Leaved");
+    }
+
+    @SubCommand("team modify <team> friendlyFire <int>")
+    public void teamFriendlyFire(Player player, SpigotDisplayTeam team, int friendlyFire) {
+        team.setFriendlyFire(Observable.immutable((byte) friendlyFire));
+        player.sendMessage("Friendly fire");
+    }
+
+
+
+    @SubCommand("team heartbeat <team>")
+    public void heartbeat(Player player, SpigotDisplayTeam team) {
+        team.heartbeat();
+        player.sendMessage("Heartbeat");
+    }
+
+    @SubCommand("scoreboard delete")
+    public void deleteScoreboard(Player player) {
+        boardManager.unregisterBoard(player.getUniqueId());
+    }
+
+    @SubCommand("scoreboard sidebar")
+    public void sidebar(Player player) {
+        boardManager.getBoard(player).setDisplay();
+    }
+
 
     @SubCommand("scoreboard set <int> <strings>")
     public void setLine(Player player, int line, String text) {

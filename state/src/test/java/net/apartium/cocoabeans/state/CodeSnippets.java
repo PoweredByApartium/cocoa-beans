@@ -197,7 +197,7 @@ class CodeSnippets {
 
         // our watcher performs some checks and increments the count variable
         // The attached watcher object allows as to cancel the watcher
-        AttachedWatcher<Integer> watcher = observable.watch(watcherManager, num -> {
+        AttachedWatcher<Integer> watcher = observable.lazyWatch(watcherManager, num -> {
             switch (count.get()) {
                 case 0 -> assertEquals(1, num);
                 case 1 -> assertEquals(8, num);
@@ -254,7 +254,7 @@ class CodeSnippets {
 
         // the final piece of the puzzle: if num reaches 69, we want to shut down the JVM
         WatcherManager watcherManager = new WatcherManager();
-        num.watch(watcherManager, value -> {
+        num.lazyWatch(watcherManager, value -> {
             if (value == 69) {
                 System.exit(69);
             }
