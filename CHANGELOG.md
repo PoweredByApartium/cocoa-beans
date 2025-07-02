@@ -1,6 +1,7 @@
 # CHANGELOG
 ## 0.0.41
 - [scoreboard] Add numeric & team display
+- [scoreboard] Add ViewerGroup
 - [state] Add LazyWatcher
 
 ## 0.0.40
