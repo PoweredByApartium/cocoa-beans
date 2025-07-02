@@ -53,7 +53,7 @@ public abstract class Watcher<T> implements Observer {
      * Being called by heartbeat when value has been changed
      * @param newValue the new value that has been set to it
      */
-    @ApiStatus.AvailableSince("0.0.41")
+    @ApiStatus.AvailableSince(value = "0.0.41")
     public abstract void onChange(T newValue);
 
     /**
