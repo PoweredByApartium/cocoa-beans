@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.display.fixture;
 
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.scoreboard.display.packet.*;
 import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.packet.Packet;

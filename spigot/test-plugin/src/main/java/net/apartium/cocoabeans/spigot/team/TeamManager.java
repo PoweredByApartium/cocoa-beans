@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.team;
 
-import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
+import net.apartium.cocoabeans.spigot.scoreboard.SpigotViewerGroup;
 import net.apartium.cocoabeans.spigot.scoreboard.SpigotDisplayTeam;
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import org.bukkit.entity.Player;

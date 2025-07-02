@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.*;
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;

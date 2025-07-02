@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import net.apartium.cocoabeans.state.Observable;
-import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

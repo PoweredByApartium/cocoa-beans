@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.board;
 
-import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
+import net.apartium.cocoabeans.spigot.scoreboard.SpigotViewerGroup;
 import net.apartium.cocoabeans.spigot.scoreboard.SpigotScoreboardNumericDisplay;
 import net.apartium.cocoabeans.state.MutableObservable;
 import net.apartium.cocoabeans.state.Observable;

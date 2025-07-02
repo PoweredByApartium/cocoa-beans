@@ -1,6 +1,6 @@
-package net.apartium.cocoabeans.state.spigot;
+package net.apartium.cocoabeans.spigot.scoreboard;
 
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 import org.bukkit.entity.Player;

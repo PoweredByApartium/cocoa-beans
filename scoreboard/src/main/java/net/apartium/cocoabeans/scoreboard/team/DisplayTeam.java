@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;

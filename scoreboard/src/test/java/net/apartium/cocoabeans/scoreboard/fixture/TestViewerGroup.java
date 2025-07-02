@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.fixture;
 
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 

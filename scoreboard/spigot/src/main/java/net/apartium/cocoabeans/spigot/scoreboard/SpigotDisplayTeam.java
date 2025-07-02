@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.scoreboard.TeamMode;
 import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
 import net.apartium.cocoabeans.scoreboard.team.CollisionRule;

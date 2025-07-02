@@ -5,7 +5,7 @@ import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.DisplayPacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ObjectivePacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ScorePacket;
-import net.apartium.cocoabeans.state.ViewerGroup;
+import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.CompoundRecords;
 import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;

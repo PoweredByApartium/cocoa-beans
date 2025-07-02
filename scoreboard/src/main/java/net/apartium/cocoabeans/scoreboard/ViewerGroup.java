@@ -1,5 +1,6 @@
-package net.apartium.cocoabeans.state;
+package net.apartium.cocoabeans.scoreboard;
 
+import net.apartium.cocoabeans.state.SetObservable;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
