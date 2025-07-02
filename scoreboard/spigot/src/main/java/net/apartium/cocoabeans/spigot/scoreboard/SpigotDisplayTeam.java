@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
-import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.scoreboard.TeamMode;
 import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
 import net.apartium.cocoabeans.scoreboard.team.CollisionRule;
@@ -18,7 +18,7 @@ import java.util.*;
 @ApiStatus.AvailableSince("0.0.41")
 public class SpigotDisplayTeam extends DisplayTeam<Player> {
 
-    public SpigotDisplayTeam(String name, BoardPlayerGroup<Player> group) {
+    public SpigotDisplayTeam(String name, ViewerGroup<Player> group) {
         super(name, group);
     }
 

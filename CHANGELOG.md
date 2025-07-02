@@ -2,6 +2,7 @@
 ## 0.0.41
 - [scoreboard] Add numeric & team display
 - [state] Add LazyWatcher
+- [state] Add ViewerGroup
 
 ## 0.0.40
 - [spigot] Add NMSUtils

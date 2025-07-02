@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.*;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class SpigotScoreboardNumericDisplay extends ScoreboardNumericDisplay<Player> {
 
-    public SpigotScoreboardNumericDisplay(String objectiveId, BoardPlayerGroup<Player> group, Observable<Component> displayName) {
+    public SpigotScoreboardNumericDisplay(String objectiveId, ViewerGroup<Player> group, Observable<Component> displayName) {
         super(objectiveId, group, displayName);
     }
 

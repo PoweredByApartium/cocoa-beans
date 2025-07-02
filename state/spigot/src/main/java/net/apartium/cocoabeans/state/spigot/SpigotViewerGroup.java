@@ -1,6 +1,6 @@
-package net.apartium.cocoabeans.spigot.scoreboard;
+package net.apartium.cocoabeans.state.spigot;
 
-import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 import org.bukkit.entity.Player;
@@ -10,15 +10,15 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * @see BoardPlayerGroup
+ * @see ViewerGroup
  */
 @ApiStatus.AvailableSince("0.0.41")
-public class SpigotBoardPlayerGroup implements BoardPlayerGroup<Player> {
+public class SpigotViewerGroup implements ViewerGroup<Player> {
 
     private final SetObservable<Player> playerSetObservable;
     private final Set<Player> players;
 
-    public SpigotBoardPlayerGroup(Set<Player> players) {
+    public SpigotViewerGroup(Set<Player> players) {
         this.players = players;
         this.playerSetObservable = Observable.set(players);
     }

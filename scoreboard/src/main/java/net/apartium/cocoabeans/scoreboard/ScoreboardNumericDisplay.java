@@ -1,9 +1,7 @@
 package net.apartium.cocoabeans.scoreboard;
 
-import net.apartium.cocoabeans.state.CompoundRecords;
-import net.apartium.cocoabeans.state.LazyWatcher;
+import net.apartium.cocoabeans.state.*;
 import net.apartium.cocoabeans.state.Observable;
-import net.apartium.cocoabeans.state.SetObservable;
 import net.apartium.cocoabeans.structs.Entry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,7 +21,7 @@ public abstract class ScoreboardNumericDisplay<P> {
 
     protected final String objectiveId;
 
-    protected final BoardPlayerGroup<P> group;
+    protected final ViewerGroup<P> group;
     protected final LazyWatcher<Set<P>> groupWatcher;
 
     protected final Set<DisplaySlot> displaySlots;
@@ -31,7 +29,7 @@ public abstract class ScoreboardNumericDisplay<P> {
     protected final LazyWatcher<Component> displayName;
     protected ObjectiveRenderType renderType = ObjectiveRenderType.INTEGER;
 
-    protected ScoreboardNumericDisplay(String objectiveId, BoardPlayerGroup<P> group, Observable<Component> displayName) {
+    protected ScoreboardNumericDisplay(String objectiveId, ViewerGroup<P> group, Observable<Component> displayName) {
         this.objectiveId = objectiveId;
         this.group = group;
 
@@ -46,7 +44,7 @@ public abstract class ScoreboardNumericDisplay<P> {
      * Get the group of players that is able to view this object
      * @return display audience
      */
-    public BoardPlayerGroup<P> getViewers() {
+    public ViewerGroup<P> getViewers() {
         return group;
     }
 

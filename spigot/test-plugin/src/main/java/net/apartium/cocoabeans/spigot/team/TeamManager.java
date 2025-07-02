@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.team;
 
-import net.apartium.cocoabeans.spigot.scoreboard.SpigotBoardPlayerGroup;
+import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
 import net.apartium.cocoabeans.spigot.scoreboard.SpigotDisplayTeam;
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class TeamManager {
     }
 
     public DisplayTeam<Player> getTeam(String name) {
-        return teams.computeIfAbsent(name, key -> new SpigotDisplayTeam(key, new SpigotBoardPlayerGroup(Collections.newSetFromMap(new WeakHashMap<>()))));
+        return teams.computeIfAbsent(name, key -> new SpigotDisplayTeam(key, new SpigotViewerGroup(Collections.newSetFromMap(new WeakHashMap<>()))));
     }
 
     public Map<String, SpigotDisplayTeam> getTeams() {

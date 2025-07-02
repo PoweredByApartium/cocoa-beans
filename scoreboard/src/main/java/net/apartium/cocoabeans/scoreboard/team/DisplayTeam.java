@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.team;
 
-import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
@@ -20,7 +20,7 @@ public abstract class DisplayTeam<P> {
 
     protected final String name;
     protected final LazyWatcher<Set<String>> entities = LazyWatcher.create(Observable.set());
-    protected final BoardPlayerGroup<P> group;
+    protected final ViewerGroup<P> group;
     protected final LazyWatcher<Set<P>> groupWatcher;
 
     protected final LazyWatcher<Component> displayName = LazyWatcher.create(Observable.empty());
@@ -35,7 +35,7 @@ public abstract class DisplayTeam<P> {
 
     protected final LazyWatcher<Byte> friendlyFire = LazyWatcher.create(Observable.immutable((byte) 0x00));
 
-    protected DisplayTeam(String name, BoardPlayerGroup<P> group) {
+    protected DisplayTeam(String name, ViewerGroup<P> group) {
         this.name = name;
         this.group = group;
 
@@ -194,7 +194,7 @@ public abstract class DisplayTeam<P> {
      * Get the group of players that is able to view this object
      * @return display audience
      */
-    public BoardPlayerGroup<P> getViewers() {
+    public ViewerGroup<P> getViewers() {
         return group;
     }
 

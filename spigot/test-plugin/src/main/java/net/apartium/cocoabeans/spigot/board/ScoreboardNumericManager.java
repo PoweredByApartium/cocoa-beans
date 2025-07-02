@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.board;
 
-import net.apartium.cocoabeans.spigot.scoreboard.SpigotBoardPlayerGroup;
+import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
 import net.apartium.cocoabeans.spigot.scoreboard.SpigotScoreboardNumericDisplay;
 import net.apartium.cocoabeans.state.MutableObservable;
 import net.apartium.cocoabeans.state.Observable;
@@ -45,7 +45,7 @@ public class ScoreboardNumericManager {
                 id,
                 key -> new SpigotScoreboardNumericDisplay(
                         key,
-                        new SpigotBoardPlayerGroup(Collections.newSetFromMap(new WeakHashMap<>())),
+                        new SpigotViewerGroup(Collections.newSetFromMap(new WeakHashMap<>())),
                         Observable.empty()
                 )
         );

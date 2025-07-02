@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.numeric.fixture;
 
-import net.apartium.cocoabeans.scoreboard.fixture.TestBoardPlayerGroup;
+import net.apartium.cocoabeans.scoreboard.fixture.TestViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 
 import java.util.*;
@@ -14,7 +14,7 @@ public class ScoreboardNumericManager {
                 id,
                 key -> new TestNumericDisplay(
                         key,
-                        new TestBoardPlayerGroup(new HashSet<>()),
+                        new TestViewerGroup(new HashSet<>()),
                         Observable.empty()
                 )
         );

@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.display.fixture;
 
-import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.scoreboard.display.packet.*;
 import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.packet.Packet;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class TestDisplayTeam extends DisplayTeam<MockPlayer> {
 
-    public TestDisplayTeam(String name, BoardPlayerGroup<MockPlayer> group) {
+    public TestDisplayTeam(String name, ViewerGroup<MockPlayer> group) {
         super(name, group);
     }
 

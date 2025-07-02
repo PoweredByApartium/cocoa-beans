@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.display.fixture;
 
-import net.apartium.cocoabeans.scoreboard.fixture.TestBoardPlayerGroup;
+import net.apartium.cocoabeans.scoreboard.fixture.TestViewerGroup;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ public class TestTeamManager {
                 name,
                 key -> new TestDisplayTeam(
                         key,
-                        new TestBoardPlayerGroup(new HashSet<>())
+                        new TestViewerGroup(new HashSet<>())
                 )
         );
     }

@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.DisplayPacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ObjectivePacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ScorePacket;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.state.CompoundRecords;
 import net.apartium.cocoabeans.state.LazyWatcher;
 import net.apartium.cocoabeans.state.Observable;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 public class TestNumericDisplay extends ScoreboardNumericDisplay<MockPlayer> {
 
-    public TestNumericDisplay(String objectiveId, BoardPlayerGroup<MockPlayer> group, Observable<Component> displayName) {
+    public TestNumericDisplay(String objectiveId, ViewerGroup<MockPlayer> group, Observable<Component> displayName) {
         super(objectiveId, group, displayName);
     }
 

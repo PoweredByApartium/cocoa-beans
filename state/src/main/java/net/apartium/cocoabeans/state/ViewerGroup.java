@@ -1,6 +1,5 @@
-package net.apartium.cocoabeans.scoreboard;
+package net.apartium.cocoabeans.state;
 
-import net.apartium.cocoabeans.state.SetObservable;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -11,7 +10,7 @@ import java.util.Set;
  * @param <P> type of Player (Spigot/Minestom/etc...)
  */
 @ApiStatus.AvailableSince("0.0.41")
-public interface BoardPlayerGroup<P> {
+public interface ViewerGroup<P> {
 
     /**
      * Add a player as viewer

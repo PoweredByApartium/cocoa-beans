@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.scoreboard;
 
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import net.apartium.cocoabeans.state.Observable;
+import net.apartium.cocoabeans.state.spigot.SpigotViewerGroup;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +22,7 @@ public class CodeSnippets {
 
         private final Map<String, SpigotDisplayTeam> teams = new HashMap<>();
 
-        private final SpigotBoardPlayerGroup group = new SpigotBoardPlayerGroup(Collections.newSetFromMap(new WeakHashMap<>()));
+        private final SpigotViewerGroup group = new SpigotViewerGroup(Collections.newSetFromMap(new WeakHashMap<>()));
 
         private BukkitTask cprTask;
 

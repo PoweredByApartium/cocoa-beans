@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.fixture;
 
-import net.apartium.cocoabeans.scoreboard.BoardPlayerGroup;
+import net.apartium.cocoabeans.state.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 import net.apartium.cocoabeans.state.SetObservable;
 
@@ -8,13 +8,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-public class TestBoardPlayerGroup implements BoardPlayerGroup<MockPlayer> {
+public class TestViewerGroup implements ViewerGroup<MockPlayer> {
 
     private final SetObservable<MockPlayer> playerSetObservable;
     private final Set<MockPlayer> players;
 
 
-    public TestBoardPlayerGroup(Set<MockPlayer> players) {
+    public TestViewerGroup(Set<MockPlayer> players) {
         this.players = players;
         this.playerSetObservable = Observable.set(players);
     }
