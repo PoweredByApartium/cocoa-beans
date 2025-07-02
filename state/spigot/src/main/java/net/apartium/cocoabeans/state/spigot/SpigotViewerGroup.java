@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -55,6 +56,6 @@ public class SpigotViewerGroup implements ViewerGroup<Player> {
 
     @Override
     public Set<Player> players() {
-        return players;
+        return Collections.unmodifiableSet(players);
     }
 }

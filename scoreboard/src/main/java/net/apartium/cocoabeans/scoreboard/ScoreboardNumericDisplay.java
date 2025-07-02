@@ -143,13 +143,15 @@ public abstract class ScoreboardNumericDisplay<P> {
                 );
 
             for (Map.Entry<String, LazyWatcher<CompoundRecords.RecordOf3<Integer, Component, Style>>> entity : entities.entrySet()) {
+                CompoundRecords.RecordOf3<Integer, Component, Style> record = entity.getValue().getLastValue();
+
                 sendScorePacket(
                         toAdd,
                         entity.getKey(),
-                        entity.getValue().getLastValue().arg0(),
+                        record.arg0(),
                         ScoreboardAction.CREATE_OR_UPDATE,
-                        entity.getValue().getLastValue().arg1(),
-                        entity.getValue().getLastValue().arg2()
+                        record.arg1(),
+                        record.arg2()
                 );
             }
 
