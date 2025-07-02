@@ -70,4 +70,5 @@ public abstract class Watcher<T> implements Observer {
     public void flagAsDirty(Observable<?> observable) {
         isDirty = true;
     }
+
 }
