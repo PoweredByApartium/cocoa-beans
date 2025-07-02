@@ -39,7 +39,7 @@ public abstract class ScoreboardNumericDisplay<P> {
         this.groupWatcher = LazyWatcher.create(players);
 
         this.displaySlots = Collections.newSetFromMap(new IdentityHashMap<>());
-        this.displayName = displayName.watch();
+        this.displayName = displayName.lazyWatch();
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class ScoreboardNumericDisplay<P> {
                         ? Observable.immutable(null)
                         : Optional.ofNullable(style).orElse(Observable.immutable(Style.style(NamedTextColor.RED)))
         );
-        var watcher = compound.watch();
+        var watcher = compound.lazyWatch();
 
         entities.put(
                 entity,

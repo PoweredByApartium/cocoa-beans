@@ -337,17 +337,17 @@ public interface Observable<T> {
      * @param consumer action to run
      * @return a new attached watcher
      */
-    default AttachedWatcher<T> watch(WatcherManager watcherManager, Consumer<T> consumer) {
+    default AttachedWatcher<T> lazyWatch(WatcherManager watcherManager, Consumer<T> consumer) {
         return watcherManager.watch(this, consumer);
     }
 
-    @ApiStatus.AvailableSince("0.0.41")
     /**
      * Create a watcher for the observable that will be working on dirty machination
      * @see LazyWatcher
      * @return new Instance of DirtyWatcher
      */
-    default LazyWatcher<T> watch() {
+    @ApiStatus.AvailableSince("0.0.41")
+    default LazyWatcher<T> lazyWatch() {
         return LazyWatcher.create(this);
     }
 

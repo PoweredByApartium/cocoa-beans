@@ -1,7 +1,5 @@
 package net.apartium.cocoabeans.spigot.scoreboard;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
@@ -69,8 +67,6 @@ public class CodeSnippets {
 
     }
 
-    @Getter
-    @RequiredArgsConstructor
     public enum Rank {
         DEFAULT(0, "§7"),
         VIP(10, "§a§lVIP "),
@@ -80,6 +76,19 @@ public class CodeSnippets {
 
         private final int priority;
         private final String prefix;
+
+        Rank(int priority, String prefix) {
+            this.priority = priority;
+            this.prefix = prefix;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
     }
 
     public TeamManager teamManager;

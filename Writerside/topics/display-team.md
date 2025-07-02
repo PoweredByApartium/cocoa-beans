@@ -23,21 +23,19 @@ While giving you more free control over who see your teams
 
 ## Usage
 
-I will show how to use it in Spigot here
+Here is an example of using the API with Spigot. You will have to implement a custom Team manager to manage active teams and their references.
 **Beware** that you will need to create your own manager and decide how to manage teams
 I will keep it simple here is simple manager
 
 <code-block lang="java" src="scoreboard-spigot/CodeSnippets.java" include-symbol="TeamManager"/>
 
-Now how will we create simple ranks prefix in tab and next to name
-
-<sub>For this a example I will just create a simple enum for ranks (Please use LuckPerm or other permission base system)</sub>
+Here is how we create prefixes in tab and above head
 
 <code-block lang="java" src="scoreboard-spigot/CodeSnippets.java" include-symbol="Rank"/>
 
 <code-block lang="java" src="scoreboard-spigot/CodeSnippets.java" include-symbol="createRankTeams"/>
 
-<sub>We will also need to added them as viewer & make them join a team as entity</sub>
+<sub>We also need to add the players as viewers and parts of the team</sub>
 
 <code-block lang="java" src="scoreboard-spigot/CodeSnippets.java" include-symbol="onJoin"/>
 
@@ -57,5 +55,5 @@ To control priority using numbers, you can **prefix team names with numbers**, s
 <code-block lang="java" src="scoreboard-spigot/CodeSnippets.java" include-symbol="formatTeamName"/>
 
 ### Notes
-For **LuckPerms** we would like to invert the number because there priority go up
-so we will do as follow `9999 - priority` typical priority is lower than 10,000 if it's higher we can change are code
+For **LuckPerms** we would like to invert the number because their priority go up
+for example `MAX_PRIORITY - priority`, where max priority has to be higher than or equal to the highest configured priority in the system
