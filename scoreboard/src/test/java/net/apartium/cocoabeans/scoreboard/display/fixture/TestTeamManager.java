@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.display.fixture;
 
-import net.apartium.cocoabeans.scoreboard.fixture.TestViewerGroup;
+import net.apartium.cocoabeans.fixture.TestViewerGroup;
 
 import java.util.HashMap;
 import java.util.HashSet;

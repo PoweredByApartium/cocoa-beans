@@ -15,7 +15,9 @@ import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
 import net.apartium.cocoabeans.spigot.board.ScoreboardNumericManager;
 import net.apartium.cocoabeans.spigot.commands.CocoaBoardCommand;
+import net.apartium.cocoabeans.spigot.commands.TabListCommand;
 import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
+import net.apartium.cocoabeans.spigot.tab.TabManager;
 import net.apartium.cocoabeans.spigot.team.TeamManager;
 import net.apartium.cocoabeans.state.spigot.SpigotProvidedState;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,6 +28,7 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
     private CommandManager commandManager;
     private BoardManager boardManager;
     private TeamManager teamManager;
+    private TabManager tabManager;
     private ScoreboardNumericManager scoreboardNumericManager;
 
     @Override
@@ -42,11 +45,15 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
         scoreboardNumericManager = new ScoreboardNumericManager(spigotProvidedState);
         scoreboardNumericManager.initialize(this);
 
+        tabManager = new TabManager();
+        tabManager.initialize(this);
+
         commandManager = new SpigotCommandManager(this);
         commandManager.registerArgumentTypeHandler(SpigotCommandManager.COMMON_PARSERS);
         commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
 
         commandManager.addCommand(new CocoaBoardCommand(boardManager, teamManager, scoreboardNumericManager));
+        commandManager.addCommand(new TabListCommand(tabManager));
 
         ListenerAutoRegistration listenerAutoRegistration = new ListenerAutoRegistration(this, false);
         listenerAutoRegistration.addInjectableObject(boardManager);
@@ -62,6 +69,7 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
         boardManager.disable();
         spigotProvidedState.remove();
         teamManager.disable();
+        tabManager.disable();
     }
 
 }

@@ -4,7 +4,7 @@ import net.apartium.cocoabeans.scoreboard.DisplaySlot;
 import net.apartium.cocoabeans.scoreboard.ObjectiveMode;
 import net.apartium.cocoabeans.scoreboard.ObjectiveRenderType;
 import net.apartium.cocoabeans.scoreboard.ScoreboardAction;
-import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
+import net.apartium.cocoabeans.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.numeric.fixture.TestNumericDisplay;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.DisplayPacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ObjectivePacket;

@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.numeric.fixture;
 
-import net.apartium.cocoabeans.scoreboard.fixture.TestViewerGroup;
+import net.apartium.cocoabeans.fixture.TestViewerGroup;
 import net.apartium.cocoabeans.state.Observable;
 
 import java.util.*;

@@ -2,8 +2,8 @@ package net.apartium.cocoabeans.scoreboard.display.fixture;
 
 import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.scoreboard.display.packet.*;
-import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
-import net.apartium.cocoabeans.scoreboard.packet.Packet;
+import net.apartium.cocoabeans.fixture.MockPlayer;
+import net.apartium.cocoabeans.packet.Packet;
 import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
 import net.apartium.cocoabeans.scoreboard.team.CollisionRule;
 import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;

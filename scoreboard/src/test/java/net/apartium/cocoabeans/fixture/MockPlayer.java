@@ -1,6 +1,6 @@
-package net.apartium.cocoabeans.scoreboard.fixture;
+package net.apartium.cocoabeans.fixture;
 
-import net.apartium.cocoabeans.scoreboard.packet.Packet;
+import net.apartium.cocoabeans.packet.Packet;
 
 import java.util.LinkedList;
 import java.util.Queue;

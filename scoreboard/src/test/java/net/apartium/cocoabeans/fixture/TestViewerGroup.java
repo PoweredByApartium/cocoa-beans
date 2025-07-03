@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.scoreboard.fixture;
+package net.apartium.cocoabeans.fixture;
 
 import net.apartium.cocoabeans.scoreboard.ViewerGroup;
 import net.apartium.cocoabeans.state.Observable;

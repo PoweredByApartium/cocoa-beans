@@ -3,6 +3,7 @@
 - [scoreboard] Add numeric & team display
 - [scoreboard] Add ViewerGroup
 - [state] Add LazyWatcher
+- [scoreboard] Add TabList api
 
 ## 0.0.40
 - [spigot] Add NMSUtils

@@ -1,11 +1,11 @@
 package net.apartium.cocoabeans.scoreboard;
 
+import net.apartium.cocoabeans.packet.Packet;
 import net.apartium.cocoabeans.scoreboard.packet.*;
 import net.apartium.cocoabeans.state.Observable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
