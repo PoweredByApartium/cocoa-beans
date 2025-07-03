@@ -1,7 +1,5 @@
 package net.apartium.cocoabeans.spigot.tab;
 
-import net.apartium.cocoabeans.scoreboard.team.DisplayTeam;
-import net.apartium.cocoabeans.spigot.scoreboard.SpigotDisplayTeam;
 import net.apartium.cocoabeans.spigot.scoreboard.SpigotViewerGroup;
 import net.apartium.cocoabeans.state.MutableObservable;
 import net.apartium.cocoabeans.state.Observable;

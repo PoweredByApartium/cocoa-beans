@@ -35,7 +35,7 @@ public abstract class TabList<P> {
      *
      * @param group the group of players this tab list applies to
      */
-    public TabList(ViewerGroup<P> group) {
+    protected TabList(ViewerGroup<P> group) {
         this.group = group;
         this.groupWatcher = group.observePlayers().lazyWatch();
     }
@@ -81,20 +81,19 @@ public abstract class TabList<P> {
                 );
         }
 
-        heartbeatAudience();
+        heartbeatViewers();
     }
 
-    private void heartbeatAudience() {
+    private void heartbeatViewers() {
         if (!groupWatcher.isDirty())
             return;
 
-        Set<P> cache = groupWatcher.getLastValue();
-        if (cache == null)
-            cache = Set.of();
+        Set<P> cache = Optional.ofNullable(groupWatcher.getLastValue())
+                .orElse(Set.of());
 
         Entry<Set<P>, Boolean> entry = groupWatcher.getOrUpdate();
 
-        if (!entry.value())
+        if (Boolean.FALSE.equals(entry.value()))
             return;
 
         Set<P> toAdd = new HashSet<>(entry.key());
