@@ -2,6 +2,11 @@ name: Github release
 
 on:
   workflow_call:
+    secrets:
+      SIGNING_SECRET:
+        required: true
+      SIGNING_PASSWORD:
+        required: true
     inputs:
       VERSION:
         description: 'Version name'
@@ -38,6 +43,8 @@ jobs:
           VERSION: ${{ github.event.inputs.name }}
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
 

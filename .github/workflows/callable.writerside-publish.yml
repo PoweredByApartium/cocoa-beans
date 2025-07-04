@@ -10,6 +10,10 @@ on:
     secrets:
       GH_PAGES_TOKEN:
         required: true
+      SIGNING_SECRET:
+        required: true
+      SIGNING_PASSWORD:
+        required: true
 
 permissions:
   pull-requests: write
@@ -57,6 +61,9 @@ jobs:
 
       - name: Generate javadoc
         run: ./gradlew javadoc
+        env:
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
       - name: Fetch previous version
         id: perv_version
