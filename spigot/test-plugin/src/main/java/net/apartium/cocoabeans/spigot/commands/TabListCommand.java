@@ -97,19 +97,19 @@ public class TabListCommand implements CommandNode {
                 JoinConfiguration.builder()
                         .separator(Component.text(", "))
                         .build(),
-                tabList.getGroup().players().stream().map(Player::name).toList()
+                tabList.getViewers().players().stream().map(Player::name).toList()
         )));
     }
 
     @SubCommand("viewers <tab> add <player>")
     public void addViewerToTab(CommandSender sender, TabList<Player> tabList, Player target) {
-        tabList.getGroup().add(target);
+        tabList.getViewers().add(target);
         sender.sendMessage("Added " + target.getName());
     }
 
     @SubCommand("viewers <tab> remove <player>")
     public void removeViewerToTab(CommandSender sender, TabList<Player> tabList, Player target) {
-        tabList.getGroup().remove(target);
+        tabList.getViewers().remove(target);
         sender.sendMessage("Removed " + target.getName());
     }
 

@@ -20,7 +20,7 @@ class SimpleTabListTest {
 
         TestTabList tabList = new TestTabList(group);
 
-        assertEquals(group, tabList.getGroup());
+        assertEquals(group, tabList.getViewers());
 
         tabList.set(Component.text("Header"), Component.text("Footer"));
 
@@ -54,7 +54,7 @@ class SimpleTabListTest {
 
         TestTabList tabList = new TestTabList(group);
 
-        assertEquals(group, tabList.getGroup());
+        assertEquals(group, tabList.getViewers());
 
         tabList.set(Component.text("Header"), Component.text("Footer"));
 
@@ -98,7 +98,7 @@ class SimpleTabListTest {
 
         TestTabList tabList = new TestTabList(group);
 
-        assertEquals(group, tabList.getGroup());
+        assertEquals(group, tabList.getViewers());
 
         MutableObservable<Component> footer = Observable.mutable(Component.text("Footer"));
         tabList.set(Observable.immutable(Component.text("Header")), footer);

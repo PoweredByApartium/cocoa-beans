@@ -12,7 +12,7 @@ minestom = { group = "net.minestom", name = "minestom-snapshots", version = "a1d
 adventure = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 adventure-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
 adventure-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventure" }
-adventure-bungee = { group = "net.kyori", name = "adventure-text-serializer-bungeecord", version = "4.3.4" }
+adventure-bungee = { group = "net.kyori", name = "adventure-text-serializer-bungeecord", version = "4.4.0" }
 
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-jupiter-engine = { group = "org.junit.jupiter" , name = "junit-jupiter-engine" }

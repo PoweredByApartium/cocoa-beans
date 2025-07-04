@@ -111,7 +111,7 @@ public abstract class TabList<P> {
      *
      * @return the group of players for this tab list
      */
-    public ViewerGroup<P> getGroup() {
+    public ViewerGroup<P> getViewers() {
         return group;
     }
 
