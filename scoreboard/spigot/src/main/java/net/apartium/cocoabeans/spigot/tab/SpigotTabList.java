@@ -60,4 +60,8 @@ public class SpigotTabList extends TabList<Player> {
         }
     }
 
+    @VisibleForTesting
+    /* package-private */ boolean hasNativeKyori() {
+        return hasNativeKyori;
+    }
 }

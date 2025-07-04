@@ -19,15 +19,7 @@ class SimpleTabListTest extends CocoaBeansTestBase {
         SpigotViewerGroup group = new SpigotViewerGroup(Collections.newSetFromMap(new WeakHashMap<>()));
 
         SpigotTabList tabList = new SpigotTabList(group);
-
-        try {
-            Field hasNativeKyori = tabList.getClass().getDeclaredField("hasNativeKyori");
-            hasNativeKyori.setAccessible(true);
-            assertTrue((Boolean) hasNativeKyori.get(tabList));
-            hasNativeKyori.setAccessible(false);
-        } catch (Exception e) {
-            fail(e);
-        }
+        assertTrue(tabList.hasNativeKyori());
 
         PlayerMock player = addPlayer("ikfir");
         group.add(player);
@@ -56,6 +48,8 @@ class SimpleTabListTest extends CocoaBeansTestBase {
         SpigotViewerGroup group = new SpigotViewerGroup(Collections.newSetFromMap(new WeakHashMap<>()));
 
         SpigotTabList tabList = new SpigotTabList(group, false);
+        assertFalse(tabList.hasNativeKyori());
+
 
         PlayerMock player = server.addPlayer("ikfir");
         group.add(player);
