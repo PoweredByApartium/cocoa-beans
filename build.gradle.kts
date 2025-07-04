@@ -48,6 +48,7 @@ allprojects {
     apply<SonarQubePlugin>()
     apply<SigningPlugin>()
     apply<NmcpPlugin>()
+    apply(plugin = "com.gradleup.nmcp")
 
     if (sonaTypeUsername != null && sonatypePassword != null) {
         nmcp {
