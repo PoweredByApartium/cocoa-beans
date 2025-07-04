@@ -7,6 +7,12 @@ on:
         required: true
       SIGNING_PASSWORD:
         required: true
+      HANGAR_TOKEN:
+        required: true
+      APARTIUM_NEXUS_PASSWORD:
+        required: true
+      APARTIUM_NEXUS_USERNAME:
+        required: true
     inputs:
       VERSION:
         description: 'Version name'
