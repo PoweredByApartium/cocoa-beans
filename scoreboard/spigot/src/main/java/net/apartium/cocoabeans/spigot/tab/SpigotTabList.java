@@ -18,6 +18,8 @@ import java.util.Set;
 @ApiStatus.AvailableSince("0.0.41")
 public class SpigotTabList extends TabList<Player> {
 
+    private static final boolean HAS_NATIVE_SUPPORT_ADVENTURE_API = Audience.class.isAssignableFrom(Player.class);
+
     public SpigotTabList(ViewerGroup<Player> group) {
         super(group);
     }
@@ -28,7 +30,7 @@ public class SpigotTabList extends TabList<Player> {
         if (viewers.isEmpty())
             return;
 
-        if (Audience.class.isAssignableFrom(Player.class)) {
+        if (HAS_NATIVE_SUPPORT_ADVENTURE_API) {
             Audience audience = Audience.audience(viewers);
             audience.sendPlayerListHeaderAndFooter(
                     header,
