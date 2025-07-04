@@ -53,7 +53,9 @@ jobs:
     uses: ./.github/workflows/callable.test.yml
     secrets:
       SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
-
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      
   build:
     needs: run_tests
     uses: ./.github/workflows/callable.build.yml
