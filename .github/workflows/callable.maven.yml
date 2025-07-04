@@ -8,6 +8,8 @@ on:
         required: true
         type: string
     secrets:
+      GITHUB_TOKEN:
+        required: true
       OSSRH_USERNAME:
         required: true
       OSSRH_PASSWORD:
@@ -42,6 +44,7 @@ jobs:
 
       - name: Publish
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
