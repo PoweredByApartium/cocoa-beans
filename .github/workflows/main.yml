@@ -1,13 +1,6 @@
 name: Main pipeline workflow
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-      - 276-cicd-rewrite-f
   workflow_dispatch:
     inputs:
       name:
@@ -69,7 +62,7 @@ jobs:
       VERSION: ${{ github.event.inputs.name || 'dev' }}
 
   release:
-    #if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     needs: run_tests
     uses: ./.github/workflows/callable.release.yml
     secrets:
@@ -79,10 +72,10 @@ jobs:
       APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
       APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
     with:
-      VERSION: ${{ github.event.inputs.name }}
+      VERSION: ${{ github.event.inputs.name || 'dev' }}
 
   maven:
-    #if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     needs: release
     uses: ./.github/workflows/callable.maven.yml
     with:
