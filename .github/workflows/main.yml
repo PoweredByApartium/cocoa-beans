@@ -62,19 +62,21 @@ jobs:
   build:
     needs: run_tests
     uses: ./.github/workflows/callable.build.yml
-    with:
-      VERSION: ${{ github.event.inputs.name || 'dev' }}
+    secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    with:
+      VERSION: ${{ github.event.inputs.name || 'dev' }}
 
   release:
     #if: github.event_name == 'workflow_dispatch'
     needs: run_tests
     uses: ./.github/workflows/callable.release.yml
-    with:
-      VERSION: ${{ github.event.inputs.name }}
+    secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    with:
+      VERSION: ${{ github.event.inputs.name }}
 
   maven:
     #if: github.event_name == 'workflow_dispatch'
