@@ -8,6 +8,7 @@ import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Optional;
 import java.util.Set;
@@ -18,10 +19,18 @@ import java.util.Set;
 @ApiStatus.AvailableSince("0.0.41")
 public class SpigotTabList extends TabList<Player> {
 
-    private static final boolean HAS_NATIVE_SUPPORT_ADVENTURE_API = Audience.class.isAssignableFrom(Player.class);
+    private final boolean hasNativeKyori;
 
-    public SpigotTabList(ViewerGroup<Player> group) {
+    @VisibleForTesting
+    /* package-private */ SpigotTabList(ViewerGroup<Player> group, boolean hasNativeKyori) {
         super(group);
+
+        this.hasNativeKyori = hasNativeKyori;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public SpigotTabList(ViewerGroup<Player> group) {
+        this(group, Audience.class.isAssignableFrom(Player.class));
     }
 
     @SuppressWarnings("deprecation")
@@ -30,7 +39,7 @@ public class SpigotTabList extends TabList<Player> {
         if (viewers.isEmpty())
             return;
 
-        if (HAS_NATIVE_SUPPORT_ADVENTURE_API) {
+        if (hasNativeKyori) {
             Audience audience = Audience.audience(viewers);
             audience.sendPlayerListHeaderAndFooter(
                     header,

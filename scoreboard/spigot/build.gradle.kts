@@ -14,5 +14,6 @@ dependencies {
     compileOnly(libs.paper)
     compileOnly(libs.adventure.bungee)
 
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation(libs.mock.bukkit)
-}
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")}
