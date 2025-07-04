@@ -197,14 +197,6 @@ allprojects {
 
         sign(publishing.publications)
     }
-
-    nmcp {
-        publishAllPublications {
-            this.username = username
-            this.password = password
-            this.publicationType = "AUTOMATIC"
-        }
-    }
 }
 
 hangarPublish {
