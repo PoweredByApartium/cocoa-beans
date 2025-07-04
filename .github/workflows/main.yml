@@ -76,6 +76,8 @@ jobs:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+      APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
+      APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
     with:
       VERSION: ${{ github.event.inputs.name }}
 
