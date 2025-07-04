@@ -48,6 +48,8 @@ jobs:
       VERSION: ${{ github.event.inputs.name || 'snapshot' }}
     secrets:
       GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   run_tests:
     needs: checkout
@@ -62,6 +64,8 @@ jobs:
     uses: ./.github/workflows/callable.build.yml
     with:
       VERSION: ${{ github.event.inputs.name || 'dev' }}
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   release:
     #if: github.event_name == 'workflow_dispatch'
@@ -69,6 +73,8 @@ jobs:
     uses: ./.github/workflows/callable.release.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
+      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   maven:
     #if: github.event_name == 'workflow_dispatch'
