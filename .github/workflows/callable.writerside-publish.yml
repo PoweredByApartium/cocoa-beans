@@ -198,5 +198,3 @@ jobs:
           fi
 
           git push origin gh-pages
-          fetch-depth: true
-          token: ${{ secrets.GITHUB_TOKEN }}
