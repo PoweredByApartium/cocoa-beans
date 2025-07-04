@@ -3,6 +3,10 @@ name: Run tests
 on:
   workflow_call:
     secrets:
+      SIGNING_SECRET:
+        required: true
+      SIGNING_PASSWORD:
+        required: true
       SONAR_PROP_TOKEN:
         required: true
 
@@ -31,6 +35,8 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
+            SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
+            SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           run: ./gradlew check jacocoTestReport sonar -Dsonar.verbose=true
 
         - name: Publish Test Report
