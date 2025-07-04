@@ -49,4 +49,4 @@ jobs:
           APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
           APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           VERSION: ${{ inputs.VERSION }}
-        run: ./gradlew publishAllPublicationsToCentralPortal
+        run: ./gradlew publish

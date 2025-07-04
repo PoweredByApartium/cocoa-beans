@@ -44,7 +44,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Publish to maven repository
-        run: ./gradlew publishPluginPublicationToHangar publish
+        run: ./gradlew publishPluginPublicationToHangar
         env:
           VERSION: ${{ github.event.inputs.name }}
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}

@@ -191,14 +191,10 @@ allprojects {
     }
 
     signing {
-        if (isCi) {
-            val signingSecret: String = System.getenv("SIGNING_SECRET")
-            val signingPassword: String = System.getenv("SIGNING_PASSWORD")
+        val signingSecret: String = System.getenv("SIGNING_SECRET")
+        val signingPassword: String = System.getenv("SIGNING_PASSWORD")
 
-            useInMemoryPgpKeys(signingSecret, signingPassword)
-        } else
-            useGpgCmd()
-
+        useInMemoryPgpKeys(signingSecret, signingPassword)
 
         sign(publishing.publications)
     }
