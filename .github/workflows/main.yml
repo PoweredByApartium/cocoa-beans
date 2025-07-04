@@ -47,7 +47,7 @@ jobs:
       VERSION: ${{ github.event.inputs.name || 'snapshot' }}
     secrets:
       GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-
+  
   run_tests:
     needs: checkout
     uses: ./.github/workflows/callable.test.yml
