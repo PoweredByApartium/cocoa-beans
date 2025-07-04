@@ -230,7 +230,7 @@ hangarPublish {
 
 publishing {
     publications {
-        create<MavenPublication>("cocoaBeansPlatformBom") {
+        create<MavenPublication>("bom") {
             groupId = rootProject.group.toString()
             artifactId = "platform"
 
