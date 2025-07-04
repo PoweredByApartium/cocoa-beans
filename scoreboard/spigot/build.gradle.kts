@@ -12,6 +12,7 @@ dependencies {
     api(project(":state:state-spigot"))
 
     compileOnly(libs.paper)
+    compileOnly(libs.adventure.bungee)
 
     testImplementation(libs.mock.bukkit)
 }
