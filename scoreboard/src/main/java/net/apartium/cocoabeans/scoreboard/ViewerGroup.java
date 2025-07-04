@@ -43,7 +43,7 @@ public interface ViewerGroup<P> {
     void clear();
 
     /**
-     * Observable of viewers that will be used to track who to add & who to remove
+     * Observable of viewers that will be used to track who to add and who to remove
      * @return Observable of viewers
      */
     SetObservable<P> observePlayers();

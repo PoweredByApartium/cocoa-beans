@@ -66,7 +66,7 @@ public abstract class TabList<P> {
      * Triggers a heartbeat to update the tab list header and footer.
      * <p>
      * This should be called periodically to ensure any updated observable values are applied
-     * And will also handle adding & removing viewers.
+     * And will also handle adding and removing viewers.
      */
      public void heartbeat() {
         if (isDirty()) {
