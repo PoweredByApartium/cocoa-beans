@@ -1,0 +1,200 @@
+name: Writerside publish
+
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        description: 'Version name'
+        required: true
+        type: string
+    secrets:
+      GH_PAGES_TOKEN:
+        required: true
+
+permissions:
+  pull-requests: write
+  contents: write
+  repository-projects: write
+  packages: write
+  pages: write
+  id-token: write
+
+env:
+  INSTANCE: 'Writerside/cb'
+  ARTIFACT: 'webHelpHI2-all.zip'
+  DOCKER_VERSION: '233.14938'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Setup git
+        run: |
+          git remote rm origin
+          git remote add origin git@github.com:${{ github.repository }}
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Generate javadoc
+        run: ./gradlew javadoc
+
+      - name: Fetch previous version
+        id: perv_version
+        run: |
+          git fetch origin
+          echo "::set-output name=version::$(git tag -l | sort -V | tail -n 1)"
+
+      - name: Determine version changes
+        id: determine_version
+        run: |
+          git fetch origin
+          CURRENT_VERSION=${{ steps.perv_version.outputs.version }}
+          INPUT_VERSION=${{ inputs.VERSION }}
+
+          CURRENT_VERSION=${CURRENT_VERSION#v}
+          INPUT_VERSION=${INPUT_VERSION#v}
+
+          IFS='.' read -ra CURRENT <<< "$CURRENT_VERSION"
+          IFS='.' read -ra INPUT <<< "$INPUT_VERSION"
+
+          echo "Current version array: ${CURRENT[@]}"
+          echo "Input version array: ${INPUT[@]}"
+
+          echo "::set-output name=is_minor::$([ "${INPUT[0]}" == "${CURRENT[0]}" ] && [ "${INPUT[1]}" == "${CURRENT[1]}" ] && [ "${INPUT[2]}" != "${CURRENT[2]}" ] && echo true || echo false)"
+
+      - name: Build Writerside docs using Docker
+        uses: JetBrains/writerside-github-action@v4
+        with:
+          instance: ${{ env.INSTANCE }}
+          artifact: ${{ env.ARTIFACT }}
+          docker-version: ${{ env.DOCKER_VERSION }}
+
+      - name: Generate docs folder
+        run: sh build-scripts/prepare-web-output.sh
+        env:
+          docs: ${{ inputs.VERSION }}
+
+      - name: Update html
+        env:
+          version: ${{ inputs.VERSION }}
+        run: |
+          git reset --hard
+          git clean -fdx
+          git fetch origin
+          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git config pull.rebase false
+          git pull origin gh-pages || true
+
+          if [ -f "index.html" ]; then
+            sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
+            git add index.html
+            git commit -m "Update index.html"
+          else
+            echo "index.html not found"
+            exit 1
+          fi
+
+      - name: Override docs
+        if: steps.determine_version.outputs.is_minor == 'true'
+        env:
+          version: ${{ inputs.VERSION }}
+          perv_version: ${{ steps.perv_version.outputs.version }}
+        run: |
+          git fetch origin || true
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git pull origin gh-pages || true
+
+          if [ -d "$perv_version" ]; then
+            echo "Removing previous version: $perv_version"
+            git rm -rf $perv_version/
+            git commit -m "Removed old version $perv_version"
+
+            git add $version/
+
+            if [[ ! "$version" =~ [Ss]napshot ]]; then
+              json_file="help-versions.json"
+
+              new_element=$(cat <<EOF
+              {
+                "version": "$version",
+                "url": "/$version/",
+                "isCurrent": true
+              }
+              EOF
+              )
+
+              updated_json=$(jq --arg version "$version" '
+                .[-1].version = $version |
+                .[-1].url = "/" + $version + "/" |
+                .[-1].isCurrent = true |
+                .[0:-1] |= map(.isCurrent = false)
+              ' "$json_file")
+
+              echo "$updated_json" > "$json_file"
+              git add help-versions.json
+              git commit -m "Override docs in github pages branch" || echo "No changes to commit"
+            else
+              echo "Skipping help-versions.json update for snapshot version"
+            fi
+
+            git push origin gh-pages
+          else
+            echo "Previous version directory ($perv_version) does not exist. Aborting."
+            exit 1
+          fi
+
+      - name: Update docs
+        if: steps.determine_version.outputs.is_minor == 'false'
+        env:
+          version: ${{ inputs.VERSION }}
+        run: |
+          git fetch origin
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git pull origin gh-pages || true
+
+          git add $version/
+
+          if [[ ! "$version" =~ [Ss]napshot ]]; then
+            json_file="help-versions.json"
+
+            new_element=$(cat <<EOF
+            {
+              "version": "$version",
+              "url": "/$version/",
+              "isCurrent": true
+            }
+            EOF
+            )
+
+            updated_json=$(jq --argjson new "$new_element" '
+              map(.isCurrent = false) + [$new]
+            ' "$json_file")
+
+            echo "$updated_json" > "$json_file"
+            git add help-versions.json
+            git commit -m "Update docs in github pages branch" || echo "No changes to commit"
+          else
+            echo "Skipping help-versions.json update for snapshot version"
+          fi
+
+          git push origin gh-pages
