@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.scoreboard.packet;
 
+import net.apartium.cocoabeans.packet.Packet;
 import net.apartium.cocoabeans.scoreboard.TeamMode;
 import net.kyori.adventure.text.Component;
 

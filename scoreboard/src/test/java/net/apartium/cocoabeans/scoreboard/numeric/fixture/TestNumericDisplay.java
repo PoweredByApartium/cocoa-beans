@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.scoreboard.numeric.fixture;
 
 import net.apartium.cocoabeans.scoreboard.*;
-import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
+import net.apartium.cocoabeans.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.DisplayPacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ObjectivePacket;
 import net.apartium.cocoabeans.scoreboard.numeric.packet.ScorePacket;

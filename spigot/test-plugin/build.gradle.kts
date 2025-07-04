@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.adventure)
     implementation(libs.adventure.legacy)
     implementation(libs.adventure.minimessage)
+    implementation(libs.adventure.bungee)
     // TEMP - END
 
     implementation(project(":spigot"))

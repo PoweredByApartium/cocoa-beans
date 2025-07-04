@@ -12,6 +12,8 @@ dependencies {
     api(project(":state:state-spigot"))
 
     compileOnly(libs.paper)
+    compileOnly(libs.adventure.bungee)
 
+    testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.mock.bukkit)
-}
+    testRuntimeOnly(libs.junit.jupiter.engine)}

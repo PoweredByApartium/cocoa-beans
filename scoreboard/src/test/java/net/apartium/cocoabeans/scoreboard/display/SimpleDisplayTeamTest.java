@@ -2,7 +2,7 @@ package net.apartium.cocoabeans.scoreboard.display;
 
 import net.apartium.cocoabeans.scoreboard.display.fixture.TestDisplayTeam;
 import net.apartium.cocoabeans.scoreboard.display.packet.*;
-import net.apartium.cocoabeans.scoreboard.fixture.MockPlayer;
+import net.apartium.cocoabeans.fixture.MockPlayer;
 import net.apartium.cocoabeans.scoreboard.team.ChatFormatting;
 import net.apartium.cocoabeans.scoreboard.team.CollisionRule;
 import net.apartium.cocoabeans.scoreboard.team.NameTagVisibilityRule;
