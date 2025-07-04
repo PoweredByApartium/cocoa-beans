@@ -75,6 +75,7 @@ jobs:
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
     with:
       VERSION: ${{ github.event.inputs.name }}
 
