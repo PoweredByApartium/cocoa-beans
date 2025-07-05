@@ -1,12 +1,9 @@
 package net.apartium.cocoabeans.commands.virtual;
 
-
-import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.TestCommandManager;
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -81,22 +78,22 @@ class CustomParserCommandTest {
     }
 
     static class TestLogHandler extends Handler {
-        final List<LogRecord> records = new ArrayList<>();
+        final List<LogRecord> logs = new ArrayList<>();
 
         @Override
-        public void publish(LogRecord record) {
-            records.add(record);
+        public void publish(LogRecord log) {
+            logs.add(log);
         }
 
         public LogRecord next() {
-            if (records.isEmpty())
+            if (logs.isEmpty())
                 fail("No more records");
 
-            return records.remove(0);
+            return logs.remove(0);
         }
 
         public void assertNoMoreRecords() {
-            assertTrue(records.isEmpty());
+            assertTrue(logs.isEmpty());
         }
 
         @Override public void flush() {
