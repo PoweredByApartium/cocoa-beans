@@ -20,6 +20,7 @@ import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import net.apartium.cocoabeans.spigot.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -67,6 +68,7 @@ public class SpigotCommandManager extends CommandManager {
      * @param commandLexer command lexer instance
      * @param logger logger
      */
+    @ApiStatus.AvailableSince("0.0.41")
     public SpigotCommandManager(JavaPlugin plugin, Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
         super(logger, argumentMapper, commandLexer);
         this.plugin = plugin;
