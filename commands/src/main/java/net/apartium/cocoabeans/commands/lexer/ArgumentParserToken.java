@@ -40,6 +40,15 @@ public abstract class ArgumentParserToken extends CommandToken {
     public abstract RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers);
 
     /**
+     * Gets the argument parser from the given parsers map
+     * @param parsers parser map that represents all argument parsers we have
+     * @param fallback fallback parser when couldn't find parser in map
+     * @return the argument parser or fallback
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    public abstract RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers, ArgumentParser<?> fallback);
+
+    /**
      * Gets the argument parser name
      * @return the argument parser name
      */

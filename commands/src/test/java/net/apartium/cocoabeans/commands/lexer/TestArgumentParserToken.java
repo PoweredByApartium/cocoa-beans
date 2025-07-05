@@ -33,9 +33,17 @@ public class TestArgumentParserToken extends ArgumentParserToken {
 
     @Override
     public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers) {
+        return getParser(parsers, null);
+    }
+
+    @Override
+    public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers, ArgumentParser<?> fallback) {
         ArgumentParser<?> argumentParser = parsers.get(parserKeyword);
-        if (argumentParser == null)
+        if (argumentParser == null) {
+            if (fallback != null)
+                return new RegisterArgumentParser<>(fallback, optionalNotMatch, isOptional, parameterName);
             throw new IllegalArgumentException("Parser not found: " + parserKeyword);
+        }
 
         return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
     }

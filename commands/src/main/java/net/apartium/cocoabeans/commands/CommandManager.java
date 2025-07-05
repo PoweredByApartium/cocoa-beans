@@ -290,15 +290,26 @@ public abstract class CommandManager {
      */
     @ApiStatus.AvailableSince("0.0.39")
     public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        addVirtualCommand(virtualCommandDefinition, callback, null);
+    }
+
+    /**
+     * Add Virtual command with consumer that get called every time someone is running that command
+     * @param virtualCommandDefinition virtual command to be added
+     * @param callback function to be called each time the command has been run
+     * @param fallbackParser fall back parser when couldn't find parser (will also log the missing parser as warning)
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback, ArgumentParser<?> fallbackParser) {
         if (virtualCommandDefinition == null || callback == null)
             return;
 
         commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this))
-                .addVirtualCommand(virtualCommandDefinition, callback);
+                .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
 
         for (String alias : virtualCommandDefinition.aliases())
             commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
-                    .addVirtualCommand(virtualCommandDefinition, callback);
+                    .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
     }
 
     public CommandInfo getCommandInfo(String commandName) {
