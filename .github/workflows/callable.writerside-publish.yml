@@ -176,7 +176,7 @@ jobs:
           version: ${{ inputs.VERSION }}
         run: |
           git fetch origin
-          git checkout gh-pages origin/gh-pages || git checkout gh-pages
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages || true
           git pull origin gh-pages || true
 
           git add $version/

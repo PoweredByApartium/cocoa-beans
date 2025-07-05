@@ -71,6 +71,13 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     needs: run_tests
     uses: ./.github/workflows/callable.release.yml
+    with:
+      VERSION: ${{ github.event.inputs.name }}
+
+  hangar:
+    if: github.event_name == 'workflow_dispatch'
+    needs: release
+    uses: ./.github/workflows/callable.hangar.yml
     secrets:
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
