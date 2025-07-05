@@ -13,7 +13,6 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.Dispensers;
 import net.apartium.cocoabeans.commands.exception.*;
 import net.apartium.cocoabeans.commands.lexer.CommandLexer;
-import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.requirements.*;
 import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
@@ -22,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 @ApiStatus.NonExtendable
 public abstract class CommandManager {
@@ -40,6 +40,7 @@ public abstract class CommandManager {
     protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
     private final CommandLexer commandLexer;
+    private final Logger logger;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
@@ -50,11 +51,8 @@ public abstract class CommandManager {
 
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
-    protected CommandManager(ArgumentMapper argumentMapper) {
-        this(argumentMapper, new SimpleCommandLexer());
-    }
-
-    protected CommandManager(ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+    protected CommandManager(Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+        this.logger = logger;
         this.argumentMapper = argumentMapper;
         this.commandLexer = commandLexer;
     }
@@ -290,15 +288,26 @@ public abstract class CommandManager {
      */
     @ApiStatus.AvailableSince("0.0.39")
     public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+        addVirtualCommand(virtualCommandDefinition, callback, null);
+    }
+
+    /**
+     * Add Virtual command with consumer that get called every time someone is running that command
+     * @param virtualCommandDefinition virtual command to be added
+     * @param callback function to be called each time the command has been run
+     * @param fallbackParser fall back parser when couldn't find parser (will also log the missing parser as warning)
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback, ArgumentParser<?> fallbackParser) {
         if (virtualCommandDefinition == null || callback == null)
             return;
 
         commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this))
-                .addVirtualCommand(virtualCommandDefinition, callback);
+                .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
 
         for (String alias : virtualCommandDefinition.aliases())
             commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
-                    .addVirtualCommand(virtualCommandDefinition, callback);
+                    .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
     }
 
     public CommandInfo getCommandInfo(String commandName) {
@@ -326,6 +335,15 @@ public abstract class CommandManager {
     @ApiStatus.Internal
     /* package-private */ Map<Class<? extends Annotation>, RequirementFactory> getExternalRequirementFactories() {
         return Collections.unmodifiableMap(externalRequirementFactories);
+    }
+
+    /**
+     * Get logger for command manager
+     * @return logger
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    public Logger getLogger() {
+        return logger;
     }
 }
 

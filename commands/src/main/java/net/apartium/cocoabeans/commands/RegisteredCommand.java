@@ -146,7 +146,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         return new RequirementSet(requirements);
     }
 
-    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback) {
+    public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback, ArgumentParser<?> fallbackParser) {
         commandInfo.fromCommandInfo(virtualCommandDefinition.info());
 
         this.virtualNodes.add(new VirtualCommandNode(virtualCommandDefinition, callback));
@@ -186,7 +186,8 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                             commandManager.argumentTypeHandlerMap,
                             resolveRequirementsForBranch(i, methodRequirements),
                             parsersResult,
-                            classRequirementsResult
+                            classRequirementsResult,
+                            fallbackParser
                     );
                     continue;
                 }
@@ -333,7 +334,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
             }
 
             if (token instanceof ArgumentParserToken argumentParserToken) {
-                currentCommandOption = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult);
+                currentCommandOption = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult, null);
                 continue;
             }
 
@@ -396,13 +397,31 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         return createCommandOption(requirements, branchProcessor, requirementsResult);
     }
 
-    private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
-        RegisterArgumentParser<?> parser = argumentParserToken.getParser(parserMap);
-        if (parser == null)
-            throw new IllegalArgumentException("Parser not found: " + argumentParserToken.getParserName());
+    private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, ArgumentParser<?> fallbackParser) {
+        RegisterArgumentParser<?> parser;
+        try {
+            parser = argumentParserToken.getParser(parserMap);
+        } catch (Exception e) {
+            parser = null;
+        }
 
+        if (parser == null && fallbackParser != null) {
+            commandManager.getLogger().warning("Parser not found for: " + argumentParserToken.getParserName() + " using fallback parser: " + fallbackParser.getClass().getSimpleName());
+            parser = new RegisterArgumentParser<>(
+                    fallbackParser,
+                    argumentParserToken.optionalNotMatch(),
+                    argumentParserToken.isOptional(),
+                    argumentParserToken.getParameterName()
+                            .orElse(null)
+            );
+        }
+
+        if (parser == null)
+            throw new IllegalArgumentException("Parser not found & no fallback: " + argumentParserToken.getParserName());
+
+        RegisterArgumentParser<?> finalParser = parser;
         Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                .filter(entry -> entry.key().equals(parser))
+                .filter(entry -> entry.key().equals(finalParser))
                 .findAny()
                 .orElse(null);
 
@@ -424,7 +443,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         if (parser.isOptional()) {
             CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
-                    .filter(entry -> entry.key().equals(parser))
+                    .filter(entry -> entry.key().equals(finalParser))
                     .findAny()
                     .map(Entry::value)
                     .orElse(null);

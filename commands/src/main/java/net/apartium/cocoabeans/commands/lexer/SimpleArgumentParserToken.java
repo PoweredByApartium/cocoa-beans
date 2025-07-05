@@ -3,7 +3,6 @@ package net.apartium.cocoabeans.commands.lexer;
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;

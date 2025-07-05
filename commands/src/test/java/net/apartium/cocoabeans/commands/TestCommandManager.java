@@ -12,11 +12,14 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.exception.UnknownCommandResponse;
+import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
+
+import java.util.logging.Logger;
 
 public class TestCommandManager extends CommandManager {
 
     public TestCommandManager() {
-        super(new SimpleArgumentMapper());
+        super(Logger.getLogger(TestCommandManager.class.getName()), new SimpleArgumentMapper(), new SimpleCommandLexer());
 
     }
 
