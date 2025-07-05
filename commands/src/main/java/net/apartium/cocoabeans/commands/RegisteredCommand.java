@@ -398,12 +398,30 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     }
 
     private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, ArgumentParser<?> fallbackParser) {
-        RegisterArgumentParser<?> parser = argumentParserToken.getParser(parserMap, fallbackParser);
-        if (parser == null)
-            throw new IllegalArgumentException("Parser not found: " + argumentParserToken.getParserName());
+        RegisterArgumentParser<?> parser;
+        try {
+            parser = argumentParserToken.getParser(parserMap);
+        } catch (Exception e) {
+            parser = null;
+        }
 
+        if (parser == null && fallbackParser != null) {
+            commandManager.getLogger().warning("Parser not found for: " + argumentParserToken.getParserName() + " using fallback parser: " + fallbackParser.getClass().getSimpleName());
+            parser = new RegisterArgumentParser<>(
+                    fallbackParser,
+                    argumentParserToken.optionalNotMatch(),
+                    argumentParserToken.isOptional(),
+                    argumentParserToken.getParameterName()
+                            .orElse(null)
+            );
+        }
+
+        if (parser == null)
+            throw new IllegalArgumentException("Parser not found & no fallback: " + argumentParserToken.getParserName());
+
+        RegisterArgumentParser<?> finalParser = parser;
         Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                .filter(entry -> entry.key().equals(parser))
+                .filter(entry -> entry.key().equals(finalParser))
                 .findAny()
                 .orElse(null);
 
@@ -425,7 +443,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         if (parser.isOptional()) {
             CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
-                    .filter(entry -> entry.key().equals(parser))
+                    .filter(entry -> entry.key().equals(finalParser))
                     .findAny()
                     .map(Entry::value)
                     .orElse(null);

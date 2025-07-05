@@ -38,11 +38,6 @@ public class EvilCompoundParser extends CompoundParser<Instant> {
         }
 
         @Override
-        public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers, ArgumentParser<?> fallback) {
-            return null;
-        }
-
-        @Override
         public String getParserName() {
             return "";
         }

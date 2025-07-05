@@ -1,20 +1,17 @@
 package net.apartium.cocoabeans.commands.virtual;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
+
 import net.apartium.cocoabeans.CollectionHelpers;
 import net.apartium.cocoabeans.commands.TestCommandManager;
-import net.apartium.cocoabeans.commands.lexer.SimpleArgumentParserToken;
 import net.apartium.cocoabeans.commands.parsers.DummyParser;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +44,7 @@ class CustomParserCommandTest {
         assertThrows(IllegalArgumentException.class, () -> commandManager.addVirtualCommand(definition, context -> true));
     }
 
+
     @Test
     void registerWithFallback() {
         CustomParserCommand customParserCommand = new CustomParserCommand();
@@ -56,45 +54,41 @@ class CustomParserCommandTest {
 
         TestCommandManager commandManager = new TestCommandManager();
 
-        LoggerContext contextLog = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger logger = (Logger) LoggerFactory.getLogger(SimpleArgumentParserToken.class);
+        Logger logger = commandManager.getLogger();
         TestLogHandler handler = new TestLogHandler();
-
-        handler.setContext(contextLog);
-        handler.start();
-
-        logger.addAppender(handler);
-        logger.setAdditive(false);
+        logger.addHandler(handler);
+        logger.setUseParentHandlers(false);
 
         commandManager.addVirtualCommand(definition, context -> true, new DummyParser());
-        ILoggingEvent[] logs = Stream.of(handler.next(), handler.next(), handler.next())
-                .sorted(Comparator.comparing(a -> ((String) a.getArgumentArray()[0])))
+        LogRecord[] logs = Stream.of(handler.next(), handler.next(), handler.next())
+                .sorted((a, b) -> a.getMessage().compareTo(b.getMessage()))
                 .toList()
-                .toArray(new ILoggingEvent[0]);
+                .toArray(new LogRecord[0]);
 
         handler.assertNoMoreRecords();
 
-        ILoggingEvent log = logs[0];
-        assertEquals(Level.WARN, log.getLevel());
-        assertEquals("Parser not found for: {} & fallback to: {}", log.getMessage());
-        assertTrue(CollectionHelpers.equalsArray(new String[]{"potion", "DummyParser"}, log.getArgumentArray()));
+        LogRecord log = logs[0];
+        assertEquals(Level.WARNING, log.getLevel());
+        assertEquals("Parser not found for: potion using fallback parser: DummyParser", log.getMessage());
 
         log = logs[1];
-        assertEquals(Level.WARN, log.getLevel());
-        assertEquals("Parser not found for: {} & fallback to: {}", log.getMessage());
-        assertTrue(CollectionHelpers.equalsArray(new String[]{"spell", "DummyParser"}, log.getArgumentArray()));
+        assertEquals(Level.WARNING, log.getLevel());
+        assertEquals("Parser not found for: spell using fallback parser: DummyParser", log.getMessage());
 
         log = logs[2];
-        assertEquals(Level.WARN, log.getLevel());
-        assertEquals("Parser not found for: {} & fallback to: {}", log.getMessage());
-        assertTrue(CollectionHelpers.equalsArray(new String[]{"wizard", "DummyParser"}, log.getArgumentArray()));
+        assertEquals(Level.WARNING, log.getLevel());
+        assertEquals("Parser not found for: wizard using fallback parser: DummyParser", log.getMessage());
     }
 
-    static class TestLogHandler extends AppenderBase<ILoggingEvent> {
-        final List<ILoggingEvent> records = new ArrayList<>();
+    static class TestLogHandler extends Handler {
+        final List<LogRecord> records = new ArrayList<>();
 
+        @Override
+        public void publish(LogRecord record) {
+            records.add(record);
+        }
 
-        public ILoggingEvent next() {
+        public LogRecord next() {
             if (records.isEmpty())
                 fail("No more records");
 
@@ -105,10 +99,14 @@ class CustomParserCommandTest {
             assertTrue(records.isEmpty());
         }
 
-        @Override
-        protected void append(ILoggingEvent iLoggingEvent) {
-            records.add(iLoggingEvent);
+        @Override public void flush() {
+            throw new UnsupportedOperationException();
         }
+
+        @Override public void close() throws SecurityException {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }

@@ -11,6 +11,8 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.*;
+import net.apartium.cocoabeans.commands.lexer.CommandLexer;
+import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.spigot.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.requirements.Permission;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * A command manager implementation for Spigot and Spigot-based platforms.
@@ -54,7 +57,18 @@ public class SpigotCommandManager extends CommandManager {
      * @param argumentMapper argument mapper instance
      */
     public SpigotCommandManager(JavaPlugin plugin, ArgumentMapper argumentMapper) {
-        super(argumentMapper);
+        this(plugin, plugin.getLogger(), argumentMapper, new SimpleCommandLexer());
+    }
+
+    /**
+     * Create a new command manager instance for specified plugin
+     * @param plugin plugin to own this command manager
+     * @param argumentMapper argument mapper instance
+     * @param commandLexer command lexer instance
+     * @param logger logger
+     */
+    public SpigotCommandManager(JavaPlugin plugin, Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+        super(logger, argumentMapper, commandLexer);
         this.plugin = plugin;
     }
 
