@@ -16,8 +16,7 @@ plugins {
     id("jacoco")
 }
 
-val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/callable.writerside-publish.yml"
-val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
+val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
 fun figureVersion() : String {
@@ -197,7 +196,8 @@ allprojects {
 
 hangarPublish {
     publications.register("plugin") {
-        version = project.version as String
+        version = figureVersion()
+        println("Registering hangar publication version: $version")
         if (snapshot) {
             channel.set("Snapshot")
         } else {
