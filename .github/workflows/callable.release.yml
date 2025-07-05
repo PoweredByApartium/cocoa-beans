@@ -46,7 +46,7 @@ jobs:
       - name: Publish to hangar
         run: ./gradlew publishPluginPublicationToHangar
         env:
-          VERSION: ${{ inputs.name }}
+          VERSION: ${{ inputs.VERSION }}
           HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
