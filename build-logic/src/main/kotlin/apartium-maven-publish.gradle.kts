@@ -29,6 +29,11 @@ tasks {
             from(javadoc.get().destinationDir)
             archiveClassifier = "javadoc"
         }
+
+        register<Jar>("sourcesJar") {
+            archiveClassifier = "sources"
+            from(sourceSets.main.get().allSource)
+        }
     }
 }
 
@@ -42,6 +47,7 @@ if (!root) {
                 artifactId = proj.mavenName
 
                 artifact(tasks.getByName("packageJavadoc"))
+                artifact(tasks.getByName("sourcesJar"))
                 artifact(tasks.jar)
                 tasks.findByName("testFixturesJar")?.let {
                     artifact(it, {
