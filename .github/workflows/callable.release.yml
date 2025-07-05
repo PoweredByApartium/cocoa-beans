@@ -43,7 +43,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Publish to maven repository
+      - name: Publish to hangar
         run: ./gradlew publishPluginPublicationToHangar
         env:
           VERSION: ${{ inputs.name }}
