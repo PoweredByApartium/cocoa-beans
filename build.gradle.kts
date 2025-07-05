@@ -20,19 +20,21 @@ val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/callable.
 val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
 val isCi = System.getenv("GITHUB_ACTOR") != null
 
-val versionBase = System.getenv("VERSION") ?: "dev"
-val isPullRequest = System.getenv("GITHUB_HEAD_REF") != null
-val prNumber = System.getenv("GITHUB_REF")?.let {
-    val match = Regex("""refs/pull/(\d+)/.*""").find(it)
-    match?.groupValues?.get(1)
-}
-
 fun figureVersion() : String {
-    return buildString {
-        append(versionBase)
-        if (snapshot) append("-SNAPSHOT")
-        if (isPullRequest && prNumber != null) append("-PR$prNumber")
+    val prodVersion = System.getenv("VERSION")
+    if (System.getenv("FORCE_PROD") != null || (!snapshot && prodVersion != null && !prodVersion.isEmpty()))
+        return prodVersion
+
+    val isPullRequest = System.getenv("GITHUB_HEAD_REF") != null
+    val prNumber = System.getenv("GITHUB_REF")?.let {
+        val match = Regex("""refs/pull/(\d+)/.*""").find(it)
+        match?.groupValues?.get(1)
     }
+
+    if (isPullRequest && prNumber != null)
+        return "PR$prNumber-SNAPSHOT"
+
+    return "dev-SNAPSHOT"
 }
 
 group = "net.apartium.cocoa-beans"
@@ -51,16 +53,6 @@ allprojects {
     apply<JacocoPlugin>()
     apply<SonarQubePlugin>()
     apply<SigningPlugin>()
-
-    if (sonaTypeUsername != null && sonatypePassword != null) {
-        nmcp {
-            publishAllPublications {
-                username = sonaTypeUsername
-                password = sonatypePassword
-                publicationType = "AUTOMATIC"
-            }
-        }
-    }
 
     publishing {
         repositories {
@@ -124,6 +116,16 @@ allprojects {
                 }
             }
 
+            if (sonaTypeUsername != null && sonatypePassword != null) {
+                nmcp {
+                    publishAllPublications {
+                        username = sonaTypeUsername
+                        password = sonatypePassword
+                        publicationType = "AUTOMATIC"
+                    }
+                }
+            }
+
         }
     }
 
@@ -181,10 +183,13 @@ allprojects {
     }
 
     signing {
-        val signingSecret: String = System.getenv("SIGNING_SECRET")
-        val signingPassword: String = System.getenv("SIGNING_PASSWORD")
+        val signingSecret: String? = System.getenv("SIGNING_SECRET")
+        val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
 
-        useInMemoryPgpKeys(signingSecret, signingPassword)
+        if (signingSecret == null || signingPassword == null)
+            useGpgCmd()
+        else
+            useInMemoryPgpKeys(signingSecret, signingPassword)
 
         sign(publishing.publications)
     }
