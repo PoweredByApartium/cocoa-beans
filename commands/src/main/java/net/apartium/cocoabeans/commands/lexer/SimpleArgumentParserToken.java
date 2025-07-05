@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.lexer;
 
+import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,9 +77,26 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
      */
     @Override
     public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers) {
+        return getParser(parsers, null);
+    }
+
+    /**
+     * Gets the argument parser from the given parsers map
+     * @param parsers parser map that represents all argument parsers we have
+     * @param fallback fallback parser when couldn't find parser in map
+     * @return the argument parser or fallback
+     */
+    @ApiStatus.AvailableSince("0.0.41")
+    @Override
+    public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers, ArgumentParser<?> fallback) {
         ArgumentParser<?> argumentParser = parsers.get(parserKeyword);
-        if (argumentParser == null)
-            throw new IllegalArgumentException("Parser not found: " + parserKeyword);
+        if (argumentParser == null) {
+            if (fallback == null)
+                throw new IllegalArgumentException("Parser not found: " + parserKeyword);
+
+            Logger.getLogger(CommandManager.LOGGER_NAME).warning("Parser not found for: " + parserKeyword + " & fallback to: " + fallback.getClass().getSimpleName());
+            return new RegisterArgumentParser<>(fallback, optionalNotMatch, isOptional, parameterName);
+        }
 
         return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
     }

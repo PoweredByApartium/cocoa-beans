@@ -4,6 +4,7 @@
 - [scoreboard] Add ViewerGroup
 - [state] Add LazyWatcher
 - [scoreboard] Add TabList api
+- [commands] Add Virtual commands fallback parser
 
 ## 0.0.40
 - [spigot] Add NMSUtils

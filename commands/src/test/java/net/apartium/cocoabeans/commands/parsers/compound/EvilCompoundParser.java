@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.parsers.compound;
 
+import net.apartium.cocoabeans.commands.EvaluationContext;
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.SimpleArgumentMapper;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class EvilCompoundParser extends CompoundParser<Instant> {
 
     protected EvilCompoundParser(String keyword, int priority) {
-        super(keyword, Instant.class, priority, new SimpleArgumentMapper(), new SimpleCommandLexer(BasicArgumentParserToken::new, SimpleKeywordToken::new));
+        super(keyword, Instant.class, priority, new EvaluationContext(new SimpleCommandLexer(BasicArgumentParserToken::new, SimpleKeywordToken::new), new SimpleArgumentMapper()));
     }
 
     @ParserVariant("<long>")
@@ -33,6 +34,11 @@ public class EvilCompoundParser extends CompoundParser<Instant> {
 
         @Override
         public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers) {
+            return null;
+        }
+
+        @Override
+        public RegisterArgumentParser<?> getParser(Map<String, ArgumentParser<?>> parsers, ArgumentParser<?> fallback) {
             return null;
         }
 
