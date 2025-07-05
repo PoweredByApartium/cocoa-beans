@@ -26,7 +26,6 @@ import java.util.function.Function;
 @ApiStatus.NonExtendable
 public abstract class CommandManager {
 
-    public static final String LOGGER_NAME = CommandManager.class.getName();
     public static final Set<ArgumentParser<?>> COMMON_PARSERS = Set.of(
             new IntParser(0),
             new LongParser(0),

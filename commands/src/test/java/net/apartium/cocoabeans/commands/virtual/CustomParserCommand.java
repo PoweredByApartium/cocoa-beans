@@ -10,6 +10,8 @@ public class CustomParserCommand implements CommandNode {
     @SubCommand("use <spell>")
     @SubCommand("kill <wizard>")
     @SubCommand("create <potion>")
-    public void useKillCreate() {}
+    public void useKillCreate() {
+        throw new UnsupportedOperationException("Should be virtual");
+    }
 
 }

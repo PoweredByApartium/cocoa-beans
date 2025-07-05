@@ -1,14 +1,14 @@
 package net.apartium.cocoabeans.commands.lexer;
 
-import net.apartium.cocoabeans.commands.CommandManager;
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 public class SimpleArgumentParserToken extends ArgumentParserToken {
 
     private static final Pattern PARAMETER_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9_\\-]+:");
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleArgumentParserToken.class);
 
     private String parserKeyword;
     private String parameterName;
@@ -94,7 +96,7 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
             if (fallback == null)
                 throw new IllegalArgumentException("Parser not found: " + parserKeyword);
 
-            Logger.getLogger(CommandManager.LOGGER_NAME).warning("Parser not found for: " + parserKeyword + " & fallback to: " + fallback.getClass().getSimpleName());
+            logger.warn("Parser not found for: {} & fallback to: {}", parserKeyword, fallback.getClass().getSimpleName());
             return new RegisterArgumentParser<>(fallback, optionalNotMatch, isOptional, parameterName);
         }
 

@@ -14,6 +14,9 @@ adventure-minimessage = { group = "net.kyori", name = "adventure-text-minimessag
 adventure-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventure" }
 adventure-bungee = { group = "net.kyori", name = "adventure-text-serializer-bungeecord", version = "4.4.0" }
 
+slf4j = { group = "org.slf4j", name = "slf4j-api", version = "1.7.36"}
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version = "1.5.18" }
+
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-jupiter-engine = { group = "org.junit.jupiter" , name = "junit-jupiter-engine" }
 junit-bom = { group = "org.junit", name = "junit-bom", version = "5.9.1" }
