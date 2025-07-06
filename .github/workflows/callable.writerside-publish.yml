@@ -54,8 +54,7 @@ jobs:
 
       - name: Setup git
         run: |
-          git remote rm origin
-          git remote add origin git@github.com:${{ github.repository }}
+          git remote set-url origin git@github.com:${{ github.repository }}
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
 
@@ -85,7 +84,7 @@ jobs:
 
           git add $version/
           git commit -m "Add version $version"
-          git push gh-pages
+          git push origin gh-pages
 
       - name: Update html
         env:
