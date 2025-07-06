@@ -37,7 +37,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         Git.open(project.rootDir).use { git ->
             git.remoteAdd()
                 .setName("origin")
-                .setUri(URIish("https://github.com/PoweredByApartium/cocoa-beans.git"))
+                .setUri(URIish("git@github.com:PoweredByApartium/cocoa-beans.git"))
                 .call()
 
             val repo = git.repository

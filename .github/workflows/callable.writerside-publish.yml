@@ -36,7 +36,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: true
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install SSH Client 🔑
@@ -76,6 +76,9 @@ jobs:
         run: sh build-scripts/prepare-web-output.sh
         env:
           docs: ${{ inputs.VERSION }}
+
+      - name: Fetch gh-pages branch
+        run: git fetch origin gh-pages
 
       - name: Update help-versions.json
         run: ./gradlew generateWritersideVersions
