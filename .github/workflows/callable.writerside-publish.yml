@@ -77,18 +77,15 @@ jobs:
         env:
           docs: ${{ inputs.VERSION }}
 
-      - name: Fetch gh-pages branch
-        run: git fetch origin gh-pages
-
       - name: Push docs
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git fetch origin
+          git fetch origin gh-pages
           
           git add $version/
           git commit -m "Add version $version"
-          git push origin gh-pages || git push gh-pages || git push origin/gh-pages
+          git push origin gh-pages
 
       - name: Update html
         env:
