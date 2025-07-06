@@ -37,6 +37,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             println("Current branch: $currentBranch")
 
             println("Checking out gh-pages...")
+            it.fetch()
             it.checkout().setName("gh-pages").call()
 
             it.tagList().call().
