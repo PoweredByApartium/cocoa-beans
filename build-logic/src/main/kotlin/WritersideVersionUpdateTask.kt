@@ -38,7 +38,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
 
             println("Checking out gh-pages...")
             it.fetch()
-            it.checkout().setName("gh-pages").call()
+            it.checkout().setName("origin/gh-pages").call()
 
             it.tagList().call().
             forEach { tag ->
