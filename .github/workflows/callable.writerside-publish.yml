@@ -79,6 +79,8 @@ jobs:
 
       - name: Update help-versions.json
         run: ./gradlew generateWritersideVersions
+        env:
+          VERSION: ${{ inputs.VERSION }}
 
       - name: Push docs
         env:
