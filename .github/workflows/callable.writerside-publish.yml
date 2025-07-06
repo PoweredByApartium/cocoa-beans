@@ -77,11 +77,10 @@ jobs:
         env:
           docs: ${{ inputs.VERSION }}
 
-      - name: Stash generated docs and checkout gh-pages
+      - name: Push docs
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git reset --hard          
           git fetch origin gh-pages
 
           git add $version/
