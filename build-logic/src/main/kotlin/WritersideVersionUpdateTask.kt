@@ -34,14 +34,10 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
+            git.remoteAdd().setName("origin")
+
             val repo = git.repository
             currentBranch = repo.branch
-
-            val githubToken = System.getenv("GITHUB_TOKEN") ?: error("GITHUB_TOKEN env not found")
-
-            git.fetch()
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider("x-access-token", githubToken))
-                .call()
 
             val ghPagesBranch = "gh-pages"
             val remoteBranchRef = "origin/$ghPagesBranch"
@@ -89,7 +85,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             if (currentVersion.isNotEmpty()) {
                 git.add().addFilepattern("help-versions.json").call()
                 git.commit().setMessage("Update help-versions.json").call()
-                git.push().call()
+                git.push().setRemote("origin").call()
             }
 
             git.checkout().setName(currentBranch).call()
