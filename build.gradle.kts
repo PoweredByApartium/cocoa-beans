@@ -153,10 +153,6 @@ allprojects {
         }
     }
 
-    tasks.register("generateWritersideVersions", WritersideVersionUpdateTask::class) {
-        currentVersion = project.version as String
-    }
-
     tasks.withType<JacocoReport> {
         dependsOn(tasks.test)
         reports {
@@ -246,4 +242,8 @@ publishing {
 
         }
     }
+}
+
+tasks.register("generateWritersideVersions", WritersideVersionUpdateTask::class) {
+    currentVersion = project.version as String
 }
