@@ -35,6 +35,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
+            git.clean().setCleanDirectories(true).call()
             git.remoteAdd()
                 .setName("origin")
                 .setUri(URIish("git@github.com:PoweredByApartium/cocoa-beans.git"))
@@ -89,7 +90,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             if (currentVersion.isNotEmpty()) {
                 git.add().addFilepattern("help-versions.json").call()
                 git.commit().setMessage("Update help-versions.json").call()
-                git.push().setRemote("origin").call()
+                git.push().call()
             }
 
             git.checkout().setName(currentBranch).call()
