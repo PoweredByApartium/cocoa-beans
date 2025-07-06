@@ -77,19 +77,27 @@ jobs:
         env:
           docs: ${{ inputs.VERSION }}
 
-      - name: Checkout gh-pages branch
-        run: |
-          git fetch origin gh-pages
-          git checkout gh-pages || git checkout -b gh-pages origin/gh-pages
-
-      - name: Push docs
+      - name: Stash generated docs and checkout gh-pages
         env:
           version: ${{ inputs.VERSION }}
         run: |
+          mkdir -p /tmp/docs
+          mv $version /tmp/docs/
+          
+          git reset --hard
+          git clean -fdx
+          
+          git fetch origin gh-pages
+          git checkout -b gh-pages origin/gh-pages || git checkout gh-pages
+          
+          mv /tmp/docs/$version ./
+          
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Action"
+          
           git add $version/
           git commit -m "Add version $version"
           git push origin gh-pages
-
 
       - name: Update html
         env:
