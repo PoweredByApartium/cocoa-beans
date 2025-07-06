@@ -243,7 +243,6 @@ publishing {
     }
 }
 
-/*
 tasks.register("generateWritersideVersions", WritersideVersionUpdateTask::class) {
     currentVersion = project.version as String
-}*/
+}
