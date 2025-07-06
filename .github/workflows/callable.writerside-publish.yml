@@ -80,12 +80,6 @@ jobs:
       - name: Fetch gh-pages branch
         run: git fetch origin gh-pages
 
-      - name: Update help-versions.json
-        run: ./gradlew generateWritersideVersions
-        env:
-          VERSION: ${{ inputs.VERSION }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Push docs
         env:
           version: ${{ inputs.VERSION }}
@@ -115,3 +109,9 @@ jobs:
             echo "index.html not found"
             exit 1
           fi
+
+      - name: Update help-versions.json
+        run: ./gradlew generateWritersideVersions
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
