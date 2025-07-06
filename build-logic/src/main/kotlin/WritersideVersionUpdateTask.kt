@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.transport.URIish
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -34,7 +35,10 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
-            git.remoteAdd().setName("origin").call()
+            git.remoteAdd()
+                .setName("origin")
+                .setUri(URIish("https://github.com/PoweredByApartium/cocoa-beans.git"))
+                .call()
 
             val repo = git.repository
             currentBranch = repo.branch
