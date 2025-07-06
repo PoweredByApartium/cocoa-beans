@@ -34,7 +34,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
-            git.remoteAdd().setName("origin")
+            git.remoteAdd().setName("origin").call()
 
             val repo = git.repository
             currentBranch = repo.branch
