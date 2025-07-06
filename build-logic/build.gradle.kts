@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r")
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
 }
 
 kotlin {
