@@ -1,11 +1,11 @@
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.eclipse.jgit.api.Git
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.impldep.com.fasterxml.jackson.databind.ObjectMapper
-import org.gradle.internal.impldep.com.fasterxml.jackson.databind.SerializationFeature
-import org.gradle.internal.impldep.com.fasterxml.jackson.databind.node.ObjectNode
 import java.io.File
 import java.util.Locale
 

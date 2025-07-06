@@ -196,8 +196,7 @@ allprojects {
 
 hangarPublish {
     publications.register("plugin") {
-        version = figureVersion()
-        println("Registering hangar publication version: $version")
+        version = project.version as String
         if (snapshot) {
             channel.set("Snapshot")
         } else {
@@ -244,6 +243,7 @@ publishing {
     }
 }
 
+/*
 tasks.register("generateWritersideVersions", WritersideVersionUpdateTask::class) {
     currentVersion = project.version as String
-}
+}*/
