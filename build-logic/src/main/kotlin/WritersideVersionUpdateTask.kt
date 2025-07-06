@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -36,7 +37,11 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             val repo = git.repository
             currentBranch = repo.branch
 
-            git.fetch().call()
+            val githubToken = System.getenv("GITHUB_TOKEN") ?: error("GITHUB_TOKEN env not found")
+
+            git.fetch()
+                .setCredentialsProvider(UsernamePasswordCredentialsProvider("x-access-token", githubToken))
+                .call()
 
             val ghPagesBranch = "gh-pages"
             val remoteBranchRef = "origin/$ghPagesBranch"

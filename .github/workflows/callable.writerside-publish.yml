@@ -81,6 +81,7 @@ jobs:
         run: ./gradlew generateWritersideVersions
         env:
           VERSION: ${{ inputs.VERSION }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push docs
         env:
