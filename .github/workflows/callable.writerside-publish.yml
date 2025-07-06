@@ -81,11 +81,11 @@ jobs:
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git fetch origin gh-pages
+          git fetch origin
 
           git add $version/
           git commit -m "Add version $version"
-          git push origin gh-pages
+          git push gh-pages
 
       - name: Update html
         env:
