@@ -1,0 +1,58 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-07-07T11:34:37.324162184"><title>🥸 Watcher | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🥸 Watcher | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/watcher.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🥸 Watcher | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/watcher.html#webpage",
+    "url": "writerside-documentation//snapshot/watcher.html",
+    "name": "🥸 Watcher | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="watcher" data-main-title="🥸 Watcher" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="observable.md|📺 Observable api"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="watcher" id="watcher.md">🥸 Watcher</h1><p id="f5mzsb_2"><sup class="superscript" id="f5mzsb_3">Available Since 0.0.39</sup></p><p id="f5mzsb_4">After we have made our reactive state its time to put the final piece in the puzzle - watchers. Watchers allow us trigger external operations when the state changes.</p><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void watch() {
+        MutableObservable&lt;Integer&gt; observable = Observable.mutable(1);
+        AtomicInteger count = new AtomicInteger();
+
+        // we need to create a watcher manager, every watcher needs to be attached to it
+        WatcherManager watcherManager = new WatcherManager();
+
+        // our watcher performs some checks and increments the count variable
+        // The attached watcher object allows as to cancel the watcher
+        AttachedWatcher&lt;Integer&gt; watcher = observable.lazyWatch(watcherManager, num -&gt; {
+            switch (count.get()) {
+                case 0 -&gt; assertEquals(1, num);
+                case 1 -&gt; assertEquals(8, num);
+                case 2 -&gt; assertEquals(67, num);
+                default -&gt; fail();
+            }
+
+            count.incrementAndGet();
+        });
+
+        // for anything to happen, we have to call the heartbeat method
+        // It will trigger every watcher attached to the manager that was flagged as dirty
+        watcherManager.heartbeat(); // 1
+        watcherManager.heartbeat(); // No new data
+        watcherManager.heartbeat(); // No new data
+
+        observable.set(8);
+        watcherManager.heartbeat(); // 8
+        watcherManager.heartbeat(); // No new data
+
+        observable.set(4);
+        observable.set(67);
+        watcherManager.heartbeat(); // 67
+
+        observable.set(8);
+        observable.set(67);
+        watcherManager.heartbeat(); // No new data
+
+        watcher.detach(); // Detach watcher from manager
+        assertFalse(watcher.isAttached()); // Make sure it detach
+    }
+</div><div class="last-modified">Last modified: 07 July 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="observer.html" class="navigation-links__prev">🔍 Observer</a><a href="animation.html" class="navigation-links__next">📹 Animation Observables</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
