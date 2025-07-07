@@ -27,7 +27,8 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
 
-        val target = File("help-versions.json")
+        val parent = File("gh-pages")
+        val target = File(parent, "help-versions.json")
         val content = objectMapper.createArrayNode()
         content.add(createEntry(objectMapper, "main"))
 

@@ -96,16 +96,13 @@ jobs:
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git fetch origin gh-pages
+          cd gh-pages
           
-          git checkout gh-pages origin/gh-pages || git checkout gh-pages
-          git config pull.rebase false
-          git pull origin gh-pages || true
-
           if [ -f "index.html" ]; then
             sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
             git add index.html
             git commit -m "Update index.html"
+            git push origin gh-pages
           else
             echo "index.html not found"
             exit 1
