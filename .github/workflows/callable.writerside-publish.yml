@@ -77,16 +77,21 @@ jobs:
         env:
           docs: ${{ inputs.VERSION }}
 
-      - name: Push docs
+      - name: Push docs to gh-pages
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git reset --hard
           git fetch origin gh-pages
-
-          git add $version/
+          mkdir gh-pages
+          git worktree add gh-pages gh-pages
+          
+          cp -r $version gh-pages/$version
+          
+          cd gh-pages
+          git add $version
           git commit -m "Add version $version"
-          git push origin HEAD:gh-pages --force
+          git push origin gh-pages
+
 
       - name: Update html
         env:
