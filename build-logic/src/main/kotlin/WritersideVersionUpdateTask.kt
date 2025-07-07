@@ -33,34 +33,9 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         content.add(createEntry(objectMapper, "main"))
 
         var write = false
-        var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
-            git.remoteSetUrl()
-                .setRemoteName("origin")
-                .setRemoteUri(URIish("git@github.com:PoweredByApartium/cocoa-beans.git"))
-                .call()
-
             val repo = git.repository
-            currentBranch = repo.branch
-
-            val ghPagesBranch = "gh-pages"
-            val remoteBranchRef = "origin/$ghPagesBranch"
-            val localBranchExists = repo.findRef(ghPagesBranch) != null
-
-            if (!localBranchExists) {
-                git.checkout()
-                    .setCreateBranch(true)
-                    .setName(ghPagesBranch)
-                    .setStartPoint(remoteBranchRef)
-                    .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-                    .call()
-            } else {
-                git.checkout()
-                    .setName(ghPagesBranch)
-                    .call()
-            }
-
             git.tagList().call().forEach { tag ->
                 val tagName = tag.name.replace("refs/tags/", "")
                 if (!write) {
@@ -85,17 +60,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         last.put("isCurrent", true)
 
         objectMapper.writeValue(target, content)
-
-        Git.open(project.rootDir).use { git ->
-            if (currentVersion.isNotEmpty()) {
-                git.add().addFilepattern("help-versions.json").call()
-                git.commit().setMessage("Update help-versions.json").call()
-                git.push().call()
-            }
-
-            git.checkout().setName(currentBranch).call()
-        }
-    }
+   }
 
     fun createEntry(objectMapper: ObjectMapper, version: String): ObjectNode {
         return objectMapper.createObjectNode().apply {

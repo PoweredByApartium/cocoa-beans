@@ -115,3 +115,10 @@ jobs:
         env:
           VERSION: ${{ inputs.VERSION }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push help-versions.json
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git add help-versions.json
+          git commit -m "Update help-versions.json"
+          git push origin gh-pages
