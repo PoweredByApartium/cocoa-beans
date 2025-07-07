@@ -1,0 +1,66 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-07-07T18:16:42.375374433"><title>🔬 Compound Observable | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[{"id":"usage-the-fast-approach","level":0,"title":"Usage - The fast approach","anchor":"#usage-the-fast-approach"},{"id":"usage-prettier-compounds","level":0,"title":"Usage - Prettier compounds","anchor":"#usage-prettier-compounds"},{"id":"use-cases","level":0,"title":"Use Cases","anchor":"#use-cases"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🔬 Compound Observable | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/compound-observable.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🔬 Compound Observable | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/compound-observable.html#webpage",
+    "url": "writerside-documentation//snapshot/compound-observable.html",
+    "name": "🔬 Compound Observable | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="compound-observable" data-main-title="🔬 Compound Observable" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="observable.md|📺 Observable api"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="compound-observable" id="compound-observable.md">🔬 Compound Observable</h1><p id="-i9nblb_2"><sup class="superscript" id="-i9nblb_3">Available Since 0.0.39</sup></p><p id="-i9nblb_4">A compound observable is a type of observable which encapsulates multiple observables into it. It allows accessing values of multiple observables as if they are just one.</p><p id="-i9nblb_5">If:</p><ul class="list _bullet" id="-i9nblb_6"><li class="list__item" id="-i9nblb_7"><p>All the observables are of the same element type</p></li><li class="list__item" id="-i9nblb_8"><p>The observables are not changing on their own Consider using ()[collection-observable.md] instead.</p></li></ul><section class="chapter"><h2 id="usage-the-fast-approach" data-toc="usage-the-fast-approach">Usage - The fast approach</h2><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void compound() {
+        MutableObservable&lt;Integer&gt; age = Observable.mutable(17);
+        MutableObservable&lt;String&gt; username = Observable.mutable(&quot;thebotgame&quot;);
+
+        var compound = Observable.compound(age, username);
+        assertEquals(17, compound.get().arg0());
+        assertEquals(&quot;thebotgame&quot;, compound.get().arg1());
+
+        Observable&lt;Boolean&gt; validUser = compound.map(args -&gt; {
+            String name = args.arg1();
+            int ageValue = args.arg0();
+
+            return ageValue &gt;= 18
+                    &amp;&amp; name.length() &gt;= 3
+                    &amp;&amp; name.length() &lt;= 20;
+        });
+
+        assertFalse(validUser.get()); // because age is 17
+
+        age.set(19);
+        assertTrue(validUser.get()); // because age is 19 and username is &quot;thebotgame&quot;
+
+        username.set(&quot;bo&quot;);
+        assertFalse(validUser.get()); // because username is &quot;bo&quot; and its length is less than 3
+
+    }
+</div></section><section class="chapter"><h2 id="usage-prettier-compounds" data-toc="usage-prettier-compounds">Usage - Prettier compounds</h2><p id="-i9nblb_10">The default implementations of compound observables support compounding 1 up to 10 observables. You can support more arguments in the following way:</p><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void customCompound() {
+        MutableObservable&lt;Integer&gt; age = Observable.mutable(24);
+        MutableObservable&lt;String&gt; username = Observable.mutable(&quot;Voigon&quot;);
+
+        // The user class allows you to specify as many arguments as you would like
+        // It also helps keeping track of your data by naming all the fields
+        record User(int age, String username) {}
+
+
+        Observable&lt;User&gt; compound = Observable.compound(
+                // the first argument takes the list of values and constructs the User object
+                list -&gt; new User((int) list.get(0), (String) list.get(1)),
+                // the second argument is the list of dependent observables we will derive our compound from
+                List.of(age, username)
+        );
+
+        User user = compound.get();
+
+        // now we can access the compound values in a prettier way
+        assertEquals(24, user.age());
+        assertEquals(&quot;Voigon&quot;, user.username());
+    }
+</div></section><section class="chapter"><h2 id="use-cases" data-toc="use-cases">Use Cases</h2><ul class="list _bullet" id="-i9nblb_12"><li class="list__item" id="-i9nblb_13"><p id="-i9nblb_14">Aggregating values from several observables into one.</p></li><li class="list__item" id="-i9nblb_15"><p id="-i9nblb_16">Building derived state from multiple sources.</p></li></ul></section><div class="last-modified">Last modified: 07 July 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="mutable-observable.html" class="navigation-links__prev">📋 Mutable Observable</a><a href="mapped-observable.html" class="navigation-links__next">🗺️ Mapped Observable</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
