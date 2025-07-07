@@ -1,5 +1,5 @@
 # CHANGELOG
-## 0.0.2-test
+## 0.0.3-test
 
 ## 0.0.41
 - [scoreboard] Add numeric & team display
