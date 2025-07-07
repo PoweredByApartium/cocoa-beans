@@ -109,6 +109,17 @@ jobs:
             exit 1
           fi
 
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git remote set-url origin git@github.com:${{ github.repository }}
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+
       - name: Update help-versions.json
         if: github.event_name == 'workflow_dispatch'
         run: ./gradlew generateWritersideVersions
