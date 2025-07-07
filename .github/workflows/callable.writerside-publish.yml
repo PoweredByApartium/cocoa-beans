@@ -92,15 +92,13 @@ jobs:
           git commit -m "Add version $version"
           git push origin gh-pages
 
-
       - name: Update html
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git reset --hard
-          git clean -fdx
-          git fetch origin
-          git checkout -b gh-pages origin/gh-pages || git checkout -b gh-pages
+          git fetch origin gh-pages
+          
+          git checkout gh-pages origin/gh-pages || git checkout gh-pages
           git config pull.rebase false
           git pull origin gh-pages || true
 
