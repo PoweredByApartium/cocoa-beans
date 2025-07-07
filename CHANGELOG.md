@@ -1,4 +1,6 @@
 # CHANGELOG
+## 0.0.0-test
+
 ## 0.0.41
 - [scoreboard] Add numeric & team display
 - [scoreboard] Add ViewerGroup

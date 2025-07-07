@@ -67,12 +67,12 @@ jobs:
     with:
       VERSION: ${{ github.event.inputs.name }}
 
-  release:
-    if: github.event_name == 'workflow_dispatch'
-    needs: run_tests
-    uses: ./.github/workflows/callable.release.yml
-    with:
-      VERSION: ${{ github.event.inputs.name }}
+  #release:
+  #  if: github.event_name == 'workflow_dispatch'
+  #  needs: run_tests
+  #  uses: ./.github/workflows/callable.release.yml
+  #  with:
+  #    VERSION: ${{ github.event.inputs.name }}
 
   #hangar:
   #  if: github.event_name == 'workflow_dispatch'
