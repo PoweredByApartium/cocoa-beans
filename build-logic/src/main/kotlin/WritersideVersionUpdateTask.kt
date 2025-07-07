@@ -36,6 +36,11 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         var currentBranch = ""
 
         Git.open(project.rootDir).use { git ->
+            git.remoteSetUrl()
+                .setRemoteName("origin")
+                .setRemoteUri(URIish("git@github.com:PoweredByApartium/cocoa-beans.git"))
+                .call()
+
             val repo = git.repository
             currentBranch = repo.branch
 
