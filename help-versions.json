@@ -1,7 +1,9 @@
-[
-  {
-    "version": "snapshot",
-    "isCurrent": false,
-    "url" "/snapshot/"
-  }
-]
+[ {
+  "version" : "main",
+  "isCurrent" : false,
+  "url" : "/main/"
+}, {
+  "version" : "0.0.5-test",
+  "isCurrent" : true,
+  "url" : "/0.0.5-test/"
+} ]
