@@ -1,0 +1,44 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-07-07T12:37:26.172253333"><title>🔏 Value Requirement | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"example-usage","level":0,"title":"Example Usage 🗿","anchor":"#example-usage"},{"id":"advantages","level":0,"title":"Advantages 💡","anchor":"#advantages"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🔏 Value Requirement | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/value-requirement.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🔏 Value Requirement | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/value-requirement.html#webpage",
+    "url": "writerside-documentation//snapshot/value-requirement.html",
+    "name": "🔏 Value Requirement | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="value-requirement" data-main-title="🔏 Value Requirement" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="commands.md|💻 The command system///examples.md|📌 Examples"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="value-requirement" id="value-requirement.md">🔏 Value Requirement</h1><p id="-sy8rcf_2"><sup class="superscript" id="-sy8rcf_3">Available Since 0.0.30</sup></p><p id="-sy8rcf_4"><span class="control" id="-sy8rcf_5">Table of content:</span></p><ul class="list _bullet" id="-sy8rcf_6"><li class="list__item" id="-sy8rcf_7"><p><a href="#introduction" id="-sy8rcf_8" data-tooltip="The Value Requirement feature introduces a mechanism for retrieving specific values from a requirement, enhancing the flexibility and efficiency of our method handling. This feature aims to address scenarios where it is essential to extract and utilize parameter values from a…">Introduction</a></p></li><li class="list__item" id="-sy8rcf_9"><p><a href="#example-usage" id="-sy8rcf_10" data-tooltip="If we want to create an @InGame requirement that will give us Game and GamePlayer we will need to pass RequirementResult.Value with requirement meets as follows">Usage</a></p></li><li class="list__item" id="-sy8rcf_11"><p><a href="#advantages" id="-sy8rcf_12" data-tooltip="Reduced Calculation 📊: By directly accessing required values from the RequirementResult, we minimize the need for additional computations or data retrieval steps. Decreased Code Duplication 📉: This feature eliminates repetitive code patterns by streamlining how values are accessed…">Advantages</a></p></li></ul><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-sy8rcf_13">The Value Requirement feature introduces a mechanism for retrieving specific values from a requirement, enhancing the flexibility and efficiency of our method handling. This feature aims to address scenarios where it is essential to extract and utilize parameter values from a requirement, such as user authentication details.</p></section><section class="chapter"><h2 id="example-usage" data-toc="example-usage">Example Usage 🗿</h2><p id="-sy8rcf_14">If we want to create an <code class="code" id="-sy8rcf_15">@InGame</code> requirement that will give us <code class="code" id="-sy8rcf_16">Game</code> and <code class="code" id="-sy8rcf_17">GamePlayer</code> we will need to pass <code class="code" id="-sy8rcf_18">RequirementResult.Value</code> with requirement meets as follows</p><div class="code-block" data-lang="java">
+public class InGameImpl implements Requirement {
+
+    private final InGame inGame;
+
+    public InGameImpl(InGame inGame) {
+        this.inGame = inGame;
+    }
+    
+    @Override
+    public RequirementResult meetsRequirement(RequirementEvaluationContext context) {
+        // Do all check and get the game and game player
+        if (/* check if not in game*/)
+            return RequirementResult.error(error(new BadCommandResponse()));
+        
+        // otherwise we have game and game player
+        return RequirementResult.meet(
+                RequirementResult.valueOf(game, Game.class),
+                RequirementResult.valueOf(gamePlayer, GamePlayer.class)
+        );
+    }
+}
+</div><p id="-sy8rcf_20">When we want to use it in a command we will do the following thing</p><div class="code-block" data-lang="java">
+@InGame
+@SubCommand(&quot;test&quot;)
+public void test(Sender sender, Game game, GamePlayer gamePlayer) {
+    // Do something
+}
+</div><p id="-sy8rcf_22">In the example above, the method test is defined with annotations indicating it should be executed within the game context The Value Requirement feature will enable you to retrieve specific values related to the Game (Like Game &amp; GamePlayer).</p></section><section class="chapter"><h2 id="advantages" data-toc="advantages">Advantages 💡</h2><ul class="list _bullet" id="-sy8rcf_23"><li class="list__item" id="-sy8rcf_24"><p><span class="control" id="-sy8rcf_25">Reduced Calculation</span> 📊: By directly accessing required values from the <code class="code" id="-sy8rcf_26">RequirementResult</code>, we minimize the need for additional computations or data retrieval steps.</p></li><li class="list__item" id="-sy8rcf_27"><p><span class="control" id="-sy8rcf_28">Decreased Code Duplication</span> 📉: This feature eliminates repetitive code patterns by streamlining how values are accessed and utilized within methods.</p></li><li class="list__item" id="-sy8rcf_29"><p><span class="control" id="-sy8rcf_30">Increased Simplicity</span> 👍: Simplifies method implementation by allowing direct access to necessary parameter values, improving code readability and maintainability.</p></li></ul></section><div class="last-modified">Last modified: 07 July 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="dynamic-annotation-parser.html" class="navigation-links__prev">🔄Dynamic annotation parser</a><a href="parameter-name.html" class="navigation-links__next">📮 Parameter name</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>

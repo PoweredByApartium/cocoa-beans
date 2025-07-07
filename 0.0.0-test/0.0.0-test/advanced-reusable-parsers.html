@@ -1,0 +1,100 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-07-07T12:37:26.272633983"><title>🔐 Advanced reusable parsers | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🔐 Advanced reusable parsers | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/advanced-reusable-parsers.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🔐 Advanced reusable parsers | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/advanced-reusable-parsers.html#webpage",
+    "url": "writerside-documentation//snapshot/advanced-reusable-parsers.html",
+    "name": "🔐 Advanced reusable parsers | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="advanced-reusable-parsers" data-main-title="🔐 Advanced reusable parsers" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="commands.md|💻 The command system///examples.md|📌 Examples"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="advanced-reusable-parsers" id="advanced-reusable-parsers.md">🔐 Advanced reusable parsers</h1><aside class="prompt" data-type="tip" data-title="" id="v18829_2"><p>You can interact with the command system at a low level by implementing the ArgumentParser class.</p></aside><div class="code-block" data-lang="java">
+public class PlayerDataParser extends ArgumentParser&lt;PlayerData&gt; {
+
+    PlayerManager playerManager;
+
+    public PlayerDataParser(PlayerManager playerManager) {
+        this(playerManager, &quot;playerData&quot;, 0);
+    }
+
+    public PlayerDataParser(PlayerManager playerManager, String keyword) {
+        this(playerManager, keyword, 0);
+    }
+
+    public PlayerDataParser(PlayerManager playerManager, int priority) {
+        this(playerManager, &quot;playerData&quot;, priority);
+    }
+
+    public PlayerDataParser(PlayerManager playerManager, String keyword, int priority) {
+        super(keyword, PlayerData.class, priority);
+        
+        this.playerManager = playerManager;
+        
+    }
+
+    @Override
+    public Optional&lt;ParseResult&lt;PlayerData&gt;&gt; parse(CommandProcessingContext commandProcessingContext) {
+        int index = commandProcessingContext.index(); // index of the current argument to be processed
+        List&lt;String&gt; args = commandProcessingContext.args(); // in bukkit, this is usually seen as String[] args
+
+        // return if no argument is provided to this parser
+        if (index &gt;= args.size())
+            return Optional.empty();
+
+        // retrieve player data from memory
+        PlayerData playerData = playerManager.getPlayerData(args.get(index));
+        if (playerData == null)
+            return Optional.empty(); // if argument is not found, return empty
+
+        return Optional.of(new ParseResult&lt;&gt;(
+            playerData, // a non-null result
+            index + 1 // the index of the next argument to be processed
+        ));
+    }
+
+    @Override
+    public OptionalInt tryParse(CommandProcessingContext commandProcessingContext) {
+        // tryParse is used for implementing tab completions, this detects if this parser is suitable to handle request argument
+        return parse(commandProcessingContext)
+                .map(ParseResult::newIndex)
+                .map(OptionalInt::of)
+                .orElse(OptionalInt.empty());
+    }
+
+    @Override
+    public Optional&lt;TabCompletionResult&gt; tabCompletion(CommandProcessingContext commandProcessingContext) {
+        int index = commandProcessingContext.index();
+        List&lt;String&gt; args = commandProcessingContext.args();
+
+        // return if no argument is provided to this parser
+        if (index &gt; args.size())
+            return Optional.empty();
+        
+        if (index == args.size()) // called if the player did not start writing the current argument
+            return Optional.of(new TabCompletionResult(
+                    playerManager.getPlayerNames(),
+                    index + 1)
+            );
+        else  // called if player is in the middle of writing the current argument, so we have to look for matches
+            return Optional.of(new TabCompletionResult(
+                playerManager.getPlayerNames().stream()
+                        .filter(s -&gt; s.toLowerCase().startsWith(args.get(index).toLowerCase()))
+                        .collect(Collectors.toSet()),
+                index + 1)
+            );
+    }
+}
+</div><p id="v18829_4">And now, we have to register the parser in the command system:</p><div class="code-block" data-lang="java">
+SpigotCommandManager commandManager = new SpigotCommandManager(this);
+
+// no parsers are included by default, so we need to add some of our own
+commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
+commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
+
+commandManager.registerArgumentTypeHandler(new PlayerDataParser(playerManager));
+</div><div class="last-modified">Last modified: 07 July 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="optional-argument.html" class="navigation-links__prev">❓ Optional Argument</a><a href="polymorphic-command-declaration.html" class="navigation-links__next">🧬 Polymorphic command declaration</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
