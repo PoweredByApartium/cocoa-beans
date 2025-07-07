@@ -85,7 +85,7 @@ jobs:
 
           git add $version/
           git commit -m "Add version $version"
-          git push origin gh-pages --force
+          git push origin HEAD:gh-pages --force
 
       - name: Update html
         env:
