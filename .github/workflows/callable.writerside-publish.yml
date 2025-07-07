@@ -81,6 +81,7 @@ jobs:
         env:
           version: ${{ inputs.VERSION }}
         run: |
+          git reset --hard
           git fetch origin gh-pages
 
           git add $version/
