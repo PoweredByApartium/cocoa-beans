@@ -93,6 +93,7 @@ jobs:
           git push origin gh-pages
 
       - name: Update html
+        if: github.event_name == 'workflow_dispatch'
         env:
           version: ${{ inputs.VERSION }}
         run: |
@@ -109,6 +110,7 @@ jobs:
           fi
 
       - name: Update help-versions.json
+        if: github.event_name == 'workflow_dispatch'
         run: ./gradlew generateWritersideVersions
         env:
           VERSION: ${{ inputs.VERSION }}
