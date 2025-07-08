@@ -30,7 +30,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         val parent = File("gh-pages")
         val target = File(parent, "help-versions.json")
         val content = objectMapper.createArrayNode()
-        content.add(createEntry(objectMapper, "main"))
+        content.add(createEntry(objectMapper, "snapshot"))
 
         var write = false
 
