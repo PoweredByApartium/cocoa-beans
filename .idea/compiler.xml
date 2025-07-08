@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="build-logic" target="17" />
+      <module name="cocoa-beans.commands.commands-spigot" target="21" />
+      <module name="cocoa-beans.commands.commands-spigot.main" target="21" />
+      <module name="cocoa-beans.commands.commands-spigot.test" target="21" />
+      <module name="cocoa-beans.minestom" target="21" />
+      <module name="cocoa-beans.minestom.main" target="21" />
+      <module name="cocoa-beans.minestom.test" target="21" />
+      <module name="cocoa-beans.scoreboard" target="21" />
+      <module name="cocoa-beans.scoreboard.main" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-minestom" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-minestom.main" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-minestom.test" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-spigot" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-spigot.main" target="21" />
+      <module name="cocoa-beans.scoreboard.scoreboard-spigot.test" target="21" />
+      <module name="cocoa-beans.scoreboard.test" target="21" />
+      <module name="cocoa-beans.spigot.spigot-test-plugin" target="21" />
+      <module name="cocoa-beans.spigot.spigot-test-plugin.main" target="21" />
+      <module name="cocoa-beans.spigot.spigot-test-plugin.test" target="21" />
+      <module name="cocoa-beans.state" target="21" />
+      <module name="cocoa-beans.state.main" target="21" />
+      <module name="cocoa-beans.state.state-animation" target="21" />
+      <module name="cocoa-beans.state.state-animation.main" target="21" />
+      <module name="cocoa-beans.state.state-animation.test" target="21" />
+      <module name="cocoa-beans.state.state-spigot" target="21" />
+      <module name="cocoa-beans.state.state-spigot.main" target="21" />
+      <module name="cocoa-beans.state.state-spigot.test" target="21" />
+      <module name="cocoa-beans.state.test" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

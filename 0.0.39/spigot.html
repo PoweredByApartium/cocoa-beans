@@ -1,0 +1,53 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-07-08T12:31:42.261526996"><title>🚰 Spigot | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[{"id":"relevant-links","level":0,"title":"Relevant Links","anchor":"#relevant-links"},{"id":"include-in-your-project","level":0,"title":"Include in your project","anchor":"#include-in-your-project"},{"id":"read-more","level":0,"title":"Read more","anchor":"#read-more"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🚰 Spigot | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/spigot.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🚰 Spigot | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/spigot.html#webpage",
+    "url": "writerside-documentation//snapshot/spigot.html",
+    "name": "🚰 Spigot | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="spigot" data-main-title="🚰 Spigot" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs=""><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="spigot" id="spigot.md">🚰 Spigot</h1><p id="m0yhth_3"><span class="control" id="m0yhth_7">Cocoabeans</span> has many utilities for Spigot that will help you make your plugin development faster and easier</p><section class="chapter"><h2 id="relevant-links" data-toc="relevant-links">Relevant Links</h2><ul class="list _bullet" id="m0yhth_8"><li class="list__item" id="m0yhth_9"><p id="m0yhth_10"><a href="https://cocoa-beans.apartium.net/0.0.39/spigot/" id="m0yhth_11" data-external="true" rel="noopener noreferrer" target="_blank">Spigot javadocs</a></p></li></ul></section><section class="chapter"><h2 id="include-in-your-project" data-toc="include-in-your-project">Include in your project</h2><div class="tabs" id="m0yhth_12" data-anchors="[m0yhth_13,m0yhth_14,m0yhth_15]"><div class="tabs__content" data-gtm="tab" id="m0yhth_13" data-title="Maven"><div class="code-block" data-lang="markup" data-title="XML">
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;apartium-releases&lt;/id&gt;
+        &lt;url&gt;https://nexus.voigon.dev/repository/apartium-releases&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;net.apartium.cocoa-beans&lt;/groupId&gt;
+        &lt;artifactId&gt;spigot&lt;/artifactId&gt;
+        &lt;version&gt;0.0.39&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</div></div><div class="tabs__content" data-gtm="tab" id="m0yhth_14" data-title="Gradle"><div class="code-block" data-lang="groovy" data-title="Groovy">
+repositories {
+    maven {
+        name 'apartium-releases'
+        url 'https://nexus.voigon.dev/repository/apartium-releases'
+    }
+}
+
+dependencies {
+    compileOnly 'net.apartium.cocoa-beans:spigot:0.0.39'
+}
+</div></div><div class="tabs__content" data-gtm="tab" id="m0yhth_15" data-title="Gradle - Kotlin"><div class="code-block" data-lang="kotlin" data-title="Kotlin">
+repositories {
+    maven {
+        name = &quot;apartium-releases&quot;
+        url = uri(&quot;https://nexus.voigon.dev/repository/apartium-releases&quot;)
+    }
+}
+
+dependencies {
+    compileOnly(&quot;net.apartium.cocoa-beans:spigot:0.0.39&quot;)
+}
+</div></div></div></section><section class="chapter"><h2 id="read-more" data-toc="read-more">Read more</h2><ul class="list _bullet" id="m0yhth_19"><li class="list__item" id="m0yhth_20"><p id="m0yhth_22"><a href="minecraft-version.html" id="m0yhth_23" data-tooltip="There are some cases when we want to know the version of the server because we make our plugin for multiple versions Cocoabeans provides us with an easier way to do it.">📜 Minecraft Version</a></p></li><li class="list__item" id="m0yhth_21"><p id="m0yhth_24"><a href="visibility-api.html" id="m0yhth_25" data-tooltip="Table of content:">👁️ Visibility Api</a></p></li></ul></section><div class="last-modified">08 July 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="virtual-command.html" class="navigation-links__prev">🤖 Virtual Command</a><a href="minecraft-version.html" class="navigation-links__next">📜 Minecraft Version</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>
