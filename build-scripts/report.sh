@@ -14,14 +14,15 @@ modules=$(grep -Eo 'include\("([^"]+)"\)' "$SETTINGS_FILE" \
 
 report_paths=$(echo "$modules" \
   | sed 's/:/\//g' \
-  | awk '{print "**/" $1 "/build/test-results/test/TEST-*.xml"}' \
-  | paste -sd ',' -)
+  | awk '{print "**/" $1 "/build/test-results/test/TEST-*.xml"}')
 
 check_names=$(echo "$modules" \
-  | sed 's/:/-/g' \
-  | paste -sd '\n' -)
+  | sed 's/:/-/g')
 
-echo "report_paths=$report_paths" >> "$GITHUB_OUTPUT"
+echo "report_paths<<EOF" >> "$GITHUB_OUTPUT"
+echo "$report_paths" >> "$GITHUB_OUTPUT"
+echo "EOF" >> "$GITHUB_OUTPUT"
+
 echo "check_names<<EOF" >> "$GITHUB_OUTPUT"
 echo "$check_names" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
