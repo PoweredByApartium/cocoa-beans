@@ -17,7 +17,7 @@ plugins {
 }
 
 val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
-val isCi = System.getenv("GITHUB_ACTOR") != null
+val isCi = System.getenv("GITHUB_EVENT_NAME") != null
 
 fun figureVersion() : String {
     val prodVersion = System.getenv("VERSION")
