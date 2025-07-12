@@ -10,10 +10,6 @@ on:
     secrets:
       GH_PAGES_TOKEN:
         required: true
-      SIGNING_SECRET:
-        required: true
-      SIGNING_PASSWORD:
-        required: true
 
 permissions:
   pull-requests: write
@@ -34,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -45,7 +41,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.GH_PAGES_TOKEN }}
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
@@ -61,9 +57,6 @@ jobs:
 
       - name: Generate javadoc
         run: ./gradlew javadoc
-        env:
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4

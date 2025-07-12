@@ -39,8 +39,8 @@ fun figureVersion() : String {
 group = "net.apartium.cocoa-beans"
 version = figureVersion()
 
-val sonaTypeUsername = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
-val sonatypePassword = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password").toString()
+val sonaTypeUsername: String? = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
+val sonatypePassword: String? = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password").toString()
 
 subprojects {
     apply<NmcpPlugin>()
@@ -55,19 +55,6 @@ allprojects {
 
     publishing {
         repositories {
-            if (isCi || project.findProperty("apartium.nexus.username") != null) {
-                maven {
-                    name = "ApartiumMaven"
-                    val base = if (isCi) "nexus-de-push.apartium.net" else "nexus.voigon.dev"
-                    url = uri("https://$base/repository/apartium-releases")
-                    credentials {
-                        username = (System.getenv("APARTIUM_NEXUS_USERNAME")
-                            ?: project.findProperty("apartium.nexus.username")).toString()
-                        password = (System.getenv("APARTIUM_NEXUS_PASSWORD")
-                            ?: project.findProperty("apartium.nexus.password")).toString()
-                    }
-                }
-            }
 
         }
 
@@ -185,10 +172,10 @@ allprojects {
         val signingSecret: String? = System.getenv("SIGNING_SECRET")
         val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
 
-        if (signingSecret == null || signingPassword == null)
-            useGpgCmd()
-        else
+        if (isCi)
             useInMemoryPgpKeys(signingSecret, signingPassword)
+        else if (signingSecret == null || signingPassword == null)
+            useGpgCmd()
 
         sign(publishing.publications)
     }

@@ -16,10 +16,6 @@ on:
         required: true
       SIGNING_PASSWORD:
         required: true
-      APARTIUM_NEXUS_USERNAME:
-        required: true
-      APARTIUM_NEXUS_PASSWORD:
-        required: true
 
 permissions:
   contents: read
@@ -32,7 +28,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
@@ -47,7 +43,5 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-          APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
           VERSION: ${{ inputs.VERSION }}
         run: ./gradlew publish publishAllPublicationsToCentralPortal

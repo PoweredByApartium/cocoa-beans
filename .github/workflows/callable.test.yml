@@ -3,10 +3,6 @@ name: Run tests
 on:
   workflow_call:
     secrets:
-      SIGNING_SECRET:
-        required: true
-      SIGNING_PASSWORD:
-        required: true
       SONAR_PROP_TOKEN:
         required: true
 
@@ -23,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
@@ -35,8 +31,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: |
           ./gradlew check jacocoTestReport sonar -Dsonar.verbose=true
 
