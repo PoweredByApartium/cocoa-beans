@@ -1,4 +1,5 @@
 import io.papermc.hangarpublishplugin.model.Platforms
+import nmcp.NmcpPlugin
 import org.sonarqube.gradle.SonarQubePlugin
 import org.sonarqube.gradle.SonarTask
 
@@ -10,52 +11,109 @@ plugins {
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
     id("idea")
-    jacoco
+    id("com.gradleup.nmcp").version("0.0.8")
+    id("signing")
+    id("jacoco")
 }
 
-val releaseWorkflow = "PoweredByApartium/cocoa-beans/.github/workflows/release.yml"
-val snapshot: Boolean = System.getenv("GITHUB_WORKFLOW_REF") == null || !(System.getenv("GITHUB_WORKFLOW_REF").startsWith(releaseWorkflow))
-val isCi = System.getenv("GITHUB_ACTOR") != null
+val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
+val isCi = System.getenv("GITHUB_EVENT_NAME") != null
+val isProd: Boolean = (System.getenv("IS_PROD"))?.toBoolean() ?: false
 
-group = "net.apartium.cocoa-beans"
-version = (if (System.getenv("VERSION") == null) "dev" else System.getenv("VERSION")) + (if (snapshot) "-SNAPSHOT" else "")
+fun figureVersion() : String {
+    val prodVersion = System.getenv("VERSION")
+    if (System.getenv("FORCE_PROD") != null || (!snapshot && prodVersion != null && !prodVersion.isEmpty()))
+        return prodVersion
+
+    val isPullRequest = System.getenv("GITHUB_HEAD_REF") != null
+    val prNumber = System.getenv("GITHUB_REF")?.let {
+        val match = Regex("""refs/pull/(\d+)/.*""").find(it)
+        match?.groupValues?.get(1)
+    }
+
+    if (isPullRequest && prNumber != null)
+        return "PR$prNumber-SNAPSHOT"
+
+    return "dev-SNAPSHOT"
+}
+
+group = "dev.apartium.cocoa-beans"
+version = figureVersion()
+
+val sonaTypeUsername: String? = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
+val sonatypePassword: String? = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password").toString()
+
+subprojects {
+    apply<NmcpPlugin>()
+}
 
 allprojects {
-
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
     apply<JacocoPlugin>()
     apply<SonarQubePlugin>()
+    apply<SigningPlugin>()
 
     publishing {
         repositories {
 
-            if (isCi) {
-                maven {
-                    name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/poweredbyapartium/cocoa-beans")
-                    credentials {
-                        username = System.getenv("GITHUB_ACTOR")
-                        password = System.getenv("GITHUB_TOKEN")
+        }
+
+        afterEvaluate {
+            publications {
+                forEach {
+                    (it as MavenPublication).pom {
+                        name = "Cocoa Beans"
+                        description = "General purpose library for Java & Spigot"
+                        url = "https://cocoa-beans.apartium.net/"
+
+                        licenses {
+                            license {
+                                name = "MIT License"
+                                url = "https://github.com/PoweredByApartium/cocoa-beans/blob/master/LICENSE.md"
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = "idankoblik"
+                                name = "Idan Koblik"
+                                email = "me@idank.dev"
+                            }
+                            developer {
+                                id = "liorslak"
+                                name = "Lior Slakman"
+                                email = "me@voigon.dev"
+                            }
+                            developer {
+                                id = "ikfir"
+                                name = "Kfir botnik"
+                                email = "me@kfirbot.dev"
+                            }
+                        }
+
+                        scm {
+                            connection = "scm:git:git://github.com/PoweredByApartium/cocoa-beans.git"
+                            developerConnection = "scm:git:ssh://github.com:PoweredByApartium/cocoa-beans.git"
+                            url = "https://github.com/PoweredByApartium/cocoa-beans"
+                        }
+
                     }
+
                 }
             }
-            if (isCi || project.findProperty("apartium.nexus.username") != null) {
-                maven {
-                    name = "ApartiumMaven"
-                    val base = if (isCi) "nexus-de-push.apartium.net" else "nexus.voigon.dev"
-                    url = uri("https://$base/repository/apartium-releases")
-                    credentials {
-                        username = (System.getenv("APARTIUM_NEXUS_USERNAME")
-                            ?: project.findProperty("apartium.nexus.username")).toString()
-                        password = (System.getenv("APARTIUM_NEXUS_PASSWORD")
-                            ?: project.findProperty("apartium.nexus.password")).toString()
+
+            if (sonaTypeUsername != null && sonatypePassword != null) {
+                nmcp {
+                    publishAllPublications {
+                        username = sonaTypeUsername
+                        password = sonatypePassword
+                        publicationType = "AUTOMATIC"
                     }
                 }
             }
 
         }
-
     }
 
     dependencies {
@@ -77,7 +135,9 @@ allprojects {
     repositories {
         maven {
             name = "ApartiumNexus"
-            url = uri("https://nexus-de.apartium.net/repository/maven-public")
+
+            val base = if (isCi) "nexus-de.apartium.net" else "nexus.apartium.net"
+            url = uri("https://$base/repository/maven-public")
         }
     }
 
@@ -109,6 +169,17 @@ allprojects {
         }
     }
 
+    signing {
+        val signingSecret: String? = System.getenv("SIGNING_SECRET")
+        val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
+
+        if (isCi)
+            useInMemoryPgpKeys(signingSecret, signingPassword)
+        else if (signingSecret == null || signingPassword == null)
+            useGpgCmd()
+
+        sign(publishing.publications)
+    }
 }
 
 hangarPublish {
@@ -134,8 +205,9 @@ hangarPublish {
 
 publishing {
     publications {
-        create<MavenPublication>("platform") {
-            groupId = rootProject.group.toString()
+        create<MavenPublication>("bom") {
+            val group = if (isProd) "dev.apartium.cocoa-beans" else "net.apartium.cocoa-beans"
+            groupId = group
             artifactId = "platform"
 
             pom.withXml {
@@ -158,4 +230,8 @@ publishing {
 
         }
     }
+}
+
+tasks.register("generateWritersideVersions", WritersideVersionUpdateTask::class) {
+    currentVersion = project.version as String
 }

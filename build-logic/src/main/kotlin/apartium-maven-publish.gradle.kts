@@ -6,6 +6,7 @@ plugins {
 }
 
 val root = project.rootProject == project
+val isProd: Boolean = (System.getenv("IS_PROD"))?.toBoolean() ?: false
 
 tasks {
     if (root) {
@@ -29,6 +30,11 @@ tasks {
             from(javadoc.get().destinationDir)
             archiveClassifier = "javadoc"
         }
+
+        register<Jar>("sourcesJar") {
+            archiveClassifier = "sources"
+            from(sourceSets.main.get().allSource)
+        }
     }
 }
 
@@ -38,10 +44,11 @@ if (!root) {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = rootProject.group.toString()
+                groupId = if (isProd) "dev.apartium.cocoa-beans" else "net.apartium.cocoa-beans"
                 artifactId = proj.mavenName
 
                 artifact(tasks.getByName("packageJavadoc"))
+                artifact(tasks.getByName("sourcesJar"))
                 artifact(tasks.jar)
                 tasks.findByName("testFixturesJar")?.let {
                     artifact(it, {

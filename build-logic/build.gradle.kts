@@ -13,6 +13,11 @@ repositories {
     }
 }
 
+dependencies {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
+}
+
 kotlin {
     jvmToolchain(17)
 }
