@@ -6,6 +6,7 @@ plugins {
 }
 
 val root = project.rootProject == project
+val isProd: Boolean = (System.getenv("IS_PROD"))?.toBoolean() ?: false
 
 tasks {
     if (root) {
@@ -43,7 +44,7 @@ if (!root) {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = if (System.getenv("GITHUB_EVENT_NAME") != null) "net.apartium.cocoa-beans" else "dev.apartium.cocoa-beans"
+                groupId = if (isProd) "dev.apartium.cocoa-beans" else "net.apartium.cocoa-beans"
                 artifactId = proj.mavenName
 
                 artifact(tasks.getByName("packageJavadoc"))

@@ -7,6 +7,11 @@ on:
         description: 'Version name'
         required: true
         type: string
+      IS_PROD:
+        description: 'Determine if the version is prod'
+        required: true
+        type: boolean
+
     secrets:
       OSSRH_USERNAME:
         required: true
@@ -44,4 +49,5 @@ jobs:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           VERSION: ${{ inputs.VERSION }}
+          IS_PROD: ${{ inputs.IS_PROD }}
         run: ./gradlew publish publishAllPublicationsToCentralPortal

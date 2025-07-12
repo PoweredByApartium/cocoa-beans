@@ -13,6 +13,9 @@ on:
         description: 'Version name'
         required: true
         type: string
+      isProd:
+        type: boolean
+        description: Says if the version either prod or not
 
 permissions:
   pull-requests: write
@@ -81,6 +84,7 @@ jobs:
     uses: ./.github/workflows/callable.maven.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
+      IS_PROD: ${{ github.event.inputs.isProd }}
     secrets:
       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
