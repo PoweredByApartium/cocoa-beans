@@ -3,10 +3,6 @@ name: Github release
 on:
   workflow_call:
     secrets:
-      SIGNING_SECRET:
-        required: true
-      SIGNING_PASSWORD:
-        required: true
       HANGAR_TOKEN:
         required: true
     inputs:

@@ -47,23 +47,16 @@ jobs:
       VERSION: ${{ github.event.inputs.name || 'snapshot' }}
     secrets:
       GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   run_tests:
     needs: checkout
     uses: ./.github/workflows/callable.test.yml
     secrets:
       SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
-      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
   build:
     needs: run_tests
     uses: ./.github/workflows/callable.build.yml
-    secrets:
-      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
     with:
       VERSION: ${{ github.event.inputs.name }}
 
@@ -78,11 +71,7 @@ jobs:
     needs: release
     uses: ./.github/workflows/callable.hangar.yml
     secrets:
-      SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-      SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
-      APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}
     with:
       VERSION: ${{ github.event.inputs.name }}
 
@@ -97,5 +86,3 @@ jobs:
       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
       SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
       SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-      APARTIUM_NEXUS_USERNAME: ${{ secrets.APARTIUM_NEXUS_USERNAME }}
-      APARTIUM_NEXUS_PASSWORD: ${{ secrets.APARTIUM_NEXUS_PASSWORD }}

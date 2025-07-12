@@ -2,11 +2,6 @@ run-name: Build project
 
 on:
   workflow_call:
-    secrets:
-      SIGNING_SECRET:
-        required: true
-      SIGNING_PASSWORD:
-        required: true
     inputs:
       VERSION:
         description: 'Version name'
@@ -38,8 +33,6 @@ jobs:
         run: ./gradlew shadowJar
         env:
           VERSION: ${{ inputs.VERSION }}
-          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload jar
