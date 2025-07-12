@@ -15,7 +15,7 @@ on:
         type: string
       isProd:
         type: boolean
-        description: Says if the version either prod or not
+        description: production
 
 permissions:
   pull-requests: write
