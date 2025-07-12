@@ -4,7 +4,7 @@ set -e
 
 SETTINGS_FILE="settings.gradle.kts"
 
-if [[ ! -f "$SETTINGS_FILE" ]]; then
+if [ ! -f "$SETTINGS_FILE" ]; then
   echo "Error: $SETTINGS_FILE not found."
   exit 1
 fi
