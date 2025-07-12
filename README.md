@@ -39,7 +39,7 @@ and a common java module and commands java module and commands spigot module ins
 ```xml
 <dependencies>
     <dependency>
-        <groupId>net.apartium.cocoa-beans</groupId>
+        <groupId>dev.apartium.cocoa-beans</groupId>
         <!-- You can also use 'spigot' instead to get the spigot utilities as well -->
         <artifactId>common</artifactId>
         <version>[VERSION]</version>
@@ -47,7 +47,7 @@ and a common java module and commands java module and commands spigot module ins
 
     <!-- For the command system itself -->
     <dependency>
-        <groupId>net.apartium.cocoa-beans</groupId>
+        <groupId>dev.apartium.cocoa-beans</groupId>
         <!-- You can also use 'commands-spigot' instead to get the spigot utilities as well -->
         <artifactId>commands</artifactId>
         <version>[VERSION]</version>
