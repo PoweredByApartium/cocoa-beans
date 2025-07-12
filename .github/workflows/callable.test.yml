@@ -32,6 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
         run: |
+          ls -la
           ./gradlew check jacocoTestReport sonar -Dsonar.verbose=true
 
       - name: Generate dynamic test report paths and check names
