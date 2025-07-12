@@ -43,7 +43,7 @@ if (!root) {
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = rootProject.group.toString()
+                groupId = if (System.getenv("GITHUB_EVENT_NAME") != null) "net.apartium.cocoa-beans" else "dev.apartium.cocoa-beans"
                 artifactId = proj.mavenName
 
                 artifact(tasks.getByName("packageJavadoc"))

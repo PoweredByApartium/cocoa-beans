@@ -205,7 +205,8 @@ hangarPublish {
 publishing {
     publications {
         create<MavenPublication>("bom") {
-            groupId = rootProject.group.toString()
+            val group = if (isCi) "net.apartium.cocoa-beans" else "dev.apartium.cocoa-beans"
+            groupId = group
             artifactId = "platform"
 
             pom.withXml {
