@@ -29,14 +29,6 @@ and a common java module and commands java module and commands spigot module ins
 
 **Maven:**
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-```
-```xml
 <dependencies>
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
@@ -57,19 +49,12 @@ and a common java module and commands java module and commands spigot module ins
 
 **Gradle:**
 ```groovy
-repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
-}
-
 dependencies {
     // You can also use 'spigot' instead to get the spigot utilities as well
-    implementation 'net.apartium.cocoa-beans:common:[VERSION]'
+    implementation('dev.apartium.cocoa-beans:common:[VERSION]')
 
     // For the command system (You also could use 'commands-spigot' instead to get the spigot command utilities as well)
-    implementation 'net.apartium.cocoa-beans:commands:[VERSION]'
+    implementation('dev.apartium.cocoa-beans:commands:[VERSION]')
 }
 ```
 
