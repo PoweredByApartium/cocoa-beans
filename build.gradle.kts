@@ -36,7 +36,7 @@ fun figureVersion() : String {
     return "dev-SNAPSHOT"
 }
 
-group = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
+group = "dev.apartium.cocoa-beans"
 version = figureVersion()
 
 val sonaTypeUsername: String? = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
