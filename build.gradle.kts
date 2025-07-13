@@ -18,7 +18,6 @@ plugins {
 
 val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
 val isCi = System.getenv("GITHUB_EVENT_NAME") != null
-val isProd: Boolean = (System.getenv("IS_PROD"))?.toBoolean() ?: false
 
 fun figureVersion() : String {
     val prodVersion = System.getenv("VERSION")
@@ -206,7 +205,7 @@ hangarPublish {
 publishing {
     publications {
         create<MavenPublication>("bom") {
-            val group = if (isProd) "dev.apartium.cocoa-beans" else "net.apartium.cocoa-beans"
+            val group = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
             groupId = group
             artifactId = "bom"
 

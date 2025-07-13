@@ -83,7 +83,7 @@ jobs:
           cd gh-pages
           git add $version
           git commit -m "Add version $version"
-          git push origin gh-pages
+          git push origin gh-pages || true
 
       - name: Update html
         if: github.event_name == 'workflow_dispatch'
@@ -96,7 +96,7 @@ jobs:
             sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
             git add index.html
             git commit -m "Update index.html"
-            git push origin gh-pages
+            git push origin gh-pages || true
           else
             echo "index.html not found"
             exit 1
@@ -115,4 +115,4 @@ jobs:
           cd gh-pages
           git add help-versions.json
           git commit -m "Update help-versions.json"
-          git push origin gh-pages
+          git push origin gh-pages || true
