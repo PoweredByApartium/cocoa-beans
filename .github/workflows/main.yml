@@ -13,12 +13,12 @@ on:
         description: 'Version name'
         required: true
         type: string
-      isProd:
+      group:
         type: choice
-        description: Type
+        description: Group
         options:
-          - Production
-          - Dev
+          - net.apartium.cocoa-beans
+          - dev.apartium.cocoa-beans
 
 permissions:
   pull-requests: write
@@ -87,7 +87,7 @@ jobs:
     uses: ./.github/workflows/callable.maven.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
-      IS_PROD: ${{ github.event.inputs.isProd }}
+      GROUP: ${{ github.event.inputs.group }}
     secrets:
       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
