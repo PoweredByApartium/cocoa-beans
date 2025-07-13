@@ -1,6 +1,8 @@
 # CHANGELOG
 ## 0.0.41
-- [cicd] The production groupId of the project is now `dev.apartium.cocoa-beans`
+- [cicd] The maven groupId of the project is now `dev.apartium.cocoa-beans`
+- [cicd] Publishing to maven central
+- [cicd] Rename `platform` module to `bom`
 - [scoreboard] Add numeric & team display
 - [scoreboard] Add ViewerGroup
 - [state] Add LazyWatcher

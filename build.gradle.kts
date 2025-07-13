@@ -208,7 +208,7 @@ publishing {
         create<MavenPublication>("bom") {
             val group = if (isProd) "dev.apartium.cocoa-beans" else "net.apartium.cocoa-beans"
             groupId = group
-            artifactId = "platform"
+            artifactId = "bom"
 
             pom.withXml {
                 val dependencyManagement = asNode().appendNode("dependencyManagement")
