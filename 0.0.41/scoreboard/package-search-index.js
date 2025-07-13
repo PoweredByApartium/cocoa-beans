@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"net.apartium.cocoabeans.scoreboard"},{"l":"net.apartium.cocoabeans.scoreboard.team"},{"l":"net.apartium.cocoabeans.tab"}];updateSearchResults();
