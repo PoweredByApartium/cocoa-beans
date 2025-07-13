@@ -3,16 +3,7 @@
   "isCurrent" : false,
   "url" : "/snapshot/"
 }, {
-  "version" : "0.0.38",
-  "isCurrent" : false,
-  "url" : "/0.0.38/"
-}, {
-  "version" : "0.0.39",
-  "isCurrent" : false,
-  "url" : "/0.0.39/"
-}, {
-    "version" : "0.0.40",
-    "isCurrent" : true,
-    "url" : "/0.0.40/"
-}
-]
+  "version" : "0.0.41",
+  "isCurrent" : true,
+  "url" : "/0.0.41/"
+} ]
