@@ -14,9 +14,10 @@ on:
         required: true
         type: string
       isProd:
-        required: false
-        default: 'false'
-        description: production
+        type: choice
+        description: Type
+        options:
+          - Production
 
 permissions:
   pull-requests: write
