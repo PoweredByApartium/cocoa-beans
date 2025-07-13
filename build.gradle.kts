@@ -205,8 +205,8 @@ hangarPublish {
 publishing {
     publications {
         create<MavenPublication>("bom") {
-            val group = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
-            groupId = group
+            val artifactGroup = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
+            groupId = artifactGroup
             artifactId = "bom"
 
             pom.withXml {
@@ -219,7 +219,7 @@ publishing {
                         return@forEach
 
                     val dependency = dependencies.appendNode("dependency")
-                    dependency.appendNode("groupId", it.group)
+                    dependency.appendNode("groupId", artifactGroup)
                     dependency.appendNode("artifactId", it.mavenName)
                     dependency.appendNode("version", it.version)
 
