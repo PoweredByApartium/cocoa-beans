@@ -7,10 +7,10 @@ on:
         description: 'Version name'
         required: true
         type: string
-      IS_PROD:
-        description: 'Determine if the version is prod'
+      GROUP:
+        description: 'Maven group id'
         required: true
-        type: boolean
+        type: string
 
     secrets:
       OSSRH_USERNAME:
@@ -49,5 +49,5 @@ jobs:
           SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           VERSION: ${{ inputs.VERSION }}
-          IS_PROD: ${{ inputs.IS_PROD }}
+          GROUP: ${{ inputs.GROUP }}
         run: ./gradlew publish publishAllPublicationsToCentralPortal
