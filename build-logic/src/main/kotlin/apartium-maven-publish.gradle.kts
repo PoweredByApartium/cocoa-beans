@@ -6,7 +6,7 @@ plugins {
 }
 
 val root = project.rootProject == project
-val isProd: Boolean = (System.getenv("IS_PROD"))?.toBoolean() ?: false
+val isProd: Boolean = System.getenv("IS_PROD") == "Production"
 
 tasks {
     if (root) {
