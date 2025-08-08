@@ -17,8 +17,8 @@ tasks {
 
                 project.subprojects {
                     if (plugins.hasPlugin("apartium-maven-publish")) {
-                        val publishName = alternateModuleNames[project.name] ?: project.name
-                        mappingFile.appendText("${project.path}>${project.group}:$publishName\n")
+                        val publishName = project.mavenName
+                        mappingFile.appendText("${project.path}>dev.apartium.cocoa-beans:$publishName\n")
                     }
                 }
             }
