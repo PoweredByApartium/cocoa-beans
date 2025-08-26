@@ -192,8 +192,8 @@ AttachedWatcher *-- WatcherOperator::detach
 
 <dependencies>
     <dependency>
-        <groupId>net.apartium.cocoa-beans</groupId>
-        <artifactId>state</artifactId>
+        <groupId>dev.apartium.cocoa-beans</groupId>
+        <artifactId>cocoa-beans-state</artifactId>
         <version>%version%</version>
     </dependency>
 </dependencies>
@@ -205,14 +205,11 @@ AttachedWatcher *-- WatcherOperator::detach
 
 ```groovy
 repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:state:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-state:%version%")
 }
 ```
 
@@ -222,14 +219,11 @@ dependencies {
 
 ```kotlin
 repositories {
-    maven {
-        name = "apartium-releases"
-        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:state:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-state:%version%")
 }
 ```
 
