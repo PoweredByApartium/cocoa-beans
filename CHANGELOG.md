@@ -1,6 +1,6 @@
 # CHANGELOG
 ## 0.0.42
-- [repo] Add `cocoa-beans-` to all artifact ids
+- [repo] Add `cocoa-beans-` prefix to all artifact ids
 
 ## 0.0.41
 - [cicd] The maven groupId of the project is now `dev.apartium.cocoa-beans`
