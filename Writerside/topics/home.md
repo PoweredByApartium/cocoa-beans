@@ -28,9 +28,9 @@ Cocoa Beans is available as a plugin from Hangar.
 
 <dependencies>
     <dependency>
-        <groupId>net.apartium.cocoa-beans</groupId>
+        <groupId>dev.apartium.cocoa-beans</groupId>
         <!-- You can also use 'spigot' instead to get the spigot utilities as well -->
-        <artifactId>common</artifactId>
+        <artifactId>cocoa-beans-common</artifactId>
         <version>[VERSION]</version>
     </dependency>
 </dependencies>
@@ -42,15 +42,12 @@ Cocoa Beans is available as a plugin from Hangar.
 
 ```groovy
 repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
+    mavenCentral()
 }
 
 dependencies {
     // You can also use 'spigot' instead to get the spigot utilities as well
-    compileOnly 'net.apartium.cocoa-beans:common:[VERSION]'
+    compileOnly 'dev.apartium.cocoa-beans:cocoa-beans-common:[VERSION]'
 }
 ```
 

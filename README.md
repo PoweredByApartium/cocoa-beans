@@ -33,7 +33,7 @@ and a common java module and commands java module and commands spigot module ins
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
         <!-- You can also use 'spigot' instead to get the spigot utilities as well -->
-        <artifactId>common</artifactId>
+        <artifactId>cocoa-beans-common</artifactId>
         <version>[VERSION]</version>
     </dependency>
 
@@ -41,7 +41,7 @@ and a common java module and commands java module and commands spigot module ins
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
         <!-- You can also use 'commands-spigot' instead to get the spigot utilities as well -->
-        <artifactId>commands</artifactId>
+        <artifactId>cocoa-beans-commands</artifactId>
         <version>[VERSION]</version>
     </dependency>
 </dependencies>
@@ -51,10 +51,10 @@ and a common java module and commands java module and commands spigot module ins
 ```groovy
 dependencies {
     // You can also use 'spigot' instead to get the spigot utilities as well
-    implementation('dev.apartium.cocoa-beans:common:[VERSION]')
+    implementation('dev.apartium.cocoa-beans:cocoa-beans-common:[VERSION]')
 
     // For the command system (You also could use 'commands-spigot' instead to get the spigot command utilities as well)
-    implementation('dev.apartium.cocoa-beans:commands:[VERSION]')
+    implementation('dev.apartium.cocoa-beans:cocoa-beans-commands:[VERSION]')
 }
 ```
 

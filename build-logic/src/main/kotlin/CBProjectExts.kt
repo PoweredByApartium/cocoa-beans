@@ -1,8 +1,10 @@
 import org.gradle.api.Project
 
+const val prefix = "cocoa-beans"
+
 val alternateModuleNames = mapOf(
-    "spigot-1-8" to "spigot-1.8",
-    "spigot-1-20" to "spigot-1.20",
+    "spigot-1-8" to "$prefix-spigot-1.8",
+    "spigot-1-20" to "$prefix-spigot-1.20",
 )
 
 val Project.mavenName: String?
@@ -10,6 +12,6 @@ val Project.mavenName: String?
         if (alternateModuleNames.containsKey(project.name)) {
             alternateModuleNames[project.name]
         } else {
-            project.name
+            "$prefix-${project.name}"
         }
 

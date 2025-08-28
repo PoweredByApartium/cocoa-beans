@@ -117,17 +117,10 @@ public class BoardManager {
 <tab title="Maven">
 
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-
 <dependencies>
 <dependency>
-    <groupId>net.apartium.cocoa-beans</groupId>
-    <artifactId>scoreboard</artifactId>
+    <groupId>dev.apartium.cocoa-beans</groupId>
+    <artifactId>cocoa-beans-scoreboard</artifactId>
     <version>%version%</version>
 </dependency>
 </dependencies>
@@ -139,14 +132,11 @@ public class BoardManager {
 
 ```groovy
 repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard:%version%")
 }
 ```
 
@@ -156,14 +146,11 @@ dependencies {
 
 ```kotlin
 repositories {
-    maven {
-        name = "apartium-releases"
-        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard:%version%")
 }
 ```
 
@@ -175,17 +162,10 @@ dependencies {
 <tab title="Maven">
 
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-
 <dependencies>
 <dependency>
-    <groupId>net.apartium.cocoa-beans</groupId>
-    <artifactId>scoreboard-spigot</artifactId>
+    <groupId>dev.apartium.cocoa-beans</groupId>
+    <artifactId>cocoa-beans-scoreboard-spigot</artifactId>
     <version>%version%</version>
 </dependency>
 </dependencies>
@@ -197,14 +177,11 @@ dependencies {
 
 ```groovy
 repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard-spigot:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard-spigot:%version%")
 }
 ```
 
@@ -214,14 +191,11 @@ dependencies {
 
 ```kotlin
 repositories {
-    maven {
-        name = "apartium-releases"
-        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard-spigot:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard-spigot:%version%")
 }
 ```
 
@@ -233,17 +207,10 @@ dependencies {
 <tab title="Maven">
 
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-
 <dependencies>
 <dependency>
-    <groupId>net.apartium.cocoa-beans</groupId>
-    <artifactId>scoreboard-minestom</artifactId>
+    <groupId>dev.apartium.cocoa-beans</groupId>
+    <artifactId>cocoa-beans-scoreboard-minestom</artifactId>
     <version>%version%</version>
 </dependency>
 </dependencies>
@@ -255,14 +222,11 @@ dependencies {
 
 ```groovy
 repositories {
-    maven {
-        name 'apartium-releases'
-        url 'https://nexus.voigon.dev/repository/apartium-releases'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard-minestom:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard-minestom:%version%")
 }
 ```
 
@@ -272,14 +236,11 @@ dependencies {
 
 ```kotlin
 repositories {
-    maven {
-        name = "apartium-releases"
-        url = uri("https://nexus.voigon.dev/repository/apartium-releases")
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly("net.apartium.cocoa-beans:scoreboard-minestom:%version%")
+    compileOnly("dev.apartium.cocoa-beans:cocoa-beans-scoreboard-minestom:%version%")
 }
 ```
 
