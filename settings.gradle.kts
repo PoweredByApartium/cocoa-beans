@@ -12,7 +12,6 @@ rootProject.name = "cocoa-beans"
 
 include("cocoa-beans-spigot")
 include("cocoa-beans-common")
-include("cocoa-beans-plugin")
 include("cocoa-beans-spigot-1-8")
 include("cocoa-beans-spigot-1-20")
 include("cocoa-beans-commands")
