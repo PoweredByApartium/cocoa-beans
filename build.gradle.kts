@@ -172,12 +172,18 @@ allprojects {
         val signingSecret: String? = System.getenv("SIGNING_SECRET")
         val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
 
-        if (isCi)
-            useInMemoryPgpKeys(signingSecret, signingPassword)
-        else if (signingSecret == null || signingPassword == null)
-            useGpgCmd()
+        var enable = false;
 
-        sign(publishing.publications)
+        if (isCi) {
+            useInMemoryPgpKeys(signingSecret, signingPassword)
+            enable = true
+        } else if ((signingSecret == null || signingPassword == null) && System.getenv("GPG_TTY") != null) {
+            useGpgCmd()
+            enable = true
+        }
+
+        if (enable)
+            sign(publishing.publications)
     }
 }
 

@@ -46,26 +46,10 @@ if (!root) {
                 groupId = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
                 artifactId = proj.mavenName
 
+                from(components["java"])
+
                 artifact(tasks.getByName("packageJavadoc"))
                 artifact(tasks.getByName("sourcesJar"))
-                artifact(tasks.jar)
-                tasks.findByName("testFixturesJar")?.let {
-                    artifact(it, {
-                        classifier = "test-fixtures"
-                    })
-                }
-
-                pom.withXml {
-                    val dependenciesNode = asNode().appendNode("dependencies")
-
-                    //Iterate over the compile dependencies (we don"t want the test ones), adding a <dependency> node for each
-                    configurations.getByName("api").allDependencies.forEach {
-                        val dependencyNode = dependenciesNode.appendNode("dependency")
-                        dependencyNode.appendNode("groupId", it.group)
-                        dependencyNode.appendNode("artifactId", it.name)
-                        dependencyNode.appendNode("version", it.version)
-                    }
-                }
 
             }
         }
