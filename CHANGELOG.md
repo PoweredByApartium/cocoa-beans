@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.43-rc1
+## 0.0.43-rc2
 - testing
 
 ## 0.0.43
