@@ -15,14 +15,14 @@ if [ ! -d "docs" ]; then
   mkdir -p $docs/scoreboard-minestom
 
   ls $docs/
-  cp -a common/build/docs/javadoc/* $docs/common
-  cp -a state/build/docs/javadoc/* $docs/state
-  cp -a minestom/build/docs/javadoc/* $docs/minestom
-  cp -a state/spigot/build/docs/javadoc/* $docs/state-spigot
-  cp -a spigot/build/docs/javadoc/* $docs/spigot
-  cp -a commands/build/docs/javadoc/* $docs/commands
-  cp -a commands/spigot/build/docs/javadoc/* $docs/commands-spigot
-  cp -a scoreboard/build/docs/javadoc/* $docs/scoreboard
-  cp -a scoreboard/spigot/build/docs/javadoc/* $docs/scoreboard-spigot
-  cp -a scoreboard/minestom/build/docs/javadoc/* $docs/scoreboard-minestom
+  cp -a cocoa-beans-common/build/docs/javadoc/* $docs/common
+  cp -a cocoa-beans-state/build/docs/javadoc/* $docs/state
+  cp -a cocoa-beans-minestom/build/docs/javadoc/* $docs/minestom
+  cp -a cocoa-beans-state-spigot/build/docs/javadoc/* $docs/state-spigot
+  cp -a cocoa-beans-spigot/build/docs/javadoc/* $docs/spigot
+  cp -a cocoa-beans-commands/build/docs/javadoc/* $docs/commands
+  cp -a cocoa-beans-commands-spigot/build/docs/javadoc/* $docs/commands-spigot
+  cp -a cocoa-beans-scoreboard/build/docs/javadoc/* $docs/scoreboard
+  cp -a cocoa-beans-scoreboard-spigot/build/docs/javadoc/* $docs/scoreboard-spigot
+  cp -a cocoa-beans-scoreboard-minestom/build/docs/javadoc/* $docs/scoreboard-minestom
 fi
