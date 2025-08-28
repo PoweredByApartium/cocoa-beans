@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.43
+- [repo] Add `cocoa-beans-` prefix to bom artifact
+
 ## 0.0.42
 - [repo] Add `cocoa-beans-` prefix to all artifact ids
 - [repo] Publish gradle module metadata

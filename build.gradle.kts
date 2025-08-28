@@ -213,7 +213,7 @@ publishing {
         create<MavenPublication>("bom") {
             val artifactGroup = System.getenv("GROUP") ?: "net.apartium.cocoa-beans"
             groupId = artifactGroup
-            artifactId = "bom"
+            artifactId = "cocoa-beans-bom"
 
             pom.withXml {
                 val dependencyManagement = asNode().appendNode("dependencyManagement")
