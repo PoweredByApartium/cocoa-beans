@@ -201,7 +201,7 @@ hangarPublish {
 
         platforms {
             register(Platforms.PAPER) {
-                jar.set(project(":spigot–plugin").tasks.shadowJar.flatMap { it.archiveFile })
+                jar.set(project(":spigot-plugin").tasks.shadowJar.flatMap { it.archiveFile })
                 platformVersions = listOf("1.17", "1.19", "1.20")
             }
         }
