@@ -1,0 +1,14 @@
+package net.apartium.cocoabeans.scoreboard.numeric.packet;
+
+import net.apartium.cocoabeans.packet.Packet;
+import net.apartium.cocoabeans.scoreboard.ObjectiveMode;
+import net.apartium.cocoabeans.scoreboard.ObjectiveRenderType;
+import net.kyori.adventure.text.Component;
+
+public record ObjectivePacket(
+        ObjectiveMode mode,
+        ObjectiveRenderType renderType,
+        Component displayName
+) implements Packet {
+
+}
