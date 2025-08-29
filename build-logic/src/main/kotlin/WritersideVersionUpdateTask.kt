@@ -32,10 +32,8 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         val content = objectMapper.createArrayNode()
         content.add(createEntry(objectMapper, "snapshot"))
 
-        var write = false
-
         Git.open(project.rootDir).use { git ->
-            val repo = git.repository
+            var write = false
             git.tagList().call().forEach { tag ->
                 val tagName = tag.name.replace("refs/tags/", "")
                 if (!write) {

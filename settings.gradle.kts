@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.maven
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -12,27 +10,19 @@ pluginManagement {
 
 rootProject.name = "cocoa-beans"
 
-include("spigot")
-include("common")
-include("plugin")
-include("spigot:spigot-1-8")
-include("spigot:spigot-1-20")
-include("commands")
-include("commands:spigot")
+include("cocoa-beans-spigot")
+include("cocoa-beans-common")
+include("cocoa-beans-spigot-1-8")
+include("cocoa-beans-spigot-1-20")
+include("cocoa-beans-commands")
+include("cocoa-beans-commands-spigot")
+include("cocoa-beans-scoreboard")
+include("cocoa-beans-minestom")
+include("cocoa-beans-state")
+include("cocoa-beans-state-animation")
+include("cocoa-beans-state-spigot")
+include("cocoa-beans-scoreboard-spigot")
+include("cocoa-beans-scoreboard-minestom")
+include("spigot-test-plugin")
+include("spigot-plugin")
 include("code-coverage-report")
-include("scoreboard")
-include("minestom")
-include("state")
-include("state:animation")
-include("state:spigot")
-include("scoreboard:spigot")
-include("scoreboard:minestom")
-include("spigot:test-plugin")
-
-for (project in rootProject.children) {
-    for (subproject in project.children) {
-        if (!subproject.name.startsWith(project.name)) {
-            subproject.name = "${project.name}-${subproject.name}"
-        }
-    }
-}
