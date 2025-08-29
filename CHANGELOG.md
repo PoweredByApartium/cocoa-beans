@@ -1,8 +1,4 @@
 # CHANGELOG
-
-## 0.0.43-rc2
-- testing
-
 ## 0.0.43
 - [repo] Add `cocoa-beans-` prefix to bom artifact
 - [repo] Project restructure
