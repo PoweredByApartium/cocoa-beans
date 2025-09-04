@@ -313,7 +313,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                 if (index != 0)
                     throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
 
-                return map(converter, context -> context.parsedArgs().get(CommandContext.class).getFirst());
+                return map(converter, context -> context.parsedArgs().get(CommandContext.class).get(0));
             }
         }
 
@@ -324,7 +324,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             if (index != 0)
                 throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
 
-            return context -> context.parsedArgs().get(CommandContext.class).getFirst();
+            return context -> context.parsedArgs().get(CommandContext.class).get(0);
         }
 
         return null;
@@ -405,7 +405,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                     .add(context -> {
                         for (Map.Entry<Class<?>, List<Object>> entry : context.parsedArgs().entrySet()) {
                             if (type.isAssignableFrom(entry.getKey())) {
-                                return entry.getValue().getFirst();
+                                return entry.getValue().get(0);
                             }
                         }
 

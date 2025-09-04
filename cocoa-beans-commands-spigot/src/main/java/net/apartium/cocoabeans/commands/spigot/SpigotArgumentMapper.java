@@ -25,6 +25,10 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
         super();
     }
 
+    public SpigotArgumentMapper(List<MapConverter<?>> converters) {
+        super(converters);
+    }
+
     @Override
     protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
         ArgumentIndex<?> argumentIndex = super.resolveBuiltInArgumentIndex(type, counterMap, mapOfArguments, index);
@@ -36,7 +40,7 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
                 continue;
 
             if (converter.isSourceTypeSupported(CommandSender.class))
-                return map(converter, getSpigotSenderIndex(type, counterMap, mapOfArguments, index));
+                return map(converter, getSpigotSenderIndex(CommandSender.class, counterMap, mapOfArguments, index));
         }
 
         if (CommandSender.class.isAssignableFrom(type))
