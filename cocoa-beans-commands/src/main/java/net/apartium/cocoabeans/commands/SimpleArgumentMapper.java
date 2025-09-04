@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.structs.Entry;
 import net.apartium.cocoabeans.utils.OptionalFloat;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -92,6 +93,17 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             }
     );
 
+    protected final List<MapConverter<?>> converters;
+
+    @ApiStatus.AvailableSince("0.0.44")
+    public SimpleArgumentMapper(List<MapConverter<?>> converters) {
+        this.converters = List.copyOf(converters);
+    }
+
+    public SimpleArgumentMapper() {
+        this(List.of());
+    }
+
     @Override
     public List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes) {
         if (parameters.length == 0)
@@ -136,6 +148,17 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         }
 
         return result;
+    }
+
+    @ApiStatus.AvailableSince("0.0.44")
+    protected <T> ArgumentIndex<T> map(MapConverter<T> converter, ArgumentIndex<?> argumentIndex) {
+        return context -> {
+            Object obj = argumentIndex.get(context);
+            if (obj == null)
+                return null;
+
+            return converter.convert(obj);
+        };
     }
 
     private Map<String, Class<?>> getParametersNames(RegisteredVariant.Parameter[] parameters) {
@@ -203,12 +226,63 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         if (isInvalidArguments(arguments, index))
             arguments = findArgumentsByAssignableType(type, resultMap.mapOfArgumentsByType);
 
+        if (isInvalidArguments(arguments, index)) {
+            argumentIndex = findArgumentsByMapConverters(type, index, resultMap.mapOfArgumentsByType, counterMap);
+            if (argumentIndex != null)
+                return argumentIndex;
+        }
 
         if (isInvalidArguments(arguments, index))
             throw new NoSuchElementException("No argument found for type " + type + " at index " + index);
 
 
         return arguments.get(index);
+    }
+
+    private ArgumentIndex<?> findArgumentsByMapConverters(Class<?> type, int index, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType, Map<Class<?>, Integer> counterMap) {
+        for (MapConverter<?> converter : converters) {
+            if (!converter.targetType().isAssignableFrom(type))
+                continue;
+
+            List<ArgumentIndex<?>> arguments = null;
+            Entry<Class<?>, List<ArgumentIndex<?>>> mapper = getMapper(converter, mapOfArgumentsByType, Map.of());
+            if (mapper != null) {
+                arguments = mapper.value();
+                index = counterMap.getOrDefault(mapper.key(), 0);
+            }
+
+            if (isInvalidArguments(arguments, index)) {
+                mapper = getMapper(converter, mapOfArgumentsByType, PRIMITIVE_TO_WRAPPER_MAP);
+                if (mapper != null) {
+                    arguments = mapper.value();
+                    index = counterMap.getOrDefault(mapper.key(), 0);
+                }
+            }
+
+            if (mapper == null || isInvalidArguments(arguments, index))
+                continue;
+
+            arguments.set(index, map(converter, arguments.get(index)));
+            counterMap.put(type, counterMap.getOrDefault(type, 0) - 1);
+            counterMap.put(type, counterMap.getOrDefault(mapper.key(), 0) + 1);
+            return arguments.get(index);
+        }
+
+        return null;
+    }
+
+    private Entry<Class<?>, List<ArgumentIndex<?>>> getMapper(MapConverter<?> converter, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType, Map<Class<?>, Class<?>> classMapper) {
+        for (Map.Entry<Class<?>, List<ArgumentIndex<?>>> entry : mapOfArgumentsByType.entrySet()) {
+            Class<?> clazz = entry.getKey();
+            clazz = classMapper.getOrDefault(clazz, clazz);
+
+            if (!converter.isSourceTypeSupported(clazz))
+                continue;
+
+            return new Entry<>(entry.getKey(), entry.getValue());
+        }
+
+        return null;
     }
 
     private boolean isInvalidArguments(List<ArgumentIndex<?>> arguments, int index) {
@@ -228,6 +302,21 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
+        for (MapConverter<?> converter : converters) {
+            if (!converter.targetType().isAssignableFrom(type))
+                continue;
+
+            if (converter.isSourceTypeSupported(Sender.class))
+                return map(converter, getSenderIndex(mapOfArguments, index));
+
+            if (converter.isSourceTypeSupported(CommandContext.class)) {
+                if (index != 0)
+                    throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
+
+                return map(converter, context -> context.parsedArgs().get(CommandContext.class).getFirst());
+            }
+        }
+
         if (Sender.class.isAssignableFrom(type))
             return getSenderIndex(mapOfArguments, index);
 
@@ -235,7 +324,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             if (index != 0)
                 throw new IllegalArgumentException("Can't use index " + index + " for CommandContext");
 
-            return context -> context.parsedArgs().get(CommandContext.class).get(0);
+            return context -> context.parsedArgs().get(CommandContext.class).getFirst();
         }
 
         return null;
@@ -291,8 +380,21 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         counterMap.put(type, countIndex + 1);
 
         if (parameterName != null && lookupParametersNames.containsKey(parameterName)) {
-            if (!lookupParametersNames.get(parameterName).isAssignableFrom(type))
+            Class<?> targetType = lookupParametersNames.get(parameterName);
+            if (!targetType.isAssignableFrom(type)) {
+                for (MapConverter<?> converter : converters) {
+                    if (!converter.targetType().isAssignableFrom(targetType))
+                        continue;
+
+                    if (!converter.isSourceTypeSupported(type))
+                        continue;
+
+                    resultParameterName.put(parameterName, map(converter, context -> context.parsedArgs().get(type).get(countIndex)));
+                    return;
+                }
+
                 throw new IllegalArgumentException("Parameter name " + parameterName + " is not assignable from type " + type);
+            }
 
             resultParameterName.put(parameterName, context -> context.parsedArgs().get(type).get(countIndex));
             return;
@@ -303,7 +405,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
                     .add(context -> {
                         for (Map.Entry<Class<?>, List<Object>> entry : context.parsedArgs().entrySet()) {
                             if (type.isAssignableFrom(entry.getKey())) {
-                                return entry.getValue().get(0);
+                                return entry.getValue().getFirst();
                             }
                         }
 
