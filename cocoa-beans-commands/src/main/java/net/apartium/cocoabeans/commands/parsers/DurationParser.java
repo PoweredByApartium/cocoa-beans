@@ -135,7 +135,7 @@ public class DurationParser extends ArgumentParser<Duration> {
     public OptionalInt tryParse(CommandProcessingContext context) {
         return parse(context)
                 .map(result -> OptionalInt.of(result.newIndex()))
-                .orElse(null);
+                .orElse(OptionalInt.empty());
     }
 
     @Override
