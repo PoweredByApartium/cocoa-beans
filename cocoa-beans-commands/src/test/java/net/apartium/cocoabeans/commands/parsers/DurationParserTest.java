@@ -1,10 +1,10 @@
 package net.apartium.cocoabeans.commands.parsers;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Set;
 
 import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -117,6 +117,28 @@ class DurationParserTest {
 
         assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, Map.of()));
         assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, null));
+    }
+
+    @Test
+    void tabCompletion() {
+        DurationParser parser = new DurationParser();
+
+        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9"), 1);
+        assertParserTabCompletion(parser, null, null, args("2"), 0, Set.of("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2y", "2w", "2d", "2h", "2m", "2s"), 1);
+        assertParserTabCompletion(parser, null, null, args("2m"), 0, Set.of("2m"), 1);
+
+        parser = new DurationParser(DurationParser.DEFAULT_KEYWORD, 0, Map.of(
+                "months", Duration.ofDays(30),
+                "minutes", Duration.ofMinutes(1),
+                "mills", Duration.ofMillis(1),
+                "s", Duration.ofSeconds(1)
+        ));
+
+        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9"), 1);
+        assertParserTabCompletion(parser, null, null, args("2"), 0, Set.of("20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2months", "2minutes", "2mills", "2s"), 1);
+        assertParserTabCompletion(parser, null, null, args("2m"), 0, Set.of("2months", "2minutes", "2mills"), 1);
+        assertParserTabCompletion(parser, null, null, args("2mo"), 0, Set.of("2months"), 1);
+        assertParserTabCompletion(parser, null, null, args("2mi"), 0, Set.of("2minutes", "2mills"), 1);
     }
 
 }

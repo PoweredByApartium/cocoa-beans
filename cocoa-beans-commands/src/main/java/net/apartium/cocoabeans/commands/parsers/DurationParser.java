@@ -4,10 +4,8 @@ import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ApiStatus.AvailableSince("0.0.44")
 public class DurationParser extends ArgumentParser<Duration> {
@@ -142,6 +140,75 @@ public class DurationParser extends ArgumentParser<Duration> {
 
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        return Optional.empty();
+        List<String> args = processingContext.args();
+        int index = processingContext.index();
+
+        if (args.size() <= index || args.get(index).isEmpty())
+            return Optional.of(new TabCompletionResult(
+                    Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9"),
+                    index + 1
+            ));
+
+        long asLong = 0;
+        String arg = args.get(index);
+        int lastArgIndex = 0;
+        boolean numberComplete = true;
+        while (lastArgIndex < arg.length() && numberComplete) {
+            char c = arg.charAt(lastArgIndex);
+            if (Character.isDigit(c)) {
+                if (asLong > asLong * 10)
+                    return Optional.empty();
+
+                asLong = asLong * 10 + (c - '0');
+                lastArgIndex++;
+                continue;
+            }
+
+            numberComplete = false;
+        }
+
+        if (numberComplete) {
+            Set<String> result = new HashSet<>();
+            for (int i = asLong == 0 ? 1 : 0; i < 10; i++) {
+                long num = (asLong * 10 + i);
+                if (asLong > num)
+                    break;
+
+                result.add(args.get(index) + i);
+            }
+
+            if (arg.length() == lastArgIndex) {
+                final long finalAsLong = asLong;
+                result.addAll(this.units.keySet()
+                        .stream()
+                        .map(unit -> finalAsLong + unit)
+                        .collect(Collectors.toSet())
+                );
+            }
+
+            if (result.isEmpty())
+                return Optional.empty();
+
+            return Optional.of(new TabCompletionResult(
+                    result,
+                    index + 1
+            ));
+        }
+
+        String attemptUnit = arg.substring(lastArgIndex);
+        final long finalAsLong = asLong;
+        Set<String> result = this.units.keySet()
+                .stream()
+                .filter(unit -> unit.startsWith(attemptUnit))
+                .map(unit -> finalAsLong + unit)
+                .collect(Collectors.toSet());
+
+        if (result.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new TabCompletionResult(
+                result,
+                index + 1
+        ));
     }
 }
