@@ -24,9 +24,13 @@ public class CommandsSpigotTestBase {
         server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
 
-        commandManager = new SpigotCommandManager(plugin);
+        commandManager = new SpigotCommandManager(plugin, createArgumentMapper());
         commandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
         commandManager.registerArgumentTypeHandler(SpigotCommandManager.SPIGOT_PARSERS);
+    }
+
+    protected SpigotArgumentMapper createArgumentMapper() {
+        return new SpigotArgumentMapper();
     }
 
     @AfterEach

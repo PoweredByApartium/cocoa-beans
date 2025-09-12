@@ -22,7 +22,7 @@ import java.util.Map;
 public class SpigotArgumentMapper extends SimpleArgumentMapper {
 
     public SpigotArgumentMapper() {
-        super();
+        this(List.of());
     }
 
     public SpigotArgumentMapper(List<ArgumentConverter<?>> converters) {
