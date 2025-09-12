@@ -1,6 +1,6 @@
 # CHANGELOG
 ## 0.0.44
-- [commands] Add MapConverter
+- [commands] Add ArgumentConverter
 
 ## 0.0.43
 - [repo] Add `cocoa-beans-` prefix to bom artifact
