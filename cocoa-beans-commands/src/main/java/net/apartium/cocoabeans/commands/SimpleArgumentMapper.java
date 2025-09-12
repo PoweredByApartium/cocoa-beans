@@ -93,10 +93,10 @@ public class SimpleArgumentMapper implements ArgumentMapper {
             }
     );
 
-    protected final List<MapConverter<?>> converters;
+    protected final List<ArgumentConverter<?>> converters;
 
     @ApiStatus.AvailableSince("0.0.44")
-    public SimpleArgumentMapper(List<MapConverter<?>> converters) {
+    public SimpleArgumentMapper(List<ArgumentConverter<?>> converters) {
         this.converters = List.copyOf(converters);
     }
 
@@ -151,7 +151,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     @ApiStatus.AvailableSince("0.0.44")
-    protected <T> ArgumentIndex<T> map(MapConverter<T> converter, ArgumentIndex<?> argumentIndex) {
+    protected <T> ArgumentIndex<T> map(ArgumentConverter<T> converter, ArgumentIndex<?> argumentIndex) {
         return context -> {
             Object obj = argumentIndex.get(context);
             if (obj == null)
@@ -240,8 +240,8 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     private ArgumentIndex<?> findArgumentsByMapConverters(Class<?> type, int index, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType, Map<Class<?>, Integer> counterMap) {
-        for (MapConverter<?> converter : converters) {
-            if (!converter.targetType().isAssignableFrom(type))
+        for (ArgumentConverter<?> converter : converters) {
+            if (!type.isAssignableFrom(converter.targetType()))
                 continue;
 
             List<ArgumentIndex<?>> arguments = null;
@@ -271,7 +271,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         return null;
     }
 
-    private Entry<Class<?>, List<ArgumentIndex<?>>> getMapper(MapConverter<?> converter, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType, Map<Class<?>, Class<?>> classMapper) {
+    private Entry<Class<?>, List<ArgumentIndex<?>>> getMapper(ArgumentConverter<?> converter, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArgumentsByType, Map<Class<?>, Class<?>> classMapper) {
         for (Map.Entry<Class<?>, List<ArgumentIndex<?>>> entry : mapOfArgumentsByType.entrySet()) {
             Class<?> clazz = entry.getKey();
             clazz = classMapper.getOrDefault(clazz, clazz);
@@ -302,8 +302,8 @@ public class SimpleArgumentMapper implements ArgumentMapper {
     }
 
     protected ArgumentIndex<?> resolveBuiltInArgumentIndex(Class<?> type, Map<Class<?>, Integer> counterMap, Map<Class<?>, List<ArgumentIndex<?>>> mapOfArguments, int index) {
-        for (MapConverter<?> converter : converters) {
-            if (!converter.targetType().isAssignableFrom(type))
+        for (ArgumentConverter<?> converter : converters) {
+            if (!type.isAssignableFrom(converter.targetType()))
                 continue;
 
             if (converter.isSourceTypeSupported(Sender.class))
@@ -382,8 +382,8 @@ public class SimpleArgumentMapper implements ArgumentMapper {
         if (parameterName != null && lookupParametersNames.containsKey(parameterName)) {
             Class<?> targetType = lookupParametersNames.get(parameterName);
             if (!targetType.isAssignableFrom(type)) {
-                for (MapConverter<?> converter : converters) {
-                    if (!converter.targetType().isAssignableFrom(targetType))
+                for (ArgumentConverter<?> converter : converters) {
+                    if (!targetType.isAssignableFrom(converter.targetType()))
                         continue;
 
                     if (!converter.isSourceTypeSupported(type))

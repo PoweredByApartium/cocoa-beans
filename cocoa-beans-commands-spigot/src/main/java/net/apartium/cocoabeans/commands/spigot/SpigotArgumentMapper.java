@@ -11,7 +11,7 @@
 package net.apartium.cocoabeans.commands.spigot;
 
 import net.apartium.cocoabeans.commands.ArgumentIndex;
-import net.apartium.cocoabeans.commands.MapConverter;
+import net.apartium.cocoabeans.commands.ArgumentConverter;
 import net.apartium.cocoabeans.commands.SimpleArgumentMapper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
         super();
     }
 
-    public SpigotArgumentMapper(List<MapConverter<?>> converters) {
+    public SpigotArgumentMapper(List<ArgumentConverter<?>> converters) {
         super(converters);
     }
 
@@ -35,8 +35,8 @@ public class SpigotArgumentMapper extends SimpleArgumentMapper {
         if (argumentIndex != null)
             return argumentIndex;
 
-        for (MapConverter<?> converter : converters) {
-            if (!converter.targetType().isAssignableFrom(type))
+        for (ArgumentConverter<?> converter : converters) {
+            if (!type.isAssignableFrom(converter.targetType()))
                 continue;
 
             if (converter.isSourceTypeSupported(CommandSender.class))

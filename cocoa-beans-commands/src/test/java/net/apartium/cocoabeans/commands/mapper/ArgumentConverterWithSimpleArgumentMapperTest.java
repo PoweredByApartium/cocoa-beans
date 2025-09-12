@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MapConverterWithSimpleArgumentMapperTest {
+class ArgumentConverterWithSimpleArgumentMapperTest {
 
     TestCommandManager testCommandManager;
 
@@ -22,7 +22,7 @@ class MapConverterWithSimpleArgumentMapperTest {
 
     @BeforeEach
     void before() {
-        testCommandManager = new TestCommandManager(new SimpleArgumentMapper(List.of(new UUIDMapConverter())), new SimpleCommandLexer());
+        testCommandManager = new TestCommandManager(new SimpleArgumentMapper(List.of(new UUIDArgumentConverter())), new SimpleCommandLexer());
 
         testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
         testCommandManager.registerArgumentTypeHandler(new UUIDParser());
