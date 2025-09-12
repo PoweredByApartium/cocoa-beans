@@ -136,6 +136,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates an instance of a <code>ArgumentContext</code> record class.</div>
 </dd>
+<dt><a href="net/apartium/cocoabeans/commands/ArgumentConverter.html" class="type-name-link" title="interface in net.apartium.cocoabeans.commands">ArgumentConverter</a>&lt;<a href="net/apartium/cocoabeans/commands/ArgumentConverter.html" title="type parameter in ArgumentConverter">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/commands/package-summary.html">net.apartium.cocoabeans.commands</a></dt>
+<dd>
+<div class="block">Allows defining custom types in sub commands that will be converted before execution.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/commands/ArgumentIndex.html" class="type-name-link" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;<a href="net/apartium/cocoabeans/commands/ArgumentIndex.html" title="type parameter in ArgumentIndex">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/commands/package-summary.html">net.apartium.cocoabeans.commands</a></dt>
 <dd>
 <div class="block">Retrieves the argument from the context</div>
@@ -346,8 +350,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor with an ignoreCase and lax</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/commands/MapConverter.html#convert(java.lang.Object)" class="member-name-link">convert(Object)</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/MapConverter.html" title="interface in net.apartium.cocoabeans.commands">MapConverter</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/commands/ArgumentConverter.html#convert(java.lang.Object)" class="member-name-link">convert(Object)</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/ArgumentConverter.html" title="interface in net.apartium.cocoabeans.commands">ArgumentConverter</a></dt>
+<dd>
+<div class="block">Convert source object into target type.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#converters" class="member-name-link">converters</a> - Variable in class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/virtual/VirtualCommandFactory.html#create(net.apartium.cocoabeans.commands.CommandNode...)" class="member-name-link">create(CommandNode...)</a> - Method in class net.apartium.cocoabeans.commands.virtual.<a href="net/apartium/cocoabeans/commands/virtual/VirtualCommandFactory.html" title="class in net.apartium.cocoabeans.commands.virtual">VirtualCommandFactory</a></dt>
@@ -1026,8 +1032,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get if the argument parser accept no argument</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/commands/MapConverter.html#isSourceTypeSupported(java.lang.Class)" class="member-name-link">isSourceTypeSupported(Class&lt;?&gt;)</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/MapConverter.html" title="interface in net.apartium.cocoabeans.commands">MapConverter</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/commands/ArgumentConverter.html#isSourceTypeSupported(java.lang.Class)" class="member-name-link">isSourceTypeSupported(Class&lt;?&gt;)</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/ArgumentConverter.html" title="interface in net.apartium.cocoabeans.commands">ArgumentConverter</a></dt>
+<dd>
+<div class="block">Is argument source type supported by this converter.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/commands/parsers/Scope.html#isVariant()" class="member-name-link">isVariant()</a> - Method in enum class net.apartium.cocoabeans.commands.parsers.<a href="net/apartium/cocoabeans/commands/parsers/Scope.html" title="enum class in net.apartium.cocoabeans.commands.parsers">Scope</a></dt>
 <dd>
 <div class="block">Whether this scope applies to a variant</div>
@@ -1098,7 +1106,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
-<dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#map(net.apartium.cocoabeans.commands.MapConverter,net.apartium.cocoabeans.commands.ArgumentIndex)" class="member-name-link">map(MapConverter&lt;T&gt;, ArgumentIndex&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
+<dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#map(net.apartium.cocoabeans.commands.ArgumentConverter,net.apartium.cocoabeans.commands.ArgumentIndex)" class="member-name-link">map(ArgumentConverter&lt;T&gt;, ArgumentIndex&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/parsers/MapBasedParser.html" class="type-name-link" title="class in net.apartium.cocoabeans.commands.parsers">MapBasedParser</a>&lt;<a href="net/apartium/cocoabeans/commands/parsers/MapBasedParser.html" title="type parameter in MapBasedParser">T</a>&gt; - Class in <a href="net/apartium/cocoabeans/commands/parsers/package-summary.html">net.apartium.cocoabeans.commands.parsers</a></dt>
 <dd>
@@ -1118,8 +1126,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor with ignoreCase and lax</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/commands/MapConverter.html" class="type-name-link" title="interface in net.apartium.cocoabeans.commands">MapConverter</a>&lt;<a href="net/apartium/cocoabeans/commands/MapConverter.html" title="type parameter in MapConverter">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/commands/package-summary.html">net.apartium.cocoabeans.commands</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/ArgumentMapper.html#mapIndices(net.apartium.cocoabeans.commands.RegisteredVariant.Parameter%5B%5D,java.util.List,java.util.List,java.util.List)" class="member-name-link">mapIndices(RegisteredVariant.Parameter[], List&lt;RegisterArgumentParser&lt;?&gt;&gt;, List&lt;Requirement&gt;, List&lt;Class&lt;?&gt;&gt;)</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/ArgumentMapper.html" title="interface in net.apartium.cocoabeans.commands">ArgumentMapper</a></dt>
 <dd>
 <div class="block">Maps the command arguments into the argument indexes required by the sub command to be call with the right arguments</div>
@@ -1620,7 +1626,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#%3Cinit%3E()" class="member-name-link">SimpleArgumentMapper()</a> - Constructor for class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#%3Cinit%3E(java.util.List)" class="member-name-link">SimpleArgumentMapper(List&lt;MapConverter&lt;?&gt;&gt;)</a> - Constructor for class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
+<dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html#%3Cinit%3E(java.util.List)" class="member-name-link">SimpleArgumentMapper(List&lt;ArgumentConverter&lt;?&gt;&gt;)</a> - Constructor for class net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.html" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/SimpleArgumentMapper.ResultMap.html" class="type-name-link" title="class in net.apartium.cocoabeans.commands">SimpleArgumentMapper.ResultMap</a> - Record Class in <a href="net/apartium/cocoabeans/commands/package-summary.html">net.apartium.cocoabeans.commands</a></dt>
 <dd>
@@ -1749,8 +1755,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates an instance of a <code>TabCompletionResult</code> record class.</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/commands/MapConverter.html#targetType()" class="member-name-link">targetType()</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/MapConverter.html" title="interface in net.apartium.cocoabeans.commands">MapConverter</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/commands/ArgumentConverter.html#targetType()" class="member-name-link">targetType()</a> - Method in interface net.apartium.cocoabeans.commands.<a href="net/apartium/cocoabeans/commands/ArgumentConverter.html" title="interface in net.apartium.cocoabeans.commands">ArgumentConverter</a></dt>
+<dd>
+<div class="block">Target type of this converter.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/commands/lexer/CommandToken.html#text" class="member-name-link">text</a> - Variable in class net.apartium.cocoabeans.commands.lexer.<a href="net/apartium/cocoabeans/commands/lexer/CommandToken.html" title="class in net.apartium.cocoabeans.commands.lexer">CommandToken</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/commands/exception/BadCommandResponse.html#throwError()" class="member-name-link">throwError()</a> - Method in class net.apartium.cocoabeans.commands.exception.<a href="net/apartium/cocoabeans/commands/exception/BadCommandResponse.html" title="class in net.apartium.cocoabeans.commands.exception">BadCommandResponse</a></dt>
