@@ -264,7 +264,7 @@ public class SimpleArgumentMapper implements ArgumentMapper {
 
             arguments.set(index, map(converter, arguments.get(index)));
             counterMap.put(type, counterMap.getOrDefault(type, 0) - 1);
-            counterMap.put(type, counterMap.getOrDefault(mapper.key(), 0) + 1);
+            counterMap.put(mapper.key(), counterMap.getOrDefault(mapper.key(), 0) + 1);
             return arguments.get(index);
         }
 
