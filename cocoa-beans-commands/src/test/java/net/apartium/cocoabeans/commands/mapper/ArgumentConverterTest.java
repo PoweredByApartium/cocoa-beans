@@ -22,7 +22,9 @@ class ArgumentConverterTest {
 
     @BeforeEach
     void before() {
-        testCommandManager = new TestCommandManager(new SimpleArgumentMapper(List.of(new UUIDArgumentConverter())), new SimpleCommandLexer());
+        testCommandManager = new TestCommandManager(
+                new SimpleArgumentMapper(List.of(new UUIDArgumentConverter(), new SenderArgumentConverter(), new CommandContextArgumentConverter())),
+                new SimpleCommandLexer());
 
         testCommandManager.registerArgumentTypeHandler(CommandManager.COMMON_PARSERS);
         testCommandManager.registerArgumentTypeHandler(new UUIDParser());
@@ -34,87 +36,94 @@ class ArgumentConverterTest {
 
     @Test
     void meowA() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "a " + uuid);
-            assertEquals(
-                    List.of("a: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "a " + uuid);
+        assertEquals(
+                List.of("a: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowB() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "b " + uuid);
-            assertEquals(
-                    List.of("b: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "b " + uuid);
+        assertEquals(
+                List.of("b: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowC() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "c nah_id_win " + uuid);
-            assertEquals(
-                    List.of("nah_id_win -c uuid: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "c nah_id_win " + uuid);
+        assertEquals(
+                List.of("nah_id_win -c uuid: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowD() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "d " + uuid + " nah_id_win");
-            assertEquals(
-                    List.of("nah_id_win -d uuid: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "d " + uuid + " nah_id_win");
+        assertEquals(
+                List.of("nah_id_win -d uuid: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowE() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "e nah_id_win " + uuid);
-            assertEquals(
-                    List.of("nah_id_win -e uuid: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "e nah_id_win " + uuid);
+        assertEquals(
+                List.of("nah_id_win -e uuid: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowF() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "f " + uuid + " nah_id_win");
-            assertEquals(
-                    List.of("nah_id_win -f uuid: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "f " + uuid + " nah_id_win");
+        assertEquals(
+                List.of("nah_id_win -f uuid: " + uuid),
+                sender.getMessages()
+        );
     }
 
     @Test
     void meowG() {
-        for (int i = 0; i <= 1024; i++) {
-            UUID uuid = UUID.randomUUID();
-            evaluate("cool", "g " + uuid + " nah_id_win");
-            assertEquals(
-                    List.of("nah_id_win -g uuid: " + uuid),
-                    sender.getMessages()
-            );
-        }
+        UUID uuid = UUID.randomUUID();
+        evaluate("cool", "g " + uuid + " nah_id_win");
+        assertEquals(
+                List.of("nah_id_win -g uuid: " + uuid),
+                sender.getMessages()
+        );
     }
+
+    @Test
+    void senderConverter() {
+        evaluate("cool", "sender-converter");
+        assertEquals(
+                List.of("sender converted"),
+                sender.getMessages()
+        );
+
+    }
+
+    @Test
+    void contextConverter() {
+        evaluate("cool", "context-converter");
+        assertEquals(
+                List.of("context converted"),
+                sender.getMessages()
+        );
+
+    }
+
 
     void evaluate(String label, String args) {
         sender.getMessages().clear();

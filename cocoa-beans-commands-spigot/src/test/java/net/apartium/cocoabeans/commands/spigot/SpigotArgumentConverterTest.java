@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SpigotArgumentConverterTest extends CommandsSpigotTestBase {
+class SpigotArgumentConverterTest extends CommandsSpigotTestBase {
 
     private PlayerMock voigon;
 
@@ -44,13 +44,6 @@ public class SpigotArgumentConverterTest extends CommandsSpigotTestBase {
         assertEquals("value is sender", voigon.nextMessage());
 
     }
-
-//    @Test
-//    void testSenderMappingWithPrimitiveWrapper() {
-//        execute(voigon, "dog numeric 2");
-//        assertEquals("numeric value is 2", voigon.nextMessage());
-//
-//    }
 
     private static class StringContainerArgumentConverter implements ArgumentConverter<DogCommand.StringContainer> {
         @Override

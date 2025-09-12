@@ -22,8 +22,4 @@ public class DogCommand implements CommandNode {
         sender.commandSender().sendMessage("value is " + string.value());
     }
 
-//    @SubCommand("numeric <int>")
-//    public void setInteger(SenderContainer sender, int i) {
-//        sender.commandSender().sendMessage("numeric value is " + i);
-//    }
 }

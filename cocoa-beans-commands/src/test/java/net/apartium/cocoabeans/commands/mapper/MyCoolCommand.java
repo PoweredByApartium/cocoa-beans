@@ -42,4 +42,15 @@ public class MyCoolCommand implements CommandNode {
     public void subCommandG(Sender sender, String myString, @Param("my-uuid") String uuidAsString) {
         sender.sendMessage(myString + " -g uuid: " + uuidAsString);
     }
+
+    @SubCommand("sender-converter")
+    public void senderConverter(SenderContainer sender) {
+        sender.sender().sendMessage("sender converted");
+    }
+
+    @SubCommand("context-converter")
+    public void senderConverter(CommandContextContainer ctxt, SenderContainer sender) {
+        ctxt.context().sender().sendMessage("context converted");
+    }
+
 }
