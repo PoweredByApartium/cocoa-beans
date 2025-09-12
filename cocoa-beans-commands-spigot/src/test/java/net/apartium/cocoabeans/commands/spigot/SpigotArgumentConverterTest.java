@@ -28,37 +28,7 @@ public class SpigotArgumentConverterTest extends CommandsSpigotTestBase {
 
     @Override
     protected SpigotArgumentMapper createArgumentMapper() {
-        return new SpigotArgumentMapper(List.of(new ArgumentConverter<DogCommand.StringContainer>() {
-            @Override
-            public boolean isSourceTypeSupported(Class<?> clazz) {
-                return clazz == String.class;
-            }
-
-            @Override
-            public Class<DogCommand.StringContainer> targetType() {
-                return DogCommand.StringContainer.class;
-            }
-
-            @Override
-            public DogCommand.StringContainer convert(Object source) {
-                return new DogCommand.StringContainer((String) source);
-            }
-        }, new ArgumentConverter<DogCommand.SenderContainer>() {
-            @Override
-            public boolean isSourceTypeSupported(Class<?> clazz) {
-                return CommandSender.class.isAssignableFrom(clazz);
-            }
-
-            @Override
-            public Class<DogCommand.SenderContainer> targetType() {
-                return DogCommand.SenderContainer.class;
-            }
-
-            @Override
-            public DogCommand.SenderContainer convert(Object source) {
-                return new DogCommand.SenderContainer((CommandSender) source);
-            }
-        }));
+        return new SpigotArgumentMapper(List.of(new SenderContainerArgumentConverter(), new StringContainerArgumentConverter()));
     }
 
     @Test
@@ -75,4 +45,47 @@ public class SpigotArgumentConverterTest extends CommandsSpigotTestBase {
 
     }
 
+//    @Test
+//    void testSenderMappingWithPrimitiveWrapper() {
+//        execute(voigon, "dog numeric 2");
+//        assertEquals("numeric value is 2", voigon.nextMessage());
+//
+//    }
+
+    private static class StringContainerArgumentConverter implements ArgumentConverter<DogCommand.StringContainer> {
+        @Override
+        public boolean isSourceTypeSupported(Class<?> clazz) {
+            return clazz == String.class;
+        }
+
+        @Override
+        public Class<DogCommand.StringContainer> targetType() {
+            return DogCommand.StringContainer.class;
+        }
+
+        @Override
+        public DogCommand.StringContainer convert(Object source) {
+            String str = (String) source;
+            if (str.equals("null"))
+                return null;
+            return new DogCommand.StringContainer(str);
+        }
+    }
+
+    private static class SenderContainerArgumentConverter implements ArgumentConverter<DogCommand.SenderContainer> {
+        @Override
+        public boolean isSourceTypeSupported(Class<?> clazz) {
+            return CommandSender.class.isAssignableFrom(clazz);
+        }
+
+        @Override
+        public Class<DogCommand.SenderContainer> targetType() {
+            return DogCommand.SenderContainer.class;
+        }
+
+        @Override
+        public DogCommand.SenderContainer convert(Object source) {
+            return new DogCommand.SenderContainer((CommandSender) source);
+        }
+    }
 }
