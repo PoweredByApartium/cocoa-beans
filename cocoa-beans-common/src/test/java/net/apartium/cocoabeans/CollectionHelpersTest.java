@@ -19,7 +19,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author Voigon (Lior S.)
+ * @author Voigon (Lior S.), Thebotgame (Kfir B)
  */
 class CollectionHelpersTest {
 
@@ -276,6 +276,54 @@ class CollectionHelpersTest {
         assertTrue(CollectionHelpers.isSorted(List.of(), Integer::compareTo));
         assertTrue(CollectionHelpers.isSorted(List.of(1), Integer::compareTo));
 
+    }
+
+    @Test
+    void doubleRange() {
+        assertEquals(
+                List.of(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0),
+                CollectionHelpers.range(0.0, 10.0, 1.0)
+        );
+
+        assertEquals(
+                List.of(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0),
+                CollectionHelpers.range(0.0, 5.0, 0.5)
+        );
+
+        assertEquals(
+                List.of(5.0, 4.5, 4.0, 3.5, 3.0, 2.5, 2.0, 1.5, 1.0, 0.5, 0.0),
+                CollectionHelpers.range(5.0, 0.0, 0.5)
+        );
+
+        assertEquals(
+                List.of(0.0, 0.25, 0.5, 0.75, 1.0),
+                CollectionHelpers.range(0.0, 1.0, 0.25)
+        );
+
+        assertEquals(
+                List.of(0.0, 1.0),
+                CollectionHelpers.range(0.0, 1.0, 1)
+        );
+
+        assertEquals(
+                List.of(0.0),
+                CollectionHelpers.range(0.0, 0.0, 1)
+        );
+
+        assertEquals(
+                List.of(0.0, 0.35),
+                CollectionHelpers.range(0.0, 0.35, 1)
+        );
+
+        assertEquals(
+                List.of(0.35, 0.0),
+                CollectionHelpers.range(0.35, 0.0, 1)
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> CollectionHelpers.range(0.0, 10.0, 0.0));
+        assertThrows(IllegalArgumentException.class, () -> CollectionHelpers.range(0.0, 10.0, -0.1));
+        assertThrows(IllegalArgumentException.class, () -> CollectionHelpers.range(0.0, 10.0, -1));
+        assertThrows(IllegalArgumentException.class, () -> CollectionHelpers.range(0.0, 10.0, -10));
     }
 
 }

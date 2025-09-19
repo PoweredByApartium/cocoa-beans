@@ -21,6 +21,8 @@ import java.util.*;
  */
 public class CollectionHelpers {
 
+    private static final double FLOAT_TOLERANCE = 1e-9;
+
     /**
      * Picks a random entry from collection
      * @param collection collection
@@ -185,6 +187,37 @@ public class CollectionHelpers {
         }
 
         return result;
+    }
+
+    /**
+     * Construct a new instance with values consisting of specified range
+     * @param start range start
+     * @param end range end
+     * @param step amount to step each time
+     * @return a new instance of list that has elements from start to end with jumps of step
+     */
+    @ApiStatus.AvailableSince("0.0.45")
+    public static List<Double> range(double start, double end, double step) {
+        if (step <= 0)
+            throw new IllegalArgumentException("Step must be larger than 0");
+
+        final double dir = Math.signum(end - start);
+        step *= dir;
+
+        if (step == 0)
+            return List.of(start);
+
+        int n = 1 + (int) Math.floor((end - start) / step + FLOAT_TOLERANCE);
+        if (n <= 1)
+            return List.of(start, end);
+
+        List<Double> result = new ArrayList<>(n);
+        for (int i = 0; i < n - 1; i++)
+            result.add(start + i * step);
+
+        result.add(end);
+
+        return Collections.unmodifiableList(result);
     }
 
     public static <E> void addElementSorted(List<E> list, E element, Comparator<E> comparator) {
