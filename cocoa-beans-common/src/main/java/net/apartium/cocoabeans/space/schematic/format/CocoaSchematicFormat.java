@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.space.schematic.format;
 
-import net.apartium.cocoabeans.space.BoxRegion;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.Region;
 import net.apartium.cocoabeans.space.schematic.BlockData;
 import net.apartium.cocoabeans.space.schematic.BlockDataEncoder;
 import net.apartium.cocoabeans.space.schematic.Dimensions;
@@ -31,11 +31,13 @@ public class CocoaSchematicFormat implements SchematicFormat {
     public static final int L2_SIZE = 64;
     public static final int L3_SIZE = 16;
     public static final int L4_SIZE = 4;
+    public static final int L5_SIZE = 1;
 
     public static final Dimensions L1_DIM = Dimensions.box(L1_SIZE);
     public static final Dimensions L2_DIM = Dimensions.box(L2_SIZE);
     public static final Dimensions L3_DIM = Dimensions.box(L3_SIZE);
     public static final Dimensions L4_DIM = Dimensions.box(L4_SIZE);
+    public static final Dimensions L5_DIM = Dimensions.box(L5_SIZE);
 
     public static class Headers {
 
@@ -103,7 +105,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             // TODO may wanna equal block data to not have to write many times and just point same point
             Map<Position, Long> blockIndexes = new HashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
-            long offset = 0;
+            long offset = out.position();
             while (iterator.hasNext()) {
                 Entry<Position, BlockData> entry = iterator.next();
                 Position position = entry.key();
@@ -141,6 +143,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.write(compressed);
 
             long indexesStartIndex = HEADER_START_INDEX + headerResult.offsetIndexInfo;
+            long indexStart = offset;
             
             final AxisOrder axes = schematic.axisOrder();
             List<Map.Entry<Position, Long>> indexes = blockIndexes.entrySet().stream()
@@ -151,7 +154,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             Dimensions l1Size = splitToChunk(dimensions, L1_DIM);
 
-            offset = 0;
             ByteArrayOutputStream indexesOut = new ByteArrayOutputStream();
 
             indexesOut.write(writeU24((int) axes.getFirst().getAlong(l1Size)));
@@ -172,14 +174,13 @@ public class CocoaSchematicFormat implements SchematicFormat {
                             .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue()))
                             .toList(),
                     List.of(
-                            L1_DIM, L2_DIM, L3_DIM, L4_DIM
+                            L1_DIM, L2_DIM, L3_DIM, L4_DIM, L5_DIM
                     ),
                     axes
             );
 
             l1.createAllChildren();
-            System.out.println(l1);
-
+            System.out.println("testing");
 
 
 //            out.position(HEADER_START_INDEX + headerResult.offsetIndexInfo);
@@ -230,20 +231,23 @@ public class CocoaSchematicFormat implements SchematicFormat {
         private final int layer;
         private final ChunkResult[] children = new ChunkResult[CHILD_SIZE];
         private final List<ChunkPointer> leftOverByChild;
-        private final List<Dimensions> layerSize;
+        private final List<Dimensions> layersSize;
         private final AxisOrder axes;
+        private final Dimensions size;
 
         private boolean calculated = false;
-        private boolean empty = false;
+        private boolean empty;
 
-        private ChunkResult(ChunkResult parent, Position actualPoint, Position chunkPoint, int layer, List<ChunkPointer> leftOverByChild, List<Dimensions> layerSize, AxisOrder axes) {
+        private ChunkResult(ChunkResult parent, Position actualPoint, Position chunkPoint, int layer, List<ChunkPointer> leftOverByChild, List<Dimensions> layersSize, AxisOrder axes) {
             this.parent = parent;
             this.actualPoint = actualPoint;
             this.chunkPoint = chunkPoint;
             this.layer = layer;
             this.leftOverByChild = leftOverByChild;
-            this.layerSize = layerSize;
+            this.layersSize = layersSize;
+            this.size = this.layersSize.get(this.layer - 1);
             this.axes = axes;
+            this.empty = leftOverByChild.isEmpty();
         }
 
         public byte[] createOccupancyMask() {
@@ -274,7 +278,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
         }
 
         public boolean isLastLayer() {
-            return this.layer == (this.layerSize.size() + 1);
+            return this.layer == (this.layersSize.size());
         }
 
         public boolean isCalculated() {
@@ -294,14 +298,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
                 return;
             }
 
-            this.empty = leftOverByChild.isEmpty();
-
             if (this.empty) {
                 calculated = true;
                 return;
             }
-
-            Dimensions layerSize = this.layerSize.get(this.layer - 1);
 
             for (int idx = 0; idx < CHILD_SIZE; idx++) {
                 int i0 = idx % (int) axes.getFirst().getAlong(CHUNK_DIM);
@@ -310,9 +310,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
 
                 Position chunkPoint = axes.position(i0, i1, i2);
-                Position actualPoint = add(this.actualPoint, multiply(chunkPoint, layerSize));
+                Position actualPoint = add(this.actualPoint, multiply(chunkPoint, size));
 
-                BoxRegion region = layerSize.toBoxRegion(chunkPoint);
+                Region region = size.toBoxRegion(actualPoint);
 
                 ChunkResult chunkResult = new ChunkResult(
                         this,
@@ -323,7 +323,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
                                 .filter(inChunk(region))
                                 .sorted((a, b) -> axes.compare(a.position, b.position))
                                 .toList(),
-                        this.layerSize,
+                        this.layersSize,
                         this.axes
                 );
 
@@ -338,15 +338,20 @@ public class CocoaSchematicFormat implements SchematicFormat {
                 return;
 
             createChildren();
-            for (ChunkResult child : children) {
+
+            for (int i = 0; i < children.length; i++) {
+                ChunkResult child = children[i];
                 if (child == null)
                     continue;
 
                 child.createAllChildren();
+
+                if (child.isEmpty())
+                    children[i] = null;
             }
         }
 
-        private Predicate<? super ChunkPointer> inChunk(BoxRegion region) {
+        private Predicate<? super ChunkPointer> inChunk(Region region) {
             return pointer -> {
                 Position position = subtract(pointer.position, this.actualPoint);
                 return region.contains(position);
