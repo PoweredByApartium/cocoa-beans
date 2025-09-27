@@ -157,6 +157,16 @@ class CocoaSchematicFormatTest {
             public Schematic translate(AxisOrder axisOrder) {
                 return null;
             }
+
+            @Override
+            public Schematic setBlock(int x, int y, int z, BlockData data) {
+                return null;
+            }
+
+            @Override
+            public Schematic removeBlock(int x, int y, int z) {
+                return null;
+            }
         };
 
         try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {

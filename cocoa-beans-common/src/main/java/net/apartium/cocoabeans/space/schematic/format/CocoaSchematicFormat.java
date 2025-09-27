@@ -1,24 +1,22 @@
 package net.apartium.cocoabeans.space.schematic.format;
 
+import net.apartium.cocoabeans.space.BoxRegion;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.schematic.BlockData;
 import net.apartium.cocoabeans.space.schematic.BlockDataEncoder;
 import net.apartium.cocoabeans.space.schematic.Dimensions;
 import net.apartium.cocoabeans.space.schematic.Schematic;
-import net.apartium.cocoabeans.space.schematic.axis.Axis;
 import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionType;
+import net.apartium.cocoabeans.space.schematic.utils.FileUtils;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableOutputStream;
 import net.apartium.cocoabeans.structs.Entry;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
 
 import static net.apartium.cocoabeans.space.schematic.utils.FileUtils.*;
 
@@ -33,6 +31,11 @@ public class CocoaSchematicFormat implements SchematicFormat {
     public static final int L2_SIZE = 64;
     public static final int L3_SIZE = 16;
     public static final int L4_SIZE = 4;
+
+    public static final Dimensions L1_DIM = Dimensions.box(L1_SIZE);
+    public static final Dimensions L2_DIM = Dimensions.box(L2_SIZE);
+    public static final Dimensions L3_DIM = Dimensions.box(L3_SIZE);
+    public static final Dimensions L4_DIM = Dimensions.box(L4_SIZE);
 
     public static class Headers {
 
@@ -97,6 +100,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.write(headers);
 
             Iterator<Entry<Position, BlockData>> iterator = schematic.blocksIterator();
+            // TODO may wanna equal block data to not have to write many times and just point same point
             Map<Position, Long> blockIndexes = new HashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
             long offset = 0;
@@ -137,6 +141,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.write(compressed);
 
             long indexesStartIndex = HEADER_START_INDEX + headerResult.offsetIndexInfo;
+            
             final AxisOrder axes = schematic.axisOrder();
             List<Map.Entry<Position, Long>> indexes = blockIndexes.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey(axes))
@@ -144,215 +149,37 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             Dimensions dimensions = schematic.size();
 
-            Dimensions l1Size = splitToChunks(dimensions, L1_SIZE);
+            Dimensions l1Size = splitToChunk(dimensions, L1_DIM);
 
-            ChunkResult l1Chunks = new ChunkResult(
-                    toSimpleArray(splitToChunks(indexes.stream()
-                        .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue(), null))
-                        .toList(), Position.ZERO, axes, l1Size, L1_SIZE), l1Size, axes, l1Size.toArraySize(), null),
+            offset = 0;
+            ByteArrayOutputStream indexesOut = new ByteArrayOutputStream();
+
+            indexesOut.write(writeU24((int) axes.getFirst().getAlong(l1Size)));
+            offset += 3;
+
+            indexesOut.write(writeU24((int) axes.getSecond().getAlong(l1Size)));
+            offset += 3;
+
+            indexesOut.write(writeU24((int) axes.getThird().getAlong(l1Size)));
+            offset += 3;
+
+            ChunkResult l1 = new ChunkResult(
+                    null,
                     Position.ZERO,
-                    Dimensions.box(L1_SIZE),
+                    Position.ZERO,
                     1,
-                    null
+                    indexes.stream()
+                            .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue()))
+                            .toList(),
+                    List.of(
+                            L1_DIM, L2_DIM, L3_DIM, L4_DIM
+                    ),
+                    axes
             );
 
+            l1.createAllChildren();
+            System.out.println(l1);
 
-            Map<ChunkResult, Map<ChunkResult, ChunkResult[]>> bridgeFromL2ToL4 = new IdentityHashMap<>();
-            Map<ChunkResult, ChunkResult[]> bridgeL2toL3 = new IdentityHashMap<>();
-
-            ChunkResult[] l2 = compact(l1Chunks, axes, L2_SIZE, 64);
-
-            for (ChunkResult chunkResult : l2) {
-                if (chunkResult == null)
-                    continue;
-
-                ChunkResult[] l3 = compact(chunkResult, axes, L3_SIZE, 64);
-                bridgeL2toL3.put(chunkResult, l3);
-
-                for (ChunkResult result : l3) {
-                    if (result == null)
-                        continue;
-
-                    ChunkResult[] l4 = compact(result, axes, L4_SIZE, 64);
-                    bridgeFromL2ToL4.computeIfAbsent(chunkResult, key -> new IdentityHashMap<>())
-                            .put(result, l4);
-                }
-            }
-
-
-            // DEBUG
-            AtomicInteger counter = new AtomicInteger(0);
-            bridgeFromL2ToL4.values().stream().map(Map::values).forEach(list -> list.forEach(result -> {
-                for (ChunkResult r : result) {
-                    if (r == null)
-                        continue;
-
-                    for (List<ChunkPointer> chunk : r.chunks) {
-                        if (chunk == null)
-                            continue;
-                        for (ChunkPointer pointer : chunk) {
-                            if (pointer == null)
-                                continue;
-
-                            counter.incrementAndGet();
-                        }
-                    }
-                }
-            }));
-
-            System.out.println("counter: " + counter.get()); // 52
-
-            List<ChunkResult> l4 = bridgeFromL2ToL4.values().stream()
-                    .filter(Objects::nonNull)
-                    .flatMap(m -> m.values().stream())
-                    .filter(Objects::nonNull)
-                    .flatMap(Arrays::stream)
-                    .filter(Objects::nonNull)
-                    .toList();
-
-            List<ChunkPointer> l4Pointers = bridgeFromL2ToL4.values().stream()
-                    .filter(Objects::nonNull)
-                    .flatMap(m -> m.values().stream())
-                    .filter(Objects::nonNull)
-                    .flatMap(Arrays::stream)
-                    .filter(Objects::nonNull)
-                    .flatMap(r -> {
-                        List<ChunkPointer>[] chunks = r.chunks;    // or r.getChunks()
-                        return chunks == null
-                                ? Stream.empty()
-                                : Arrays.stream(chunks)
-                                .filter(Objects::nonNull)
-                                .flatMap(Collection::stream)
-                                .filter(Objects::nonNull);
-                    })
-                    .toList();
-
-
-            Set<ChunkResult> l3 = l4Pointers.stream()
-                    .map(ChunkPointer::prev)
-                    .filter(Objects::nonNull)
-                    .filter(chunk -> chunk.layer == 3)
-                    .collect(Collectors.toSet());
-
-            Set<ChunkResult> finalL2 = Arrays.stream(l2).filter(Objects::nonNull).collect(Collectors.toSet());
-
-
-            int totalL4Indexes = (int) l4.stream()
-                    .map(ChunkResult::chunks)
-                    .filter(Objects::nonNull)
-                    .flatMap(Arrays::stream)
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .filter(Objects::nonNull)
-                    .count();
-
-            int totalL3Indexes = (int) l3.stream()
-                    .map(ChunkResult::chunks)
-                    .filter(Objects::nonNull)
-                    .count();
-
-            int totalL2Indexes = (int) finalL2.stream()
-                    .map(ChunkResult::chunks).
-                    filter(Objects::nonNull)
-                    .count();
-
-            int totalL1Indexes = (int) Arrays.stream(l1Chunks.chunks)
-                    .filter(Objects::nonNull)
-                    .count();
-
-            int totalIndexes = totalL4Indexes + totalL3Indexes + totalL2Indexes + totalL1Indexes;
-
-            System.out.println("l4: " + l4.size() + ", " + totalL4Indexes);
-            System.out.println("l3: " + l3.size() + ", " + totalL3Indexes);
-            System.out.println("l2: " + finalL2.size() + ", " + totalL2Indexes);
-            System.out.println("l1: " + 1 + ", " + totalL1Indexes);
-            System.out.println("total: " + totalIndexes);
-
-            Map<ChunkResult, Long> chunkOffset = new IdentityHashMap<>();
-            Map<ChunkResult, Map<Integer, Long>> chunkOffsetBy = new IdentityHashMap<>();
-
-            long occupancyMaskLength = (long) Math.ceil((l1Size.width() * l1Size.height() * l1Size.depth()) / 8.0);
-
-            out.write(writeU24((int) axes.getFirst().getAlong(l1Size)));
-            out.write(writeU24((int) axes.getSecond().getAlong(l1Size)));
-            out.write(writeU24((int) axes.getThird().getAlong(l1Size)));
-            out.write(createOccupancyMask(l1Chunks.chunks));
-
-            long indexStart = out.position();
-            chunkOffset.put(l1Chunks, indexStart + 3 * 3 + occupancyMaskLength);
-            for (int idx = 0; idx < l1Chunks.chunks.length; idx++) {
-//                int i0 = (int) (idx % axes.getFirst().getAlong(l1Size));
-//                int i1 = (int) ((idx / axes.getFirst().getAlong(l1Size)) % axes.getSecond().getAlong(l1Size));
-//                int i2 = (int) (idx / (axes.getFirst().getAlong(l1Size)) * axes.getSecond().getAlong(l1Size));
-//                Position offsetPos = axes.position(i0, i1, i2);
-                if (l1Chunks.chunks[idx] == null)
-                    continue;
-
-                chunkOffsetBy.computeIfAbsent(l1Chunks, key -> new HashMap<>()).put(idx, out.position());
-                out.write(new byte[8]);
-            }
-
-            for (int i = 0; i < l2.length; i++) {
-                ChunkResult chunkResult = l2[i];
-
-                if (chunkResult == null)
-                    continue;
-
-                long chunkStart = out.position();
-
-                out.position(chunkOffsetBy.get(chunkResult.prev).get(i));
-                out.write(writeU64(chunkStart));
-
-                out.position(chunkStart);
-                System.out.println("uooo");
-                out.write(createOccupancyMask(chunkResult.chunks));
-                chunkOffset.put(chunkResult, chunkStart + 8);
-                for (int idx = 0; idx < chunkResult.chunks.length; idx++) {
-                    if (chunkResult.chunks[idx] == null)
-                        continue;
-
-                    chunkOffsetBy.computeIfAbsent(chunkResult, key -> new HashMap<>()).put(
-                            idx,
-                            out.position()
-                    );
-
-                    out.write(new byte[8]);
-                }
-            }
-
-            for (int j = 0; j < l2.length; j++) {
-                if (l2[j] == null)
-                    continue;
-
-                ChunkResult[] l3Result = bridgeL2toL3.get(l2[j]);
-
-                for (int i = 0; i < l3Result.length; i++) {
-                    ChunkResult chunkResult = l3Result[i];
-
-                    if (chunkResult == null)
-                        continue;
-
-                    long chunkStart = out.position();
-
-                    out.position(chunkOffsetBy.get(chunkResult.prev).get(i));
-                    out.write(writeU64(chunkStart));
-
-                    out.position(chunkStart);
-                    out.write(createOccupancyMask(chunkResult.chunks));
-                    chunkOffset.put(chunkResult, chunkStart + 8);
-                    for (int idx = 0; idx < chunkResult.chunks.length; idx++) {
-                        if (chunkResult.chunks[idx] == null)
-                            continue;
-
-                        chunkOffsetBy.computeIfAbsent(chunkResult, key -> new HashMap<>()).put(
-                                idx,
-                                out.position()
-                        );
-
-                        out.write(new byte[8]);
-                    }
-                }
-            }
 
 
 //            out.position(HEADER_START_INDEX + headerResult.offsetIndexInfo);
@@ -365,72 +192,14 @@ public class CocoaSchematicFormat implements SchematicFormat {
         }
     }
 
-    private byte[] createOccupancyMask(List<ChunkPointer>[] chunks) {
-        byte[] result = new byte[(int) Math.ceil(chunks.length / 8.0)];
+    private <T> T[] toSimpleArray(T[][][] arr, Dimensions size, AxisOrder axes, T[] simple) {
+        T[] result = Arrays.copyOf(simple, size.toAreaSize());
 
-        for (int i = 0; i < chunks.length; i++)
-            result[i / 8] = (byte) (result[i / 8] | ((chunks[i] == null ? 0 : 1) << (i % 8)));
-
-        System.out.println("why: " + result.length + " | " + chunks.length);
-        return result;
-    }
-
-    private ChunkResult[] compact(ChunkResult prevResult, AxisOrder axes, int newSize, int arraySize) {
-        List<ChunkPointer>[] chunks = prevResult.chunks;
-
-        ChunkResult[] result = new ChunkResult[arraySize];
-
-        Dimensions prevSize = prevResult.size;
-        Dimensions size = Dimensions.box(newSize);
-
-        for (int idx = 0; idx < chunks.length; idx++) {
-            List<ChunkPointer> chunk = chunks[idx];
-
-            if (chunk == null)
-                continue;
-
-            int i0 = (int) (idx % axes.getFirst().getAlong(prevSize));
-            int i1 = (int) ((idx / axes.getFirst().getAlong(prevSize)) % axes.getSecond().getAlong(prevSize));
-            int i2 = (int) (idx / (axes.getFirst().getAlong(prevSize)) * axes.getSecond().getAlong(prevSize));
-
-            Position offset = add(prevResult.offset, multiply(axes.position(i0, i1, i2), size));
-
-            List<ChunkPointer>[] lists = toSimpleArray(splitToChunks(chunk, offset, axes, size, newSize), size, axes, size.toArraySize(), prevResult);
-            result[idx] = new ChunkResult(
-                    lists,
-                    offset,
-                    size,
-                    prevResult.layer + 1,
-                    prevResult
-            );
-        }
-
-        return result;
-    }
-
-    private List<ChunkPointer>[] toSimpleArray(List<ChunkPointer>[][][] chunks, Dimensions size, AxisOrder axes, int arraySize, ChunkResult prev) {
-        List<ChunkPointer>[] result = new List[arraySize];
-
-        for (int j0 = 0; j0 < chunks.length; j0++) {
-            for (int j1 = 0; j1 < chunks[j0].length; j1++) {
-                for (int j2 = 0; j2 < chunks[j0][j1].length; j2++) {
-                    List<ChunkPointer> pointers = chunks[j0][j1][j2];
-                    if (pointers == null)
-                        continue;
-
-                    int chunkIdx = (int) (j0 + (j1 * axes.getFirst().getAlong(size)) + (j2 * axes.getFirst().getAlong(size) * axes.getSecond().getAlong(size)));
-                    System.out.println("meow: " + j0 + ", " + j1 + ", " + j2 + " (" + size + ":" + arraySize + ")");
-
-                    List<ChunkPointer> chunk = result[chunkIdx];
-                    if (chunk == null) {
-                        chunk = new ArrayList<>();
-                        result[chunkIdx] = chunk;
-                    }
-
-
-                    for (ChunkPointer pointer : pointers) {
-                        chunk.add(new ChunkPointer(pointer.position, pointer.fileOffset, prev));
-                    }
+        for (int i0 = 0; i0 < arr.length; i0++) {
+            for (int i1 = 0; i1 < arr[i0].length; i1++) {
+                for (int i2 = 0; i2 < arr[i0][i1].length; i2++) {
+                    int idx = (int) (i0 + (i1 * axes.getFirst().getAlong(size)) + (i2 * axes.getFirst().getAlong(size) * axes.getSecond().getAlong(size)));
+                    result[idx] = arr[i0][i1][i2];
                 }
             }
         }
@@ -438,69 +207,168 @@ public class CocoaSchematicFormat implements SchematicFormat {
         return result;
     }
 
-    private record ChunkPointer(Position position, long fileOffset, ChunkResult prev) { }
-    private record ChunkResult(List<ChunkPointer>[] chunks, Position offset, Dimensions size, int layer, ChunkResult prev) {
+
+
+    private Dimensions splitToChunk(Dimensions dimensions, Dimensions chunkSize) {
+        return new Dimensions(
+                Math.ceil(dimensions.width() / chunkSize.width()),
+                Math.ceil(dimensions.height() / chunkSize.height()),
+                Math.ceil(dimensions.depth() / chunkSize.depth())
+        );
+    }
+
+
+    private record ChunkPointer(Position position, long fileOffset) { }
+    private static class ChunkResult {
+
+        public static final int CHILD_SIZE = 64;
+        public static final Dimensions CHUNK_DIM = new Dimensions(4, 4, 4);
+
+        private final ChunkResult parent;
+        private final Position actualPoint;
+        private final Position chunkPoint;
+        private final int layer;
+        private final ChunkResult[] children = new ChunkResult[CHILD_SIZE];
+        private final List<ChunkPointer> leftOverByChild;
+        private final List<Dimensions> layerSize;
+        private final AxisOrder axes;
+
+        private boolean calculated = false;
+        private boolean empty = false;
+
+        private ChunkResult(ChunkResult parent, Position actualPoint, Position chunkPoint, int layer, List<ChunkPointer> leftOverByChild, List<Dimensions> layerSize, AxisOrder axes) {
+            this.parent = parent;
+            this.actualPoint = actualPoint;
+            this.chunkPoint = chunkPoint;
+            this.layer = layer;
+            this.leftOverByChild = leftOverByChild;
+            this.layerSize = layerSize;
+            this.axes = axes;
+        }
+
+        public byte[] createOccupancyMask() {
+            if (isLastLayer())
+                return FileUtils.createOccupancyMask(this.leftOverByChild, Objects::nonNull); // TODO fix it to work on last layer
+
+            return FileUtils.createOccupancyMask(this.children, result -> result != null && !result.isEmpty());
+        }
+
+        public ChunkResult getParent() {
+            return parent;
+        }
+
+        public ChunkResult[] getChildren() {
+            return children;
+        }
+
+        public int getLayer() {
+            return layer;
+        }
+
+        public Position getActualPoint() {
+            return actualPoint;
+        }
+
+        public Position getChunkPoint() {
+            return chunkPoint;
+        }
+
+        public boolean isLastLayer() {
+            return this.layer == (this.layerSize.size() + 1);
+        }
+
+        public boolean isCalculated() {
+            return this.calculated;
+        }
+
+        public boolean isEmpty() {
+            return this.empty;
+        }
+
+        private void createChildren() {
+            if (this.calculated)
+                return;
+
+            if (isLastLayer()) {
+                calculated = true;
+                return;
+            }
+
+            this.empty = leftOverByChild.isEmpty();
+
+            if (this.empty) {
+                calculated = true;
+                return;
+            }
+
+            Dimensions layerSize = this.layerSize.get(this.layer - 1);
+
+            for (int idx = 0; idx < CHILD_SIZE; idx++) {
+                int i0 = idx % (int) axes.getFirst().getAlong(CHUNK_DIM);
+                int i1 = (int) ((idx / axes.getFirst().getAlong(CHUNK_DIM)) % axes.getSecond().getAlong(CHUNK_DIM));
+                int i2 = (int) (idx / (axes.getFirst().getAlong(CHUNK_DIM) * axes.getSecond().getAlong(CHUNK_DIM)));
+
+
+                Position chunkPoint = axes.position(i0, i1, i2);
+                Position actualPoint = add(this.actualPoint, multiply(chunkPoint, layerSize));
+
+                BoxRegion region = layerSize.toBoxRegion(chunkPoint);
+
+                ChunkResult chunkResult = new ChunkResult(
+                        this,
+                        actualPoint,
+                        chunkPoint,
+                        this.layer + 1,
+                        this.leftOverByChild.stream()
+                                .filter(inChunk(region))
+                                .sorted((a, b) -> axes.compare(a.position, b.position))
+                                .toList(),
+                        this.layerSize,
+                        this.axes
+                );
+
+                children[idx] = chunkResult;
+            }
+
+            calculated = true;
+        }
+
+        public void createAllChildren() {
+            if (isLastLayer())
+                return;
+
+            createChildren();
+            for (ChunkResult child : children) {
+                if (child == null)
+                    continue;
+
+                child.createAllChildren();
+            }
+        }
+
+        private Predicate<? super ChunkPointer> inChunk(BoxRegion region) {
+            return pointer -> {
+                Position position = subtract(pointer.position, this.actualPoint);
+                return region.contains(position);
+            };
+        }
 
         @Override
-        public @NotNull String toString() {
-            return "ChunkResult{" + "chunks=" + Arrays.stream(chunks)
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .filter(Objects::nonNull)
-                    .map(p -> p.position + ": " + p.fileOffset)
-                    .collect(Collectors.joining(", ", "[", "]")) +
+        public String toString() {
+            return "ChunkResult{" +
+                    "actualPoint=" + actualPoint +
+                    ", chunkPoint=" + chunkPoint +
                     ", layer=" + layer +
-                    ", prev=" + prev +
+                    ", children=" + Arrays.toString(children) +
+                    ", leftOverByChild=" + leftOverByChild +
+                    ", axes=" + axes +
+                    ", calculated=" + calculated +
+                    ", empty=" + empty +
                     '}';
         }
     }
 
-    private List<ChunkPointer>[][][] splitToChunks(List<ChunkPointer> indexes, Position offset, AxisOrder axes, Dimensions chunkDim, int chunkSize) {
-        List<ChunkPointer>[][][] splitToChunks = new List
-                [
-                (int) axes.getFirst().getAlong(chunkDim)
-                ][
-                (int) axes.getSecond().getAlong(chunkDim)
-                ][
-                (int) axes.getThird().getAlong(chunkDim)
-                ];
-
-        for (ChunkPointer pointer : indexes) {
-            int idx0 = (int) (axes.getFirst().getAlong(subtract(pointer.position(), offset)) / chunkSize);
-            int idx1 = (int) (axes.getSecond().getAlong(subtract(pointer.position(), offset)) / chunkSize);
-            int idx2 = (int) (axes.getThird().getAlong(subtract(pointer.position(), offset)) / chunkSize);
-
-            List<ChunkPointer> chunk = splitToChunks[idx0][idx1][idx2];
-            if (chunk == null) {
-                chunk = new ArrayList<>();
-                splitToChunks[idx0][idx1][idx2] = chunk;
-            }
-
-            chunk.add(pointer);
-        }
-
-
-
-        return splitToChunks;
-    }
-
-    private Dimensions splitToChunks(Dimensions dimensions, int chunkSize) {
-        return new Dimensions(
-                Math.ceil(dimensions.width() / (double) chunkSize),
-                Math.ceil(dimensions.height() / (double) chunkSize),
-                Math.ceil(dimensions.depth() / (double) chunkSize)
-        );
-    }
-
-    private long findLargestByAxis(List<Map.Entry<Position, Long>> indexes, Axis axis) {
-        return indexes.stream()
-                .max(Comparator.comparingDouble(a -> axis.getAlong(a.getKey())))
-                .map(entry -> axis.getAlong(entry.getKey()))
-                .map(Double::longValue)
-                .orElse(0L);
-    }
-
-    private Position subtract(Position a, Position b) {
+    private static Position subtract(Position a, Position b) {
         return new Position(
                 a.getX() - b.getX(),
                 a.getY() - b.getY(),
@@ -508,7 +376,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
         );
     }
 
-    private Position add(Position a, Position b) {
+    private static Position add(Position a, Position b) {
         return new Position(
                 a.getX() + b.getX(),
                 a.getY() + b.getY(),
@@ -516,7 +384,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
         );
     }
 
-    private Position multiply(Position position, Dimensions dimensions) {
+    private static Position multiply(Position position, Dimensions dimensions) {
         return new Position(
                 position.getX() * dimensions.width(),
                 position.getY() * dimensions.height(),

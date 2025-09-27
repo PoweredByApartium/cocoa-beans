@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.zip.CRC32;
 
 public class FileUtils {
@@ -103,6 +105,32 @@ public class FileUtils {
         crc.reset();
         crc.update(data, 0, data.length);
         return crc.getValue();
+    }
+
+    public static <T> byte[] createOccupancyMask(List<T> list) {
+        return createOccupancyMask(list, Objects::nonNull);
+    }
+
+    public static <T> byte[] createOccupancyMask(List<T> list, Function<T, Boolean> filter) {
+        byte[] result = new byte[(int) Math.ceil(list.size() / 8.0)];
+
+        for (int i = 0; i < list.size(); i++)
+            result[i / 8] = (byte) (result[i / 8] | ((filter.apply(list.get(i)) ? 1 : 0) << (i % 8)));
+
+        return result;
+    }
+
+    public static <T> byte[] createOccupancyMask(T[] arr) {
+        return createOccupancyMask(arr, Objects::nonNull);
+    }
+
+    public static <T> byte[] createOccupancyMask(T[] arr, Function<T, Boolean> filter) {
+        byte[] result = new byte[(int) Math.ceil(arr.length / 8.0)];
+
+        for (int i = 0; i < arr.length; i++)
+            result[i / 8] = (byte) (result[i / 8] | ((filter.apply(arr[i]) ? 1 : 0) << (i % 8)));
+
+        return result;
     }
 
 }

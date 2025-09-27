@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.space.schematic;
 
+import net.apartium.cocoabeans.space.BoxRegion;
+import net.apartium.cocoabeans.space.Position;
+
 public record Dimensions(double width, double height, double depth) {
 
     public static Dimensions box(double length) {
@@ -10,7 +13,14 @@ public record Dimensions(double width, double height, double depth) {
         return new Dimensions(Math.floor(width), Math.floor(height), Math.floor(depth));
     }
 
-    public int toArraySize() {
+    public BoxRegion toBoxRegion(Position start) {
+        return new BoxRegion(
+                start,
+                new Position(start.getX() + width, start.getY() + height, start.getZ() + depth)
+        );
+    }
+
+    public int toAreaSize() {
         return (int) Math.floor(width * height * depth);
     }
 }

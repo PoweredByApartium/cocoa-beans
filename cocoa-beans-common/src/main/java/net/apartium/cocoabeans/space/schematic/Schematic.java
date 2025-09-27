@@ -31,4 +31,7 @@ public interface Schematic {
     Schematic translate(Position offset);
     Schematic translate(AxisOrder axisOrder);
 
+    Schematic setBlock(int x, int y, int z, BlockData data);
+    Schematic removeBlock(int x, int y, int z);
+
 }
