@@ -1,11 +1,12 @@
-package net.apartium.cocoabeans.space;
+package net.apartium.cocoabeans.space.schematic;
 
+import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AxisOrderTest {
 
@@ -33,6 +34,8 @@ class AxisOrderTest {
             }
         }
 
+        assertFalse(iterator.hasNext());
+
         iterator = order.iterator(
                 new Position(2, 3, 7),
                 new Position(11, -5, 18),
@@ -52,6 +55,8 @@ class AxisOrderTest {
                 }
             }
         }
+
+        assertFalse(iterator.hasNext());
     }
 
     @Test
@@ -78,6 +83,8 @@ class AxisOrderTest {
             }
         }
 
+        assertFalse(iterator.hasNext());
+
         iterator = order.iterator(
                 new Position(2, 3, 7),
                 new Position(11, -5, 18),
@@ -97,6 +104,8 @@ class AxisOrderTest {
                 }
             }
         }
+
+        assertFalse(iterator.hasNext());
     }
 
 }

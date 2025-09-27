@@ -1,0 +1,108 @@
+package net.apartium.cocoabeans.space.schematic.utils;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.CRC32;
+
+public class FileUtils {
+
+    private static final CRC32 crc = new CRC32();
+
+    public static int readU16(DataInput in) throws IOException {
+        return (in.readUnsignedByte() << 8) | (in.readUnsignedByte());
+    }
+
+    public static int readU24(DataInput in) throws IOException {
+        return (in.readUnsignedByte() << 16) | (in.readUnsignedByte() << 8) | (in.readUnsignedByte());
+    }
+
+    public static long readU32(DataInput in) throws IOException {
+        return ((long) in.readUnsignedByte() << 24) | ((long) in.readUnsignedByte() << 16) | ((long) in.readUnsignedByte() << 8) | (in.readUnsignedByte());
+    }
+
+    public static long readU64(DataInput in) throws IOException {
+        return ((long) in.readUnsignedByte() << 56) | ((long) in.readUnsignedByte() << 48) | ((long) in.readUnsignedByte() << 40) | ((long) in.readUnsignedByte() << 32)
+                | ((long) in.readUnsignedByte() << 24) | ((long) in.readUnsignedByte() << 16) | ((long) in.readUnsignedByte() << 8) | (in.readUnsignedByte());
+    }
+
+    public static String readString(DataInput in) throws IOException {
+        int len = (int) readU32(in);
+        if (len < 0)
+            throw new EOFException("Negative length!");
+
+        byte[] bytes = new byte[len];
+        in.readFully(bytes);
+
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public static byte[] writeU64(long value) {
+        return new byte[]{
+                (byte) (value >>> 56 & 0xFF),
+                (byte) (value >>> 48 & 0xFF),
+                (byte) (value >>> 40 & 0xFF),
+                (byte) (value >>> 32 & 0xFF),
+                (byte) (value >>> 24 & 0xFF),
+                (byte) (value >>> 16 & 0xFF),
+                (byte) (value >>> 8 & 0xFF),
+                (byte) (value & 0xFF)
+        };
+    }
+
+    public static byte[] writeU32(int value) {
+        return new byte[]{
+                (byte) (value >>> 24 & 0xFF),
+                (byte) (value >>> 16 & 0xFF),
+                (byte) (value >>> 8 & 0xFF),
+                (byte) (value & 0xFF)
+        };
+    }
+
+    public static byte[] writeU24(int value) {
+        return new byte[]{
+                (byte) (value >>> 16 & 0xFF),
+                (byte) (value >>> 8 & 0xFF),
+                (byte) (value & 0xFF)
+        };
+    }
+
+    public static byte[] writeU16(int value) {
+        return new byte[]{
+                (byte) (value >>> 8 & 0xFF),
+                (byte) (value & 0xFF)
+        };
+    }
+
+    public static byte[] writeString(String value) {
+        byte[] data = value.getBytes(StandardCharsets.UTF_8);
+        int len = data.length;
+
+        byte[] result = new byte[len + 4];
+        System.arraycopy(writeU32(len), 0, result, 0, 4);
+        System.arraycopy(data, 0, result, 4, len);
+
+        return result;
+    }
+
+    public static List<Byte> writeStringAsList(String value) {
+        byte[] data = value.getBytes(StandardCharsets.UTF_8);
+        int len = data.length;
+
+        List<Byte> result = new ArrayList<>(len + 4);
+        for (byte b : writeU32(len))
+            result.add(b);
+
+        for (byte b : data)
+            result.add(b);
+
+        return result;
+    }
+    public static long crc32(byte[] data) {
+        crc.reset();
+        crc.update(data, 0, data.length);
+        return crc.getValue();
+    }
+
+}

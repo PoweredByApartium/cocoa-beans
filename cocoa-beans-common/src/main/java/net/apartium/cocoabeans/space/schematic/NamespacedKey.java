@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.space;
+package net.apartium.cocoabeans.space.schematic;
 
 public record NamespacedKey(String namespace, String key) {
 }
