@@ -17,7 +17,7 @@ public record Dimensions(double width, double height, double depth) {
     public Region toBoxRegion(Position start) {
         return new StrictBoxRegion(
                 start,
-                new Position(start.getX() + width - 1, start.getY() + height - 1, start.getZ() + depth - 1)
+                new Position(start.getX() + width, start.getY() + height, start.getZ() + depth)
         );
     }
 

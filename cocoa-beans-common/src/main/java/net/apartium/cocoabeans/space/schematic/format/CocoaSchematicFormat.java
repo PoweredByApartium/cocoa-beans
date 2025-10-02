@@ -180,7 +180,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             );
 
             l1.createAllChildren();
-            System.out.println("testing");
+
 
 
 //            out.position(HEADER_START_INDEX + headerResult.offsetIndexInfo);
@@ -230,6 +230,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
         private final Position chunkPoint;
         private final int layer;
         private final ChunkResult[] children = new ChunkResult[CHILD_SIZE];
+        private final ChunkPointer[] childrenAsPointer = new ChunkPointer[CHILD_SIZE];
         private final List<ChunkPointer> leftOverByChild;
         private final List<Dimensions> layersSize;
         private final AxisOrder axes;
@@ -252,7 +253,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
         public byte[] createOccupancyMask() {
             if (isLastLayer())
-                return FileUtils.createOccupancyMask(this.leftOverByChild, Objects::nonNull); // TODO fix it to work on last layer
+                return FileUtils.createOccupancyMask(this.childrenAsPointer, Objects::nonNull);
 
             return FileUtils.createOccupancyMask(this.children, result -> result != null && !result.isEmpty());
         }
@@ -293,15 +294,31 @@ public class CocoaSchematicFormat implements SchematicFormat {
             if (this.calculated)
                 return;
 
-            if (isLastLayer()) {
-                calculated = true;
-                return;
-            }
-
             if (this.empty) {
                 calculated = true;
                 return;
             }
+
+            if (isLastLayer()) {
+                for (ChunkPointer pointer : leftOverByChild) {
+                    Position chunkPoint = subtract(pointer.position, this.actualPoint);
+                    int index = (int) (axes.getFirst().getAlong(chunkPoint)
+                            + (axes.getSecond().getAlong(chunkPoint) * axes.getFirst().getAlong(CHUNK_DIM)
+                            + (axes.getThird().getAlong(chunkPoint) * axes.getFirst().getAlong(CHUNK_DIM) * axes.getSecond().getAlong(CHUNK_DIM))));
+
+                    if (index < 0 || index >= CHUNK_DIM.toAreaSize())
+                        throw new IndexOutOfBoundsException("index is out of bound: " + index);
+
+                    if (childrenAsPointer[index] != null)
+                        throw new RuntimeException("Chunk pointer found 2 times: " + index + " a: " + childrenAsPointer[index] + " b: " + pointer);
+
+                    childrenAsPointer[index] = pointer;
+                }
+
+                calculated = true;
+                return;
+            }
+
 
             for (int idx = 0; idx < CHILD_SIZE; idx++) {
                 int i0 = idx % (int) axes.getFirst().getAlong(CHUNK_DIM);
@@ -334,10 +351,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
         }
 
         public void createAllChildren() {
+            createChildren();
+
             if (isLastLayer())
                 return;
-
-            createChildren();
 
             for (int i = 0; i < children.length; i++) {
                 ChunkResult child = children[i];
