@@ -15,3 +15,9 @@ dependencies {
     testFixturesCompileOnly("org.junit.jupiter:junit-jupiter-api:${libs.junit.bom.get().version}")
     testFixturesCompileOnly(libs.jetbrains.annotations)
 }
+
+tasks.compileJava {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
+    options.release = 17
+}
