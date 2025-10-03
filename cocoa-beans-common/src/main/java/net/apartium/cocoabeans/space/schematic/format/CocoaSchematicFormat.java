@@ -9,6 +9,7 @@ import net.apartium.cocoabeans.space.schematic.Schematic;
 import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionType;
+import net.apartium.cocoabeans.space.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.space.schematic.utils.FileUtils;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableOutputStream;
@@ -57,7 +58,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
     private final Map<Integer, BlockDataEncoder> blockDataEncoderMap;
     private CompressionEngine compressionEngine;
     private CompressionType compressionTypeForBlocks = CompressionType.GZIP;
-    private CompressionType compressionTypeForIndexes = CompressionType.RAW;
+    private CompressionType compressionTypeForIndexes = CompressionType.GZIP;
     private Map.Entry<Integer, BlockDataEncoder> preferEncoder;
 
     public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, CompressionEngine compressionEngine) {
@@ -105,7 +106,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             // TODO may wanna equal block data to not have to write many times and just point same point
             Map<Position, Long> blockIndexes = new HashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
-            long offset = out.position();
+            long offset = 0;
             while (iterator.hasNext()) {
                 Entry<Position, BlockData> entry = iterator.next();
                 Position position = entry.key();
@@ -123,10 +124,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
             byte[] originalBlocksData = blockOut.toByteArray();
             byte[] compressed = compressionEngine.compress(compressionTypeForBlocks, originalBlocksData);
 
-            System.out.println("before: " + originalBlocksData.length);
-            System.out.println("after: " + compressed.length);
-            System.out.println(Arrays.equals(originalBlocksData, compressionEngine.decompress(compressionTypeForBlocks, compressed)));
-
             CompressionBlockInfo blockInfo = new CompressionBlockInfo(
                     compressionTypeForBlocks,
                     originalBlocksData.length,
@@ -142,8 +139,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.position(blockInfo.offset());
             out.write(compressed);
 
-            long indexesStartIndex = HEADER_START_INDEX + headerResult.offsetIndexInfo;
-            long indexStart = offset;
+            offset = 0;
             
             final AxisOrder axes = schematic.axisOrder();
             List<Map.Entry<Position, Long>> indexes = blockIndexes.entrySet().stream()
@@ -154,7 +150,50 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             Dimensions l1Size = splitToChunk(dimensions, L1_DIM);
 
-            ByteArrayOutputStream indexesOut = new ByteArrayOutputStream();
+            ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
+            SeekableOutputStream indexesOut = new SeekableOutputStream(channel);
+
+            ChunkResult[][][] chunkResults = new ChunkResult
+                    [(int) axes.getFirst().getAlong(l1Size)]
+                    [(int) axes.getFirst().getAlong(l1Size)]
+                    [(int) axes.getFirst().getAlong(l1Size)];
+
+            // TODO may optimize it later
+            List<Dimensions> sizes = List.of(
+                    L1_DIM, L2_DIM, L3_DIM, L4_DIM, L5_DIM
+            );
+
+            for (int i0 = 0; i0 < chunkResults.length; i0++) {
+                for (int i1 = 0; i1 < chunkResults[0].length; i1++) {
+                    for (int i2 = 0; i2 < chunkResults[0][0].length; i2++) {
+                        Position chunkPoint = axes.position(i0, i1, i2);
+                        Position actualPoint = multiply(chunkPoint, L1_DIM);
+
+                        Region region = L1_DIM.toBoxRegion(actualPoint);
+
+                        List<ChunkPointer> pointers = indexes.stream()
+                                .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue()))
+                                .filter(pointer -> region.contains(subtract(pointer.position, actualPoint)))
+                                .toList();
+
+                        if (pointers.isEmpty())
+                            continue;
+
+                        ChunkResult chunkResult = new ChunkResult(
+                                null,
+                                actualPoint,
+                                chunkPoint,
+                                1,
+                                pointers,
+                                sizes,
+                                axes
+                        );
+
+                        chunkResults[i0][i1][i2] = chunkResult;
+                        chunkResult.createAllChildren();
+                    }
+                }
+            }
 
             indexesOut.write(writeU24((int) axes.getFirst().getAlong(l1Size)));
             offset += 3;
@@ -165,32 +204,108 @@ public class CocoaSchematicFormat implements SchematicFormat {
             indexesOut.write(writeU24((int) axes.getThird().getAlong(l1Size)));
             offset += 3;
 
-            ChunkResult l1 = new ChunkResult(
-                    null,
-                    Position.ZERO,
-                    Position.ZERO,
-                    1,
-                    indexes.stream()
-                            .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue()))
-                            .toList(),
-                    List.of(
-                            L1_DIM, L2_DIM, L3_DIM, L4_DIM, L5_DIM
-                    ),
-                    axes
+            ChunkResult[] l1AsSimpleArray = toSimpleArray(chunkResults, l1Size, axes, new ChunkResult[0]);
+            byte[] occupancyMask = createOccupancyMask(l1AsSimpleArray);
+
+            indexesOut.write(occupancyMask);
+            offset += occupancyMask.length;
+
+            for (ChunkResult l1 : l1AsSimpleArray) {
+                if (l1 == null)
+                    continue;
+
+                l1.setOffset(offset);
+                offset = writeIndexChildren(offset, indexesOut, l1);
+            }
+
+            List<ChunkResult> listL2 = Arrays.stream(l1AsSimpleArray).filter(Objects::nonNull).flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
+            offset = computeResult(indexesOut, listL2, offset);
+
+            List<ChunkResult> listL3 = listL2.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
+            offset = computeResult(indexesOut, listL3, offset);
+
+
+            List<ChunkResult> listL4 = listL3.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
+            offset = computeResult(indexesOut, listL4, offset);
+
+            List<ChunkResult> listL5 = listL4.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
+            for (ChunkResult result : listL5) {
+                pointToParent(indexesOut, result, offset);
+
+                byte[] mask = result.createOccupancyMask();
+
+                indexesOut.write(mask);
+                offset += mask.length;
+
+                for (ChunkPointer child : result.getChildrenAsPointer()) {
+                    if (child == null)
+                        continue;
+
+                    indexesOut.write(writeU64(child.fileOffset));
+                    offset += 8;
+                }
+            }
+
+            byte[] indexesAsBytes = channel.toByteArray();
+            compressed = compressionEngine.compress(compressionTypeForIndexes, indexesAsBytes);
+
+            CompressionBlockInfo indexInfo = new CompressionBlockInfo(
+                    compressionTypeForIndexes,
+                    indexesAsBytes.length,
+                    compressed.length,
+                    out.position(),
+                    crc32(indexesAsBytes)
             );
 
-            l1.createAllChildren();
+            long indexStartIndex = HEADER_START_INDEX + headerResult.offsetIndexInfo;
+            out.position(indexStartIndex);
+            out.write(indexInfo.toByteArray());
 
-
-
-//            out.position(HEADER_START_INDEX + headerResult.offsetIndexInfo);
-//            out.write(42);
-//            out.write(69);
-
-
+            out.position(indexInfo.offset());
+            out.write(compressed);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void pointToParent(SeekableOutputStream indexesOut, ChunkResult result, long offset) throws IOException {
+        result.setOffset(offset);
+
+        // Point parent to here
+        long parentIndex = Arrays.stream(result.getParent().getChildren()).filter(Objects::nonNull).toList().indexOf(result);
+
+        if (parentIndex == -1)
+            throw new RuntimeException("Parent index out of bounds!");
+
+        indexesOut.position(result.getParent().getOffset() + 8 + parentIndex * 8);
+        indexesOut.write(writeU64(result.getOffset()));
+
+        indexesOut.position(result.getOffset());
+    }
+
+    private long computeResult(SeekableOutputStream indexesOut, List<ChunkResult> chunkResults, long offset) throws IOException {
+        for (ChunkResult result : chunkResults) {
+            pointToParent(indexesOut, result, offset);
+            offset = writeIndexChildren(offset, indexesOut, result);
+        }
+
+        return offset;
+    }
+
+    private long writeIndexChildren(long offset, SeekableOutputStream indexesOut, ChunkResult result) throws IOException {
+        byte[] mask = result.createOccupancyMask();
+
+        indexesOut.write(mask);
+        offset += mask.length;
+
+        for (ChunkResult child : result.getChildren()) {
+            if (child == null)
+                continue;
+
+            indexesOut.write(new byte[8]); // Write pos later
+            offset += 8;
+        }
+        return offset;
     }
 
     private <T> T[] toSimpleArray(T[][][] arr, Dimensions size, AxisOrder axes, T[] simple) {
@@ -236,8 +351,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
         private final AxisOrder axes;
         private final Dimensions size;
 
+        private final boolean empty;
         private boolean calculated = false;
-        private boolean empty;
+
+        private long offset;
 
         private ChunkResult(ChunkResult parent, Position actualPoint, Position chunkPoint, int layer, List<ChunkPointer> leftOverByChild, List<Dimensions> layersSize, AxisOrder axes) {
             this.parent = parent;
@@ -264,6 +381,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
         public ChunkResult[] getChildren() {
             return children;
+        }
+
+        public ChunkPointer[] getChildrenAsPointer() {
+            return childrenAsPointer;
         }
 
         public int getLayer() {
@@ -387,6 +508,14 @@ public class CocoaSchematicFormat implements SchematicFormat {
                     ", calculated=" + calculated +
                     ", empty=" + empty +
                     '}';
+        }
+
+        public long getOffset() {
+            return offset;
+        }
+
+        public void setOffset(long offset) {
+            this.offset = offset;
         }
     }
 
