@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.space.schematic.*;
 import net.apartium.cocoabeans.space.schematic.axis.Axis;
 import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.space.schematic.block.GenericBlockData;
+import net.apartium.cocoabeans.space.schematic.compression.CocoaCompressionEngine;
 import net.apartium.cocoabeans.space.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableOutputStream;
@@ -13,16 +14,21 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CocoaSchematicFormatTest {
 
     @Test
     void soFar() {
-        SchematicFormat format = SchematicFormat.COCOA;
+        SchematicFormat format = new CocoaSchematicFormat(
+                Map.of(
+                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of())
+                ),
+                new CocoaCompressionEngine(),
+                new TestSchematicFactory()
+        );
 
         GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
         GenericBlockData sandBlock = new GenericBlockData(new NamespacedKey("minecraft", "sand"), Map.of());
@@ -71,14 +77,17 @@ class CocoaSchematicFormatTest {
                     },
             };
 
+            private final UUID id = UUID.randomUUID();
+            private final Instant created = Instant.now();
+
             @Override
             public UUID id() {
-                return UUID.randomUUID();
+                return id;
             }
 
             @Override
             public Instant created() {
-                return Instant.now();
+                return created;
             }
 
             @Override
@@ -108,7 +117,7 @@ class CocoaSchematicFormatTest {
 
             @Override
             public BlockData getBlockData(int x, int y, int z) {
-                return null;
+                return blocks[x][y][z];
             }
 
             @Override
@@ -174,15 +183,29 @@ class CocoaSchematicFormatTest {
             SeekableOutputStream out = new SeekableOutputStream(channel);
 
             format.write(schematic, out);
-            System.out.println(Arrays.toString(channel.toByteArray()));
-            System.out.println("len: " + channel.size());
-
 
             SeekableInputStream in = new SeekableInputStream(channel);
 
             in.position(0);
             Schematic schem = format.read(in);
-            System.out.println(schem);
+
+            assertEquals(schematic.id(), schem.id());
+            assertEquals(schematic.created().toEpochMilli(), schem.created().toEpochMilli());
+            assertEquals(schem.author(), schem.author());
+            assertEquals(schem.title(), schem.title());
+            assertEquals(schem.offset(), schem.offset());
+            assertEquals(schem.size().width(), schem.size().width());
+            assertEquals(schem.size().height(), schem.size().height());
+            assertEquals(schem.size().depth(), schem.size().depth());
+            assertEquals(schem.axisOrder(), schem.axisOrder());
+
+            for (int x = 0; x < schem.size().width(); x++) {
+                for (int y = 0; y < schem.size().height(); y++) {
+                    for (int z = 0; z < schem.size().depth(); z++) {
+                        assertEquals(schematic.getBlockData(x, y, z), schem.getBlockData(x, y, z));
+                    }
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

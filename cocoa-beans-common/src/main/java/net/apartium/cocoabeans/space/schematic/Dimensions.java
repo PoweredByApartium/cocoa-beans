@@ -4,7 +4,13 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.Region;
 import net.apartium.cocoabeans.space.StrictBoxRegion;
 
+import java.awt.*;
+
 public record Dimensions(double width, double height, double depth) {
+
+    public Dimensions(Dimensions size) {
+        this(size.width, size.height, size.depth);
+    }
 
     public static Dimensions box(double length) {
         return new Dimensions(length, length, length);

@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.space.schematic.axis;
 
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.schematic.Dimensions;
 
 import java.util.*;
 
@@ -65,6 +66,17 @@ public enum AxisOrder implements Comparator<Position> {
         Axis second = getSecond();
         Axis third = getThird();
         return new Position(
+                first == Axis.X ? i0 : first == Axis.Y ? i1 : i2,
+                second == Axis.X ? i0 : second == Axis.Y ? i1 : i2,
+                third == Axis.X ? i0 : third == Axis.Y ? i1 : i2
+        );
+    }
+
+    public Dimensions dimensions(int i0, int i1, int i2) {
+        Axis first = getFirst();
+        Axis second = getSecond();
+        Axis third = getThird();
+        return new Dimensions(
                 first == Axis.X ? i0 : first == Axis.Y ? i1 : i2,
                 second == Axis.X ? i0 : second == Axis.Y ? i1 : i2,
                 third == Axis.X ? i0 : third == Axis.Y ? i1 : i2

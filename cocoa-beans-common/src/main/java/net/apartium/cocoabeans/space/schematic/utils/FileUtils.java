@@ -1,10 +1,9 @@
 package net.apartium.cocoabeans.space.schematic.utils;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 
@@ -27,6 +26,16 @@ public class FileUtils {
     public static long readU64(DataInput in) throws IOException {
         return ((long) in.readUnsignedByte() << 56) | ((long) in.readUnsignedByte() << 48) | ((long) in.readUnsignedByte() << 40) | ((long) in.readUnsignedByte() << 32)
                 | ((long) in.readUnsignedByte() << 24) | ((long) in.readUnsignedByte() << 16) | ((long) in.readUnsignedByte() << 8) | (in.readUnsignedByte());
+    }
+
+    public static UUID toUUID(byte[] in) {
+        if (in.length != 16)
+            throw new IllegalArgumentException();
+
+        ByteBuffer bb = ByteBuffer.wrap(in);
+        long mostSigBits = bb.getLong();
+        long leastSigBits = bb.getLong();
+        return new UUID(mostSigBits, leastSigBits);
     }
 
     public static String readString(DataInput in) throws IOException {
@@ -105,6 +114,23 @@ public class FileUtils {
         crc.reset();
         crc.update(data, 0, data.length);
         return crc.getValue();
+    }
+
+
+    public static boolean[] toBooleanArray(byte[] data) {
+        return toBooleanArray(data, data.length * 8);
+    }
+
+    public static boolean[] toBooleanArray(byte[] data, int bitCount) {
+        boolean[] result = new boolean[bitCount];
+
+        for (int i = 0; i < bitCount; i++) {
+            int byteIndex = i >> 3;
+            int bitIndex = i & 7;
+            result[i] = ((data[byteIndex] >> bitIndex) & 1) == 1;
+        }
+
+        return result;
     }
 
     public static <T> byte[] createOccupancyMask(List<T> list) {

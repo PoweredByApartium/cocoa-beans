@@ -2,10 +2,7 @@ package net.apartium.cocoabeans.space.schematic.format;
 
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.Region;
-import net.apartium.cocoabeans.space.schematic.BlockData;
-import net.apartium.cocoabeans.space.schematic.BlockDataEncoder;
-import net.apartium.cocoabeans.space.schematic.Dimensions;
-import net.apartium.cocoabeans.space.schematic.Schematic;
+import net.apartium.cocoabeans.space.schematic.*;
 import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.space.schematic.compression.CompressionType;
@@ -16,6 +13,7 @@ import net.apartium.cocoabeans.space.schematic.utils.SeekableOutputStream;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.io.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -33,6 +31,8 @@ public class CocoaSchematicFormat implements SchematicFormat {
     public static final int L3_SIZE = 16;
     public static final int L4_SIZE = 4;
     public static final int L5_SIZE = 1;
+
+    public static final int CHUNK_AXIS_SIZE = 4;
 
     public static final Dimensions L1_DIM = Dimensions.box(L1_SIZE);
     public static final Dimensions L2_DIM = Dimensions.box(L2_SIZE);
@@ -60,12 +60,15 @@ public class CocoaSchematicFormat implements SchematicFormat {
     private CompressionType compressionTypeForBlocks = CompressionType.GZIP;
     private CompressionType compressionTypeForIndexes = CompressionType.GZIP;
     private Map.Entry<Integer, BlockDataEncoder> preferEncoder;
+    private SchematicFactory schematicFactory;
 
-    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, CompressionEngine compressionEngine) {
+    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, CompressionEngine compressionEngine, SchematicFactory schematicFactory) {
         this.blockDataEncoderMap = new HashMap<>(blockDataEncoderMap);
         this.compressionEngine = compressionEngine;
         if (!blockDataEncoderMap.isEmpty())
             preferEncoder = blockDataEncoderMap.entrySet().iterator().next();
+
+        this.schematicFactory = schematicFactory;
     }
 
     public void registerBlockEncoder(int id, BlockDataEncoder encoder) {
@@ -556,34 +559,34 @@ public class CocoaSchematicFormat implements SchematicFormat {
         out.write(writeU16(Headers.AXIS_ORDER));
         out.write(schematic.axisOrder().getId());
 
-        out.write(Headers.OFFSET);
+        out.write(writeU16(Headers.OFFSET));
         out.write(writeU24((int) schematic.offset().getX()));
         out.write(writeU24((int) schematic.offset().getY()));
         out.write(writeU24((int) schematic.offset().getZ()));
 
-        out.write(Headers.SIZE);
+        out.write(writeU16(Headers.SIZE));
         out.write(writeU24((int) schematic.size().width()));
         out.write(writeU24((int) schematic.size().height()));
         out.write(writeU24((int) schematic.size().depth()));
 
-        out.write(Headers.BLOCK_DATA_ENCODING);
+        out.write(writeU16(Headers.BLOCK_DATA_ENCODING));
         out.write(writeU16(preferEncoder.getKey()));
 
-        out.write(Headers.BLOCK_INFO);
+        out.write(writeU16(Headers.BLOCK_INFO));
         int blockInfoIndex = out.size();
         out.write(new byte[CompressionBlockInfo.SIZE]);
 
-        out.write(Headers.INDEX_INFO);
+        out.write(writeU16(Headers.INDEX_INFO));
         int indexInfoIndex = out.size();
         out.write(new byte[CompressionBlockInfo.SIZE]);
 
-        out.write(Headers.TIMESTAMP);
+        out.write(writeU16(Headers.TIMESTAMP));
         out.write(writeU64(schematic.created().toEpochMilli()));
 
-        out.write(Headers.AUTHOR);
+        out.write(writeU16(Headers.AUTHOR));
         out.write(writeString(schematic.author()));
 
-        out.write(Headers.TITLE);
+        out.write(writeU16(Headers.TITLE));
         out.write(writeString(schematic.title()));
 
         return new HeaderResult(
@@ -611,11 +614,301 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             int headerSize = readU24(din);
             byte[] header = in.readNBytes(headerSize);
+            Map<Integer, Object> headers = parseHeaders(header);
+            assertBaseHeaders(headers);
 
-            return null;
+            CompressionBlockInfo blockInfo = (CompressionBlockInfo) headers.get(Headers.BLOCK_INFO);
+            in.position(blockInfo.offset());
+            byte[] compressedBlocks = in.readNBytes((int) blockInfo.compressedSize());
+            byte[] originalBlockData = compressionEngine.decompress(blockInfo.type(), compressedBlocks);
+            if (originalBlockData.length != blockInfo.uncompressedSize())
+                throw new EOFException("Block data length mismatch");
+
+            if (crc32(originalBlockData) != blockInfo.checksum())
+                throw new EOFException("Checksum mismatch");
+
+            CompressionBlockInfo indexInfo = (CompressionBlockInfo) headers.get(Headers.INDEX_INFO);
+            in.position(indexInfo.offset());
+            byte[] compressedIndexInfo = in.readNBytes((int) indexInfo.uncompressedSize());
+            byte[] originalIndexInfo = compressionEngine.decompress(indexInfo.type(), compressedIndexInfo);
+            if (originalIndexInfo.length != indexInfo.uncompressedSize())
+                throw new EOFException("Index info length mismatch");
+
+            if (crc32(originalIndexInfo) != indexInfo.checksum())
+                throw new EOFException("Checksum mismatch");
+
+            AxisOrder axes = (AxisOrder) headers.get(Headers.AXIS_ORDER);
+
+            SeekableInputStream blockIn = new SeekableInputStream(ByteArraySeekableChannel.of(originalBlockData));
+            BlockDataEncoder encoder = (BlockDataEncoder) headers.get(Headers.BLOCK_DATA_ENCODING);
+
+            SeekableInputStream indexIn = new SeekableInputStream(ByteArraySeekableChannel.of(originalIndexInfo));
+            DataInputStream indexDin = new DataInputStream(indexIn);
+            Dimensions l1Size = axes.dimensions(
+                    readU24(indexDin),
+                    readU24(indexDin),
+                    readU24(indexDin)
+            );
+
+            Map<Position, BlockData> blocks = new HashMap<>();
+            boolean[] mask = toBooleanArray(indexIn.readNBytes((int) Math.ceil(l1Size.toAreaSize() / 8.0)), l1Size.toAreaSize());
+            for (int i = 0; i < mask.length; i++) {
+                if (!mask[i])
+                    continue;
+
+                int i0 = (int) (i % axes.getFirst().getAlong(l1Size));
+                int i1 = (int) ((i / axes.getFirst().getAlong(l1Size)) % axes.getSecond().getAlong(l1Size));
+                int i2 = (int) (i / (axes.getFirst().getAlong(l1Size) * axes.getSecond().getAlong(l1Size)));
+
+                Position l1ChunkPoint = axes.position(i0, i1, i2);
+                Position l1ActualPoint = multiply(l1ChunkPoint, L1_DIM);
+
+                boolean[] l1Mask = toBooleanArray(indexIn.readNBytes(8), 64);
+                for (int j = 0; j < l1Mask.length; j++) {
+                    if (!l1Mask[j])
+                        continue;
+
+                    i0 = j % CHUNK_AXIS_SIZE;
+                    i1 = (j / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
+                    i2 = j / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
+
+                    Position l2ChunkPoint = axes.position(i0, i1, i2);
+                    Position l2ActualPoint = add(l1ActualPoint, multiply(l2ChunkPoint, L1_DIM));
+
+                    long l2Pos = readU64(indexDin);
+                    long beforeL2Offset = indexIn.position();
+
+                    indexIn.position(l2Pos);
+                    boolean[] l2Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
+                    for (int k = 0; k < l2Mask.length; k++) {
+                        if (!l2Mask[k])
+                            continue;
+
+                        i0 = k % CHUNK_AXIS_SIZE;
+                        i1 = (k / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
+                        i2 = k / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
+
+                        Position l3ChunkPoint = axes.position(i0, i1, i2);
+                        Position l3ActualPoint = add(l2ActualPoint, multiply(l3ChunkPoint, L2_DIM));
+
+                        long l3Pos = readU64(indexDin);
+                        long beforeL3Offset = indexIn.position();
+
+                        indexIn.position(l3Pos);
+                        boolean[] l3Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
+                        for (int l = 0; l < l3Mask.length; l++) {
+                            if (!l3Mask[l])
+                                continue;
+
+                            i0 = l % CHUNK_AXIS_SIZE;
+                            i1 = (l / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
+                            i2 = l / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
+
+                            Position l4ChunkPoint = axes.position(i0, i1, i2);
+                            Position l4ActualPoint = add(l3ActualPoint, multiply(l4ChunkPoint, L3_DIM));
+
+                            long l4Pos = readU64(indexDin);
+                            long beforeL4Offset = indexIn.position();
+
+                            indexIn.position(l4Pos);
+                            boolean[] l4Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
+                            for (int n = 0; n < l4Mask.length; n++) {
+                                if (!l4Mask[n])
+                                    continue;
+
+                                i0 = n % CHUNK_AXIS_SIZE;
+                                i1 = (n / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
+                                i2 = n / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
+
+                                Position l5ChunkPoint = axes.position(i0, i1, i2);
+                                Position l5ActualPoint = add(l4ActualPoint, multiply(l5ChunkPoint, L4_DIM));
+
+                                long l5Pos = readU64(indexDin);
+                                long beforeL5Offset = indexIn.position();
+
+                                indexIn.position(l5Pos);
+                                boolean[] l5Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
+                                for (int m = 0; m < l5Mask.length; m++) {
+                                    if (!l5Mask[m])
+                                        continue;
+
+                                    i0 = m % CHUNK_AXIS_SIZE;
+                                    i1 = (m / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
+                                    i2 = m / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
+
+                                    Position chunkPoint = axes.position(i0, i1, i2);
+                                    Position pos = add(l5ActualPoint, chunkPoint);
+
+                                    long offset = readU64(indexDin);
+                                    blockIn.position(offset);
+
+                                    if (blocks.containsKey(pos))
+                                        throw new RuntimeException("Something went very wrong!!!");
+
+                                    blocks.put(pos, encoder.read(blockIn));
+                                }
+
+
+                                indexIn.position(beforeL5Offset);
+                            }
+
+
+                            indexIn.position(beforeL4Offset);
+                        }
+
+                        indexIn.position(beforeL3Offset);
+                    }
+
+                    indexIn.position(beforeL2Offset);
+                }
+            }
+
+            return schematicFactory.createSchematic(
+                    (UUID) headers.get(Headers.ID),
+                    (Instant) headers.get(Headers.TIMESTAMP),
+                    (String) headers.get(Headers.AUTHOR),
+                    (String) headers.get(Headers.TITLE),
+                    blocks,
+                    (Dimensions) headers.get(Headers.SIZE),
+                    (AxisOrder) headers.get(Headers.AXIS_ORDER),
+                    (Position) headers.get(Headers.OFFSET)
+
+            );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void assertBaseHeaders(Map<Integer, Object> headers) {
+        if (headers.isEmpty())
+            throw new IllegalStateException("No headers found!");
+
+        if (!headers.containsKey(Headers.ID))
+            throw new IllegalStateException("ID Header not found!");
+
+        if (!headers.containsKey(Headers.AXIS_ORDER))
+            throw new IllegalStateException("Axis Order Header not found!");
+
+        if (!headers.containsKey(Headers.OFFSET))
+            throw new IllegalStateException("Offset Header not found!");
+
+        if (!headers.containsKey(Headers.SIZE))
+            throw new IllegalStateException("Size Header not found!");
+
+        if (!headers.containsKey(Headers.BLOCK_DATA_ENCODING))
+            throw new IllegalStateException("BlockDataEncoding Header not found!");
+
+        if (!headers.containsKey(Headers.BLOCK_INFO))
+            throw new IllegalStateException("BlockInfo Header not found!");
+
+        if (!headers.containsKey(Headers.INDEX_INFO))
+            throw new IllegalStateException("IndexInfo Header not found!");
+
+        if (!headers.containsKey(Headers.TIMESTAMP))
+            throw new IllegalStateException("Timestamp Header not found!");
+
+        if (!headers.containsKey(Headers.AUTHOR))
+            throw new IllegalStateException("Author Header not found!");
+
+        if (!headers.containsKey(Headers.TITLE))
+            throw new IllegalStateException("Title Header not found!");
+    }
+
+    private Map<Integer, Object> parseHeaders(byte[] headers) throws IOException {
+        int index = 0;
+
+        Map<Integer, Object> map = new HashMap<>();
+
+        while (index < headers.length) {
+            int id = (headers[index] << 8) | (headers[index + 1]);
+            index += 2;
+
+            index = switch (id) {
+                case Headers.ID -> {
+                    map.put(Headers.ID, toUUID(splitFromAToB(headers, index, index + 16)));
+                    yield index + 16;
+                }
+                case Headers.AXIS_ORDER -> {
+                    map.put(Headers.AXIS_ORDER, AxisOrder.byId(headers[index]));
+                    yield index + 1;
+                }
+
+                case Headers.OFFSET -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 9)));
+                    map.put(Headers.OFFSET, new Position(readU24(in), readU24(in), readU24(in)));
+                    yield index + 9;
+                }
+
+                case Headers.SIZE -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 9)));
+                    map.put(Headers.SIZE, new Dimensions(readU24(in), readU24(in), readU24(in)));
+                    yield index + 9;
+                }
+
+                case Headers.BLOCK_DATA_ENCODING -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 2)));
+                    map.put(Headers.BLOCK_DATA_ENCODING, blockDataEncoderMap.get(readU16(in)));
+                    yield index + 2;
+                }
+
+                case Headers.BLOCK_INFO -> {
+                    map.put(Headers.BLOCK_INFO, CompressionBlockInfo.fromBytes(splitFromAToB(headers, index, index + CompressionBlockInfo.SIZE)));
+                    yield index + CompressionBlockInfo.SIZE;
+                }
+
+                case Headers.INDEX_INFO -> {
+                    map.put(Headers.INDEX_INFO, CompressionBlockInfo.fromBytes(splitFromAToB(headers, index, index + CompressionBlockInfo.SIZE)));
+                    yield index + CompressionBlockInfo.SIZE;
+                }
+
+                case Headers.TIMESTAMP -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 8)));
+                    map.put(Headers.TIMESTAMP, Instant.ofEpochMilli(readU64(in)));
+                    yield index + 8;
+                }
+
+                case Headers.AUTHOR -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 4)));
+                    int length = (int) readU32(in);
+
+                    in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 4 + length)));
+                    map.put(Headers.AUTHOR, readString(in));
+                    yield index + 4 + length;
+                }
+
+                case  Headers.TITLE -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 4)));
+                    int length = (int) readU32(in);
+
+                    in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 4 + length)));
+                    map.put(Headers.TITLE, readString(in));
+                    yield index + 4 + length;
+                }
+
+                default -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 3)));
+                    int length = readU24(in);
+                    map.put(id, splitFromAToB(headers, index + 3, index + 3 + length)); // TODO add way to parse those bytes
+                    yield index + 3 + length;
+
+//                    throw new IllegalStateException("Unexpected value: " + id + " (index: " + index + ")");
+                }
+            };
+        }
+
+        return map;
+    }
+
+    private byte[] splitFromAToB(byte[] data, int a, int b) {
+        if (data.length <= a)
+            throw new IndexOutOfBoundsException("Couldn't start from the end!");
+
+        if (data.length < b)
+            throw new IndexOutOfBoundsException("Couldn't reach after the end!");
+
+        byte[] result = new byte[b - a];
+        System.arraycopy(data, a, result, 0, b - a);
+        return result;
     }
 
 }
