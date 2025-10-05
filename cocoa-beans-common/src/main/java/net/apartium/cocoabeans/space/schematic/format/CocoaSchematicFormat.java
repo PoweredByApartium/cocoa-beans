@@ -15,7 +15,9 @@ import net.apartium.cocoabeans.structs.Entry;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static net.apartium.cocoabeans.space.schematic.utils.FileUtils.*;
 
@@ -56,17 +58,22 @@ public class CocoaSchematicFormat implements SchematicFormat {
     }
 
     private final Map<Integer, BlockDataEncoder> blockDataEncoderMap;
-    private CompressionEngine compressionEngine;
-    private CompressionType compressionTypeForBlocks = CompressionType.GZIP;
-    private CompressionType compressionTypeForIndexes = CompressionType.GZIP;
+    private final Map<Byte, CompressionEngine> compressionEngines;
+
+    private CompressionEngine defaultCompressionEngineForBlocks;
+    private CompressionEngine defaultCompressionEngineForIndexes;
     private Map.Entry<Integer, BlockDataEncoder> preferEncoder;
     private SchematicFactory schematicFactory;
 
-    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, CompressionEngine compressionEngine, SchematicFactory schematicFactory) {
+    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory schematicFactory) {
         this.blockDataEncoderMap = new HashMap<>(blockDataEncoderMap);
-        this.compressionEngine = compressionEngine;
         if (!blockDataEncoderMap.isEmpty())
             preferEncoder = blockDataEncoderMap.entrySet().iterator().next();
+
+        this.compressionEngines = compressionEngines.stream().collect(Collectors.toMap(CompressionEngine::type, Function.identity()));
+
+        this.defaultCompressionEngineForBlocks = this.compressionEngines.get(defaultCompressionForBlock);
+        this.defaultCompressionEngineForIndexes = this.compressionEngines.get(defaultCompressionForIndexes);
 
         this.schematicFactory = schematicFactory;
     }
@@ -79,16 +86,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
         preferEncoder = Map.entry(id, encoder);
     }
 
-    public void setCompressionEngine(CompressionEngine compressionEngine) {
-        this.compressionEngine = compressionEngine;
+    public void registerCompressionEngine(byte id, CompressionEngine engine) {
+        compressionEngines.put(id, engine);
     }
 
-    public void setCompressionTypeForBlocks(CompressionType compressionTypeForBlocks) {
-        this.compressionTypeForBlocks = compressionTypeForBlocks;
+    public void setDefaultCompressionEngineForBlocks(CompressionEngine engine) {
+        defaultCompressionEngineForBlocks = engine;
     }
 
-    public void setCompressionTypeForIndexes(CompressionType compressionTypeForIndexes) {
-        this.compressionTypeForIndexes = compressionTypeForIndexes;
+    public void setDefaultCompressionEngineForIndexes(CompressionEngine engine) {
+        defaultCompressionEngineForIndexes = engine;
     }
 
     @Override
@@ -125,10 +132,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
             }
 
             byte[] originalBlocksData = blockOut.toByteArray();
-            byte[] compressed = compressionEngine.compress(compressionTypeForBlocks, originalBlocksData);
+            byte[] compressed = defaultCompressionEngineForBlocks.compress(originalBlocksData);
 
             CompressionBlockInfo blockInfo = new CompressionBlockInfo(
-                    compressionTypeForBlocks,
+                    defaultCompressionEngineForBlocks.type(),
                     originalBlocksData.length,
                     compressed.length,
                     out.position(),
@@ -250,10 +257,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
             }
 
             byte[] indexesAsBytes = channel.toByteArray();
-            compressed = compressionEngine.compress(compressionTypeForIndexes, indexesAsBytes);
+            compressed = defaultCompressionEngineForIndexes.compress(indexesAsBytes);
 
             CompressionBlockInfo indexInfo = new CompressionBlockInfo(
-                    compressionTypeForIndexes,
+                    defaultCompressionEngineForIndexes.type(),
                     indexesAsBytes.length,
                     compressed.length,
                     out.position(),
@@ -620,7 +627,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             CompressionBlockInfo blockInfo = (CompressionBlockInfo) headers.get(Headers.BLOCK_INFO);
             in.position(blockInfo.offset());
             byte[] compressedBlocks = in.readNBytes((int) blockInfo.compressedSize());
-            byte[] originalBlockData = compressionEngine.decompress(blockInfo.type(), compressedBlocks);
+            byte[] originalBlockData = compressionEngines.get(blockInfo.compressionType()).decompress(compressedBlocks);
             if (originalBlockData.length != blockInfo.uncompressedSize())
                 throw new EOFException("Block data length mismatch");
 
@@ -630,7 +637,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             CompressionBlockInfo indexInfo = (CompressionBlockInfo) headers.get(Headers.INDEX_INFO);
             in.position(indexInfo.offset());
             byte[] compressedIndexInfo = in.readNBytes((int) indexInfo.uncompressedSize());
-            byte[] originalIndexInfo = compressionEngine.decompress(indexInfo.type(), compressedIndexInfo);
+            byte[] originalIndexInfo = compressionEngines.get(indexInfo.compressionType()).decompress(compressedIndexInfo);
             if (originalIndexInfo.length != indexInfo.uncompressedSize())
                 throw new EOFException("Index info length mismatch");
 

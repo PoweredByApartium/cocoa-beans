@@ -5,7 +5,9 @@ import net.apartium.cocoabeans.space.schematic.*;
 import net.apartium.cocoabeans.space.schematic.axis.Axis;
 import net.apartium.cocoabeans.space.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.space.schematic.block.GenericBlockData;
-import net.apartium.cocoabeans.space.schematic.compression.CocoaCompressionEngine;
+import net.apartium.cocoabeans.space.schematic.compression.CompressionType;
+import net.apartium.cocoabeans.space.schematic.compression.GzipCompressionEngine;
+import net.apartium.cocoabeans.space.schematic.compression.RawCompressionEngine;
 import net.apartium.cocoabeans.space.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.space.schematic.utils.SeekableOutputStream;
@@ -26,7 +28,12 @@ class CocoaSchematicFormatTest {
                 Map.of(
                         SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of())
                 ),
-                new CocoaCompressionEngine(),
+                Set.of(
+                        new GzipCompressionEngine(),
+                        new RawCompressionEngine()
+                ),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
                 new TestSchematicFactory()
         );
 

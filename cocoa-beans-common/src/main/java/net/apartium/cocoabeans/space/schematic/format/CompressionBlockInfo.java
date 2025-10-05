@@ -7,7 +7,7 @@ import java.io.*;
 import static net.apartium.cocoabeans.space.schematic.utils.FileUtils.*;
 
 public record CompressionBlockInfo(
-        CompressionType type,
+        byte compressionType,
         long uncompressedSize,
         long compressedSize,
         long offset,
@@ -29,7 +29,7 @@ public record CompressionBlockInfo(
         DataInputStream din = new DataInputStream(in);
 
         return new CompressionBlockInfo(
-                CompressionType.fromId(in.read()),
+                (byte) in.read(),
                 readU64(din),
                 readU64(din),
                 readU64(din),
@@ -40,7 +40,7 @@ public record CompressionBlockInfo(
     byte[] toByteArray() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream(33);
 
-        out.write(type.getId());
+        out.write(compressionType);
         out.write(writeU64(uncompressedSize));
         out.write(writeU64(compressedSize));
         out.write(writeU64(offset));
