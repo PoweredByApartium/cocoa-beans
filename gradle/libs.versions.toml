@@ -3,7 +3,7 @@ jackson = "2.13.4"
 adventure = "4.20.0"
 
 [libraries]
-mock-bukkit = { group = "com.github.seeseemelk", name = "MockBukkit-v1.20", version = "3.88.1" }
+mock-bukkit = { group = "com.github.seeseemelk", name = "MockBukkit-v1.20", version = "3.9.0" }
 paper = { group = "io.papermc.paper", name = "paper-api", version = "1.19-R0.1-SNAPSHOT" }
 spigot = { group = "org.spigotmc", name = "spigot-api", version = "1.18.1-R0.1-SNAPSHOT" }
 authlib = { group = "com.mojang", name = "authlib", version = "3.11.49" }
