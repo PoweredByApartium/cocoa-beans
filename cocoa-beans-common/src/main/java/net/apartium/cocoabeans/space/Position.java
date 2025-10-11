@@ -370,9 +370,15 @@ public class Position {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Position other = (Position) obj;
+        if (this == obj)
+            return true;
+
+        if (obj == null)
+            return false;
+
+        if (!(obj instanceof Position other))
+            return false;
+
         return x == other.x && y == other.y && z == other.z;
     }
 

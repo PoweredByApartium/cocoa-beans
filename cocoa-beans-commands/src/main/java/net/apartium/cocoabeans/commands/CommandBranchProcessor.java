@@ -122,7 +122,8 @@ import java.util.*;
     }
 
     /* package-private */ Set<String> handleTabCompletion(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
-        if (args.length <= index) return Set.of();
+        if (args.length <= index && index != 0)
+            return Set.of();
 
         Set<String> result = new HashSet<>();
         for (Entry<RequirementSet, CommandOption> entry : objectMap) {
