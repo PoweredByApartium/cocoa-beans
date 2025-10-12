@@ -45,6 +45,22 @@ public class Position {
         this.z = other.z;
     }
 
+    public static Position min(Position a, Position b) {
+        return new Position(
+                Math.min(a.getX(), b.getX()),
+                Math.min(a.getY(), b.getY()),
+                Math.min(a.getZ(), b.getZ())
+        );
+    }
+
+    public static Position max(Position a, Position b) {
+        return new Position(
+                Math.max(a.getX(), b.getX()),
+                Math.max(a.getY(), b.getY()),
+                Math.max(a.getZ(), b.getZ())
+        );
+    }
+
     /**
      * Returns the x coordinate
      * @return x

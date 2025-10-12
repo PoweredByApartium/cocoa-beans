@@ -1,0 +1,34 @@
+package net.apartium.cocoabeans.schematic.block;
+
+import net.apartium.cocoabeans.schematic.BlockData;
+import net.apartium.cocoabeans.schematic.BlockProp;
+import net.apartium.cocoabeans.schematic.NamespacedKey;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+
+@ApiStatus.AvailableSince("0.0.45")
+public record GenericBlockData(
+        NamespacedKey type,
+        Map<String, BlockProp<?>> props
+) implements BlockData {
+
+    public GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) {
+        this.type = type;
+        this.props = Collections.unmodifiableMap(props);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        GenericBlockData blockData = (GenericBlockData) o;
+        return Objects.equals(type, blockData.type) && Objects.deepEquals(props, blockData.props);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, props);
+    }
+}

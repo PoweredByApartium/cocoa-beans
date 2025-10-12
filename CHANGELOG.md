@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.45
+- [schematic] Initial schematic API
+
 ## 0.0.44
 - [commands] Add ArgumentConverter
 
