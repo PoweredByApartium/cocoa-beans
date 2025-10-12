@@ -7,6 +7,8 @@
 
 package net.apartium.cocoabeans.utils;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
@@ -16,10 +18,19 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * A utility for performing DNS lookups
+ * @see InitialDirContext
+ */
+@ApiStatus.AvailableSince("0.0.45")
 public class DNSLookup {
 
     private final InitialDirContext context;
 
+    /**
+     * Create a DNSLookup instance with sane defaults
+     * @return a new DNSLookup instance
+     */
     public static DNSLookup withDefaultOptions() {
         Hashtable<String, String> env = new Hashtable<>();
         env.put("java.naming.factory.initial","com.sun.jndi.dns.DnsContextFactory");
@@ -32,10 +43,20 @@ public class DNSLookup {
 
     }
 
+    /**
+     * Create a DNSLookup class with custom options
+     * @param context initial dir context
+     */
     public DNSLookup(InitialDirContext context) {
         this.context = context;
     }
 
+    /**
+     * Perform a reverse DNS lookup on given address
+     * @param address address to lookup
+     * @return reverse hostname
+     * @throws NamingException if a problem has occurred during lookup
+     */
     public String reverseLookup(InetAddress address) throws NamingException {
         if (address instanceof Inet4Address inet4Address) {
             byte[] addressBytes = inet4Address.getAddress();
@@ -47,6 +68,14 @@ public class DNSLookup {
         }
     }
 
+    /**
+     * Perform a simple forward lookup
+     * @param hostName hostname to lookup
+     * @param recordType record type
+     * @return lookup results
+     * @throws NamingException if there were dns lookup issues
+     * @throws javax.naming.NameNotFoundException if name is not found
+     */
     @SuppressWarnings("unchecked")
     public List<String> lookup(String hostName, String recordType) throws NamingException {
         Attribute attr = context.getAttributes("dns:" + hostName, new String[] {recordType}).get(recordType);

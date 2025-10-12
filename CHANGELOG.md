@@ -1,7 +1,9 @@
 # CHANGELOG
+## 0.0.45
+- [common] Add DNSLookup
+
 ## 0.0.44
 - [commands] Add ArgumentConverter
-- [common] Add DNSLookup
 
 ## 0.0.43
 - [repo] Add `cocoa-beans-` prefix to bom artifact
