@@ -75,8 +75,18 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DNSLookup</span>
+<div class="type-signature"><span class="annotations">@AvailableSince("0.0.45")
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">DNSLookup</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">A utility for performing DNS lookups</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/directory/InitialDirContext.html" title="class or interface in javax.naming.directory" class="external-link"><code>InitialDirContext</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -89,7 +99,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(javax.naming.directory.InitialDirContext)" class="member-name-link">DNSLookup</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/directory/InitialDirContext.html" title="class or interface in javax.naming.directory" class="external-link">InitialDirContext</a>&nbsp;context)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Create a DNSLookup class with custom options</div>
+</div>
 </div>
 </section>
 </li>
@@ -107,13 +119,19 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookup(java.lang.String,java.lang.String)" class="member-name-link">lookup</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hostName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Perform a simple forward lookup</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reverseLookup(java.net.InetAddress)" class="member-name-link">reverseLookup</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;address)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Perform a reverse DNS lookup on given address</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="DNSLookup.html" title="class in net.apartium.cocoabeans.utils">DNSLookup</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#withDefaultOptions()" class="member-name-link">withDefaultOptions</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a DNSLookup instance with sane defaults</div>
+</div>
 </div>
 </div>
 </div>
@@ -135,6 +153,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(javax.naming.directory.InitialDirContext)">
 <h3>DNSLookup</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DNSLookup</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/directory/InitialDirContext.html" title="class or interface in javax.naming.directory" class="external-link">InitialDirContext</a>&nbsp;context)</span></div>
+<div class="block">Create a DNSLookup class with custom options</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>context</code> - initial dir context</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -149,6 +172,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="withDefaultOptions()">
 <h3>withDefaultOptions</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="DNSLookup.html" title="class in net.apartium.cocoabeans.utils">DNSLookup</a></span>&nbsp;<span class="element-name">withDefaultOptions</span>()</div>
+<div class="block">Create a DNSLookup instance with sane defaults</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>a new DNSLookup instance</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -156,9 +184,14 @@ loadScripts(document, 'script');</script>
 <h3>reverseLookup</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">reverseLookup</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetAddress.html" title="class or interface in java.net" class="external-link">InetAddress</a>&nbsp;address)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></span></div>
+<div class="block">Perform a reverse DNS lookup on given address</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>address</code> - address to lookup</dd>
+<dt>Returns:</dt>
+<dd>reverse hostname</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></code> - if a problem has occurred during lookup</dd>
 </dl>
 </section>
 </li>
@@ -168,9 +201,16 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">lookup</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;hostName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;recordType)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></span></div>
+<div class="block">Perform a simple forward lookup</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>hostName</code> - hostname to lookup</dd>
+<dd><code>recordType</code> - record type</dd>
+<dt>Returns:</dt>
+<dd>lookup results</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NamingException.html" title="class or interface in javax.naming" class="external-link">NamingException</a></code> - if there were dns lookup issues</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.naming/javax/naming/NameNotFoundException.html" title="class or interface in javax.naming" class="external-link">NameNotFoundException</a></code> - if name is not found</dd>
 </dl>
 </section>
 </li>
