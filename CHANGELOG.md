@@ -1,6 +1,9 @@
 # CHANGELOG
-## 0.0.45
+## 0.0.46
 - [schematic] Initial schematic API
+
+## 0.0.45
+- [common] Add DNSLookup
 
 ## 0.0.44
 - [commands] Add ArgumentConverter
