@@ -15,17 +15,19 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DNSUtilsTest {
+class DNSLookupTest {
+
+    DNSLookup dnsLookup = DNSLookup.withDefaultOptions();
 
     @Test
     void reverseLookup() throws Exception {
-        assertEquals("one.one.one.one.", DNSUtils.reverseLookup(InetAddress.getByName("1.1.1.1")));
+        assertEquals("one.one.one.one.", dnsLookup.reverseLookup(InetAddress.getByName("1.1.1.1")));
 
     }
 
     @Test
     void lookup() throws Exception {
-        List<String> result = DNSUtils.lookup("one.one.one.one.", "A");
+        List<String> result = dnsLookup.lookup("one.one.one.one.", "A");
         assertEquals(2, result.size());
         assertTrue(result.contains("1.1.1.1"));
         assertTrue(result.contains("1.0.0.1"));

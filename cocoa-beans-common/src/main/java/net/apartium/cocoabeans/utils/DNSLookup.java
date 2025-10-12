@@ -16,25 +16,24 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
-public class DNSUtils {
+public class DNSLookup {
 
     private final InitialDirContext context;
 
-    public DNSUtils(InitialDirContext context) {
-        this.context = context;
-    }
-
-    public DNSUtils()
-
-    private InitialDirContext create() {
+    public static DNSLookup withDefaultOptions() {
         Hashtable<String, String> env = new Hashtable<>();
         env.put("java.naming.factory.initial","com.sun.jndi.dns.DnsContextFactory");
 
         try {
-            return new InitialDirContext(env);
+            return new DNSLookup(new InitialDirContext(env));
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    public DNSLookup(InitialDirContext context) {
+        this.context = context;
     }
 
     public String reverseLookup(InetAddress address) throws NamingException {
