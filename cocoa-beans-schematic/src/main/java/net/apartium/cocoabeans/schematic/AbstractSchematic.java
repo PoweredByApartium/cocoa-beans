@@ -27,6 +27,24 @@ public class AbstractSchematic implements Schematic {
         this.blockChunk = new BlockChunk(axes, Math.pow(4, 6), Position.ZERO, Position.ZERO);
     }
 
+    public AbstractSchematic(Schematic schematic) {
+        this.id = schematic.id();
+        this.created = schematic.created();
+        this.author = schematic.author();
+        this.title = schematic.title();
+
+        this.offset = schematic.offset();
+        this.size = schematic.size();
+        this.axes = this.axisOrder();
+
+        this.blockChunk = new BlockChunk(axes, Math.pow(4, 6), Position.ZERO, Position.ZERO);
+        Iterator<Entry<Position, BlockData>> iterator = schematic.blocksIterator();
+        while (iterator.hasNext()) {
+            Entry<Position, BlockData> entry = iterator.next();
+            this.blockChunk.setBlock(entry.key(), entry.value());
+        }
+    }
+
     protected AbstractSchematic(AbstractSchematic that, Dimensions size, AxisOrder axes) {
         this.id = that.id;
         this.created = that.created;

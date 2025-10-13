@@ -72,7 +72,6 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
         bytes.addAll(writeStringAsList(blockData.type().namespace()));
         bytes.addAll(writeStringAsList(blockData.type().key()));
 
-
         // Prop
         for (Map.Entry<String, BlockProp<?>> entry : blockData.props().entrySet()) {
             BlockPropFormat<?> propFormat = propFormatMap.get(entry.getKey());

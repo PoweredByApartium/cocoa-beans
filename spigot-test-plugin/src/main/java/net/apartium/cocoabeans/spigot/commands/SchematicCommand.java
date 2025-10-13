@@ -6,9 +6,7 @@ import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
-import net.apartium.cocoabeans.schematic.AbstractSchematic;
-import net.apartium.cocoabeans.schematic.MeowSchematicFactory;
-import net.apartium.cocoabeans.schematic.SimpleBlockDataEncoder;
+import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
@@ -19,11 +17,13 @@ import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematic;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper;
+import net.apartium.cocoabeans.structs.Entry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -37,11 +37,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+
+import static net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper.toBukkit;
 
 
 @Command("schematic")
@@ -111,6 +110,35 @@ public class SchematicCommand implements CommandNode, Listener {
                         .build()
         );
         player.sendMessage(Component.text("You now have a wand!", NamedTextColor.YELLOW));
+    }
+
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("temp")
+    public void temp(Player player) {
+        BlockChunk blockChunk = CocoaSchematicFormat.temp;
+        if  (blockChunk == null) {
+            player.sendMessage(Component.text("There aren't any temp feature rn!", NamedTextColor.RED));
+            return;
+        }
+
+        for (Entry<Position, BlockData> entry : blockChunk) {
+            Position position = entry.key();
+            Block block = new Location(
+                    player.getWorld(),
+                    player.getLocation().getX() + position.getX(),
+                    player.getLocation().getY() + position.getY(),
+                    player.getLocation().getZ() + position.getZ()
+            ).getBlock();
+
+            org.bukkit.block.data.BlockData blockData = toBukkit(entry.value());
+            if (blockData == null) {
+                Bukkit.getLogger().warning("Could not convert block data to org.bukkit.block.data.BlockData! (" + entry.value().type().toString() + ")");
+                continue;
+            }
+
+            block.setBlockData(blockData);
+        }
+        player.sendMessage(Component.text("You paste TMP", NamedTextColor.GREEN));
     }
 
     @SenderLimit(SenderType.PLAYER)

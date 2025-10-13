@@ -1,10 +1,10 @@
 package net.apartium.cocoabeans.schematic;
 
-/* package-private */ final class ChunkPointer extends Pointer {
+public final class ChunkPointer extends Pointer {
 
     private final BlockChunk chunk;
 
-    ChunkPointer(BlockChunk chunk) {
+    public ChunkPointer(BlockChunk chunk) {
         this.chunk = chunk;
     }
 

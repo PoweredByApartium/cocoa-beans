@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -20,7 +21,7 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
     private Pointer[] pointers = new Pointer[0];
     private long mask = 0;
 
-    BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
+    public BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
         this.axisOrder = axisOrder;
         this.scaler = scaler;
         this.nextScaler = Math.floor(scaler / SIZE);
@@ -151,7 +152,6 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
     public @NotNull Iterator<Entry<Position, BlockData>> iterator() {
         return new Iterator<>() {
 
-            private final long fullMask = mask;
             private long remaining = mask;
             private int pointerIdx = 0;
             private Iterator<Entry<Position, BlockData>> child = null;
@@ -239,82 +239,11 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
         };
     }
 
-//    @Override
-//    public @NotNull Iterator<Entry<Position, BlockData>> iterator() {
-//        return new Iterator<>() {
-//
-//            private Iterator<Entry<Position, BlockData>> currentIterator;
-//            private boolean hasNext = mask != 0;
-//            private int index = 0;
-//
-//            @Override
-//            public boolean hasNext() {
-//                return hasNext;
-//            }
-//
-//            @Override
-//            public Entry<Position, BlockData> next() {
-//                if (currentIterator != null) {
-//                    if (currentIterator.hasNext()) {
-//                        Entry<Position, BlockData> entry = currentIterator.next();
-//                        if (currentIterator.hasNext())
-//                            return entry;
-//
-//                        currentIterator = null;
-//                        index++;
-//
-//                        if (mask >> index == 0)
-//                            hasNext = false;
-//
-//                        return entry;
-//                    } else {
-//                        currentIterator = null;
-//                        index++;
-//                    }
-//                }
-//
-//                long current = mask >> index;
-//                while ((current & 1) == 0) {
-//                    index++;
-//                    current >>= 1;
-//                    if (current == 0) {
-//                        hasNext = false;
-//                        return null;
-//                    }
-//                }
-//
-//                hasNext = (current >> 1) != 0;
-//
-//                Pointer pointer = pointers[index];
-//                if (pointer instanceof BlockPointer blockPointer) {
-//                    int i0 = index % SIZE;
-//                    int i1 = (index / SIZE) % SIZE;
-//                    int i2 = index / (SIZE * SIZE);
-//                    index++;
-//                    return new Entry<>(
-//                            new Position(actualPos).add(axisOrder.position(i0, i1, i2)),
-//                            blockPointer.getData()
-//                    );
-//                }
-//
-//                if (pointer instanceof ChunkPointer chunkPointer) {
-//                    currentIterator = chunkPointer.getChunk().iterator();
-//                    Entry<Position, BlockData> entry = currentIterator.next();
-//                    if (currentIterator.hasNext())
-//                        hasNext = true;
-//                    else {
-//                        index++;
-//                        hasNext = (current >> 1) != 0;
-//                    }
-//
-//                    return entry;
-//                }
-//
-//                if (pointer == null)
-//                    throw new NullPointerException("pointer is null");
-//
-//                throw new UnsupportedOperationException("Not supported yet: " + pointer.getClass().getName());
-//            }
-//        };
-//    }
+    public Pointer[] getPointers() {
+        return Arrays.copyOf(pointers, pointers.length);
+    }
+
+    public long getMask() {
+        return mask;
+    }
 }

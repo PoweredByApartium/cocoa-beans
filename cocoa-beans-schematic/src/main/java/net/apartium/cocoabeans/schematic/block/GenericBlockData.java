@@ -10,10 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @ApiStatus.AvailableSince("0.0.45")
-public record GenericBlockData(
-        NamespacedKey type,
-        Map<String, BlockProp<?>> props
-) implements BlockData {
+public record GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) implements BlockData {
 
     public GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) {
         this.type = type;
@@ -27,8 +24,4 @@ public record GenericBlockData(
         return Objects.equals(type, blockData.type) && Objects.deepEquals(props, blockData.props);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, props);
-    }
 }

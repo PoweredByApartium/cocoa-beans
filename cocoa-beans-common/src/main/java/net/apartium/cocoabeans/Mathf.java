@@ -12,6 +12,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.39")
 public class Mathf {
 
+    public static final double LOG4 = Math.log(4);
+
     private Mathf () { }
 
     /**
@@ -61,6 +63,23 @@ public class Mathf {
      */
     public static double lerp(double a, double b, double t) {
         return a + (b - a) * t;
+    }
+
+    public static long nextPowerOfFour(long x) {
+        if (x <= 1)
+            return 1L;
+
+        if (x > (1L << 62))
+            return 0L; // overflow guard
+
+        int bitLength = 64 - Long.numberOfLeadingZeros(x - 1);
+        int k = (bitLength + 1) / 2;
+        int shift = k << 1;
+        return 1L << shift;
+    }
+
+    public static double log4(long x) {
+        return Math.log(x) / LOG4;
     }
 
 }

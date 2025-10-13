@@ -120,18 +120,11 @@ public class FileUtils {
         return crc.getValue();
     }
 
+    public static boolean[] toBooleanArray(long data) {
+        boolean[] result = new boolean[64];
 
-    public static boolean[] toBooleanArray(byte[] data) {
-        return toBooleanArray(data, data.length * 8);
-    }
-
-    public static boolean[] toBooleanArray(byte[] data, int bitCount) {
-        boolean[] result = new boolean[bitCount];
-
-        for (int i = 0; i < bitCount; i++) {
-            int byteIndex = i >> 3;
-            int bitIndex = i & 7;
-            result[i] = ((data[byteIndex] >> bitIndex) & 1) == 1;
+        for (int i = 0; i < 64; i++) {
+            result[i] = (data & (1L << i)) != 0;
         }
 
         return result;

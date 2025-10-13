@@ -1,12 +1,11 @@
 package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.space.Region;
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
-import net.apartium.cocoabeans.schematic.utils.FileUtils;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
 import net.apartium.cocoabeans.structs.Entry;
@@ -16,13 +15,15 @@ import java.io.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
 
 @ApiStatus.AvailableSince("0.0.45")
 public class CocoaSchematicFormat implements SchematicFormat {
+
+    public static BlockChunk temp;
+    private boolean test = true;
 
     public static final String FINGERPRINT = "CBSC";
     public static final int FINGERPRINT_SIZE = 4;
@@ -114,10 +115,19 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.write(headers);
 
             Iterator<Entry<Position, BlockData>> iterator = schematic.blocksIterator();
-            // TODO may wanna equal block data to not have to write many times and just point same point
-            Map<Position, Long> blockIndexes = new HashMap<>();
+            Map<BlockData, Long> blockIndexes = new IdentityHashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
             long offset = 0;
+
+            final AxisOrder axes = schematic.axisOrder();
+
+            Dimensions dimensions = schematic.size();
+
+            long maxDimensions = (long) Math.max(dimensions.width(), Math.max(dimensions.height(), dimensions.depth()));
+            long scaler = Mathf.nextPowerOfFour(maxDimensions);
+            BlockChunk blockChunk = new BlockChunk(axes, scaler, Position.ZERO, Position.ZERO);
+            temp = blockChunk;
+
             while (iterator.hasNext()) {
                 Entry<Position, BlockData> entry = iterator.next();
                 Position position = entry.key();
@@ -126,9 +136,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
                 if (blockData == null)
                     continue;
 
-                blockIndexes.put(position, offset);
+                blockChunk.setBlock(position, blockData);
+
+                if (blockIndexes.containsKey(blockData))
+                    continue;
+
+                blockIndexes.put(blockData, offset);
+
                 byte[] data = preferEncoder.getValue().write(blockData);
                 blockOut.write(data);
+
                 offset += data.length;
             }
 
@@ -150,112 +167,10 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.position(blockInfo.offset());
             out.write(compressed);
 
-            offset = 0;
-            
-            final AxisOrder axes = schematic.axisOrder();
-            List<Map.Entry<Position, Long>> indexes = blockIndexes.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey(axes))
-                    .toList();
-
-            Dimensions dimensions = schematic.size();
-
-            Dimensions l1Size = splitToChunk(dimensions, L1_DIM);
-
             ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
             SeekableOutputStream indexesOut = new SeekableOutputStream(channel);
 
-            ChunkResult[][][] chunkResults = new ChunkResult
-                    [(int) axes.getFirst().getAlong(l1Size)]
-                    [(int) axes.getFirst().getAlong(l1Size)]
-                    [(int) axes.getFirst().getAlong(l1Size)];
-
-            // TODO may optimize it later
-            List<Dimensions> sizes = List.of(
-                    L1_DIM, L2_DIM, L3_DIM, L4_DIM, L5_DIM
-            );
-
-            for (int i0 = 0; i0 < chunkResults.length; i0++) {
-                for (int i1 = 0; i1 < chunkResults[0].length; i1++) {
-                    for (int i2 = 0; i2 < chunkResults[0][0].length; i2++) {
-                        Position chunkPoint = axes.position(i0, i1, i2);
-                        Position actualPoint = multiply(chunkPoint, L1_DIM);
-
-                        Region region = L1_DIM.toBoxRegion(actualPoint);
-
-                        List<ChunkPointer> pointers = indexes.stream()
-                                .map(entry -> new ChunkPointer(entry.getKey(), entry.getValue()))
-                                .filter(pointer -> region.contains(subtract(pointer.position, actualPoint)))
-                                .toList();
-
-                        if (pointers.isEmpty())
-                            continue;
-
-                        ChunkResult chunkResult = new ChunkResult(
-                                null,
-                                actualPoint,
-                                chunkPoint,
-                                1,
-                                pointers,
-                                sizes,
-                                axes
-                        );
-
-                        chunkResults[i0][i1][i2] = chunkResult;
-                        chunkResult.createAllChildren();
-                    }
-                }
-            }
-
-            indexesOut.write(writeU24((int) axes.getFirst().getAlong(l1Size)));
-            offset += 3;
-
-            indexesOut.write(writeU24((int) axes.getSecond().getAlong(l1Size)));
-            offset += 3;
-
-            indexesOut.write(writeU24((int) axes.getThird().getAlong(l1Size)));
-            offset += 3;
-
-            ChunkResult[] l1AsSimpleArray = toSimpleArray(chunkResults, l1Size, axes, new ChunkResult[0]);
-            byte[] occupancyMask = createOccupancyMask(l1AsSimpleArray);
-
-            indexesOut.write(occupancyMask);
-            offset += occupancyMask.length;
-
-            for (ChunkResult l1 : l1AsSimpleArray) {
-                if (l1 == null)
-                    continue;
-
-                l1.setOffset(offset);
-                offset = writeIndexChildren(offset, indexesOut, l1);
-            }
-
-            List<ChunkResult> listL2 = Arrays.stream(l1AsSimpleArray).filter(Objects::nonNull).flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
-            offset = computeResult(indexesOut, listL2, offset);
-
-            List<ChunkResult> listL3 = listL2.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
-            offset = computeResult(indexesOut, listL3, offset);
-
-
-            List<ChunkResult> listL4 = listL3.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
-            offset = computeResult(indexesOut, listL4, offset);
-
-            List<ChunkResult> listL5 = listL4.stream().flatMap(result -> Arrays.stream(result.getChildren())).filter(Objects::nonNull).toList();
-            for (ChunkResult result : listL5) {
-                pointToParent(indexesOut, result, offset);
-
-                byte[] mask = result.createOccupancyMask();
-
-                indexesOut.write(mask);
-                offset += mask.length;
-
-                for (ChunkPointer child : result.getChildrenAsPointer()) {
-                    if (child == null)
-                        continue;
-
-                    indexesOut.write(writeU64(child.fileOffset));
-                    offset += 8;
-                }
-            }
+            writeIndexes(indexesOut, scaler, blockChunk, blockIndexes);
 
             byte[] indexesAsBytes = channel.toByteArray();
             compressed = defaultCompressionEngineForIndexes.compress(indexesAsBytes);
@@ -279,263 +194,98 @@ public class CocoaSchematicFormat implements SchematicFormat {
         }
     }
 
-    private void pointToParent(SeekableOutputStream indexesOut, ChunkResult result, long offset) throws IOException {
-        result.setOffset(offset);
+    private void writeIndexes(SeekableOutputStream indexesOut, long scaler, BlockChunk blockChunk, Map<BlockData, Long> blockIndexes) throws IOException {
+        Map<Pointer, Long> pointerFileOffsets = new IdentityHashMap<>();
+        Map<Pointer, Entry<Pointer, Integer>> pointToParent = new IdentityHashMap<>();
 
-        // Point parent to here
-        long parentIndex = Arrays.stream(result.getParent().getChildren()).filter(Objects::nonNull).toList().indexOf(result);
+        int layers = (int) Math.ceil(Mathf.log4(scaler));
+        indexesOut.write((byte) layers);
 
-        if (parentIndex == -1)
-            throw new RuntimeException("Parent index out of bounds!");
+        ChunkPointer rootPointer = new ChunkPointer(blockChunk);
 
-        indexesOut.position(result.getParent().getOffset() + 8 + parentIndex * 8);
-        indexesOut.write(writeU64(result.getOffset()));
+        pointToParent.put(rootPointer, new Entry<>(rootPointer, 0));
 
-        indexesOut.position(result.getOffset());
-    }
+        List<Pointer> nextInQueue = new ArrayList<>();
+        nextInQueue.add(rootPointer);
 
-    private long computeResult(SeekableOutputStream indexesOut, List<ChunkResult> chunkResults, long offset) throws IOException {
-        for (ChunkResult result : chunkResults) {
-            pointToParent(indexesOut, result, offset);
-            offset = writeIndexChildren(offset, indexesOut, result);
-        }
+        while (!nextInQueue.isEmpty()) {
+            List<Pointer> currentPointers = new ArrayList<>(nextInQueue);
+            nextInQueue.clear();
 
-        return offset;
-    }
+            while (!currentPointers.isEmpty()) {
+                Pointer pointer = currentPointers.remove(0);
+                long position = indexesOut.position();
+                pointerFileOffsets.put(pointer, position);
 
-    private long writeIndexChildren(long offset, SeekableOutputStream indexesOut, ChunkResult result) throws IOException {
-        byte[] mask = result.createOccupancyMask();
-
-        indexesOut.write(mask);
-        offset += mask.length;
-
-        for (ChunkResult child : result.getChildren()) {
-            if (child == null)
-                continue;
-
-            indexesOut.write(new byte[8]); // Write pos later
-            offset += 8;
-        }
-        return offset;
-    }
-
-    private <T> T[] toSimpleArray(T[][][] arr, Dimensions size, AxisOrder axes, T[] simple) {
-        T[] result = Arrays.copyOf(simple, size.toAreaSize());
-
-        for (int i0 = 0; i0 < arr.length; i0++) {
-            for (int i1 = 0; i1 < arr[i0].length; i1++) {
-                for (int i2 = 0; i2 < arr[i0][i1].length; i2++) {
-                    int idx = (int) (i0 + (i1 * axes.getFirst().getAlong(size)) + (i2 * axes.getFirst().getAlong(size) * axes.getSecond().getAlong(size)));
-                    result[idx] = arr[i0][i1][i2];
-                }
-            }
-        }
-
-        return result;
-    }
-
-
-
-    private Dimensions splitToChunk(Dimensions dimensions, Dimensions chunkSize) {
-        return new Dimensions(
-                Math.ceil(dimensions.width() / chunkSize.width()),
-                Math.ceil(dimensions.height() / chunkSize.height()),
-                Math.ceil(dimensions.depth() / chunkSize.depth())
-        );
-    }
-
-
-    private record ChunkPointer(Position position, long fileOffset) { }
-    private static class ChunkResult {
-
-        public static final int CHILD_SIZE = 64;
-        public static final Dimensions CHUNK_DIM = new Dimensions(4, 4, 4);
-
-        private final ChunkResult parent;
-        private final Position actualPoint;
-        private final Position chunkPoint;
-        private final int layer;
-        private final ChunkResult[] children = new ChunkResult[CHILD_SIZE];
-        private final ChunkPointer[] childrenAsPointer = new ChunkPointer[CHILD_SIZE];
-        private final List<ChunkPointer> leftOverByChild;
-        private final List<Dimensions> layersSize;
-        private final AxisOrder axes;
-        private final Dimensions size;
-
-        private final boolean empty;
-        private boolean calculated = false;
-
-        private long offset;
-
-        private ChunkResult(ChunkResult parent, Position actualPoint, Position chunkPoint, int layer, List<ChunkPointer> leftOverByChild, List<Dimensions> layersSize, AxisOrder axes) {
-            this.parent = parent;
-            this.actualPoint = actualPoint;
-            this.chunkPoint = chunkPoint;
-            this.layer = layer;
-            this.leftOverByChild = leftOverByChild;
-            this.layersSize = layersSize;
-            this.size = this.layersSize.get(this.layer - 1);
-            this.axes = axes;
-            this.empty = leftOverByChild.isEmpty();
-        }
-
-        public byte[] createOccupancyMask() {
-            if (isLastLayer())
-                return FileUtils.createOccupancyMask(this.childrenAsPointer, Objects::nonNull);
-
-            return FileUtils.createOccupancyMask(this.children, result -> result != null && !result.isEmpty());
-        }
-
-        public ChunkResult getParent() {
-            return parent;
-        }
-
-        public ChunkResult[] getChildren() {
-            return children;
-        }
-
-        public ChunkPointer[] getChildrenAsPointer() {
-            return childrenAsPointer;
-        }
-
-        public int getLayer() {
-            return layer;
-        }
-
-        public Position getActualPoint() {
-            return actualPoint;
-        }
-
-        public Position getChunkPoint() {
-            return chunkPoint;
-        }
-
-        public boolean isLastLayer() {
-            return this.layer == (this.layersSize.size());
-        }
-
-        public boolean isCalculated() {
-            return this.calculated;
-        }
-
-        public boolean isEmpty() {
-            return this.empty;
-        }
-
-        private void createChildren() {
-            if (this.calculated)
-                return;
-
-            if (this.empty) {
-                calculated = true;
-                return;
-            }
-
-            if (isLastLayer()) {
-                for (ChunkPointer pointer : leftOverByChild) {
-                    Position chunkPoint = subtract(pointer.position, this.actualPoint);
-                    int index = (int) (axes.getFirst().getAlong(chunkPoint)
-                            + (axes.getSecond().getAlong(chunkPoint) * axes.getFirst().getAlong(CHUNK_DIM)
-                            + (axes.getThird().getAlong(chunkPoint) * axes.getFirst().getAlong(CHUNK_DIM) * axes.getSecond().getAlong(CHUNK_DIM))));
-
-                    if (index < 0 || index >= CHUNK_DIM.toAreaSize())
-                        throw new IndexOutOfBoundsException("index is out of bound: " + index);
-
-                    if (childrenAsPointer[index] != null)
-                        throw new RuntimeException("Chunk pointer found 2 times: " + index + " a: " + childrenAsPointer[index] + " b: " + pointer);
-
-                    childrenAsPointer[index] = pointer;
-                }
-
-                calculated = true;
-                return;
-            }
-
-
-            for (int idx = 0; idx < CHILD_SIZE; idx++) {
-                int i0 = idx % (int) axes.getFirst().getAlong(CHUNK_DIM);
-                int i1 = (int) ((idx / axes.getFirst().getAlong(CHUNK_DIM)) % axes.getSecond().getAlong(CHUNK_DIM));
-                int i2 = (int) (idx / (axes.getFirst().getAlong(CHUNK_DIM) * axes.getSecond().getAlong(CHUNK_DIM)));
-
-
-                Position chunkPoint = axes.position(i0, i1, i2);
-                Position actualPoint = add(this.actualPoint, multiply(chunkPoint, size));
-
-                Region region = size.toBoxRegion(actualPoint);
-
-                ChunkResult chunkResult = new ChunkResult(
-                        this,
-                        actualPoint,
-                        chunkPoint,
-                        this.layer + 1,
-                        this.leftOverByChild.stream()
-                                .filter(inChunk(region))
-                                .sorted((a, b) -> axes.compare(a.position, b.position))
-                                .toList(),
-                        this.layersSize,
-                        this.axes
-                );
-
-                children[idx] = chunkResult;
-            }
-
-            calculated = true;
-        }
-
-        public void createAllChildren() {
-            createChildren();
-
-            if (isLastLayer())
-                return;
-
-            for (int i = 0; i < children.length; i++) {
-                ChunkResult child = children[i];
-                if (child == null)
+                if (pointer instanceof ChunkPointer chunkPointer) {
+                    writeChunkPointer(
+                            indexesOut,
+                            chunkPointer,
+                            pointerFileOffsets,
+                            pointToParent,
+                            nextInQueue,
+                            blockIndexes,
+                            pointer != rootPointer
+                    );
                     continue;
+                }
 
-                child.createAllChildren();
+                if (pointer instanceof BlockPointer blockPointer) {
+                    throw new RuntimeException("BlockPointers are not supported");
+//                    Long fileOffset = blockIndexes.get(blockPointer.getData());
+//                    if (fileOffset == null)
+//                        throw new IllegalStateException("Couldn't find block index for block " + blockPointer.getData());
+//
+//                    indexesOut.write(writeU64(fileOffset));
+//                    continue;
+                }
 
-                if (child.isEmpty())
-                    children[i] = null;
+
+                throw new UnsupportedOperationException("Unsupported pointer type: " + pointer.getClass().getName());
             }
-        }
-
-        private Predicate<? super ChunkPointer> inChunk(Region region) {
-            return pointer -> {
-                Position position = subtract(pointer.position, this.actualPoint);
-                return region.contains(position);
-            };
-        }
-
-        @Override
-        public String toString() {
-            return "ChunkResult{" +
-                    "actualPoint=" + actualPoint +
-                    ", chunkPoint=" + chunkPoint +
-                    ", layer=" + layer +
-                    ", children=" + Arrays.toString(children) +
-                    ", leftOverByChild=" + leftOverByChild +
-                    ", axes=" + axes +
-                    ", calculated=" + calculated +
-                    ", empty=" + empty +
-                    '}';
-        }
-
-        public long getOffset() {
-            return offset;
-        }
-
-        public void setOffset(long offset) {
-            this.offset = offset;
         }
     }
 
-    private static Position subtract(Position a, Position b) {
-        return new Position(
-                a.getX() - b.getX(),
-                a.getY() - b.getY(),
-                a.getZ() - b.getZ()
-        );
+    private void writeChunkPointer(SeekableOutputStream out, ChunkPointer pointer, Map<Pointer, Long> pointerFileOffsets, Map<Pointer, Entry<Pointer, Integer>> pointToParent, List<Pointer> nextInQueue, Map<BlockData, Long> blockIndexes, boolean shouldPoint) throws IOException {
+        Entry<Pointer, Integer> entry = pointToParent.get(pointer);
+        if (shouldPoint)
+            pointParentToChild(out, out.position(), pointerFileOffsets.get(entry.key()), entry.value());
+
+        BlockChunk blockChunk = pointer.getChunk();
+        long mask = blockChunk.getMask();
+
+        if (mask == 0L)
+            throw new IllegalStateException("Chunk mask is zero");
+
+        out.write(writeU64(mask));
+        Pointer[] pointers = blockChunk.getPointers();
+
+
+        for (int i = 0; i < pointers.length; i++) {
+            Pointer child = pointers[i];
+            if (pointToParent.containsKey(child))
+                throw new RuntimeException("Duplicate pointer at " + child);
+
+            if (child instanceof BlockPointer blockPointer) {
+                Long fileOffset = blockIndexes.get(blockPointer.getData());
+                    if (fileOffset == null)
+                        throw new IllegalStateException("Couldn't find block index for block " + blockPointer.getData());
+
+                    out.write(writeU64(fileOffset));
+                    continue;
+            }
+
+            pointToParent.put(child, new Entry<>(pointer, i));
+            nextInQueue.add(child);
+            out.write(new byte[8]);
+        }
+
+    }
+
+    private void pointParentToChild(SeekableOutputStream indexesOut, long offset, long parentOffset, int index) throws IOException {
+        indexesOut.position(parentOffset + 8 + index * 8L);
+        indexesOut.write(writeU64(offset));
+        indexesOut.position(offset);
     }
 
     private static Position add(Position a, Position b) {
@@ -546,11 +296,11 @@ public class CocoaSchematicFormat implements SchematicFormat {
         );
     }
 
-    private static Position multiply(Position position, Dimensions dimensions) {
+    private static Position multiply(Position position, long value) {
         return new Position(
-                position.getX() * dimensions.width(),
-                position.getY() * dimensions.height(),
-                position.getZ() * dimensions.depth()
+                position.getX() * value,
+                position.getY() * value,
+                position.getZ() * value
         );
     }
 
@@ -652,124 +402,23 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             SeekableInputStream indexIn = new SeekableInputStream(ByteArraySeekableChannel.of(originalIndexInfo));
             DataInputStream indexDin = new DataInputStream(indexIn);
-            Dimensions l1Size = axes.dimensions(
-                    readU24(indexDin),
-                    readU24(indexDin),
-                    readU24(indexDin)
-            );
+
+            int layers = indexIn.read();
+            long scaler = (long) Math.pow(4, layers);
 
             Map<Position, BlockData> blocks = new HashMap<>();
-            boolean[] mask = toBooleanArray(indexIn.readNBytes((int) Math.ceil(l1Size.toAreaSize() / 8.0)), l1Size.toAreaSize());
-            for (int i = 0; i < mask.length; i++) {
-                if (!mask[i])
-                    continue;
+            readIndexLayer(
+                    indexIn,
+                    indexDin,
+                    indexIn.position(),
+                    scaler,
+                    Position.ZERO,
+                    axes,
+                    blocks,
+                    encoder,
+                    blockIn
+            );
 
-                int i0 = (int) (i % axes.getFirst().getAlong(l1Size));
-                int i1 = (int) ((i / axes.getFirst().getAlong(l1Size)) % axes.getSecond().getAlong(l1Size));
-                int i2 = (int) (i / (axes.getFirst().getAlong(l1Size) * axes.getSecond().getAlong(l1Size)));
-
-                Position l1ChunkPoint = axes.position(i0, i1, i2);
-                Position l1ActualPoint = multiply(l1ChunkPoint, L1_DIM);
-
-                boolean[] l1Mask = toBooleanArray(indexIn.readNBytes(8), 64);
-                for (int j = 0; j < l1Mask.length; j++) {
-                    if (!l1Mask[j])
-                        continue;
-
-                    i0 = j % CHUNK_AXIS_SIZE;
-                    i1 = (j / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
-                    i2 = j / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
-
-                    Position l2ChunkPoint = axes.position(i0, i1, i2);
-                    Position l2ActualPoint = add(l1ActualPoint, multiply(l2ChunkPoint, L1_DIM));
-
-                    long l2Pos = readU64(indexDin);
-                    long beforeL2Offset = indexIn.position();
-
-                    indexIn.position(l2Pos);
-                    boolean[] l2Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
-                    for (int k = 0; k < l2Mask.length; k++) {
-                        if (!l2Mask[k])
-                            continue;
-
-                        i0 = k % CHUNK_AXIS_SIZE;
-                        i1 = (k / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
-                        i2 = k / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
-
-                        Position l3ChunkPoint = axes.position(i0, i1, i2);
-                        Position l3ActualPoint = add(l2ActualPoint, multiply(l3ChunkPoint, L2_DIM));
-
-                        long l3Pos = readU64(indexDin);
-                        long beforeL3Offset = indexIn.position();
-
-                        indexIn.position(l3Pos);
-                        boolean[] l3Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
-                        for (int l = 0; l < l3Mask.length; l++) {
-                            if (!l3Mask[l])
-                                continue;
-
-                            i0 = l % CHUNK_AXIS_SIZE;
-                            i1 = (l / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
-                            i2 = l / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
-
-                            Position l4ChunkPoint = axes.position(i0, i1, i2);
-                            Position l4ActualPoint = add(l3ActualPoint, multiply(l4ChunkPoint, L3_DIM));
-
-                            long l4Pos = readU64(indexDin);
-                            long beforeL4Offset = indexIn.position();
-
-                            indexIn.position(l4Pos);
-                            boolean[] l4Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
-                            for (int n = 0; n < l4Mask.length; n++) {
-                                if (!l4Mask[n])
-                                    continue;
-
-                                i0 = n % CHUNK_AXIS_SIZE;
-                                i1 = (n / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
-                                i2 = n / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
-
-                                Position l5ChunkPoint = axes.position(i0, i1, i2);
-                                Position l5ActualPoint = add(l4ActualPoint, multiply(l5ChunkPoint, L4_DIM));
-
-                                long l5Pos = readU64(indexDin);
-                                long beforeL5Offset = indexIn.position();
-
-                                indexIn.position(l5Pos);
-                                boolean[] l5Mask = toBooleanArray(indexIn.readNBytes(8), ChunkResult.CHILD_SIZE);
-                                for (int m = 0; m < l5Mask.length; m++) {
-                                    if (!l5Mask[m])
-                                        continue;
-
-                                    i0 = m % CHUNK_AXIS_SIZE;
-                                    i1 = (m / CHUNK_AXIS_SIZE) % CHUNK_AXIS_SIZE;
-                                    i2 = m / (CHUNK_AXIS_SIZE * CHUNK_AXIS_SIZE);
-
-                                    Position chunkPoint = axes.position(i0, i1, i2);
-                                    Position pos = add(l5ActualPoint, chunkPoint);
-
-                                    long offset = readU64(indexDin);
-                                    blockIn.position(offset);
-
-                                    if (blocks.containsKey(pos))
-                                        throw new RuntimeException("Something went very wrong!!!");
-
-                                    blocks.put(pos, encoder.read(blockIn));
-                                }
-
-
-                                indexIn.position(beforeL5Offset);
-                            }
-
-
-                            indexIn.position(beforeL4Offset);
-                        }
-
-                        indexIn.position(beforeL3Offset);
-                    }
-
-                    indexIn.position(beforeL2Offset);
-                }
-            }
 
             return schematicFactory.createSchematic(
                     (UUID) headers.get(Headers.ID),
@@ -785,6 +434,56 @@ public class CocoaSchematicFormat implements SchematicFormat {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void readIndexLayer(SeekableInputStream in, DataInputStream din, long fileOffset, long scaler, Position actualPosition, AxisOrder axes, Map<Position, BlockData> result, BlockDataEncoder encoder, SeekableInputStream blockIn) throws IOException {
+        if (scaler < 0)
+            throw new IllegalStateException("Scaler must be positive!");
+
+        in.position(fileOffset);
+
+        boolean[] mask = toBooleanArray(readU64(din));
+        for (int i = 0; i < mask.length; i++) {
+            if (!mask[i])
+                continue;
+
+            int i0 = i % BlockChunk.SIZE;
+            int i1 = (i / BlockChunk.SIZE) % BlockChunk.SIZE;
+            int i2 = i / (BlockChunk.SIZE * BlockChunk.SIZE);
+
+            Position chunkPoint = axes.position(i0, i1, i2);
+            Position actualPos = add(actualPosition, multiply(chunkPoint, scaler));
+
+
+            long offsetBefore = in.position();
+            if (scaler == 1) {
+                // READ BLock
+                if (in.position() >= in.size())
+                    throw new EOFException("Something went wrong");
+
+                long newPos = readU64(din);
+                blockIn.position(newPos);
+                result.put(actualPos, encoder.read(blockIn));
+                in.position(offsetBefore + 8);
+                continue;
+            }
+
+            long nextFileOffset = readU64(din);
+            readIndexLayer(
+                    in,
+                    din,
+                    nextFileOffset,
+                    scaler / 4,
+                    actualPos,
+                    axes,
+                    result,
+                    encoder,
+                    blockIn
+            );
+
+            in.position(offsetBefore + 8L);
+        }
+
     }
 
     private void assertBaseHeaders(Map<Integer, Object> headers) {
@@ -899,7 +598,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
                     map.put(id, splitFromAToB(headers, index + 3, index + 3 + length)); // TODO add way to parse those bytes
                     yield index + 3 + length;
 
-//                    throw new IllegalStateException("Unexpected value: " + id + " (index: " + index + ")");
                 }
             };
         }

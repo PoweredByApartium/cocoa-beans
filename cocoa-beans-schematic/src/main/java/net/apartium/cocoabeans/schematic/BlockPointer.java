@@ -1,8 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
-import net.apartium.cocoabeans.space.Position;
-
-/* package-private */  final class BlockPointer extends Pointer {
+public final class BlockPointer extends Pointer {
 
     private final BlockData data;
 
