@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.46
+- [scoreboard-spigot] Add support for minecraft 1.21.6
+
 ## 0.0.45
 - [common] Add DNSLookup
 

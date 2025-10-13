@@ -79,18 +79,12 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
     private static final Class<?> ENUM_COLLISION_RULE;
     private static final Object ENUM_SB_ACTION_CHANGE;
     private static final Object ENUM_SB_ACTION_REMOVE;
-    private static final Object ENUM_VISIBILITY_ALWAYS;
-    private static final Object ENUM_COLLISION_RULE_ALWAYS;
 
     private static final MethodHandle COMPONENT_METHOD;
     private static final Object EMPTY_COMPONENT;
 
     private static final boolean ADVENTURE_SUPPORT;
     private static final boolean SCORE_OPTIONAL_COMPONENTS;
-
-    public static final String MODE_ALWAYS = "always";
-    public static final String MODE_NEVER = "never";
-
 
     static {
         try {
@@ -254,14 +248,9 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
             if (VERSION.isHigherThanOrEqual(V1_17)) {
                 ENUM_VISIBILITY = findNMSClass("world.scores", "ScoreboardTeamBase$EnumNameTagVisibility", "Team$Visibility").orElseThrow();
                 ENUM_COLLISION_RULE = findNMSClass("world.scores", "ScoreboardTeamBase$EnumTeamPush", "Team$CollisionRule").orElseThrow();
-
-                ENUM_VISIBILITY_ALWAYS = findEnumValueOf(ENUM_VISIBILITY, "ALWAYS", 0);
-                ENUM_COLLISION_RULE_ALWAYS = findEnumValueOf(ENUM_COLLISION_RULE, "ALWAYS", 0);
             } else {
                 ENUM_VISIBILITY = null;
                 ENUM_COLLISION_RULE = null;
-                ENUM_VISIBILITY_ALWAYS = null;
-                ENUM_COLLISION_RULE_ALWAYS = null;
             }
 
             PACKET_SB_UPDATE_SCORE = packetSbSetScore;
@@ -285,10 +274,15 @@ import static net.apartium.cocoabeans.structs.MinecraftVersion.*;
                     VERSION.isHigherThanOrEqual(V1_13)
                             ? "ScoreboardServer$Action"
                             : "PacketPlayOutScoreboardScore$EnumScoreboardAction",
-                    "ServerScoreboard$Method").orElseThrow();
+                    "ServerScoreboard$Method").orElse(null);
 
-            ENUM_SB_ACTION_CHANGE = findEnumValueOf(ENUM_SB_ACTION, "CHANGE", 0);
-            ENUM_SB_ACTION_REMOVE = findEnumValueOf(ENUM_SB_ACTION, "REMOVE", 1);
+            if (ENUM_SB_ACTION != null) {
+                ENUM_SB_ACTION_CHANGE = findEnumValueOf(ENUM_SB_ACTION, "CHANGE", 0);
+                ENUM_SB_ACTION_REMOVE = findEnumValueOf(ENUM_SB_ACTION, "REMOVE", 1);
+            } else {
+                ENUM_SB_ACTION_CHANGE = null;
+                ENUM_SB_ACTION_REMOVE = null;
+            }
 
         } catch (Throwable e) {
             throw new RuntimeException(e);
