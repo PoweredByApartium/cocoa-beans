@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.commands;
 
 import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandNode;
+import net.apartium.cocoabeans.commands.Sender;
 import net.apartium.cocoabeans.commands.SubCommand;
 import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
@@ -10,15 +11,20 @@ import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematic;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper;
-import net.apartium.cocoabeans.structs.Entry;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -27,6 +33,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.*;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.*;
+import org.bukkit.block.data.type.Comparator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,14 +50,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
-import static net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper.toBukkit;
 
-
-@Command("schematic")
+@Command(value = "schematic", aliases = "schm")
 public class SchematicCommand implements CommandNode, Listener {
 
     public static final Component WAND_NAME = Component.text("Schematic wand", NamedTextColor.GOLD);
+    public static final Component INFO_WAND_NAME = Component.text("Info wand", NamedTextColor.GOLD);
+    public static final Set<BlockFace> WALL_FACES = Set.of(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
 
     private final Map<String, SpigotSchematic> schematics = new HashMap<>();
     private final TestCocoaBeansSpigotLoader plugin;
@@ -70,7 +82,10 @@ public class SchematicCommand implements CommandNode, Listener {
 
         this.format = new CocoaSchematicFormat(
                 Map.of(
-                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of())
+                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of(
+                                BlockProp.Legacy.DATA, BlockPropFormat.BYTE,
+                                BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING
+                        ))
                 ),
                 Set.of(
                         CompressionEngine.raw(), CompressionEngine.gzip()
@@ -104,8 +119,9 @@ public class SchematicCommand implements CommandNode, Listener {
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("wand")
     public void wand(Player player) {
+        player.sendMessage(Component.text("Creating a wand", NamedTextColor.YELLOW));
         player.getInventory().addItem(
-                ItemBuilder.builder(Material.WOODEN_AXE)
+                ItemBuilder.builder(getWandType())
                         .setDisplayName(WAND_NAME)
                         .build()
         );
@@ -113,33 +129,32 @@ public class SchematicCommand implements CommandNode, Listener {
     }
 
     @SenderLimit(SenderType.PLAYER)
-    @SubCommand("temp")
-    public void temp(Player player) {
-        BlockChunk blockChunk = CocoaSchematicFormat.temp;
-        if  (blockChunk == null) {
-            player.sendMessage(Component.text("There aren't any temp feature rn!", NamedTextColor.RED));
+    @SubCommand("wand info")
+    public void wandInfo(Player player) {
+        player.getInventory().addItem(
+                ItemBuilder.builder(Material.BLAZE_ROD)
+                        .setDisplayName(INFO_WAND_NAME)
+                        .build()
+        );
+        player.sendMessage(Component.text("You now have a info wand!", NamedTextColor.YELLOW));
+    }
+
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("test info")
+    public void info(Player player) {
+        Position position = Optional.ofNullable(settings.get(player.getUniqueId()))
+                .map(SchematicSettings::getPos0)
+                .orElse(null);
+
+        if (position == null) {
+            player.sendMessage("§cNo schematic settings found!");
             return;
         }
 
-        for (Entry<Position, BlockData> entry : blockChunk) {
-            Position position = entry.key();
-            Block block = new Location(
-                    player.getWorld(),
-                    player.getLocation().getX() + position.getX(),
-                    player.getLocation().getY() + position.getY(),
-                    player.getLocation().getZ() + position.getZ()
-            ).getBlock();
-
-            org.bukkit.block.data.BlockData blockData = toBukkit(entry.value());
-            if (blockData == null) {
-                Bukkit.getLogger().warning("Could not convert block data to org.bukkit.block.data.BlockData! (" + entry.value().type().toString() + ")");
-                continue;
-            }
-
-            block.setBlockData(blockData);
-        }
-        player.sendMessage(Component.text("You paste TMP", NamedTextColor.GREEN));
+        Block block = player.getWorld().getBlockAt((int) position.getX(), (int) position.getY(), (int) position.getZ());
+        infoBlock(player, block);
     }
+
 
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic>")
@@ -164,7 +179,16 @@ public class SchematicCommand implements CommandNode, Listener {
         }
 
         player.sendMessage("Load 1");
-        SpigotSchematic schematic = SpigotSchematicHelper.load(name, player.getName(), schematicSettings.world, schematicSettings.pos0, schematicSettings.pos1);
+        Location location = player.getLocation();
+        SpigotSchematic schematic = SpigotSchematicHelper.load(
+                name,
+                player.getName(),
+                new Position(location.getX(), location.getY(), location.getZ()).floor(),
+                schematicSettings.world,
+                schematicSettings.pos0,
+                schematicSettings.pos1
+        );
+
         this.schematics.put(name, schematic);
 
         player.sendMessage("Save 1");
@@ -203,6 +227,12 @@ public class SchematicCommand implements CommandNode, Listener {
             );
         }
         sender.sendMessage(Component.text("===================================", NamedTextColor.GRAY));
+    }
+
+    @Override
+    public boolean fallbackHandle(Sender sender, String label, String[] args) {
+        sender.sendMessage("Usage: /" + label + " help");
+        return true;
     }
 
     public static class SchematicSettings {
@@ -283,12 +313,19 @@ public class SchematicCommand implements CommandNode, Listener {
             return;
 
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (!isWand(item)) {
-            item = player.getInventory().getItemInOffHand();
-            if (!isWand(item))
-                return;
+        ItemStack item = player.getInventory().getItemInHand();
+        if (item.getType() == Material.BLAZE_ROD) {
+            if (INFO_WAND_NAME.equals(item.getItemMeta().displayName())) {
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    infoBlock(player, clickedBlock);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
+        if (!isWand(item))
+            return;
+
 
         event.setCancelled(true);
 
@@ -301,14 +338,776 @@ public class SchematicCommand implements CommandNode, Listener {
         schematicSettings.setPos0(player, new Position(clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ()));
     }
 
+    private static final MinecraftVersion VERSION = ServerUtils.getVersion();
+
+    private Material getWandType() {
+        if (VERSION.isLowerThanOrEqual(MinecraftVersion.V1_12_2))
+            return Enum.valueOf(Material.class, "WOOD_AXE");
+
+        return Material.WOODEN_AXE;
+    }
+
     private boolean isWand(ItemStack item) {
-        if (item.getType() != Material.WOODEN_AXE)
+        if (item.getType() != getWandType())
             return false;
 
         if (!item.getItemMeta().hasDisplayName())
             return false;
 
         return WAND_NAME.equals(item.getItemMeta().displayName());
+    }
+
+    private void infoBlock(Player player, Block block) {
+        Component blockCoordsComponent = Component.text()
+                .append(Component.text(block.getX(), NamedTextColor.RED))
+                .append(Component.text(", ", NamedTextColor.DARK_GRAY))
+                .append(Component.text(block.getY(), NamedTextColor.RED))
+                .append(Component.text(", ", NamedTextColor.DARK_GRAY))
+                .append(Component.text(block.getZ(), NamedTextColor.RED))
+                .hoverEvent(HoverEvent.showText(Component.text("Copy to clipboard", NamedTextColor.YELLOW, TextDecoration.BOLD)))
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, block.getX() + ", " +  block.getY() + ", " + block.getZ()))
+                .build();
+
+        if (block.getType() == Material.AIR) {
+            player.sendMessage(Component.text()
+                    .append(Component.text("Block at ", NamedTextColor.YELLOW))
+                    .append(blockCoordsComponent)
+                    .append(Component.text(" is ", NamedTextColor.YELLOW))
+                    .append(Component.text("air", NamedTextColor.RED))
+                    .build()
+            );
+            return;
+        }
+
+        player.sendMessage(Component.text()
+                .append(Component.text("Block at ", NamedTextColor.YELLOW))
+                .append(blockCoordsComponent)
+                .append(Component.text(" is ", NamedTextColor.YELLOW))
+                .append(Component.text(block.getType().name(), NamedTextColor.RED))
+                .build()
+        );
+        player.sendMessage(Component.text("=".repeat(48), NamedTextColor.DARK_GRAY));
+        boolean hasProps = false;
+
+        BlockData blockData = block.getBlockData();
+        if (blockData instanceof Stairs stairs) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Stairs-Shape: ", NamedTextColor.YELLOW))
+                    .append(Component.text(stairs.getShape().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Bamboo bamboo) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Bamboo-Leaves: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bamboo.getLeaves().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Bed bed) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Bed-Part: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bed.getPart().name(), NamedTextColor.RED))
+                    .build()
+            );
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Bed-occupied: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bed.isOccupied(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Beehive beehive) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("BeeHive-HoneyLevel: ", NamedTextColor.YELLOW))
+                    .append(Component.text(beehive.getHoneyLevel(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Bell bell) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Bell-Attachment: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bell.getAttachment().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof BigDripleaf bigDripleaf) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("BigDripleaf-Tilt: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bigDripleaf.getTilt().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof BrewingStand brewingStand) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("BrewingStand-Bottles: ", NamedTextColor.YELLOW))
+                    .append(Component.text(brewingStand.getBottles().stream().map(Object::toString).collect(Collectors.joining(", ")), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Cake cake) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Cake-Bites: ", NamedTextColor.YELLOW))
+                            .append(Component.text(cake.getBites(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Campfire campfire) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Campfire-signalFire: ", NamedTextColor.YELLOW))
+                            .append(Component.text(campfire.isSignalFire(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+
+        if (blockData instanceof BubbleColumn bubbleColumn) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("BubbleColumn-Drag: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bubbleColumn.isDrag(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Candle candle) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Candle-candles: ", NamedTextColor.YELLOW))
+                            .append(Component.text(candle.getCandles(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof CaveVinesPlant caveVinesPlant) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("CaveVinesPlant-Berries: ", NamedTextColor.YELLOW))
+                            .append(Component.text(caveVinesPlant.isBerries(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Chest chest) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Chest-type: ", NamedTextColor.YELLOW))
+                            .append(Component.text(chest.getType().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof CommandBlock commandBlock) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("CommandBlock-Conditional: ", NamedTextColor.YELLOW))
+                            .append(Component.text(commandBlock.isConditional(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Comparator comparator) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Comparator-Mode: ", NamedTextColor.YELLOW))
+                            .append(Component.text(comparator.getMode().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof DaylightDetector daylightDetector) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("DayLightDetector-Inverted: ", NamedTextColor.YELLOW))
+                            .append(Component.text(daylightDetector.isInverted(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Dispenser dispenser) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Dispenser-Triggered: ", NamedTextColor.YELLOW))
+                            .append(Component.text(dispenser.isTriggered(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Door door) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Door-Hinge: ", NamedTextColor.YELLOW))
+                            .append(Component.text(door.getHinge().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof EndPortalFrame endPortalFrame) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("EndPortalFrame-Eye: ", NamedTextColor.YELLOW))
+                            .append(Component.text(endPortalFrame.hasEye(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Farmland farmland) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Farmland-Moisture: ", NamedTextColor.YELLOW))
+                            .append(Component.text(farmland.getMoisture(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Gate gate) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Gate-InWall: ", NamedTextColor.YELLOW))
+                            .append(Component.text(gate.isInWall(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Hopper hopper) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Hopper-enabled: ", NamedTextColor.YELLOW))
+                            .append(Component.text(hopper.isEnabled(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Jigsaw jigsaw) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Jigsaw-Orientation: ", NamedTextColor.YELLOW))
+                            .append(Component.text(jigsaw.getOrientation().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Jukebox jukebox) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Jukebox-HasRecord: ", NamedTextColor.YELLOW))
+                            .append(Component.text(jukebox.hasRecord(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Leaves leaves) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Leaves-Persistent: ", NamedTextColor.YELLOW))
+                            .append(Component.text(leaves.isPersistent(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Leaves-Distance: ", NamedTextColor.YELLOW))
+                            .append(Component.text(leaves.getDistance(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Lectern lectern) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Lectern-HasBook: ", NamedTextColor.YELLOW))
+                            .append(Component.text(lectern.hasBook(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof NoteBlock noteBlock) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("NoteBlock-Instrument: ", NamedTextColor.YELLOW))
+                            .append(Component.text(noteBlock.getInstrument().name(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("NoteBlock-Note: ", NamedTextColor.YELLOW))
+                            .append(Component.text(noteBlock.getNote().getId(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Piston piston) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Piston-Extended: ", NamedTextColor.YELLOW))
+                            .append(Component.text(piston.isExtended(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof PistonHead pistonHead) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("PistonHead-isShort: ", NamedTextColor.YELLOW))
+                            .append(Component.text(pistonHead.isShort(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof PointedDripstone pointedDripstone) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("PointedDripstone-verticalDirection: ", NamedTextColor.YELLOW))
+                            .append(Component.text(pointedDripstone.getVerticalDirection().name(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("PointedDripstone-thickness: ", NamedTextColor.YELLOW))
+                            .append(Component.text(pointedDripstone.getThickness().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof RedstoneWire redstoneWire) {
+            hasProps = true;
+            for (BlockFace face : redstoneWire.getAllowedFaces()) {
+                player.sendMessage(Component.text()
+                        .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                        .append(Component.text("RedstoneWire-" + face.name() + "-Connection: ", NamedTextColor.YELLOW))
+                        .append(Component.text(redstoneWire.getFace(face).name(), NamedTextColor.RED))
+                        .build()
+                );
+            }
+        }
+
+        if (blockData instanceof Repeater repeater) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Repeater-Delay: ", NamedTextColor.YELLOW))
+                            .append(Component.text(repeater.getDelay(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Repeater-Locked: ", NamedTextColor.YELLOW))
+                            .append(Component.text(repeater.isLocked(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof RespawnAnchor respawnAnchor) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("RespawnAnchor-Charges: ", NamedTextColor.YELLOW))
+                            .append(Component.text(respawnAnchor.getCharges(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Sapling sapling) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Sapling-stage: ", NamedTextColor.YELLOW))
+                            .append(Component.text(sapling.getStage(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Scaffolding scaffolding) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Scaffolding-bottom: ", NamedTextColor.YELLOW))
+                            .append(Component.text(scaffolding.isBottom(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("Scaffolding-distance: ", NamedTextColor.YELLOW))
+                            .append(Component.text(scaffolding.getDistance(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof SculkCatalyst sculkCatalyst) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("SculkCatalyst-bloom: ", NamedTextColor.YELLOW))
+                            .append(Component.text(sculkCatalyst.isBloom(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof SculkSensor sculkSensor) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("SculkSensor-Phase: ", NamedTextColor.YELLOW))
+                            .append(Component.text(sculkSensor.getPhase().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof SculkShrieker sculkShrieker) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("SculkShrieker-canSummon: ", NamedTextColor.YELLOW))
+                            .append(Component.text(sculkShrieker.isCanSummon(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                            .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                            .append(Component.text("SculkShrieker-shrieking: ", NamedTextColor.YELLOW))
+                            .append(Component.text(sculkShrieker.isShrieking(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof SeaPickle seaPickle) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("SeaPickle-pickles: ", NamedTextColor.YELLOW))
+                    .append(Component.text(seaPickle.getPickles(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Slab slab) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Slab-Type: ", NamedTextColor.YELLOW))
+                    .append(Component.text(slab.getType().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Snow snow) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Snow-layers: ", NamedTextColor.YELLOW))
+                    .append(Component.text(snow.getLayers(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof StructureBlock structureBlock) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("StructureBlock-Mode: ", NamedTextColor.YELLOW))
+                    .append(Component.text(structureBlock.getMode().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof TechnicalPiston technicalPiston) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("TechnicalPiston-type: ", NamedTextColor.YELLOW))
+                    .append(Component.text(technicalPiston.getType().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof TNT tnt) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("TNT-Unstable: ", NamedTextColor.YELLOW))
+                    .append(Component.text(tnt.isUnstable(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Tripwire tripwire) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Tripwire-disarmed: ", NamedTextColor.YELLOW))
+                    .append(Component.text(tripwire.isDisarmed(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof TurtleEgg turtleEgg) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("TurtleEgg-eggs: ", NamedTextColor.YELLOW))
+                    .append(Component.text(turtleEgg.getEggs(), NamedTextColor.RED))
+                    .build()
+            );
+
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("TurtleEgg-Hatch: ", NamedTextColor.YELLOW))
+                    .append(Component.text(turtleEgg.getHatch(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Wall wall) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Wall-Up: ", NamedTextColor.YELLOW))
+                    .append(Component.text(wall.isUp(), NamedTextColor.RED))
+                    .build()
+            );
+
+            for (BlockFace face : WALL_FACES) {
+                player.sendMessage(Component.text()
+                        .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                        .append(Component.text("Wall-" + face.name() + "-Height: ", NamedTextColor.YELLOW))
+                        .append(Component.text(wall.getHeight(face).name(), NamedTextColor.RED))
+                        .build()
+                );
+            }
+        }
+
+        if (blockData instanceof Ageable ageable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Ageable-age: ", NamedTextColor.YELLOW))
+                    .append(Component.text(ageable.getAge(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof AnaloguePowerable analoguePowerable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("AnaloguePowerable-power: ", NamedTextColor.YELLOW))
+                    .append(Component.text(analoguePowerable.getPower(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Attachable attachable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Attachable-attached: ", NamedTextColor.YELLOW))
+                    .append(Component.text(attachable.isAttached(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Bisected bisected) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Bisected-Half: ", NamedTextColor.YELLOW))
+                    .append(Component.text(bisected.getHalf().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Directional directional) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Directional-facing: ", NamedTextColor.YELLOW))
+                    .append(Component.text(directional.getFacing().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof FaceAttachable faceAttachable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("FaceAttachable-attachedFace: ", NamedTextColor.YELLOW))
+                    .append(Component.text(faceAttachable.getAttachedFace().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Hangable hangable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Hangable-Hanging: ", NamedTextColor.YELLOW))
+                    .append(Component.text(hangable.isHanging(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Levelled levelled) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Levelled-Level: ", NamedTextColor.YELLOW))
+                    .append(Component.text(levelled.getLevel(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Lightable lightable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Lightable-lit: ", NamedTextColor.YELLOW))
+                    .append(Component.text(lightable.isLit(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof MultipleFacing multipleFacing) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("MultipleFacing-faces: ", NamedTextColor.YELLOW))
+                    .append(Component.text(
+                            multipleFacing.getFaces().stream()
+                                    .map(Enum::name)
+                                    .collect(Collectors.joining(", ")),
+                            NamedTextColor.RED
+                    ))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Openable openable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Openable-open: ", NamedTextColor.YELLOW))
+                    .append(Component.text(openable.isOpen(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Orientable orientable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Orientable-axis: ", NamedTextColor.YELLOW))
+                    .append(Component.text(orientable.getAxis().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Powerable powerable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Powerable-powered: ", NamedTextColor.YELLOW))
+                    .append(Component.text(powerable.isPowered(), powerable.isPowered() ? NamedTextColor.GREEN : NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Rail rail) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Rail-shape: ", NamedTextColor.YELLOW))
+                    .append(Component.text(rail.getShape().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Rotatable rotatable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Rotatable-rotation: ", NamedTextColor.YELLOW))
+                    .append(Component.text(rotatable.getRotation().name(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Snowable snowable) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Snowable-Snowy: ", NamedTextColor.YELLOW))
+                    .append(Component.text(snowable.isSnowy(), snowable.isSnowy() ? NamedTextColor.GREEN : NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (blockData instanceof Waterlogged waterlogged) {
+            hasProps = true;
+            player.sendMessage(Component.text()
+                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text("Waterlogged-water: ", NamedTextColor.YELLOW))
+                    .append(Component.text(waterlogged.isWaterlogged(), NamedTextColor.RED))
+                    .build()
+            );
+        }
+
+        if (!hasProps) {
+            player.sendMessage(Component.text("There isn't an additional props for this block", NamedTextColor.RED, TextDecoration.BOLD));
+            player.sendMessage(Component.text("Class: ", NamedTextColor.DARK_GRAY).append(Component.text(blockData.getClass().getName(), NamedTextColor.RED)));
+        }
+
+        player.sendMessage(Component.text("=".repeat(48), NamedTextColor.DARK_GRAY));
     }
 
 }

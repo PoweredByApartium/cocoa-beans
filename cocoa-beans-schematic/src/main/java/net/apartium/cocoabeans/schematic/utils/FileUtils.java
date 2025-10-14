@@ -47,6 +47,10 @@ public class FileUtils {
         if (len < 0)
             throw new EOFException("Negative length!");
 
+        return readString(in, len);
+    }
+
+    public static String readString(DataInput in, int len) throws IOException {
         byte[] bytes = new byte[len];
         in.readFully(bytes);
 

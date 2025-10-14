@@ -29,6 +29,7 @@ import net.apartium.cocoabeans.state.animation.FadingColorInOutObservable;
 import net.apartium.cocoabeans.state.animation.FixedDoubleLerpObservable;
 import net.apartium.cocoabeans.state.animation.TypingObservable;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
@@ -38,6 +39,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.*;
@@ -436,6 +438,106 @@ public class CocoaBoardCommand implements CommandNode {
         boardManager.getBoard(player).add(Component.text(text));
 
         player.sendMessage("add line");
+    }
+
+    @SubCommand("scoreboard add-debug <?int>")
+    public void addDebug(Player player, OptionalInt optionalLine) {
+        Observable<Component> tufObservable = Observable.compound(
+                boardManager.getTotalMemory(),
+                boardManager.getUsedMemory(),
+                boardManager.getFreeMemory()
+        ).map((args) -> {
+            long total = args.arg0();
+            long used = args.arg1();
+            long free = args.arg2();
+
+            return Component.text()
+                    .append(Component.text("TUF: ", NamedTextColor.WHITE))
+                    .append(Component.text(toHumanByteSize(total), NamedTextColor.GRAY))
+                    .append(Component.text(" ", NamedTextColor.WHITE))
+                    .append(Component.text(toHumanByteSize(used), NamedTextColor.GRAY))
+                    .append(Component.text(" ", NamedTextColor.WHITE))
+                    .append(Component.text(toHumanByteSize(free), NamedTextColor.GREEN))
+                    .build();
+        });
+
+        Observable<Component> barObservable = Observable.compound(
+                boardManager.getTotalMemory(),
+                boardManager.getUsedMemory()
+                ).map((args) -> {
+            long total = args.arg0();
+            long used = args.arg1();
+
+            return usageBar(((double) used) / (double) total);
+        });
+
+        Observable<Component> cpuUsage = boardManager.getCpuUsage().map(this::usageBar);
+
+        if (optionalLine.isEmpty()) {
+            boardManager.getBoard(player).add(tufObservable);
+            boardManager.getBoard(player).add(barObservable);
+            boardManager.getBoard(player).add(Component.text("CPU usage: ", Style.style(NamedTextColor.GRAY, TextDecoration.BOLD)));
+            boardManager.getBoard(player).add(cpuUsage);
+            return;
+        }
+
+        boardManager.getBoard(player).add(tufObservable, optionalLine.getAsInt());
+        boardManager.getBoard(player).add(barObservable, optionalLine.getAsInt() + 1);
+        boardManager.getBoard(player).add(Component.text("CPU usage: ", Style.style(NamedTextColor.GRAY, TextDecoration.BOLD)),  optionalLine.getAsInt() + 2);
+        boardManager.getBoard(player).add(cpuUsage,  optionalLine.getAsInt() + 3);
+
+    }
+
+    private Component usageBar(double percent) {
+        final int barLength = 54;
+        final TextColor start = TextColor.color(0x1C6900);
+        final TextColor middle = TextColor.color(0x8EF58A);
+        final TextColor end = TextColor.color(0xFF3217);
+
+        int usedBar = (int) Math.round(percent * barLength);
+        int freeBars = barLength - usedBar;
+
+        TextComponent.Builder builder = Component.text();
+        for (int i = 0; i < usedBar; i++) {
+            float t = (float) i / Math.max(1.0f, barLength - 1.0f);
+            builder.append(Component.text(
+                    "|",
+                    TextColor.lerp(
+                            t,
+                            start,
+                            TextColor.lerp(
+                                    t,
+                                    middle,
+                                    end
+                            )
+                    )
+            ));
+        }
+
+        for (int i = 0; i < freeBars; i++)
+            builder.append(Component.text("|", NamedTextColor.DARK_GRAY));
+
+        builder.append(Component.text(String.format(
+                " (%.1f%%)",
+                percent * 100
+        )));
+
+        return builder.build();
+    }
+
+    private String toHumanByteSize(long size) {
+        if (size < 1024)
+            return size + "B";
+
+        final String[] units = new String[]{"KB", "MB", "GB", "TB", "PB", "EB"};
+        double value = size / 1024.0;
+        int i = 0;
+        while (value >= 1024 && i < units.length - 1) {
+            value /= 1024.0;
+            i++;
+        }
+
+        return String.format("%.1f " + units[i], value);
     }
 
     @SubCommand("scoreboard add <quoted-string> <int>")

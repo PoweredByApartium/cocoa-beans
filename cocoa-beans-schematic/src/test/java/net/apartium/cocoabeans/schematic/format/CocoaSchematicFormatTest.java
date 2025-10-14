@@ -108,7 +108,7 @@ class CocoaSchematicFormatTest {
 
             @Override
             public Position offset() {
-                return new Position(0, 0, 0);
+                return new Position(5, 0, -5);
             }
 
             @Override
@@ -173,13 +173,13 @@ class CocoaSchematicFormatTest {
 
             assertEquals(schematic.id(), schem.id());
             assertEquals(schematic.created().toEpochMilli(), schem.created().toEpochMilli());
-            assertEquals(schem.author(), schem.author());
-            assertEquals(schem.title(), schem.title());
-            assertEquals(schem.offset(), schem.offset());
-            assertEquals(schem.size().width(), schem.size().width());
-            assertEquals(schem.size().height(), schem.size().height());
-            assertEquals(schem.size().depth(), schem.size().depth());
-            assertEquals(schem.axisOrder(), schem.axisOrder());
+            assertEquals(schematic.author(), schem.author());
+            assertEquals(schematic.title(), schem.title());
+            assertEquals(schematic.offset(), schem.offset());
+            assertEquals(schematic.size().width(), schem.size().width());
+            assertEquals(schematic.size().height(), schem.size().height());
+            assertEquals(schematic.size().depth(), schem.size().depth());
+            assertEquals(schematic.axisOrder(), schem.axisOrder());
 
             for (int x = 0; x < schem.size().width(); x++) {
                 for (int y = 0; y < schem.size().height(); y++) {

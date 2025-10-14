@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import org.jetbrains.annotations.ApiStatus;
 

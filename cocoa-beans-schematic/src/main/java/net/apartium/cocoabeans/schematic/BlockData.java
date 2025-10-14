@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;

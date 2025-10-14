@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.schematic.block;
 
 import net.apartium.cocoabeans.schematic.BlockData;
-import net.apartium.cocoabeans.schematic.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.NamespacedKey;
 import org.jetbrains.annotations.ApiStatus;
 

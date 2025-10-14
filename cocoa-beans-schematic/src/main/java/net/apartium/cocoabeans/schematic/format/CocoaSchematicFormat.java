@@ -22,9 +22,6 @@ import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
 @ApiStatus.AvailableSince("0.0.45")
 public class CocoaSchematicFormat implements SchematicFormat {
 
-    public static BlockChunk temp;
-    private boolean test = true;
-
     public static final String FINGERPRINT = "CBSC";
     public static final int FINGERPRINT_SIZE = 4;
     public final int VERSION = 1;
@@ -65,7 +62,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
     private CompressionEngine defaultCompressionEngineForBlocks;
     private CompressionEngine defaultCompressionEngineForIndexes;
     private Map.Entry<Integer, BlockDataEncoder> preferEncoder;
-    private SchematicFactory<?> schematicFactory;
+    private final SchematicFactory<?> schematicFactory;
 
     public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory<?> schematicFactory) {
         this.blockDataEncoderMap = new HashMap<>(blockDataEncoderMap);
@@ -126,7 +123,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
             long maxDimensions = (long) Math.max(dimensions.width(), Math.max(dimensions.height(), dimensions.depth()));
             long scaler = Mathf.nextPowerOfFour(maxDimensions);
             BlockChunk blockChunk = new BlockChunk(axes, scaler, Position.ZERO, Position.ZERO);
-            temp = blockChunk;
 
             while (iterator.hasNext()) {
                 Entry<Position, BlockData> entry = iterator.next();
@@ -230,15 +226,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
                     continue;
                 }
 
-                if (pointer instanceof BlockPointer blockPointer) {
-                    throw new RuntimeException("BlockPointers are not supported");
-//                    Long fileOffset = blockIndexes.get(blockPointer.getData());
-//                    if (fileOffset == null)
-//                        throw new IllegalStateException("Couldn't find block index for block " + blockPointer.getData());
-//
-//                    indexesOut.write(writeU64(fileOffset));
-//                    continue;
-                }
+                if (pointer instanceof BlockPointer)
+                    throw new RuntimeException("BlockPointers are not supported while outside of chunk pointers");
+
 
 
                 throw new UnsupportedOperationException("Unsupported pointer type: " + pointer.getClass().getName());
@@ -318,14 +308,14 @@ public class CocoaSchematicFormat implements SchematicFormat {
         out.write(schematic.axisOrder().getId());
 
         out.write(writeU16(Headers.OFFSET));
-        out.write(writeU24((int) schematic.offset().getX()));
-        out.write(writeU24((int) schematic.offset().getY()));
-        out.write(writeU24((int) schematic.offset().getZ()));
+        out.writeInt((int) schematic.offset().getX());
+        out.writeInt((int) schematic.offset().getY());
+        out.writeInt((int) schematic.offset().getZ());
 
         out.write(writeU16(Headers.SIZE));
-        out.write(writeU24((int) schematic.size().width()));
-        out.write(writeU24((int) schematic.size().height()));
-        out.write(writeU24((int) schematic.size().depth()));
+        out.write(writeU32((int) schematic.size().width()));
+        out.write(writeU32((int) schematic.size().height()));
+        out.write(writeU32((int) schematic.size().depth()));
 
         out.write(writeU16(Headers.BLOCK_DATA_ENCODING));
         out.write(writeU16(preferEncoder.getKey()));
@@ -541,15 +531,15 @@ public class CocoaSchematicFormat implements SchematicFormat {
                 }
 
                 case Headers.OFFSET -> {
-                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 9)));
-                    map.put(Headers.OFFSET, new Position(readU24(in), readU24(in), readU24(in)));
-                    yield index + 9;
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 12)));
+                    map.put(Headers.OFFSET, new Position(in.readInt(), in.readInt(), in.readInt())); // TODO may change to 10 bytes instead of 12 because we only need 25 bits for 30m blocks
+                    yield index + 12;
                 }
 
                 case Headers.SIZE -> {
-                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 9)));
-                    map.put(Headers.SIZE, new Dimensions(readU24(in), readU24(in), readU24(in)));
-                    yield index + 9;
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 12)));
+                    map.put(Headers.SIZE, new Dimensions(readU32(in), readU32(in), readU32(in)));
+                    yield index + 12;
                 }
 
                 case Headers.BLOCK_DATA_ENCODING -> {

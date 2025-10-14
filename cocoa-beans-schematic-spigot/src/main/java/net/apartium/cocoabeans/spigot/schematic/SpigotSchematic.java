@@ -12,7 +12,7 @@ import org.bukkit.block.Block;
 
 import java.util.Iterator;
 
-import static net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper.toBukkit;
+import static net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper.*;
 
 
 public class SpigotSchematic extends AbstractSchematic {
@@ -36,6 +36,11 @@ public class SpigotSchematic extends AbstractSchematic {
                     origin.getY() + position.getY() + offset.getY(),
                     origin.getZ() + position.getZ() + offset.getZ()
             ).getBlock();
+
+            if (IS_LEGACY) {
+                setBlockLegacy(block, entry.value(), false);
+                continue;
+            }
 
             org.bukkit.block.data.BlockData blockData = toBukkit(entry.value());
             if (blockData == null) {
