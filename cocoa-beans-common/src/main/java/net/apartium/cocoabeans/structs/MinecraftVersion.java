@@ -112,6 +112,11 @@ public record MinecraftVersion(
     public static final MinecraftVersion V1_21_3 = new MinecraftVersion(1, 21, 3, 768);
     public static final MinecraftVersion V1_21_4 = new MinecraftVersion(1, 21, 4, 769);
     public static final MinecraftVersion V1_21_5 = new MinecraftVersion(1, 21, 5, 770);
+    public static final MinecraftVersion V1_21_6 = new MinecraftVersion(1, 21, 6, 771);
+    public static final MinecraftVersion V1_21_7 = new MinecraftVersion(1, 21, 7, 772);
+    public static final MinecraftVersion V1_21_8 = new MinecraftVersion(1, 21, 8, 772);
+    public static final MinecraftVersion V1_21_9 = new MinecraftVersion(1, 21, 9, 773);
+    public static final MinecraftVersion V1_21_10 = new MinecraftVersion(1, 21, 10, 773);
 
 
     public static final List<MinecraftVersion> KNOWN_VERSIONS = List.of(
@@ -199,13 +204,18 @@ public record MinecraftVersion(
             V1_20_5,
             V1_20_6,
 
-            // 1.21 - 1.21.5
+            // 1.21 - 1.21.10
             V1_21,
             V1_21_1,
             V1_21_2,
             V1_21_3,
             V1_21_4,
-            V1_21_5
+            V1_21_5,
+            V1_21_6,
+            V1_21_7,
+            V1_21_8,
+            V1_21_9,
+            V1_21_10
     );
 
     /**
