@@ -185,6 +185,18 @@ allprojects {
         if (enable)
             sign(publishing.publications)
     }
+
+    val javaVersionNum = if (project.hasProperty("versions.java"))
+        (project.property("versions.java") as String).toInt()
+    else 17
+
+    val javaVersion = JavaVersion.toVersion(javaVersionNum)
+
+    java {
+        targetCompatibility = javaVersion
+        sourceCompatibility = javaVersion
+    }
+
 }
 
 hangarPublish {
