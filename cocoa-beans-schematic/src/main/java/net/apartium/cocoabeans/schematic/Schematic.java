@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.schematic.axis.Axis;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.ApiStatus;
@@ -27,6 +26,6 @@ public interface Schematic {
     BlockData getBlockData(int x, int y, int z);
     Iterator<Entry<Position, BlockData>> blocksIterator();
 
-    SchematicBuilder builder();
+    SchematicBuilder toBuilder();
 
 }

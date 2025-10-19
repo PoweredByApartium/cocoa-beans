@@ -115,7 +115,7 @@ public class AbstractSchematic implements Schematic {
     }
 
     @Override
-    public SchematicBuilder builder() {
+    public SchematicBuilder toBuilder() {
         return new AbstractSchematicBuilder(this);
     }
 

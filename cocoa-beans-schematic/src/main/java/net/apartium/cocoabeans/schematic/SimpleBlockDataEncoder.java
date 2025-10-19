@@ -9,10 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
 
@@ -84,8 +81,11 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
             byte[] data = propFormat.encode(entry.getValue());
 
             // May need to change to 4 bytes because 16MB is limiting
+            int start = bytes.size();
             for (byte b : writeU24(data.length))
                 bytes.add(b);
+
+            System.out.println(Arrays.toString(bytes.subList(start, start + 3).toArray(new Byte[0])));
 
             for (byte b : data)
                 bytes.add(b);

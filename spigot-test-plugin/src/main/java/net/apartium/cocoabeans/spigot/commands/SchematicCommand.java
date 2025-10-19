@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.commands;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import net.apartium.cocoabeans.commands.Command;
 import net.apartium.cocoabeans.commands.CommandNode;
 import net.apartium.cocoabeans.commands.Sender;
@@ -13,6 +14,7 @@ import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
+import net.apartium.cocoabeans.schematic.prop.format.IntPropFormat;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
@@ -21,6 +23,9 @@ import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematic;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper;
+import net.apartium.cocoabeans.spigot.schematic.prop.BeeHiveHoneyLevelProp;
+import net.apartium.cocoabeans.spigot.schematic.prop.BellAttachmentProp;
+import net.apartium.cocoabeans.spigot.schematic.prop.format.*;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -28,12 +33,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
 import org.bukkit.block.data.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.*;
@@ -82,9 +85,16 @@ public class SchematicCommand implements CommandNode, Listener {
 
         this.format = new CocoaSchematicFormat(
                 Map.of(
-                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of(
-                                BlockProp.Legacy.DATA, BlockPropFormat.BYTE,
-                                BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING
+                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.ofEntries(
+                                Map.entry(BlockProp.Legacy.DATA, BlockPropFormat.BYTE),
+                                Map.entry(BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING),
+                                Map.entry(BlockProp.STAIRS_SHAPE, StairsPropFormat.INSTANCE),
+                                Map.entry(BlockProp.DIRECTIONAL, DirectionalPropFormat.INSTANCE),
+                                Map.entry(BlockProp.BAMBOO_LEAVES, BambooPropFormat.INSTANCE),
+                                Map.entry(BlockProp.BED_PART, BedPartPropFormat.INSTANCE),
+                                Map.entry(BlockProp.BEEHIVE_HONEY_LEVEL, new IntPropFormat(BeeHiveHoneyLevelProp::new)),
+                                Map.entry(BlockProp.BELL_ATTACHMENT, BellAttachmentPropFormat.INSTANCE),
+                                Map.entry(BlockProp.BIG_DRIP_LEAF_TILT, BigDripleafTiltPropFormat.INSTANCE)
                         ))
                 ),
                 Set.of(
@@ -416,12 +426,6 @@ public class SchematicCommand implements CommandNode, Listener {
                     .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
                     .append(Component.text("Bed-Part: ", NamedTextColor.YELLOW))
                     .append(Component.text(bed.getPart().name(), NamedTextColor.RED))
-                    .build()
-            );
-            player.sendMessage(Component.text()
-                    .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
-                    .append(Component.text("Bed-occupied: ", NamedTextColor.YELLOW))
-                    .append(Component.text(bed.isOccupied(), NamedTextColor.RED))
                     .build()
             );
         }
@@ -1100,6 +1104,22 @@ public class SchematicCommand implements CommandNode, Listener {
                     .append(Component.text(waterlogged.isWaterlogged(), NamedTextColor.RED))
                     .build()
             );
+        }
+
+        // Custom head
+        if (blockData instanceof Skull skull) {
+            hasProps = true;
+            if (skull.hasOwner()) {
+                PlayerProfile profile = skull.getPlayerProfile();
+                // TODO
+            } else {
+                player.sendMessage(Component.text()
+                        .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                        .append(Component.text("Skull-owner: ", NamedTextColor.YELLOW))
+                        .append(Component.text("none", NamedTextColor.RED))
+                        .build()
+                );
+            }
         }
 
         if (!hasProps) {

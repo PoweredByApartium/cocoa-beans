@@ -4,9 +4,9 @@ import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
-import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
+import net.apartium.cocoabeans.spigot.schematic.prop.*;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,7 +14,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -33,7 +34,7 @@ public class SpigotSchematicHelper {
                 Math.abs(pos0.getZ() - pos1.getZ()) + 1
         );
 
-        SchematicBuilder builder = new SpigotSchematic().builder();
+        SchematicBuilder builder = new SpigotSchematic().toBuilder();
 
 
         Position min = Position.min(pos0, pos1);
@@ -137,9 +138,34 @@ public class SpigotSchematicHelper {
 
     public static BlockData fromBukkit(org.bukkit.block.data.BlockData blockData) {
         org.bukkit.NamespacedKey type = blockData.getMaterial().getKey();
+        Map<String, BlockProp<?>> props = new HashMap<>();
+
+
+        if (blockData instanceof Stairs stairs)
+            props.put(BlockProp.STAIRS_SHAPE, new StairsProp(stairs.getShape()));
+
+        if (blockData instanceof Directional directional)
+            props.put(BlockProp.DIRECTIONAL, new DirectionalFaceProp(directional.getFacing()));
+
+        if (blockData instanceof Bamboo bamboo)
+            props.put(BlockProp.BAMBOO_LEAVES, new BambooProp(bamboo.getLeaves()));
+
+        if (blockData instanceof Bed bed)
+            props.put(BlockProp.BED_PART, new BedPartProp(bed.getPart()));
+
+        if (blockData instanceof Beehive beehive)
+            props.put(BlockProp.BEEHIVE_HONEY_LEVEL, new BeeHiveHoneyLevelProp(beehive.getHoneyLevel()));
+
+        if (blockData instanceof Bell bell)
+            props.put(BlockProp.BELL_ATTACHMENT, new BellAttachmentProp(bell.getAttachment()));
+
+        if (blockData instanceof BigDripleaf bigDripleaf)
+            props.put(BlockProp.BIG_DRIP_LEAF_TILT, new BigDripleafTiltProp(bigDripleaf.getTilt()));
+
+
         return new GenericBlockData(
                 new NamespacedKey(type.namespace(), type.getKey()),
-                Map.of() // TODO
+                props
         );
     }
 
@@ -150,8 +176,16 @@ public class SpigotSchematicHelper {
         }
 
         Map<String, BlockProp<?>> props = blockData.props();
-        String data = ""; // todo
-        return Bukkit.getServer().createBlockData(type);
+        org.bukkit.block.data.BlockData block = Bukkit.getServer().createBlockData(type);
+
+        for (BlockProp<?> prop : props.values()) {
+            if (!(prop instanceof SpigotPropHandler handler))
+                continue;
+
+            handler.update(block);
+        }
+
+        return block;
     }
 
 }

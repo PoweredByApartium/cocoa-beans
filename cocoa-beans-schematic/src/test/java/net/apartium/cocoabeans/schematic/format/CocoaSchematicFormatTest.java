@@ -154,7 +154,7 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
-            public SchematicBuilder builder() {
+            public SchematicBuilder toBuilder() {
                 return null;
             }
 
