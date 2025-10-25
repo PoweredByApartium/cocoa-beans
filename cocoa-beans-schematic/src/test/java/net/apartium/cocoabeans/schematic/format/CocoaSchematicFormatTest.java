@@ -1,8 +1,9 @@
 package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.Axis;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
@@ -10,7 +11,8 @@ import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
-import net.apartium.cocoabeans.structs.Entry;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -25,7 +27,10 @@ class CocoaSchematicFormatTest {
     void soFar() {
         SchematicFormat format = new CocoaSchematicFormat(
                 Map.of(
-                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.of())
+                        SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())
+                ),
+                Map.of(
+                        BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()
                 ),
                 Set.of(
                         CompressionEngine.gzip(),
@@ -85,10 +90,16 @@ class CocoaSchematicFormatTest {
 
             private final UUID id = UUID.randomUUID();
             private final Instant created = Instant.now();
+            private final MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "unit-test", "0.0.1");
 
             @Override
             public UUID id() {
                 return id;
+            }
+
+            @Override
+            public MinecraftPlatform platform() {
+                return platform;
             }
 
             @Override
@@ -127,7 +138,7 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
-            public Iterator<Entry<Position, BlockData>> blocksIterator() {
+            public BlockIterator blocksIterator() {
                 final Iterator<Position> iterator = axisOrder().iterator(
                         Position.ZERO,
                         new Position(
@@ -138,20 +149,50 @@ class CocoaSchematicFormatTest {
                         1
                 );
 
-                return new Iterator<>() {
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
+                return new BlockIterator() {
+
+                    private BlockPlacement next;
+
+                    {
+                        advance();
+                    }
+
+                    private void advance() {
+                        next = null;
+                        while (iterator.hasNext() && next == null) {
+                            Position position = iterator.next();
+
+                            BlockData block = blocks[(int) position.getX()][(int) position.getY()][(int) position.getZ()];
+                            if (block != null) {
+                                next = new BlockPlacement(position, block);
+                            }
+                        }
                     }
 
                     @Override
-                    public Entry<Position, BlockData> next() {
-                        Position position = iterator.next();
+                    public Position current() {
+                        return next.position();
+                    }
 
-                        return new Entry<>(position, blocks[(int) position.getX()][(int) position.getY()][(int) position.getZ()]);
+                    @Override
+                    public boolean hasNext() {
+                        return next != null;
+                    }
+
+                    @Override
+                    public BlockPlacement next() {
+                        BlockPlacement placement = next;
+                        advance();
+                        return placement;
                     }
                 };
             }
+
+            @Override
+            public BlockIterator sortedIterator(AxisOrder axisOrder) {
+                return null;
+            }
+
 
             @Override
             public SchematicBuilder toBuilder() {
@@ -172,6 +213,7 @@ class CocoaSchematicFormatTest {
             Schematic schem = format.read(in);
 
             assertEquals(schematic.id(), schem.id());
+            assertEquals(schematic.platform(), schem.platform());
             assertEquals(schematic.created().toEpochMilli(), schem.created().toEpochMilli());
             assertEquals(schematic.author(), schem.author());
             assertEquals(schematic.title(), schem.title());
@@ -187,6 +229,12 @@ class CocoaSchematicFormatTest {
                         assertEquals(schematic.getBlockData(x, y, z), schem.getBlockData(x, y, z));
                     }
                 }
+            }
+
+            BlockIterator blockIterator = schem.blocksIterator();
+            while (blockIterator.hasNext()) {
+                BlockPlacement placement = blockIterator.next();
+                assertEquals(schematic.getBlockData((int) placement.position().getX(), (int) placement.position().getY(), (int) placement.position().getZ()), placement.block());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

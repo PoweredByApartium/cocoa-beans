@@ -3,14 +3,20 @@ package net.apartium.cocoabeans.schematic.prop.format;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.ByteBlockProp;
 
-public class ByteBlockPropFormat implements BlockPropFormat<Byte> {
+import java.util.function.Function;
+
+public record ByteBlockPropFormat(Function<Byte, BlockProp<Byte>> constructor) implements BlockPropFormat<Byte> {
+
+    public ByteBlockPropFormat() {
+        this(ByteBlockProp::new);
+    }
 
     @Override
-    public ByteBlockProp decode(byte[] value) {
+    public BlockProp<Byte> decode(byte[] value) {
         if (value.length != 1)
             throw new IllegalArgumentException("Expected array of size 1 and got " + value.length);
 
-        return ByteBlockProp.BYTE.apply(value[0]);
+        return constructor.apply(value[0]);
     }
 
     @Override

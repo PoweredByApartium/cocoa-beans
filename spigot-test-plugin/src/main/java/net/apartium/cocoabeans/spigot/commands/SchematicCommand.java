@@ -9,11 +9,16 @@ import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import net.apartium.cocoabeans.schematic.*;
+import net.apartium.cocoabeans.schematic.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
+import net.apartium.cocoabeans.schematic.format.BlockChunkIndexEncoder;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
+import net.apartium.cocoabeans.schematic.format.SimpleBlockDataEncoder;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.format.ArrayIntPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
+import net.apartium.cocoabeans.schematic.prop.format.ByteBlockPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.IntPropFormat;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
@@ -22,9 +27,11 @@ import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematic;
+import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicFactory;
 import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper;
 import net.apartium.cocoabeans.spigot.schematic.prop.BeeHiveHoneyLevelProp;
-import net.apartium.cocoabeans.spigot.schematic.prop.BellAttachmentProp;
+import net.apartium.cocoabeans.spigot.schematic.prop.BrewingStandBottlesProp;
+import net.apartium.cocoabeans.spigot.schematic.prop.LegacyDataProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.format.*;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.kyori.adventure.text.Component;
@@ -48,12 +55,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
 
 @Command(value = "schematic", aliases = "schm")
@@ -69,6 +80,8 @@ public class SchematicCommand implements CommandNode, Listener {
     private final Map<UUID, SchematicSettings> settings = new HashMap<>();
     private final CocoaSchematicFormat format;
 
+    private final Set<SlowBuildSchematic> slowBuild = new HashSet<>();
+
     public SchematicCommand(TestCocoaBeansSpigotLoader plugin) {
         this.plugin = plugin;
 
@@ -83,26 +96,35 @@ public class SchematicCommand implements CommandNode, Listener {
             dataFolder.mkdir();
 
 
+        Map<String, BlockPropFormat<?>> propFormatMap = new HashMap<>();
+
+        if (VERSION.isLowerThanOrEqual(MinecraftVersion.V1_12_2)) {
+            propFormatMap.put(BlockProp.Legacy.DATA, new ByteBlockPropFormat(LegacyDataProp::new));
+            propFormatMap.put(BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING);
+        } else {
+            propFormatMap.put(BlockProp.STAIRS_SHAPE, StairsPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.DIRECTIONAL, DirectionalPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.BAMBOO_LEAVES, BambooPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.BED_PART, BedPartPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.BEEHIVE_HONEY_LEVEL, new IntPropFormat(BeeHiveHoneyLevelProp::new));
+            propFormatMap.put(BlockProp.BELL_ATTACHMENT, BellAttachmentPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.BIG_DRIP_LEAF_TILT, BigDripleafTiltPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.BREWING_STAND_BOTTLES, new ArrayIntPropFormat(BrewingStandBottlesProp::new));
+        }
+
         this.format = new CocoaSchematicFormat(
                 Map.of(
-                        SimpleBlockDataEncoder.id, new SimpleBlockDataEncoder(Map.ofEntries(
-                                Map.entry(BlockProp.Legacy.DATA, BlockPropFormat.BYTE),
-                                Map.entry(BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING),
-                                Map.entry(BlockProp.STAIRS_SHAPE, StairsPropFormat.INSTANCE),
-                                Map.entry(BlockProp.DIRECTIONAL, DirectionalPropFormat.INSTANCE),
-                                Map.entry(BlockProp.BAMBOO_LEAVES, BambooPropFormat.INSTANCE),
-                                Map.entry(BlockProp.BED_PART, BedPartPropFormat.INSTANCE),
-                                Map.entry(BlockProp.BEEHIVE_HONEY_LEVEL, new IntPropFormat(BeeHiveHoneyLevelProp::new)),
-                                Map.entry(BlockProp.BELL_ATTACHMENT, BellAttachmentPropFormat.INSTANCE),
-                                Map.entry(BlockProp.BIG_DRIP_LEAF_TILT, BigDripleafTiltPropFormat.INSTANCE)
-                        ))
+                        SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(propFormatMap)
+                ),
+                Map.of(
+                        BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()
                 ),
                 Set.of(
                         CompressionEngine.raw(), CompressionEngine.gzip()
                 ),
                 CompressionType.GZIP.getId(),
                 CompressionType.GZIP.getId(),
-                new MeowSchematicFactory()
+                new SpigotSchematicFactory()
         );
 
         for (File file : dataFolder.listFiles()) {
@@ -110,20 +132,48 @@ public class SchematicCommand implements CommandNode, Listener {
                 continue;
 
             try {
-                AbstractSchematic schematic = (AbstractSchematic) this.format.read(SeekableInputStream.open(
+                SpigotSchematic schematic = (SpigotSchematic) this.format.read(SeekableInputStream.open(
                         file.toPath()
                 ));
 
-                schematics.put(schematic.title(), new SpigotSchematic(schematic, schematic.size(), schematic.axisOrder()));
+                schematics.put(schematic.title(), schematic);
             } catch (IOException e) {
                 Bukkit.getLogger().log(Level.SEVERE, "Error reading schematic file " + file.getAbsolutePath(), e);
             }
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Set<SlowBuildSchematic> toRemove = new HashSet<>();
+                for (SlowBuildSchematic slowBuildSchematic : slowBuild) {
+                    if (!slowBuildSchematic.pasteOperation().hasNext()) {
+                        toRemove.add(slowBuildSchematic);
+                        continue;
+                    }
+
+                    slowBuildSchematic.pasteOperation().advanceOnSingleAxis(slowBuildSchematic.numsOfBlock());
+                }
+
+                for (SlowBuildSchematic slowBuildSchematic : toRemove) {
+                    slowBuild.remove(slowBuildSchematic);
+                }
+            }
+        }.runTaskTimer(plugin, 1, 1);
     }
 
-    @SourceParser(keyword = "schematic", clazz = SpigotSchematic.class, resultMaxAgeInMills = 0)
+    @SourceParser(keyword = "schematic", clazz = SpigotSchematic.class)
     public Map<String, SpigotSchematic> schematics() {
         return schematics;
+    }
+
+    @SourceParser(keyword = "axis-order", clazz = AxisOrder.class, resultMaxAgeInMills = -1, ignoreCase = true)
+    public Map<String, AxisOrder> axisOrder() {
+        return Arrays.stream(AxisOrder.values())
+                .collect(Collectors.toMap(
+                        axisOrder -> axisOrder.name().toLowerCase(),
+                        Function.identity()
+                ));
     }
 
     @SenderLimit(SenderType.PLAYER)
@@ -164,13 +214,31 @@ public class SchematicCommand implements CommandNode, Listener {
         Block block = player.getWorld().getBlockAt((int) position.getX(), (int) position.getY(), (int) position.getZ());
         infoBlock(player, block);
     }
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("paste <schematic> rotate <int>")
+    public void paste(Player player, SpigotSchematic schematic, int degress) {
+        player.sendMessage("About to paste " + schematic.title() + " degress: " + degress);
+        SpigotSchematic newSchematic = new SpigotSchematic((AbstractSchematic) schematic.toBuilder().rotate(degress).build());
+        newSchematic.paste(player.getLocation()).performAll();
+        player.sendMessage(Component.text("You paste " + schematic.title(), NamedTextColor.GREEN));
+    }
 
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("paste <schematic> slow <?axis-order> <?int>")
+    public void pasteSlow(Player player, SpigotSchematic schematic, Optional<AxisOrder> optAxisOrder, OptionalInt numsOfBlocks) {
+        AxisOrder axisOrder = optAxisOrder.orElse(schematic.axisOrder());
+        slowBuild.add(new SlowBuildSchematic(
+                schematic.paste(player.getLocation(), axisOrder),
+                numsOfBlocks.orElse(100)
+        ));
+        player.sendMessage("Schematic will be placed shortly");
+    }
 
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic>")
     public void paste(Player player, SpigotSchematic schematic) {
         player.sendMessage("About to paste " + schematic.title());
-        schematic.paste(player.getLocation());
+        schematic.paste(player.getLocation()).performAll();
         player.sendMessage(Component.text("You paste " + schematic.title(), NamedTextColor.GREEN));
     }
 
@@ -311,6 +379,13 @@ public class SchematicCommand implements CommandNode, Listener {
 
     }
 
+    public record SlowBuildSchematic(
+            PasteOperation pasteOperation,
+            int numsOfBlock
+    ) {
+
+    }
+
     // Listener
 
     @EventHandler
@@ -397,6 +472,12 @@ public class SchematicCommand implements CommandNode, Listener {
                 .build()
         );
         player.sendMessage(Component.text("=".repeat(48), NamedTextColor.DARK_GRAY));
+        if (VERSION.isLowerThanOrEqual(MinecraftVersion.V1_12_2)) {
+            player.sendMessage(Component.text("§eByte: §c" + block.getData()));
+            player.sendMessage(Component.text("=".repeat(48), NamedTextColor.DARK_GRAY));
+            return;
+        }
+
         boolean hasProps = false;
 
         BlockData blockData = block.getBlockData();

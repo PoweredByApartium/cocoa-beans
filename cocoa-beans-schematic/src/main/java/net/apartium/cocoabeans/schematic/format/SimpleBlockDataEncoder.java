@@ -1,5 +1,7 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.schematic.BlockData;
+import net.apartium.cocoabeans.schematic.NamespacedKey;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
@@ -16,7 +18,7 @@ import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
 @ApiStatus.AvailableSince("0.0.45")
 public class SimpleBlockDataEncoder implements BlockDataEncoder {
 
-    public static final int id = 0b1;
+    public static final int ID = 0b1;
 
     private final Map<String, BlockPropFormat<?>> propFormatMap;
 
@@ -81,11 +83,8 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
             byte[] data = propFormat.encode(entry.getValue());
 
             // May need to change to 4 bytes because 16MB is limiting
-            int start = bytes.size();
             for (byte b : writeU24(data.length))
                 bytes.add(b);
-
-            System.out.println(Arrays.toString(bytes.subList(start, start + 3).toArray(new Byte[0])));
 
             for (byte b : data)
                 bytes.add(b);

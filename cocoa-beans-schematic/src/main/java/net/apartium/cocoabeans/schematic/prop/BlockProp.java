@@ -24,8 +24,6 @@ public interface BlockProp<T> {
     String CAMPFIRE_SIGNAL_FIRE = "CAMPFIRE_SIGNAL_FIRE";
     String BUBBLE_COLUMN_DRAG = "BUBBLE_COLUMN_DRAG";
 
-    Function<Byte, ByteBlockProp> BYTE = ByteBlockProp::new;
-    Function<String, StringBlockProp> STRING = StringBlockProp::new;
     Function<String[], ArrayStringBlockProp> ARRAY_STRING = ArrayStringBlockProp::new;
 
     T value();

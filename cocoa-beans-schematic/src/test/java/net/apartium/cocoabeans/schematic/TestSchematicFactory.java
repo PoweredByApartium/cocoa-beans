@@ -1,7 +1,10 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
 
 import java.time.Instant;
 import java.util.Map;
@@ -10,25 +13,34 @@ import java.util.UUID;
 public class TestSchematicFactory implements SchematicFactory<AbstractSchematic> {
 
     @Override
-    public AbstractSchematic createSchematic(UUID id, Instant created, String author, String title, Map<Position, BlockData> blocks, Dimensions size, AxisOrder axisOrder, Position offset) {
-        AbstractSchematic schematic = new AbstractSchematic();
+    public AbstractSchematic createSchematic(UUID id, Instant created, MinecraftPlatform platform, String author, String title, BlockIterator blocks, Dimensions size, AxisOrder axisOrder, Position offset) {
+        AbstractSchematic schematic = new AbstractSchematic() {
+            @Override
+            public SchematicBuilder toBuilder() {
+                return null;
+            }
+        };
 
         schematic.id = id;
         schematic.created = created;
         schematic.author = author;
         schematic.title = title;
 
+        schematic.platform = platform;
+
         schematic.axes = axisOrder;
         schematic.size = size;
         schematic.offset = offset;
 
-        schematic.blockChunk = new BlockChunk(schematic.axes, Math.pow(4, 6), Position.ZERO, Position.ZERO);
+        schematic.blockChunk = new BlockChunk(schematic.axes, 1, Position.ZERO, Position.ZERO);
 
-        for (Map.Entry<Position, BlockData> block : blocks.entrySet()) {
-            Position position = block.getKey();
-            BlockData data = block.getValue();
+        while (blocks.hasNext()) {
+            BlockPlacement placement = blocks.next();
+            Position position = placement.position();
+            BlockData data = placement.block();
 
-            schematic.blockChunk.setBlock(position, data);
+            schematic.rescaleChunkIfNeeded(position);
+            schematic.blockChunk.setBlock(new BlockPlacement(position, data));
         }
 
         schematic.size = size;

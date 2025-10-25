@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.schematic.format;
 
 import net.apartium.cocoabeans.Mathf;
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
@@ -8,7 +10,8 @@ import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
 import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
-import net.apartium.cocoabeans.structs.Entry;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.*;
@@ -27,20 +30,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
     public final int VERSION = 1;
     public static final long HEADER_START_INDEX = 9;
 
-    public static final int L1_SIZE = 256;
-    public static final int L2_SIZE = 64;
-    public static final int L3_SIZE = 16;
-    public static final int L4_SIZE = 4;
-    public static final int L5_SIZE = 1;
-
-    public static final int CHUNK_AXIS_SIZE = 4;
-
-    public static final Dimensions L1_DIM = Dimensions.box(L1_SIZE);
-    public static final Dimensions L2_DIM = Dimensions.box(L2_SIZE);
-    public static final Dimensions L3_DIM = Dimensions.box(L3_SIZE);
-    public static final Dimensions L4_DIM = Dimensions.box(L4_SIZE);
-    public static final Dimensions L5_DIM = Dimensions.box(L5_SIZE);
-
     public static class Headers {
 
         public static final int ID = 0x01;
@@ -49,25 +38,33 @@ public class CocoaSchematicFormat implements SchematicFormat {
         public static final int SIZE = 0x04;
         public static final int BLOCK_DATA_ENCODING = 0x05;
         public static final int BLOCK_INFO = 0x06;
-        public static final int INDEX_INFO = 0x07;
-        public static final int TIMESTAMP = 0x08;
-        public static final int AUTHOR = 0x09;
-        public static final int TITLE = 0x0A;
+        public static final int INDEX_ENCODING = 0x07;
+        public static final int INDEX_INFO = 0x08;
+        public static final int TIMESTAMP = 0x09;
+        public static final int AUTHOR = 0x0A;
+        public static final int TITLE = 0x0B;
+        public static final int PLATFORM = 0x0C;
 
     }
 
     private final Map<Integer, BlockDataEncoder> blockDataEncoderMap;
+    private final Map<Integer, IndexEncoder> indexEncoderMap;
     private final Map<Byte, CompressionEngine> compressionEngines;
 
     private CompressionEngine defaultCompressionEngineForBlocks;
     private CompressionEngine defaultCompressionEngineForIndexes;
-    private Map.Entry<Integer, BlockDataEncoder> preferEncoder;
+    private Map.Entry<Integer, BlockDataEncoder> preferBlockEncoder;
+    private Map.Entry<Integer, IndexEncoder> preferIndexEncoder;
     private final SchematicFactory<?> schematicFactory;
 
-    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory<?> schematicFactory) {
+    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Map<Integer, IndexEncoder> indexEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory<?> schematicFactory) {
         this.blockDataEncoderMap = new HashMap<>(blockDataEncoderMap);
         if (!blockDataEncoderMap.isEmpty())
-            preferEncoder = blockDataEncoderMap.entrySet().iterator().next();
+            preferBlockEncoder = blockDataEncoderMap.entrySet().iterator().next();
+
+        this.indexEncoderMap = new HashMap<>(indexEncoderMap);
+        if (!indexEncoderMap.isEmpty())
+            preferIndexEncoder = indexEncoderMap.entrySet().iterator().next();
 
         this.compressionEngines = compressionEngines.stream().collect(Collectors.toMap(CompressionEngine::type, Function.identity()));
 
@@ -81,8 +78,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
         blockDataEncoderMap.put(id, encoder);
     }
 
-    public void setPreferEncoder(int id, BlockDataEncoder encoder) {
-        preferEncoder = Map.entry(id, encoder);
+    public void registerIndexEncoder(int id, IndexEncoder encoder) {
+        indexEncoderMap.put(id, encoder);
+    }
+
+    public void setPreferBlockEncoder(int id, BlockDataEncoder encoder) {
+        preferBlockEncoder = Map.entry(id, encoder);
+    }
+
+    public void setPreferIndexEncoder(int id, IndexEncoder encoder) {
+        preferIndexEncoder = Map.entry(id, encoder);
     }
 
     public void registerCompressionEngine(byte id, CompressionEngine engine) {
@@ -105,13 +110,15 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             out.write(writeU16(VERSION));
 
+            Map.Entry<Integer, BlockDataEncoder> blockEncoder = preferBlockEncoder;
+            Map.Entry<Integer, IndexEncoder> indexEncoder = preferIndexEncoder;
 
-            HeaderResult headerResult = headers(schematic);
+            HeaderResult headerResult = headers(schematic, blockEncoder, indexEncoder);
             byte[] headers = headerResult.data;
             out.write(writeU24(headers.length));
             out.write(headers);
 
-            Iterator<Entry<Position, BlockData>> iterator = schematic.blocksIterator();
+            BlockIterator iterator = schematic.blocksIterator();
             Map<BlockData, Long> blockIndexes = new IdentityHashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
             long offset = 0;
@@ -125,21 +132,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
             BlockChunk blockChunk = new BlockChunk(axes, scaler, Position.ZERO, Position.ZERO);
 
             while (iterator.hasNext()) {
-                Entry<Position, BlockData> entry = iterator.next();
-                Position position = entry.key();
-                BlockData blockData = entry.value();
-
-                if (blockData == null)
-                    continue;
-
-                blockChunk.setBlock(position, blockData);
+                BlockPlacement placement = iterator.next();
+                BlockData blockData = placement.block();
+                blockChunk.setBlock(placement);
 
                 if (blockIndexes.containsKey(blockData))
                     continue;
 
                 blockIndexes.put(blockData, offset);
 
-                byte[] data = preferEncoder.getValue().write(blockData);
+                byte[] data = blockEncoder.getValue().write(blockData);
                 blockOut.write(data);
 
                 offset += data.length;
@@ -163,12 +165,8 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.position(blockInfo.offset());
             out.write(compressed);
 
-            ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
-            SeekableOutputStream indexesOut = new SeekableOutputStream(channel);
 
-            writeIndexes(indexesOut, scaler, blockChunk, blockIndexes);
-
-            byte[] indexesAsBytes = channel.toByteArray();
+            byte[] indexesAsBytes = indexEncoder.getValue().write(schematic.blocksIterator(), schematic.axisOrder(), blockIndexes);
             compressed = defaultCompressionEngineForIndexes.compress(indexesAsBytes);
 
             CompressionBlockInfo indexInfo = new CompressionBlockInfo(
@@ -190,113 +188,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
         }
     }
 
-    private void writeIndexes(SeekableOutputStream indexesOut, long scaler, BlockChunk blockChunk, Map<BlockData, Long> blockIndexes) throws IOException {
-        Map<Pointer, Long> pointerFileOffsets = new IdentityHashMap<>();
-        Map<Pointer, Entry<Pointer, Integer>> pointToParent = new IdentityHashMap<>();
-
-        int layers = (int) Math.ceil(Mathf.log4(scaler));
-        indexesOut.write((byte) layers);
-
-        ChunkPointer rootPointer = new ChunkPointer(blockChunk);
-
-        pointToParent.put(rootPointer, new Entry<>(rootPointer, 0));
-
-        List<Pointer> nextInQueue = new ArrayList<>();
-        nextInQueue.add(rootPointer);
-
-        while (!nextInQueue.isEmpty()) {
-            List<Pointer> currentPointers = new ArrayList<>(nextInQueue);
-            nextInQueue.clear();
-
-            while (!currentPointers.isEmpty()) {
-                Pointer pointer = currentPointers.remove(0);
-                long position = indexesOut.position();
-                pointerFileOffsets.put(pointer, position);
-
-                if (pointer instanceof ChunkPointer chunkPointer) {
-                    writeChunkPointer(
-                            indexesOut,
-                            chunkPointer,
-                            pointerFileOffsets,
-                            pointToParent,
-                            nextInQueue,
-                            blockIndexes,
-                            pointer != rootPointer
-                    );
-                    continue;
-                }
-
-                if (pointer instanceof BlockPointer)
-                    throw new RuntimeException("BlockPointers are not supported while outside of chunk pointers");
-
-
-
-                throw new UnsupportedOperationException("Unsupported pointer type: " + pointer.getClass().getName());
-            }
-        }
-    }
-
-    private void writeChunkPointer(SeekableOutputStream out, ChunkPointer pointer, Map<Pointer, Long> pointerFileOffsets, Map<Pointer, Entry<Pointer, Integer>> pointToParent, List<Pointer> nextInQueue, Map<BlockData, Long> blockIndexes, boolean shouldPoint) throws IOException {
-        Entry<Pointer, Integer> entry = pointToParent.get(pointer);
-        if (shouldPoint)
-            pointParentToChild(out, out.position(), pointerFileOffsets.get(entry.key()), entry.value());
-
-        BlockChunk blockChunk = pointer.getChunk();
-        long mask = blockChunk.getMask();
-
-        if (mask == 0L)
-            throw new IllegalStateException("Chunk mask is zero");
-
-        out.write(writeU64(mask));
-        Pointer[] pointers = blockChunk.getPointers();
-
-
-        for (int i = 0; i < pointers.length; i++) {
-            Pointer child = pointers[i];
-            if (pointToParent.containsKey(child))
-                throw new RuntimeException("Duplicate pointer at " + child);
-
-            if (child instanceof BlockPointer blockPointer) {
-                Long fileOffset = blockIndexes.get(blockPointer.getData());
-                    if (fileOffset == null)
-                        throw new IllegalStateException("Couldn't find block index for block " + blockPointer.getData());
-
-                    out.write(writeU64(fileOffset));
-                    continue;
-            }
-
-            pointToParent.put(child, new Entry<>(pointer, i));
-            nextInQueue.add(child);
-            out.write(new byte[8]);
-        }
-
-    }
-
-    private void pointParentToChild(SeekableOutputStream indexesOut, long offset, long parentOffset, int index) throws IOException {
-        indexesOut.position(parentOffset + 8 + index * 8L);
-        indexesOut.write(writeU64(offset));
-        indexesOut.position(offset);
-    }
-
-    private static Position add(Position a, Position b) {
-        return new Position(
-                a.getX() + b.getX(),
-                a.getY() + b.getY(),
-                a.getZ() + b.getZ()
-        );
-    }
-
-    private static Position multiply(Position position, long value) {
-        return new Position(
-                position.getX() * value,
-                position.getY() * value,
-                position.getZ() * value
-        );
-    }
-
     private record HeaderResult(byte[] data, long offsetBlockInfo, long offsetIndexInfo) { }
 
-    private HeaderResult headers(Schematic schematic) throws IOException {
+    private HeaderResult headers(Schematic schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bOut);
 
@@ -318,11 +212,14 @@ public class CocoaSchematicFormat implements SchematicFormat {
         out.write(writeU32((int) schematic.size().depth()));
 
         out.write(writeU16(Headers.BLOCK_DATA_ENCODING));
-        out.write(writeU16(preferEncoder.getKey()));
+        out.write(writeU16(blockEncoder.getKey()));
 
         out.write(writeU16(Headers.BLOCK_INFO));
         int blockInfoIndex = out.size();
         out.write(new byte[CompressionBlockInfo.SIZE]);
+
+        out.write(writeU16(Headers.INDEX_ENCODING));
+        out.write(writeU16(indexEncoder.getKey()));
 
         out.write(writeU16(Headers.INDEX_INFO));
         int indexInfoIndex = out.size();
@@ -336,6 +233,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
         out.write(writeU16(Headers.TITLE));
         out.write(writeString(schematic.title()));
+
+        MinecraftPlatform platform = schematic.platform();
+
+        out.write(writeU16(Headers.PLATFORM));
+        out.write(writeU32(platform.version().major()));
+        out.write(writeU32(platform.version().update()));
+        out.write(writeU32(platform.version().minor()));
+        out.write(writeU32(platform.version().protocol()));
+        out.write(writeString(platform.platformName()));
+        out.write(writeString(platform.platformVersion()));
 
         return new HeaderResult(
                 bOut.toByteArray(),
@@ -388,31 +295,16 @@ public class CocoaSchematicFormat implements SchematicFormat {
             AxisOrder axes = (AxisOrder) headers.get(Headers.AXIS_ORDER);
 
             SeekableInputStream blockIn = new SeekableInputStream(ByteArraySeekableChannel.of(originalBlockData));
-            BlockDataEncoder encoder = (BlockDataEncoder) headers.get(Headers.BLOCK_DATA_ENCODING);
+            BlockDataEncoder blockEncoder = (BlockDataEncoder) headers.get(Headers.BLOCK_DATA_ENCODING);
 
             SeekableInputStream indexIn = new SeekableInputStream(ByteArraySeekableChannel.of(originalIndexInfo));
-            DataInputStream indexDin = new DataInputStream(indexIn);
-
-            int layers = indexIn.read();
-            long scaler = (long) Math.pow(4, layers);
-
-            Map<Position, BlockData> blocks = new HashMap<>();
-            readIndexLayer(
-                    indexIn,
-                    indexDin,
-                    indexIn.position(),
-                    scaler,
-                    Position.ZERO,
-                    axes,
-                    blocks,
-                    encoder,
-                    blockIn
-            );
-
+            IndexEncoder indexEncoder = (IndexEncoder) headers.get(Headers.INDEX_ENCODING);
+            BlockIterator blocks = indexEncoder.read(indexIn, axes, blockEncoder, blockIn);
 
             return schematicFactory.createSchematic(
                     (UUID) headers.get(Headers.ID),
                     (Instant) headers.get(Headers.TIMESTAMP),
+                    (MinecraftPlatform) headers.get(Headers.PLATFORM),
                     (String) headers.get(Headers.AUTHOR),
                     (String) headers.get(Headers.TITLE),
                     blocks,
@@ -424,56 +316,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void readIndexLayer(SeekableInputStream in, DataInputStream din, long fileOffset, long scaler, Position actualPosition, AxisOrder axes, Map<Position, BlockData> result, BlockDataEncoder encoder, SeekableInputStream blockIn) throws IOException {
-        if (scaler < 0)
-            throw new IllegalStateException("Scaler must be positive!");
-
-        in.position(fileOffset);
-
-        boolean[] mask = toBooleanArray(readU64(din));
-        for (int i = 0; i < mask.length; i++) {
-            if (!mask[i])
-                continue;
-
-            int i0 = i % BlockChunk.SIZE;
-            int i1 = (i / BlockChunk.SIZE) % BlockChunk.SIZE;
-            int i2 = i / (BlockChunk.SIZE * BlockChunk.SIZE);
-
-            Position chunkPoint = axes.position(i0, i1, i2);
-            Position actualPos = add(actualPosition, multiply(chunkPoint, scaler));
-
-
-            long offsetBefore = in.position();
-            if (scaler == 1) {
-                // READ BLock
-                if (in.position() >= in.size())
-                    throw new EOFException("Something went wrong");
-
-                long newPos = readU64(din);
-                blockIn.position(newPos);
-                result.put(actualPos, encoder.read(blockIn));
-                in.position(offsetBefore + 8);
-                continue;
-            }
-
-            long nextFileOffset = readU64(din);
-            readIndexLayer(
-                    in,
-                    din,
-                    nextFileOffset,
-                    scaler / 4,
-                    actualPos,
-                    axes,
-                    result,
-                    encoder,
-                    blockIn
-            );
-
-            in.position(offsetBefore + 8L);
-        }
-
     }
 
     private void assertBaseHeaders(Map<Integer, Object> headers) {
@@ -498,6 +340,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
         if (!headers.containsKey(Headers.BLOCK_INFO))
             throw new IllegalStateException("BlockInfo Header not found!");
 
+        if (!headers.containsKey(Headers.INDEX_ENCODING))
+            throw new IllegalStateException("IndexEncoding Header not found!");
+
         if (!headers.containsKey(Headers.INDEX_INFO))
             throw new IllegalStateException("IndexInfo Header not found!");
 
@@ -509,6 +354,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
         if (!headers.containsKey(Headers.TITLE))
             throw new IllegalStateException("Title Header not found!");
+
+        if (!headers.containsKey(Headers.PLATFORM))
+            throw new IllegalStateException("Platform Header not found!");
     }
 
     private Map<Integer, Object> parseHeaders(byte[] headers) throws IOException {
@@ -553,6 +401,12 @@ public class CocoaSchematicFormat implements SchematicFormat {
                     yield index + CompressionBlockInfo.SIZE;
                 }
 
+                case Headers.INDEX_ENCODING -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 2)));
+                    map.put(Headers.INDEX_ENCODING, indexEncoderMap.get(readU16(in)));
+                    yield index + 2;
+                }
+
                 case Headers.INDEX_INFO -> {
                     map.put(Headers.INDEX_INFO, CompressionBlockInfo.fromBytes(splitFromAToB(headers, index, index + CompressionBlockInfo.SIZE)));
                     yield index + CompressionBlockInfo.SIZE;
@@ -580,6 +434,30 @@ public class CocoaSchematicFormat implements SchematicFormat {
                     in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 4 + length)));
                     map.put(Headers.TITLE, readString(in));
                     yield index + 4 + length;
+                }
+
+                case Headers.PLATFORM -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(headers, index, index + 20));
+
+                    MinecraftVersion version = new MinecraftVersion(
+                            (int) readU32(in),
+                            (int) readU32(in),
+                            (int) readU32(in),
+                            (int) readU32(in)
+                    );
+
+                    int lengthName = (int) readU32(in);
+                    in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index + 16, index + 20 + lengthName)));
+                    String platformName = readString(in);
+
+                    in = new DataInputStream(new ByteArrayInputStream(headers, index + 20 + lengthName, index + 24 + lengthName));
+                    int lengthPlatform = (int) readU32(in);
+                    in = new DataInputStream(new ByteArrayInputStream(headers, index + 20 + lengthName, index + 24 + lengthName + lengthPlatform));
+                    String platformVersion = readString(in);
+
+                    map.put(Headers.PLATFORM, new MinecraftPlatform(version, platformName, platformVersion));
+                    yield index + 24 + lengthName + lengthPlatform;
+
                 }
 
                 default -> {

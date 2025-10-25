@@ -1,17 +1,20 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
-import net.apartium.cocoabeans.schematic.AbstractSchematic;
-import net.apartium.cocoabeans.schematic.BlockData;
-import net.apartium.cocoabeans.schematic.Dimensions;
+import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
+import static net.apartium.cocoabeans.spigot.Locations.toVector;
 import static net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper.*;
 
 
@@ -21,35 +24,33 @@ public class SpigotSchematic extends AbstractSchematic {
         super();
     }
 
+    public SpigotSchematic(AbstractSchematic schematic) {
+        this(schematic, schematic.size(), schematic.axisOrder());
+    }
+
     public SpigotSchematic(AbstractSchematic that, Dimensions size, AxisOrder axes) {
         super(that, size, axes);
     }
 
-    public void paste(final Location origin) {
-        Iterator<Entry<Position, BlockData>> iterator = this.blocksIterator();
-        while (iterator.hasNext()) {
-            Entry<Position, BlockData> entry = iterator.next();
-            Position position = entry.key();
-            Block block = new Location(
-                    origin.getWorld(),
-                    origin.getX() + position.getX() + offset.getX(),
-                    origin.getY() + position.getY() + offset.getY(),
-                    origin.getZ() + position.getZ() + offset.getZ()
-            ).getBlock();
-
-            if (IS_LEGACY) {
-                setBlockLegacy(block, entry.value(), false);
-                continue;
-            }
-
-            org.bukkit.block.data.BlockData blockData = toBukkit(entry.value());
-            if (blockData == null) {
-                Bukkit.getLogger().warning("Could not convert block data to org.bukkit.block.data.BlockData! (" + entry.value().type().toString() + ")");
-                continue;
-            }
-
-            block.setBlockData(blockData);
-        }
+    public PasteOperation paste(final Location origin) {
+        return paste(origin, axisOrder());
     }
 
+    public PasteOperation paste(final Location origin, final AxisOrder axisOrder) {
+        return paste(origin, axisOrder, block -> block.getType() == Material.AIR);
+    }
+
+    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, Function<Block, Boolean> shouldPlace) {
+        return new SpigotPasteOperation(
+                origin.clone().add(toVector(offset)),
+                sortedIterator(axisOrder),
+                axisOrder,
+                shouldPlace
+        );
+    }
+
+    @Override
+    public SpigotSchematicBuilder toBuilder() {
+        return new SpigotSchematicBuilder(this);
+    }
 }

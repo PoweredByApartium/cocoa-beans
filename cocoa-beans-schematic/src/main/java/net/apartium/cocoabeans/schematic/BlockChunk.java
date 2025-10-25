@@ -1,15 +1,12 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
-import net.apartium.cocoabeans.structs.Entry;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
-public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
+public class BlockChunk {
 
     public static final int SIZE = 4;
 
@@ -21,12 +18,24 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
     private Pointer[] pointers = new Pointer[0];
     private long mask = 0;
 
-    public BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
+    public BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         this.axisOrder = axisOrder;
         this.scaler = scaler;
         this.nextScaler = Math.floor(scaler / SIZE);
         this.actualPos = actualPos;
         this.chunkPos = chunkPos;
+        if (prev != null) {
+            mask = 1;
+            if (prev.getScaler() != nextScaler) {
+                pointers = new Pointer[]{new ChunkPointer(new BlockChunk(axisOrder, nextScaler, actualPos, chunkPos, prev))};
+            } else {
+                pointers = new Pointer[]{new ChunkPointer(prev)};
+            }
+        }
+    }
+
+    public BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
+        this(axisOrder, scaler, actualPos, chunkPos, null);
     }
 
     public BlockData getBlock(Position pos) {
@@ -56,7 +65,10 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
         throw new UnsupportedOperationException("Not supported yet: " + pointer.getClass().getName());
     }
 
-    public boolean setBlock(Position pos, BlockData data) {
+    public boolean setBlock(BlockPlacement placement) {
+        Position pos = placement.position();
+        BlockData data = getBlock(pos);
+
         if (axisOrder.compare(pos, actualPos) < 0)
             return false;
 
@@ -108,8 +120,9 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
         int count = countBits(mask, index) - 1;
         Pointer pointer = pointers[count];
         if (pointer == null) {
-            if (scaler == 1)
-                pointer = new BlockPointer(data);
+            if (scaler == 1) {
+                pointer = new BlockPointer(placement.block());
+            }
             else {
                 Position chunkPoint = axisOrder.position(i0, i1, i2);
                 pointer = new ChunkPointer(new BlockChunk(
@@ -118,7 +131,7 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
                         new Position(actualPos).add(new Position(chunkPoint).multiply(scaler)),
                         chunkPoint
                 ));
-                ((ChunkPointer) pointer).getChunk().setBlock(pos, data);
+                ((ChunkPointer) pointer).getChunk().setBlock(placement);
             }
 
             pointers[count] = pointer;
@@ -131,7 +144,7 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
             pointers[count] = new BlockPointer(blockPointer.getData());
             return true;
         } else if (pointer instanceof ChunkPointer chunkPointer) {
-            return chunkPointer.getChunk().setBlock(pos, data);
+            return chunkPointer.getChunk().setBlock(placement);
         }
 
         return false;
@@ -148,102 +161,27 @@ public class BlockChunk implements Iterable<Entry<Position, BlockData>> {
         return count;
     }
 
-    @Override
-    public @NotNull Iterator<Entry<Position, BlockData>> iterator() {
-        return new Iterator<>() {
-
-            private long remaining = mask;
-            private int pointerIdx = 0;
-            private Iterator<Entry<Position, BlockData>> child = null;
-            private Entry<Position, BlockData> next;
-
-            {
-                advance();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public Entry<Position, BlockData> next() {
-                if (next == null)
-                    throw new NoSuchElementException();
-
-                Entry<Position, BlockData> out = next;
-                advance();
-                return out;
-            }
-
-            private void advance() {
-                if (child != null) {
-                    if (child.hasNext()) {
-                        next = child.next();
-                        if (!child.hasNext())
-                            child = null;
-
-                        return;
-                    } else {
-                        child = null;
-                    }
-                }
-
-                while (remaining != 0) {
-                    int bitOffset = Long.numberOfTrailingZeros(remaining);
-                    int bitPos = bitOffset;
-                    long bit = 1L << bitPos;
-
-                    remaining ^= bit;
-                    if (pointerIdx >= pointers.length)
-                        throw new IllegalStateException("Mask has more set bits than pointers length");
-
-                    Pointer ptr = pointers[pointerIdx++];
-                    if (ptr == null)
-                        throw new NullPointerException("pointer is null at compact index " + (pointerIdx - 1));
-
-                    if (ptr instanceof BlockPointer blockPointer) {
-                        int i0 = bitPos % SIZE;
-                        int i1 = (bitPos / SIZE) % SIZE;
-                        int i2 = bitPos / (SIZE * SIZE);
-
-                        Position pos = new Position(i0, i1, i2).add(actualPos);
-                        next = new Entry<>(pos, blockPointer.getData());
-                        return;
-                    }
-
-                    if (ptr instanceof ChunkPointer chunkPointer) {
-                        child = chunkPointer.getChunk().iterator();
-                        if (child.hasNext()) {
-                            next = child.next();
-                            if (!child.hasNext())
-                                child = null;
-
-                            return;
-                        } else {
-                            child = null;
-                            continue;
-                        }
-                    }
-
-                    throw new UnsupportedOperationException("Not supported: " + ptr.getClass().getName());
-                }
-
-                if (pointerIdx != pointers.length)
-                    throw new IllegalStateException("pointers length (" + pointers.length + ") does not match popcount(mask) (" + pointers.length + ")");
-
-
-                next = null;
-            }
-
-        };
-    }
-
     public Pointer[] getPointers() {
         return Arrays.copyOf(pointers, pointers.length);
     }
 
     public long getMask() {
         return mask;
+    }
+
+    public double getScaler() {
+        return scaler;
+    }
+
+    public Position getActualPos() {
+        return actualPos;
+    }
+
+    public Position getChunkPos() {
+        return chunkPos;
+    }
+
+    public AxisOrder getAxisOrder() {
+        return axisOrder;
     }
 }

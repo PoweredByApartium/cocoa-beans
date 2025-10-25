@@ -2,13 +2,22 @@ package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.schematic.axis.Axis;
 import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.block.GenericBlockData;
+import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.RotatableProp;
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.structs.Entry;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
-public class AbstractSchematicBuilder extends AbstractSchematic implements SchematicBuilder {
+// TODO remove abstract schematic from extends you lazy fuck
+public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> extends AbstractSchematic implements SchematicBuilder {
 
     public AbstractSchematicBuilder(AbstractSchematic schematic) {
         super(schematic, schematic.size(), schematic.axisOrder());
@@ -17,6 +26,12 @@ public class AbstractSchematicBuilder extends AbstractSchematic implements Schem
     @Override
     public SchematicBuilder id(UUID id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public SchematicBuilder platform(MinecraftPlatform platform) {
+        this.platform = platform;
         return this;
     }
 
@@ -41,13 +56,96 @@ public class AbstractSchematicBuilder extends AbstractSchematic implements Schem
     @Override
     public SchematicBuilder size(Dimensions size) {
         this.size = size;
+        // TODO add checks with block chunk
         return this;
     }
 
 
     @Override
-    public SchematicBuilder rotate(AxisOrder axisOrder) {
-        // TODO
+    public SchematicBuilder rotate(int degrees) {
+        BlockChunk newChunk = new BlockChunk(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+
+        Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
+
+        degrees = Math.abs(degrees + 360) % 360;
+
+        final boolean use0Degrees = degrees == 0;
+        final boolean use90Degrees = degrees == 90;
+        final boolean use180Degrees = degrees == 180;
+        final boolean use270Degrees = degrees == 270;
+
+        final int sizeX = (int) this.size.width();
+        final int sizeZ = (int) this.size.depth();
+
+        if (!use0Degrees && !use90Degrees && !use180Degrees && !use270Degrees)
+            throw new IllegalArgumentException("no!");
+
+
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+
+            Position pos = placement.position();
+            int lx = (int) pos.getX();
+            int lz = (int) pos.getZ();
+
+            int nx, nz;
+            if (use0Degrees) {
+                nx = lx;
+                nz = lz;
+            } else if (use90Degrees) {
+                nx = lz;
+                nz = (sizeX - 1) - lx;
+            } else if (use180Degrees) {
+                nx = (sizeX - 1) - lx;
+                nz = (sizeZ - 1) - lz;
+            } else {
+                nx = (sizeZ - 1) - lz;
+                nz = lx;
+            }
+
+            BlockData data = placement.block();
+            Map<String, BlockProp<?>> props = new HashMap<>();
+            for (Map.Entry<String, BlockProp<?>> prop : data.props().entrySet()) {
+                if (!(prop.getValue() instanceof RotatableProp<?> rotatableProp)) {
+                    props.put(prop.getKey(), prop.getValue());
+                    continue;
+                }
+
+                props.put(prop.getKey(), (BlockProp<?>) rotatableProp.rotate(data.type(), degrees));
+            }
+
+            newChunk.setBlock(new BlockPlacement(
+                    new Position(nx, pos.getY(), nz),
+                    new GenericBlockData(data.type(), props))
+            );
+        }
+
+
+        if (use90Degrees) {
+            this.offset = new Position(
+                    this.offset.getZ(),
+                    this.offset.getY(),
+                    -this.size.width() - this.offset.getX() + 1
+            );
+            this.size = new Dimensions(this.size.depth(), this.size.height(), this.size.width());
+        } else if  (use180Degrees) {
+            this.offset = new Position(
+                    -this.size.width() - this.offset.getX() + 1,
+                    this.offset.getY(),
+                    -this.size.depth() - this.offset.getZ() + 1
+            );
+
+            this.size = new Dimensions(this.size.width(), this.size.height(), this.size.depth());
+        } else if (use270Degrees) {
+            this.size = new Dimensions(this.size.depth(), this.size.height(), this.size.width());
+            this.offset = new Position(
+                    -this.size.depth() - this.offset.getZ() + 2,
+                    this.offset.getY(),
+                    this.offset.getX()
+            );
+        }
+
+        this.blockChunk = newChunk;
         return this;
     }
 
@@ -65,12 +163,15 @@ public class AbstractSchematicBuilder extends AbstractSchematic implements Schem
 
     @Override
     public SchematicBuilder translate(AxisOrder axisOrder) {
-        BlockChunk old = this.blockChunk;
+        BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
         this.axes = axisOrder;
-        this.blockChunk = new BlockChunk(this.axes, Math.pow(4, 6), Position.ZERO, Position.ZERO);
-        for (Entry<Position, BlockData> entry : old)
-            this.blockChunk.setBlock(entry.key(), entry.value());
+        this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
 
+            rescaleChunkIfNeeded(placement.position());
+            this.blockChunk.setBlock(placement);
+        }
         return this;
     }
 
@@ -93,7 +194,12 @@ public class AbstractSchematicBuilder extends AbstractSchematic implements Schem
 
         Position pos = new Position(x, y, z);
         this.size = newSize;
-        this.blockChunk.setBlock(pos, data);
+
+        this.rescaleChunkIfNeeded(pos);
+        this.blockChunk.setBlock(new BlockPlacement(
+                pos,
+                data
+        ));
 
         return this;
     }
@@ -101,12 +207,9 @@ public class AbstractSchematicBuilder extends AbstractSchematic implements Schem
     @Override
     public SchematicBuilder removeBlock(int x, int y, int z) {
         Position pos = new Position(x, y, z);
-        this.blockChunk.setBlock(pos, null);
+        // TODO rescale down if possible
+        this.blockChunk.setBlock(new BlockPlacement(pos, null));
         return this;
     }
 
-    @Override
-    public Schematic build() {
-        return new AbstractSchematic(this, size, axes);
-    }
 }

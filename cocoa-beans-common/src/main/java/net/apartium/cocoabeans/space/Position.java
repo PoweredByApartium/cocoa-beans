@@ -423,4 +423,20 @@ public class Position {
 
     }
 
+    public static Position add(Position a, Position b) {
+        return new Position(
+                a.getX() + b.getX(),
+                a.getY() + b.getY(),
+                a.getZ() + b.getZ()
+        );
+    }
+
+    public static Position multiply(Position position, long value) {
+        return new Position(
+                position.getX() * value,
+                position.getY() * value,
+                position.getZ() * value
+        );
+    }
+
 }

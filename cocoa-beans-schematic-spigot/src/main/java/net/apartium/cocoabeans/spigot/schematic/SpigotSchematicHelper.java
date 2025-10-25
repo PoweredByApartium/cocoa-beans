@@ -7,6 +7,7 @@ import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.schematic.prop.*;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -67,6 +68,7 @@ public class SpigotSchematicHelper {
         builder.title(title);
         builder.author(author);
         builder.created(Instant.now());
+        builder.platform(new MinecraftPlatform(VERSION, "spigot/paper", "---"));
 
         return new SpigotSchematic((AbstractSchematic) builder.build(), size, AxisOrder.XYZ);
     }
@@ -77,7 +79,7 @@ public class SpigotSchematicHelper {
             return null;
 
         Map<String, BlockProp<?>> props = new HashMap<>(Map.of(
-                BlockProp.Legacy.DATA, BlockProp.BYTE.apply(block.getData())
+                BlockProp.Legacy.DATA, new LegacyDataProp(block.getData())
         ));
 
         BlockState state = block.getState();
@@ -162,6 +164,8 @@ public class SpigotSchematicHelper {
         if (blockData instanceof BigDripleaf bigDripleaf)
             props.put(BlockProp.BIG_DRIP_LEAF_TILT, new BigDripleafTiltProp(bigDripleaf.getTilt()));
 
+        if (blockData instanceof BrewingStand brewingStand)
+            props.put(BlockProp.BREWING_STAND_BOTTLES, new BrewingStandBottlesProp(brewingStand.getBottles().stream().mapToInt(Integer::intValue).toArray()));
 
         return new GenericBlockData(
                 new NamespacedKey(type.namespace(), type.getKey()),
