@@ -9,7 +9,7 @@ import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.format.BlockChunkIndexEncoder;

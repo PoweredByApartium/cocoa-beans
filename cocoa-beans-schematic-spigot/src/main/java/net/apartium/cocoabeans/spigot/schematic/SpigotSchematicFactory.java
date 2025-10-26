@@ -1,14 +1,14 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic> {

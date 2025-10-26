@@ -1,9 +1,10 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.schematic.prop.*;

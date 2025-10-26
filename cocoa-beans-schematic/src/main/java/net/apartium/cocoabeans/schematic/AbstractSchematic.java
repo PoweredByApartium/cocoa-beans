@@ -5,9 +5,9 @@ import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
-import net.apartium.cocoabeans.structs.Entry;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
 

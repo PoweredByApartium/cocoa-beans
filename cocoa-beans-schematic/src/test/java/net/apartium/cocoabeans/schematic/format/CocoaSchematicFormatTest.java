@@ -2,9 +2,10 @@ package net.apartium.cocoabeans.schematic.format;
 
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;

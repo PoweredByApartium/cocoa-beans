@@ -2,8 +2,8 @@ package net.apartium.cocoabeans.schematic.iterator;
 
 import net.apartium.cocoabeans.schematic.BlockChunk;
 import net.apartium.cocoabeans.schematic.BlockData;
-import net.apartium.cocoabeans.schematic.Dimensions;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
 

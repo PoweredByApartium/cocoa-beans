@@ -6,14 +6,16 @@ import org.jetbrains.annotations.ApiStatus;
 public enum CompressionType {
     RAW((byte) 0),
     ZSTD((byte) 1),
-    GZIP((byte) 2);
+    GZIP((byte) 2),
+    LZMA2((byte) 3),
+    OPEN_ZL((byte) 4);
 
     private final byte id;
 
     public static CompressionType fromId(int id){
-        for (var t: values())
-            if ((t.id & 0xFF) == id)
-                return t;
+        for (CompressionType type : values())
+            if ((type.id & 0xFF) == id)
+                return type;
 
         throw new IllegalArgumentException("bad compression id " + id);
     }

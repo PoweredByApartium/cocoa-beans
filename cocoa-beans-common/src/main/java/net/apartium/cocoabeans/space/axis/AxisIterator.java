@@ -1,7 +1,6 @@
-package net.apartium.cocoabeans.schematic.axis;
+package net.apartium.cocoabeans.space.axis;
 
 import net.apartium.cocoabeans.space.Position;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.Iterator;

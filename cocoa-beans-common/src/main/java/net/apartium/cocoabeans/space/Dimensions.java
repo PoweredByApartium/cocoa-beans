@@ -1,14 +1,8 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.space;
 
-import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.space.Region;
-import net.apartium.cocoabeans.space.StrictBoxRegion;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.awt.*;
-
-// todo don't like the name + move to space api?
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public record Dimensions(double width, double height, double depth) {
 
     public Dimensions(Dimensions size) {

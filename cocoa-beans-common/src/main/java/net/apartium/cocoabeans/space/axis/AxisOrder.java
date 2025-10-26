@@ -1,13 +1,12 @@
-package net.apartium.cocoabeans.schematic.axis;
+package net.apartium.cocoabeans.space.axis;
 
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.schematic.Dimensions;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-// todo move to space?
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public enum AxisOrder implements Comparator<Position> {
     XYZ((byte) 0, Axis.X, Axis.Y, Axis.Z),
     XZY((byte) 1, Axis.X, Axis.Z, Axis.Y),

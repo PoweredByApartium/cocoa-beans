@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.AbstractPasteOperation;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import org.bukkit.Bukkit;

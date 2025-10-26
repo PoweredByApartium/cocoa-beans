@@ -3,9 +3,10 @@ package net.apartium.cocoabeans.schematic.format;
 import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.axis.AxisOrder;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
@@ -183,6 +184,8 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             out.position(indexInfo.offset());
             out.write(compressed);
+
+            // TODO add additional body here
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -243,6 +246,8 @@ public class CocoaSchematicFormat implements SchematicFormat {
         out.write(writeU32(platform.version().protocol()));
         out.write(writeString(platform.platformName()));
         out.write(writeString(platform.platformVersion()));
+
+        // TODO add tlv headers here
 
         return new HeaderResult(
                 bOut.toByteArray(),
