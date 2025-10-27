@@ -183,13 +183,6 @@ AttachedWatcher *-- WatcherOperator::detach
 <tab title="Maven">
 
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>

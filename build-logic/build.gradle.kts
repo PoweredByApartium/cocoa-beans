@@ -9,7 +9,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     maven {
         name = "ApartiumNexus"
-        url = uri("https://nexus.voigon.dev/repository/apartium")
+        url = uri("https://nexus.apartium.net/repository/maven-public")
     }
 }
 

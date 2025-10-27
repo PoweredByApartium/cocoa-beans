@@ -2,6 +2,8 @@
 ## 0.0.46
 - [scoreboard-spigot] Add support for minecraft 1.21.6
 - [common] Bump Minecraft versions from 1.21.6 to 1.21.10
+- [common] Make MinecraftVersion comparable
+- [repo] Remove all references to the old nexus instance
 
 ## 0.0.45
 - [common] Add DNSLookup
