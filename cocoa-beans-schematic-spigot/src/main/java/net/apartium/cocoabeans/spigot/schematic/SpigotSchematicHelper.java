@@ -19,7 +19,7 @@ public class SpigotSchematicHelper {
 
     public static final MinecraftVersion VERSION = ServerUtils.getVersion();
 
-    public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1) {
+    public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {
         Dimensions size = new Dimensions(
                 Math.abs(pos0.getX() - pos1.getX()) + 1,
                 Math.abs(pos0.getY() - pos1.getY()) + 1,
@@ -45,7 +45,7 @@ public class SpigotSchematicHelper {
                         continue;
 
                     try {
-                        BlockData blockData = SpigotSchematicPlacer.INSTANCE.getBlockData(block);
+                        BlockData blockData = placer.getBlockData(block);
                         builder.setBlock((int) (x - min.getX()), (int) (y - min.getY()), (int) (z - min.getZ()), blockData);
                     } catch (Exception e) {
                         return null;

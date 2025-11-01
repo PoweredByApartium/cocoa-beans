@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.time.Instant;
 import java.util.*;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public abstract class AbstractSchematic implements Schematic {
 
     protected UUID id = UUID.randomUUID();
@@ -76,27 +76,6 @@ public abstract class AbstractSchematic implements Schematic {
                 schematic.axisOrder(),
                 schematic.blocksIterator()
         );
-    }
-
-    protected AbstractSchematic(AbstractSchematic that, Dimensions size, AxisOrder axes) {
-        this.id = that.id;
-        this.created = that.created;
-        this.platform = that.platform();
-        this.author = that.author;
-        this.title = that.title;
-
-        this.offset = new Position(that.offset).floor();
-        this.size = new Dimensions(size).floor();
-        this.axes = axes;
-
-        this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
-        BlockChunkIterator iterator = new BlockChunkIterator(that.blockChunk);
-        while (iterator.hasNext()) {
-            BlockPlacement placement = iterator.next();
-
-            rescaleChunkIfNeeded(placement.position());
-            this.blockChunk.setBlock(placement);
-        }
     }
 
     protected void rescaleChunkIfNeeded(Position pos) {

@@ -15,11 +15,13 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
 
     private final Location origin;
     private final BiFunction<Block, BlockPlacement, Boolean> shouldPlace;
+    private final SpigotSchematicPlacer placer;
 
-    public SpigotPasteOperation(Location origin, BlockIterator iterator, AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+    public SpigotPasteOperation(Location origin, BlockIterator iterator, AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, SpigotSchematicPlacer placer) {
         super(iterator, axisOrder);
         this.origin = origin;
         this.shouldPlace = shouldPlace;
+        this.placer = placer;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         if (!shouldPlace.apply(block, placement))
             return false;
 
-        SpigotSchematicPlacer.INSTANCE.place(block, placement);
+        placer.place(block, placement);
         return true;
     }
 

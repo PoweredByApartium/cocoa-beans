@@ -14,7 +14,6 @@ import org.bukkit.block.Block;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
@@ -29,12 +28,8 @@ public class SpigotSchematic extends AbstractSchematic {
         super(id, platform, created, author, title, offset, size, axes, iterator);
     }
 
-    public SpigotSchematic(AbstractSchematic schematic) {
-        this(schematic, schematic.size(), schematic.axisOrder());
-    }
-
-    public SpigotSchematic(AbstractSchematic that, Dimensions size, AxisOrder axes) {
-        super(that, size, axes);
+    public SpigotSchematic(Schematic schematic) {
+        super(schematic);
     }
 
     public PasteOperation paste(final Location origin) {
@@ -46,11 +41,16 @@ public class SpigotSchematic extends AbstractSchematic {
     }
 
     public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+        return paste(origin, axisOrder, shouldPlace, SpigotSchematicPlacer.INSTANCE);
+    }
+
+    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, SpigotSchematicPlacer placer) {
         return new SpigotPasteOperation(
                 origin.clone().add(toVector(offset)),
                 sortedIterator(axisOrder),
                 axisOrder,
-                shouldPlace
+                shouldPlace,
+                placer
         );
     }
 
