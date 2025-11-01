@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic.prop;
 
-import net.apartium.cocoabeans.schematic.NamespacedKey;
+import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.prop.ByteBlockProp;
 import net.apartium.cocoabeans.schematic.prop.RotatableProp;
 

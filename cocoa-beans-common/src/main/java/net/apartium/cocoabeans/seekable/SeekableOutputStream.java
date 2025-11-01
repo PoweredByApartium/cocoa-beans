@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.schematic.utils;
+package net.apartium.cocoabeans.seekable;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -10,8 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-// todo move to common?
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public final class SeekableOutputStream extends OutputStream {
 
     private final SeekableByteChannel channel;

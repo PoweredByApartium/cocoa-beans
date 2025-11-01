@@ -6,8 +6,8 @@ import java.io.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.readString;
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.writeString;
+import static net.apartium.cocoabeans.utils.FileUtils.readString;
+import static net.apartium.cocoabeans.utils.FileUtils.writeString;
 
 public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropFormat<T> {
 

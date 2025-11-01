@@ -1,11 +1,10 @@
 package net.apartium.cocoabeans.schematic.format;
 
-import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.*;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
+import static net.apartium.cocoabeans.utils.FileUtils.*;
 
 @ApiStatus.AvailableSince("0.0.45")
 public record CompressionBlockInfo(

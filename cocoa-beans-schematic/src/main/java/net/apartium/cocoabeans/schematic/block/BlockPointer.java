@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.schematic.block;
 
 public final class BlockPointer extends Pointer {
 

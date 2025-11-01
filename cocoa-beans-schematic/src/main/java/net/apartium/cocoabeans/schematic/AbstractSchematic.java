@@ -1,6 +1,8 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.Mathf;
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
@@ -30,27 +32,50 @@ public abstract class AbstractSchematic implements Schematic {
     protected BlockChunk blockChunk;
 
     public AbstractSchematic() {
-        this.blockChunk = new BlockChunk(axes, 0, Position.ZERO, Position.ZERO);
+        this.blockChunk = new BlockChunk(axes, 1, Position.ZERO, Position.ZERO);
     }
 
-    public AbstractSchematic(Schematic schematic) {
-        this.id = schematic.id();
-        this.created = schematic.created();
-        this.platform = schematic.platform();
-        this.author = schematic.author();
-        this.title = schematic.title();
-
-        this.offset = schematic.offset();
-        this.size = schematic.size();
-        this.axes = this.axisOrder();
+    public AbstractSchematic(
+            UUID id,
+            MinecraftPlatform platform,
+            Instant created,
+            String author,
+            String title,
+            Position offset,
+            Dimensions size,
+            AxisOrder axes,
+            BlockIterator iterator
+    ) {
+        this.id = id;
+        this.platform = platform;
+        this.created = created;
+        this.author = author;
+        this.title = title;
+        this.offset = offset;
+        this.size = size;
+        this.axes = axes;
 
         this.blockChunk = new BlockChunk(axes, 1, Position.ZERO, Position.ZERO);
-        BlockIterator iterator = schematic.blocksIterator();
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();
+
             rescaleChunkIfNeeded(placement.position());
             this.blockChunk.setBlock(placement);
         }
+    }
+
+    public AbstractSchematic(Schematic schematic) {
+        this(
+                schematic.id(),
+                schematic.platform(),
+                schematic.created(),
+                schematic.author(),
+                schematic.title(),
+                schematic.offset(),
+                schematic.size(),
+                schematic.axisOrder(),
+                schematic.blocksIterator()
+        );
     }
 
     protected AbstractSchematic(AbstractSchematic that, Dimensions size, AxisOrder axes) {

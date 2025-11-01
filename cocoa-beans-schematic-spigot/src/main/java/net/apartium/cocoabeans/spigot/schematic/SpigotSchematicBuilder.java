@@ -1,22 +1,29 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
-import net.apartium.cocoabeans.schematic.AbstractSchematic;
 import net.apartium.cocoabeans.schematic.AbstractSchematicBuilder;
-import net.apartium.cocoabeans.schematic.SchematicBuilder;
+import net.apartium.cocoabeans.schematic.Schematic;
+import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 
 public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchematic> {
 
-    public SpigotSchematicBuilder(AbstractSchematic schematic) {
+    public SpigotSchematicBuilder() {}
+
+    public SpigotSchematicBuilder(Schematic schematic) {
         super(schematic);
     }
 
     @Override
-    public SchematicBuilder toBuilder() {
-        return null;
-    }
-
-    @Override
     public SpigotSchematic build() {
-        return new SpigotSchematic(this);
+        return new SpigotSchematic(
+                id,
+                platform,
+                created,
+                author,
+                title,
+                offset,
+                size,
+                axes,
+                new BlockChunkIterator(blockChunk)
+        );
     }
 }

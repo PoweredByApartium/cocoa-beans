@@ -1,5 +1,6 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.schematic.block;
 
+import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import org.jetbrains.annotations.ApiStatus;
 

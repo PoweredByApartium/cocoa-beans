@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.Mathf;
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
@@ -10,6 +13,7 @@ import net.apartium.cocoabeans.schematic.prop.RotatableProp;
 import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -17,45 +21,66 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-// TODO remove abstract schematic from extends you lazy fuck
-public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> extends AbstractSchematic implements SchematicBuilder {
+public abstract class AbstractSchematicBuilder<T> implements SchematicBuilder<T> {
 
-    public AbstractSchematicBuilder(AbstractSchematic schematic) {
-        super(schematic, schematic.size(), schematic.axisOrder());
+    protected UUID id = UUID.randomUUID();
+    protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
+    protected Instant created = Instant.now();
+    protected String author = "";
+    protected String title = "";
+    protected Dimensions size;
+    protected BlockChunk blockChunk = new BlockChunk(AxisOrder.XYZ, 1, Position.ZERO, Position.ZERO);
+    protected Position offset = Position.ZERO;
+    protected AxisOrder axes = AxisOrder.XYZ;
+
+    public AbstractSchematicBuilder() {}
+
+    public AbstractSchematicBuilder(Schematic schematic) {
+        this.id = schematic.id();
+        this.platform = schematic.platform();
+        this.created = schematic.created();
+        this.author = schematic.author();
+        this.title = schematic.title();
+        this.size = schematic.size();
+        this.offset = schematic.offset();
+        this.axes = schematic.axisOrder();
+
+        this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
+        schematic.blocksIterator().forEachRemaining(this::setBlock);
     }
 
     @Override
-    public SchematicBuilder id(UUID id) {
+    public SchematicBuilder<T> id(UUID id) {
         this.id = id;
         return this;
     }
 
     @Override
-    public SchematicBuilder platform(MinecraftPlatform platform) {
+    public SchematicBuilder<T> platform(MinecraftPlatform platform) {
         this.platform = platform;
         return this;
     }
 
     @Override
-    public SchematicBuilder created(Instant created) {
+    public SchematicBuilder<T> created(Instant created) {
         this.created = created;
         return this;
     }
 
     @Override
-    public SchematicBuilder author(String author) {
+    public SchematicBuilder<T> author(String author) {
         this.author = author;
         return this;
     }
 
     @Override
-    public SchematicBuilder title(String title) {
+    public SchematicBuilder<T> title(String title) {
         this.title = title;
         return this;
     }
 
     @Override
-    public SchematicBuilder size(Dimensions size) {
+    public SchematicBuilder<T> size(Dimensions size) {
         this.size = size;
         // TODO add checks with block chunk
         return this;
@@ -63,7 +88,7 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> exte
 
 
     @Override
-    public SchematicBuilder rotate(int degrees) {
+    public SchematicBuilder<T> rotate(int degrees) {
         BlockChunk newChunk = new BlockChunk(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
@@ -121,7 +146,6 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> exte
             );
         }
 
-
         if (use90Degrees) {
             this.offset = new Position(
                     this.offset.getZ(),
@@ -151,19 +175,19 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> exte
     }
 
     @Override
-    public SchematicBuilder flip(Axis axis) {
+    public SchematicBuilder<T> flip(Axis axis) {
         // TODO
         return this;
     }
 
     @Override
-    public SchematicBuilder translate(Position offset) {
+    public SchematicBuilder<T> translate(Position offset) {
         this.offset = offset;
         return this;
     }
 
     @Override
-    public SchematicBuilder translate(AxisOrder axisOrder) {
+    public SchematicBuilder<T> translate(AxisOrder axisOrder) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
         this.axes = axisOrder;
         this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
@@ -177,7 +201,20 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> exte
     }
 
     @Override
-    public SchematicBuilder setBlock(int x, int y, int z, BlockData data) {
+    public SchematicBuilder<T> setBlock(BlockPlacement placement) {
+        Position pos = placement.position();
+        this.setBlock(
+                (int) pos.getX(),
+                (int) pos.getY(),
+                (int) pos.getZ(),
+                placement.block()
+        );
+
+        return this;
+    }
+
+    @Override
+    public SchematicBuilder<T> setBlock(int x, int y, int z, BlockData data) {
         if (x < 0 || y < 0 || z < 0)
             throw new IllegalArgumentException("coordinate out of range");
 
@@ -205,11 +242,21 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematic> exte
         return this;
     }
 
+    protected void rescaleChunkIfNeeded(Position pos) {
+        int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
+        if (maxAxis >= this.blockChunk.getScaler())
+            this.blockChunk = new BlockChunk(axes, Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, this.blockChunk);
+    }
+
     @Override
-    public SchematicBuilder removeBlock(int x, int y, int z) {
+    public SchematicBuilder<T> removeBlock(int x, int y, int z) {
         Position pos = new Position(x, y, z);
         // TODO rescale down if possible
         this.blockChunk.setBlock(new BlockPlacement(pos, null));
+        if (this.blockChunk.getMask() == 1) {
+            // TODO scale down
+        }
+
         return this;
     }
 

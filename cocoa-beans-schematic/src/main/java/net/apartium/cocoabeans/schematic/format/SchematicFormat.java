@@ -1,8 +1,8 @@
 package net.apartium.cocoabeans.schematic.format;
 
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
-import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
+import net.apartium.cocoabeans.seekable.SeekableInputStream;
+import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.45")

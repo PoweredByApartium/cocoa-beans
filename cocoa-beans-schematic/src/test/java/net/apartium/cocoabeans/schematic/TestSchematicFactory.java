@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Dimensions;
@@ -16,7 +18,7 @@ public class TestSchematicFactory implements SchematicFactory<AbstractSchematic>
     public AbstractSchematic createSchematic(UUID id, Instant created, MinecraftPlatform platform, String author, String title, BlockIterator blocks, Dimensions size, AxisOrder axisOrder, Position offset) {
         AbstractSchematic schematic = new AbstractSchematic() {
             @Override
-            public SchematicBuilder toBuilder() {
+            public SchematicBuilder<?> toBuilder() {
                 return null;
             }
         };

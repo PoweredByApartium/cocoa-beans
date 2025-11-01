@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.schematic.utils;
+package net.apartium.cocoabeans.seekable;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -7,8 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
-// todo maybe move to common?
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public final class ByteArraySeekableChannel implements SeekableByteChannel {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;

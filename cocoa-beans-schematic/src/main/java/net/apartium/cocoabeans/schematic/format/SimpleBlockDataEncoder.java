@@ -1,11 +1,11 @@
 package net.apartium.cocoabeans.schematic.format;
 
-import net.apartium.cocoabeans.schematic.BlockData;
-import net.apartium.cocoabeans.schematic.NamespacedKey;
+import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
-import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
+import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +13,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
+import static net.apartium.cocoabeans.utils.FileUtils.*;
 
 @ApiStatus.AvailableSince("0.0.45")
 public class SimpleBlockDataEncoder implements BlockDataEncoder {

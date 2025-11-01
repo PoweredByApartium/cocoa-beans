@@ -6,7 +6,7 @@ import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.readString;
+import static net.apartium.cocoabeans.utils.FileUtils.readString;
 
 public class ArrayStringBlockPropFormat implements BlockPropFormat<String[]> {
 

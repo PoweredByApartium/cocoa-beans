@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.schematic.prop;
 
-import net.apartium.cocoabeans.schematic.NamespacedKey;
+import net.apartium.cocoabeans.structs.NamespacedKey;
 
 public interface RotatableProp<T> {
 

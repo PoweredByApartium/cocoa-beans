@@ -1,7 +1,7 @@
 package net.apartium.cocoabeans.schematic.format;
 
-import net.apartium.cocoabeans.schematic.BlockData;
-import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
+import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.45")

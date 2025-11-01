@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
@@ -29,6 +30,6 @@ public interface Schematic {
     BlockIterator blocksIterator();
     BlockIterator sortedIterator(AxisOrder axisOrder);
 
-    SchematicBuilder toBuilder();
+    SchematicBuilder<?> toBuilder();
 
 }

@@ -12,6 +12,7 @@ dependencies {
     compileOnly(project(":cocoa-beans-state"))
     compileOnly(project(":cocoa-beans-scoreboard"))
     compileOnly(project(":cocoa-beans-scoreboard-spigot"))
+    compileOnly(project(":cocoa-beans-schematic-spigot"))
 
     testImplementation(project(":cocoa-beans-spigot"))
 

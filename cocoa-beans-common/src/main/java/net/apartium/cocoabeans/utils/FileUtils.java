@@ -1,4 +1,4 @@
-package net.apartium.cocoabeans.schematic.utils;
+package net.apartium.cocoabeans.utils;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -9,8 +9,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 
-// todo move to common?
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public class FileUtils {
 
     private static final CRC32 crc = new CRC32();

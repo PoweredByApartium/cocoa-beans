@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.space.Dimensions;
@@ -9,27 +11,28 @@ import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import java.time.Instant;
 import java.util.UUID;
 
-public interface SchematicBuilder {
+public interface SchematicBuilder<T> {
 
-    SchematicBuilder id(UUID id);
+    SchematicBuilder<T> id(UUID id);
 
-    SchematicBuilder platform(MinecraftPlatform platform);
-    SchematicBuilder created(Instant created);
+    SchematicBuilder<T> platform(MinecraftPlatform platform);
+    SchematicBuilder<T> created(Instant created);
 
-    SchematicBuilder author(String author);
-    SchematicBuilder title(String title);
+    SchematicBuilder<T> author(String author);
+    SchematicBuilder<T> title(String title);
 
-    SchematicBuilder size(Dimensions size);
+    SchematicBuilder<T> size(Dimensions size);
 
-    SchematicBuilder rotate(int degrees);
-    SchematicBuilder flip(Axis axis);
+    SchematicBuilder<T> rotate(int degrees);
+    SchematicBuilder<T> flip(Axis axis);
 
-    SchematicBuilder translate(Position offset);
-    SchematicBuilder translate(AxisOrder axisOrder);
+    SchematicBuilder<T> translate(Position offset);
+    SchematicBuilder<T> translate(AxisOrder axisOrder);
 
-    SchematicBuilder setBlock(int x, int y, int z, BlockData data);
-    SchematicBuilder removeBlock(int x, int y, int z);
+    SchematicBuilder<T> setBlock(BlockPlacement placement);
+    SchematicBuilder<T> setBlock(int x, int y, int z, BlockData data);
+    SchematicBuilder<T> removeBlock(int x, int y, int z);
 
-    Schematic build();
+    T build();
 
 }

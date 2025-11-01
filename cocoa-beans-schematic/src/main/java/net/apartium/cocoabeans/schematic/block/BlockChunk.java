@@ -1,6 +1,5 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.schematic.block;
 
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 
@@ -67,7 +66,7 @@ public class BlockChunk {
 
     public boolean setBlock(BlockPlacement placement) {
         Position pos = placement.position();
-        BlockData data = getBlock(pos);
+        BlockData data = placement.block();
 
         if (axisOrder.compare(pos, actualPos) < 0)
             return false;
@@ -82,6 +81,8 @@ public class BlockChunk {
 
         int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
         if (((mask >> index) & 1) == 0) {
+            if (data == null)
+                return true;
 
             // UPDATE MASK and shift array
             int count = countBits(mask, index - 1);
@@ -114,14 +115,14 @@ public class BlockChunk {
 
             mask |= (1L << index);
             if (((mask >> index) & 1) == 0)
-                throw new IllegalStateException("FUCK");
+                throw new IllegalStateException("Something went wrong:\nmask: " + mask + "\nindex: " + index);
         }
 
         int count = countBits(mask, index) - 1;
         Pointer pointer = pointers[count];
         if (pointer == null) {
             if (scaler == 1) {
-                pointer = new BlockPointer(placement.block());
+                pointer = new BlockPointer(data);
             }
             else {
                 Position chunkPoint = axisOrder.position(i0, i1, i2);
@@ -141,7 +142,7 @@ public class BlockChunk {
             if (blockPointer.getData().equals(data))
                 return true;
 
-            pointers[count] = new BlockPointer(blockPointer.getData());
+            pointers[count] = new BlockPointer(data);
             return true;
         } else if (pointer instanceof ChunkPointer chunkPointer) {
             return chunkPointer.getChunk().setBlock(placement);

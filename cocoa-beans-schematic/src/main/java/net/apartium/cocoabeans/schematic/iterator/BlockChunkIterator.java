@@ -1,13 +1,13 @@
 package net.apartium.cocoabeans.schematic.iterator;
 
-import net.apartium.cocoabeans.schematic.BlockChunk;
-import net.apartium.cocoabeans.schematic.BlockPointer;
-import net.apartium.cocoabeans.schematic.ChunkPointer;
-import net.apartium.cocoabeans.schematic.Pointer;
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.block.BlockPointer;
+import net.apartium.cocoabeans.schematic.block.ChunkPointer;
+import net.apartium.cocoabeans.schematic.block.Pointer;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
 
-import static net.apartium.cocoabeans.schematic.BlockChunk.SIZE;
+import static net.apartium.cocoabeans.schematic.block.BlockChunk.SIZE;
 
 public class BlockChunkIterator implements BlockIterator {
 

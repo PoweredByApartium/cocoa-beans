@@ -42,7 +42,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
     public PasteResult performAll() {
         int placed = 0;
         while (iterator.hasNext()) {
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             placed++;
         }
 
@@ -61,7 +63,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
             if (startI0 != currentI0())
                 break;
 
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             placed++;
         }
 
@@ -81,7 +85,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
             if (startI0 != currentI0() || startI1 != currentI1())
                 break;
 
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             placed++;
         }
 
@@ -95,7 +101,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
     public PasteResult advanceAllAxis(int numOfBlocks) {
         int placed = 0;
         while (iterator.hasNext() && numOfBlocks > 0) {
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             numOfBlocks--;
             placed++;
         }
@@ -115,7 +123,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
             if (startI0 != currentI0())
                 break;
 
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             numOfBlocks--;
             placed++;
         }
@@ -137,7 +147,9 @@ public abstract class AbstractPasteOperation implements PasteOperation {
             if (startI0 != currentI0() || startI1 != currentI1())
                 break;
 
-            place(iterator.next());
+            if (!place(iterator.next()))
+                continue;
+
             numOfBlocks--;
             placed++;
         }
@@ -148,6 +160,6 @@ public abstract class AbstractPasteOperation implements PasteOperation {
         );
     }
 
-    protected abstract void place(BlockPlacement placement);
+    protected abstract boolean place(BlockPlacement placement);
 
 }

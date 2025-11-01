@@ -8,7 +8,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.readString;
+import static net.apartium.cocoabeans.utils.FileUtils.readString;
 
 public class StringBlockPropFormat implements BlockPropFormat<String> {
 

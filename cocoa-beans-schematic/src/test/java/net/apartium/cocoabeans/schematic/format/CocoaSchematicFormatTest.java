@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Dimensions;
@@ -9,11 +10,12 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
-import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
-import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
-import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
+import net.apartium.cocoabeans.seekable.ByteArraySeekableChannel;
+import net.apartium.cocoabeans.seekable.SeekableInputStream;
+import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
+import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

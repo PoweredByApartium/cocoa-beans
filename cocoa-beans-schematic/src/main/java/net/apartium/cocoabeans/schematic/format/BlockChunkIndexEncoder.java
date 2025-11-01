@@ -1,14 +1,13 @@
 package net.apartium.cocoabeans.schematic.format;
 
 import net.apartium.cocoabeans.Mathf;
-import net.apartium.cocoabeans.schematic.*;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
-import net.apartium.cocoabeans.schematic.utils.ByteArraySeekableChannel;
-import net.apartium.cocoabeans.schematic.utils.SeekableInputStream;
-import net.apartium.cocoabeans.schematic.utils.SeekableOutputStream;
+import net.apartium.cocoabeans.seekable.ByteArraySeekableChannel;
+import net.apartium.cocoabeans.seekable.SeekableInputStream;
+import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.Entry;
 
@@ -17,8 +16,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.*;
 
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.*;
-import static net.apartium.cocoabeans.schematic.utils.FileUtils.writeU64;
+import static net.apartium.cocoabeans.utils.FileUtils.*;
+import static net.apartium.cocoabeans.utils.FileUtils.writeU64;
 import static net.apartium.cocoabeans.space.Position.add;
 import static net.apartium.cocoabeans.space.Position.multiply;
 
