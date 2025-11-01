@@ -161,4 +161,11 @@ class MinecraftVersionTest {
         assertEquals(Objects.hash(mySeverVersion.major(), mySeverVersion.update(), mySeverVersion.minor()), mySeverVersion.hashCode());
     }
 
+    @Test
+    void compare() {
+        assertEquals(0, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_18_1));
+        assertEquals(1, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_9));
+        assertEquals(-1, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_20));
+    }
+
 }
