@@ -14,6 +14,8 @@ import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AbstractSchematicBuilder<T> implements SchematicBuilder<T> {
+public abstract class AbstractSchematicBuilder<T extends Schematic> implements SchematicBuilder<T> {
 
     protected UUID id = UUID.randomUUID();
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
@@ -175,8 +177,29 @@ public abstract class AbstractSchematicBuilder<T> implements SchematicBuilder<T>
     }
 
     @Override
-    public SchematicBuilder<T> flip(Axis axis) {
-        // TODO
+    public SchematicBuilder<T> flip(@NonNls @NotNull Axis axis) {
+        BlockChunk newChunk = new BlockChunk(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+
+        Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+
+            Position pos = placement.position();
+            pos = switch (axis) {
+                case X -> new Position(this.size.width() - 1 - pos.getX(), pos.getY(), pos.getZ());
+                case Y -> new Position(pos.getX(), this.size.height() - 1 - pos.getY(), pos.getZ());
+                case Z -> new Position(pos.getX(), pos.getY(), this.size.depth() - 1 - pos.getZ());
+            };
+
+            newChunk.setBlock(new BlockPlacement(
+                    pos,
+                    placement.block()
+            ));
+        }
+
+        // TODO add offset
+
+        this.blockChunk = newChunk;
         return this;
     }
 

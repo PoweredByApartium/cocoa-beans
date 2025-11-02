@@ -9,6 +9,7 @@ import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import net.apartium.cocoabeans.schematic.*;
+import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
@@ -41,7 +42,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
@@ -64,8 +68,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
 
 @Command(value = "schematic", aliases = "schm")
@@ -163,6 +165,15 @@ public class SchematicCommand implements CommandNode, Listener {
         }.runTaskTimer(plugin, 1, 1);
     }
 
+    @SourceParser(keyword = "axis", ignoreCase = true, clazz = Axis.class, resultMaxAgeInMills = -1)
+    public Map<String, Axis> axisMap() {
+        return Arrays.stream(Axis.values())
+                .collect(Collectors.toMap(
+                        axis -> axis.name().toLowerCase(),
+                        Function.identity()
+                ));
+    }
+
     @SourceParser(keyword = "schematic", clazz = SpigotSchematic.class)
     public Map<String, SpigotSchematic> schematics() {
         return schematics;
@@ -215,6 +226,15 @@ public class SchematicCommand implements CommandNode, Listener {
         Block block = player.getWorld().getBlockAt((int) position.getX(), (int) position.getY(), (int) position.getZ());
         infoBlock(player, block);
     }
+    @SenderLimit(SenderType.PLAYER)
+    @SubCommand("paste <schematic> flip <axis>")
+    public void pasteFlip(Player player, SpigotSchematic schematic, Axis axis) {
+        player.sendMessage("§eAttempting to paste schematic §c" + schematic.title() + "§e while flipping axis: §c" + axis);
+        schematic = schematic.toBuilder().flip(axis).build();
+        schematic.paste(player.getLocation()).performAll();
+        player.sendMessage("§c" + schematic.title() + " §ehas been pasted!");
+    }
+
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic> rotate <int>")
     public void paste(Player player, SpigotSchematic schematic, int degress) {
@@ -350,7 +370,7 @@ public class SchematicCommand implements CommandNode, Listener {
         }
 
         public void setPos1(Player player, Position pos) {
-            if (player.getWorld() != world) {
+            if (!Objects.equals(player.getWorld(), world)) {
                 this.pos0 = null;
                 this.world = player.getWorld();
             }

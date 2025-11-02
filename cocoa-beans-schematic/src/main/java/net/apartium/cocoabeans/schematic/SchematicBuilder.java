@@ -7,11 +7,12 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public interface SchematicBuilder<T> {
+public interface SchematicBuilder<T extends Schematic> {
 
     SchematicBuilder<T> id(UUID id);
 
@@ -24,7 +25,7 @@ public interface SchematicBuilder<T> {
     SchematicBuilder<T> size(Dimensions size);
 
     SchematicBuilder<T> rotate(int degrees);
-    SchematicBuilder<T> flip(Axis axis);
+    SchematicBuilder<T> flip(@NotNull Axis axis);
 
     SchematicBuilder<T> translate(Position offset);
     SchematicBuilder<T> translate(AxisOrder axisOrder);
