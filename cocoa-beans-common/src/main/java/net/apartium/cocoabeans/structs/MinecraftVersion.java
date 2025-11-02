@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.structs;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public record MinecraftVersion(
         int minor,
         @ApiStatus.AvailableSince("0.0.36")
         int protocol
-) {
+) implements Comparable<MinecraftVersion> {
 
     public static final MinecraftVersion UNKNOWN = new MinecraftVersion(0, 0, 0, 0);
 
@@ -334,6 +335,21 @@ public record MinecraftVersion(
     @ApiStatus.AvailableSince("0.0.36")
     public boolean isProtocolKnown() {
         return protocol > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @ApiStatus.AvailableSince("0.0.46")
+    @Override
+    public int compareTo(@NotNull MinecraftVersion other) {
+        if (major() != other.major())
+            return Integer.compare(major(), other.major());
+
+        if (update() != other.update())
+            return Integer.compare(update(), other.update());
+
+        return Integer.compare(minor(), other.minor());
     }
 
 }
