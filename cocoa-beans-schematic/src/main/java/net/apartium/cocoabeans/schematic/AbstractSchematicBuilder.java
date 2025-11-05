@@ -224,6 +224,32 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     }
 
     @Override
+    public SchematicBuilder<T> shift(Axis axis, int amount) {
+        BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
+        this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+            Position position = new Position(placement.position());
+
+            switch (axis) {
+                case X -> position.add(new Position(amount, 0, 0));
+                case Y -> position.add(new Position(0, amount, 0));
+                case Z -> position.add(new Position(0, 0, amount));
+            }
+
+            placement = new BlockPlacement(
+                    position,
+                    placement.block()
+            );
+
+            rescaleChunkIfNeeded(placement.position());
+            this.blockChunk.setBlock(placement);
+        }
+
+        return this;
+    }
+
+    @Override
     public SchematicBuilder<T> setBlock(BlockPlacement placement) {
         Position pos = placement.position();
         this.setBlock(

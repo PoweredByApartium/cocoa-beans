@@ -30,6 +30,8 @@ public interface SchematicBuilder<T extends Schematic> {
     SchematicBuilder<T> translate(Position offset);
     SchematicBuilder<T> translate(AxisOrder axisOrder);
 
+    SchematicBuilder<T> shift(Axis axis, int amount);
+
     SchematicBuilder<T> setBlock(BlockPlacement placement);
     SchematicBuilder<T> setBlock(int x, int y, int z, BlockData data);
     SchematicBuilder<T> removeBlock(int x, int y, int z);

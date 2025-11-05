@@ -289,4 +289,23 @@ class CocoaSchematicFormatTest {
         assertEquals(schematic.offset(), otherSchematic.offset());
     }
 
+    @Test
+    void shiftSchematic() {
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(simpleSchematic));
+        Schematic schematic = format.read(in);
+
+        Schematic otherSchematic = schematic.toBuilder()
+                .shift(Axis.X, 5)
+                .shift(Axis.Y, 3)
+                .shift(Axis.Z, 2)
+                .build();
+
+        BlockIterator blockIterator = otherSchematic.blocksIterator();
+        assertTrue(blockIterator.hasNext());
+        while (blockIterator.hasNext()) {
+            BlockPlacement placement = blockIterator.next();
+            assertEquals(schematic.getBlockData((int) placement.position().getX() - 5, (int) placement.position().getY() - 3, (int) placement.position().getZ() - 2), placement.block());
+        }
+    }
+
 }
