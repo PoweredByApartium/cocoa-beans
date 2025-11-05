@@ -12,6 +12,10 @@ import java.util.UUID;
 
 public class TestSchematic extends AbstractSchematic {
 
+    public TestSchematic() {
+        super();
+    }
+
     public TestSchematic(UUID id, MinecraftPlatform platform, Instant created, String author, String title, Position offset, Dimensions size, AxisOrder axes, BlockIterator iterator) {
         super(id, platform, created, author, title, offset, size, axes, iterator);
     }

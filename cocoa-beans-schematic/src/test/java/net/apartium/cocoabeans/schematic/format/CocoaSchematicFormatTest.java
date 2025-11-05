@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CocoaSchematicFormatTest {
 
@@ -315,6 +314,91 @@ class CocoaSchematicFormatTest {
                 ),
                 otherSchematic.size()
         );
+    }
+
+    @Test
+    void removeBlock() {
+        SchematicBuilder<?> builder = new TestSchematic().toBuilder();
+
+        GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
+
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                for (int z = 0; z < 5; z++) {
+                    builder.setBlock(x, y, z, dirtBlock);
+                }
+            }
+        }
+
+        Schematic schematic = builder.build();
+
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                for (int z = 0; z < 5; z++) {
+                    assertEquals(dirtBlock, schematic.getBlockData(x, y, z));
+                }
+            }
+        }
+
+        assertEquals(Dimensions.box(5), schematic.size());
+
+        builder = schematic.toBuilder();
+
+        builder.removeBlock(0, 3, 2);
+
+        schematic = builder.build();
+
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                for (int z = 0; z < 5; z++) {
+                    if (x == 0 && y == 3 && z == 2) {
+                        assertNull(schematic.getBlockData(x, y, z));
+                    } else {
+                        assertEquals(dirtBlock, schematic.getBlockData(x, y, z));
+                    }
+                }
+            }
+        }
+
+        assertEquals(Dimensions.box(5), schematic.size());
+
+        schematic.blocksIterator().forEachRemaining(block -> {
+            if (block.position().getX() == 0 && block.position().getY() == 3 && block.position().getZ() == 2)
+                fail("Block shouldn't exists");
+        });
+
+        builder = schematic.toBuilder();
+
+        builder.setBlock(new BlockPlacement(
+                new Position(10, 3, 2),
+                dirtBlock
+        ));
+
+        schematic = builder.build();
+        schematic.blocksIterator().forEachRemaining(block -> {
+            if (block.position().getX() == 0 && block.position().getY() == 3 && block.position().getZ() == 2)
+                fail("Block shouldn't exists");
+        });
+
+        assertEquals(dirtBlock, schematic.getBlockData(10, 3, 2));
+        assertEquals(new Dimensions(11, 5, 5), schematic.size());
+
+        builder = schematic.toBuilder();
+
+        builder.removeBlock(10, 3, 2);
+
+        schematic = builder.build();
+        schematic.blocksIterator().forEachRemaining(block -> {
+            Position pos = block.position();
+            if (pos.getX() == 0 && pos.getY() == 3 && pos.getZ() == 2)
+                fail("Block shouldn't exists");
+
+            if (pos.getX() == 10)
+                fail("Block shouldn't exists");
+        });
+
+        assertNull(schematic.getBlockData(10, 3, 2));
+        assertEquals(new Dimensions(5, 5, 5), schematic.size());
     }
 
 }

@@ -6,13 +6,16 @@ import net.apartium.cocoabeans.schematic.block.ChunkPointer;
 import net.apartium.cocoabeans.schematic.block.Pointer;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 
 import static net.apartium.cocoabeans.schematic.block.BlockChunk.SIZE;
 
 public class BlockChunkIterator implements BlockIterator {
 
+    private final long mask;
     private final Pointer[] pointers;
     private final Position actualPos;
+    private final AxisOrder axisOrder;
     private long remaining;
     private int pointerIdx = 0;
 
@@ -20,9 +23,12 @@ public class BlockChunkIterator implements BlockIterator {
     private BlockPlacement next;
 
     public BlockChunkIterator(BlockChunk chunk) {
+        this.mask = chunk.getMask();
         this.remaining = chunk.getMask();
         this.pointers = chunk.getPointers();
         this.actualPos = chunk.getActualPos();
+
+        this.axisOrder = chunk.getAxisOrder();
 
         this.advance();
     }
@@ -47,7 +53,7 @@ public class BlockChunkIterator implements BlockIterator {
 
             remaining ^= bit;
             if (pointerIdx >= pointers.length)
-                throw new IllegalStateException("Mask has more set bits than pointers length");
+                throw new IllegalStateException("Mask has more set bits than pointers length\nMask: " + mask + "\nRemaining: " + remaining + "\nBitPos: " + bitPos);
 
             Pointer ptr = pointers[pointerIdx++];
             if (ptr == null)
@@ -58,7 +64,7 @@ public class BlockChunkIterator implements BlockIterator {
                 int i1 = (bitPos / SIZE) % SIZE;
                 int i2 = bitPos / (SIZE * SIZE);
 
-                Position pos = new Position(i0, i1, i2).add(actualPos);
+                Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
                 next = new BlockPlacement(pos, blockPointer.getData());
                 return;
             }

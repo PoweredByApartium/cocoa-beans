@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.schematic.block;
 
+import net.apartium.cocoabeans.space.Dimensions;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -50,6 +52,7 @@ public class BlockChunk {
         int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
 
         int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
+
         if (((mask >> index) & 1) == 0)
             return null;
 
@@ -81,9 +84,6 @@ public class BlockChunk {
 
         int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
         if (((mask >> index) & 1) == 0) {
-            if (data == null)
-                return true;
-
             // UPDATE MASK and shift array
             int count = countBits(mask, index - 1);
             if (count == 0) {
@@ -151,6 +151,69 @@ public class BlockChunk {
         return false;
     }
 
+    private void removeChunk(int count, int index) {
+        Pointer[] clone = this.pointers;
+        this.pointers = new Pointer[this.pointers.length - 1];
+        if (count == 0) {
+            System.arraycopy(clone, 1, this.pointers, 0, this.pointers.length);
+        } else if (count >= this.pointers.length) {
+            System.arraycopy(clone, 0, this.pointers, 0, this.pointers.length);
+        } else {
+            for (int i = 0; i < count; i++)
+                this.pointers[i] = clone[i];
+
+            for (int i = count; i < this.pointers.length; i++) {
+                this.pointers[i] = clone[i + 1];
+            }
+        }
+
+        long prev = mask;
+
+        mask &= ~(1L << index);
+
+        if ((mask | (1L << index)) != prev)
+            throw new IllegalStateException("why: " + prev + " & " + mask + " | " + (1L << index) + " > " + index);
+
+        if (((mask >> index) & 1) != 0)
+            throw new IllegalStateException("Something went wrong:\nmask: " + mask + "\nindex: " + index);
+
+    }
+
+    public @Nullable BlockData removeBlock(Position pos) {
+        if (axisOrder.compare(pos, actualPos) < 0)
+            return null;
+
+        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
+        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
+            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+
+        int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
+        int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
+        int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
+
+        int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
+        if (((mask >> index) & 1) == 0)
+            return null;
+
+
+        int count = countBits(mask, index) - 1;
+        Pointer pointer = this.pointers[count];
+
+        if (scaler == 1) {
+            removeChunk(count, index);
+            return ((BlockPointer) pointer).getData();
+        }
+
+        if (!(pointer instanceof ChunkPointer chunkPointer))
+            return null;
+
+        BlockData blockData = chunkPointer.getChunk().removeBlock(pos);
+        if (chunkPointer.getChunk().getMask() == 0)
+            removeChunk(count, index);
+
+        return blockData;
+    }
+
     private static int countBits(long mask, int index) {
         int count = 0;
         for (int i = index; i >= 0; i--) {
@@ -185,4 +248,38 @@ public class BlockChunk {
     public AxisOrder getAxisOrder() {
         return axisOrder;
     }
+
+    public Dimensions getSizeOfEntireChunk() {
+        if (mask == 0)
+            return new Dimensions(0, 0, 0);
+
+        if (scaler == 1) {
+            int bitPos = Long.numberOfTrailingZeros(mask);
+
+            int i0 = bitPos % SIZE;
+            int i1 = (bitPos / SIZE) % SIZE;
+            int i2 = bitPos / (SIZE * SIZE);
+
+            Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
+
+            return new Dimensions(
+                    pos.getX() + 1,
+                    pos.getY() + 1,
+                    pos.getZ() + 1
+            );
+        }
+
+        return ((ChunkPointer) pointers[pointers.length - 1])
+                .getChunk()
+                .getSizeOfEntireChunk();
+    }
+
+    public static boolean[] debug(long num) {
+        boolean[] arr = new boolean[64];
+        for (int i = 0; i < 64; i++)
+            arr[i] = ((num >>> (63- i)) & 1L) != 0;
+
+        return arr;
+    }
+
 }

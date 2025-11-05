@@ -1,12 +1,9 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.Mathf;
-import net.apartium.cocoabeans.schematic.block.BlockChunk;
-import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
-import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.RotatableProp;
@@ -280,6 +277,10 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         return this;
     }
 
+    protected void rescaleSize() {
+        this.size = blockChunk.getSizeOfEntireChunk();
+    }
+
     protected void rescaleSizeIfNeeded(int x, int y, int z) {
         Dimensions newSize = new Dimensions(size).floor();
 
@@ -304,12 +305,16 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     @Override
     public SchematicBuilder<T> removeBlock(int x, int y, int z) {
         Position pos = new Position(x, y, z);
-        // TODO rescale down if possible
-        this.blockChunk.setBlock(new BlockPlacement(pos, null));
-        if (this.blockChunk.getMask() == 1) {
-            // TODO scale down
+        blockChunk.removeBlock(pos);
+
+        while (this.blockChunk.getMask() == 1) {
+            if (!(this.blockChunk.getPointers()[0] instanceof ChunkPointer chunkPointer))
+                break;
+
+            this.blockChunk = chunkPointer.getChunk();
         }
 
+        this.rescaleSize();
         return this;
     }
 
