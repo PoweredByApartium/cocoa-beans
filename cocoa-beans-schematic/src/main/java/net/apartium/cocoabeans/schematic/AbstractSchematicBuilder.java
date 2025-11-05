@@ -242,6 +242,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
                     placement.block()
             );
 
+            rescaleSizeIfNeeded((int) position.getX(), (int) position.getY(), (int) position.getZ());
             rescaleChunkIfNeeded(placement.position());
             this.blockChunk.setBlock(placement);
         }
@@ -267,6 +268,19 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         if (x < 0 || y < 0 || z < 0)
             throw new IllegalArgumentException("coordinate out of range");
 
+
+        Position pos = new Position(x, y, z);
+        this.rescaleSizeIfNeeded(x, y, z);
+        this.rescaleChunkIfNeeded(pos);
+        this.blockChunk.setBlock(new BlockPlacement(
+                pos,
+                data
+        ));
+
+        return this;
+    }
+
+    protected void rescaleSizeIfNeeded(int x, int y, int z) {
         Dimensions newSize = new Dimensions(size).floor();
 
         if (x >= size.width())
@@ -278,17 +292,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         if (z >= size.depth())
             newSize = new Dimensions(size.width(), size.height(), z + 1);
 
-
-        Position pos = new Position(x, y, z);
         this.size = newSize;
-
-        this.rescaleChunkIfNeeded(pos);
-        this.blockChunk.setBlock(new BlockPlacement(
-                pos,
-                data
-        ));
-
-        return this;
     }
 
     protected void rescaleChunkIfNeeded(Position pos) {

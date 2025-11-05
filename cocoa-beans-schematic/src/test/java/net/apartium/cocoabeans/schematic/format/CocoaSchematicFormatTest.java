@@ -306,6 +306,15 @@ class CocoaSchematicFormatTest {
             BlockPlacement placement = blockIterator.next();
             assertEquals(schematic.getBlockData((int) placement.position().getX() - 5, (int) placement.position().getY() - 3, (int) placement.position().getZ() - 2), placement.block());
         }
+
+        assertEquals(
+                new Dimensions(
+                        schematic.size().width() + 5,
+                        schematic.size().height() + 3,
+                        schematic.size().depth() + 2
+                ),
+                otherSchematic.size()
+        );
     }
 
 }
