@@ -27,10 +27,7 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
-import net.apartium.cocoabeans.spigot.schematic.SpigotSchematic;
-import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicFactory;
-import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicHelper;
-import net.apartium.cocoabeans.spigot.schematic.SpigotSchematicPlacer;
+import net.apartium.cocoabeans.spigot.schematic.*;
 import net.apartium.cocoabeans.spigot.schematic.prop.BeeHiveHoneyLevelProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.BrewingStandBottlesProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.LegacyDataProp;
@@ -286,7 +283,7 @@ public class SchematicCommand implements CommandNode, Listener {
                 schematicSettings.world,
                 schematicSettings.pos0,
                 schematicSettings.pos1,
-                SpigotSchematicPlacer.INSTANCE
+                SpigotSchematicPlacer.getInstance()
         );
 
         this.schematics.put(name, schematic);

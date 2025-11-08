@@ -17,7 +17,6 @@ import java.util.function.BiFunction;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
-
 public class SpigotSchematic extends AbstractSchematic {
 
     public SpigotSchematic() {
@@ -41,7 +40,7 @@ public class SpigotSchematic extends AbstractSchematic {
     }
 
     public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
-        return paste(origin, axisOrder, shouldPlace, SpigotSchematicPlacer.INSTANCE);
+        return paste(origin, axisOrder, shouldPlace, SpigotSchematicPlacer.getInstance());
     }
 
     public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, SpigotSchematicPlacer placer) {

@@ -6,7 +6,9 @@ import org.bukkit.block.Block;
 
 public interface SpigotSchematicPlacer {
 
-    SpigotSchematicPlacer INSTANCE = CocoaSchematicInstantiator.createPlacer();
+    static SpigotSchematicPlacer getInstance() {
+        return CocoaSchematicInstantiator.getPlacerInstance();
+    }
 
     void place(Block block, BlockPlacement placement);
     BlockData getBlockData(Block block);
