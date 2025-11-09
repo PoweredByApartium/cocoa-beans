@@ -240,7 +240,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
             out.write(writeString(metadata.title()));
         }
 
-        MinecraftPlatform platform = schematic.platform();
+        MinecraftPlatform platform = schematic.originPlatform();
 
         out.write(writeU16(Headers.PLATFORM));
         out.write(writeU32(platform.version().major()));

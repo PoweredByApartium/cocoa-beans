@@ -33,8 +33,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     public AbstractSchematicBuilder() {}
 
     public AbstractSchematicBuilder(Schematic schematic) {
-        this.id = schematic.id();
-        this.platform = schematic.platform();
+        this.platform = schematic.originPlatform();
         this.created = schematic.created();
         this.metadata = schematic.metadata();
         this.size = schematic.size();

@@ -116,7 +116,7 @@ class CocoaSchematicFormatTest {
             private final MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "unit-test", "0.0.1");
 
             @Override
-            public MinecraftPlatform platform() {
+            public @NotNull MinecraftPlatform originPlatform() {
                 return platform;
             }
 

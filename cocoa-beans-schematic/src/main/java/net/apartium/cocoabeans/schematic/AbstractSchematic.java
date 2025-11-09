@@ -12,6 +12,8 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
 import java.util.*;
@@ -60,8 +62,7 @@ public abstract class AbstractSchematic implements Schematic {
 
     public AbstractSchematic(Schematic schematic) {
         this(
-                schematic.id(),
-                schematic.platform(),
+                schematic.originPlatform(),
                 schematic.created(),
                 schematic.metadata(),
                 schematic.offset(),
@@ -78,12 +79,7 @@ public abstract class AbstractSchematic implements Schematic {
     }
 
     @Override
-    public UUID id() {
-        return id;
-    }
-
-    @Override
-    public MinecraftPlatform platform() {
+    public @NotNull MinecraftPlatform originPlatform() {
         return platform;
     }
 

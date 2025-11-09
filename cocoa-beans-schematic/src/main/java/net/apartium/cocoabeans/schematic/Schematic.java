@@ -7,17 +7,23 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@ApiStatus.AvailableSince("0.0.45")
+/**
+ * Represents a 3d schematic
+ */
+@ApiStatus.AvailableSince("0.0.46")
 public interface Schematic {
 
-    UUID id();
-
-    MinecraftPlatform platform();
-    Instant created();
+    /**
+     * Platform the schematic was created on
+     * @return platform the schematic was created on
+     */
+    @NonNull MinecraftPlatform originPlatform();
 
     /**
      * Get the time the schematic was created in
@@ -45,10 +51,33 @@ public interface Schematic {
      */
     @NonNull AxisOrder axisOrder();
 
-    BlockData getBlockData(int x, int y, int z);
+    /**
+     * Get schematic block data for certain position, may be nullable
+     * @param x position x
+     * @param y position y
+     * @param z position z
+     * @return a block data instance, or null if no block is found
+     */
+    @Nullable BlockData getBlockData(int x, int y, int z);
+
+    /**
+     * Iterate over schematic with the data order.
+     * Note this iterator does not provide a sorting guarantee.
+     * @return blocks iterator instance
+     */
     BlockIterator blocksIterator();
+
+    /**
+     * Iterate over schematic with specified axis order
+     * @param axisOrder axis order
+     * @return blocks iterator instance
+     */
     BlockIterator sortedIterator(AxisOrder axisOrder);
 
+    /**
+     * Creates a builder with the existing values of this schematic
+     * @return a new builder instance
+     */
     SchematicBuilder<?> toBuilder();
 
 }

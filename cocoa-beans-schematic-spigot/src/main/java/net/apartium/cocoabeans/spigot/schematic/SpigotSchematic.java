@@ -61,8 +61,7 @@ public class SpigotSchematic extends AbstractSchematic {
     }
 
     @Override
-    public SpigotSchematicBuilder
-    toBuilder() {
+    public SpigotSchematicBuilder toBuilder() {
         return new SpigotSchematicBuilder(this);
     }
 }
