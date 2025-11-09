@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
+import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
@@ -14,6 +15,7 @@ import org.bukkit.block.Block;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
@@ -40,21 +42,27 @@ public class SpigotSchematic extends AbstractSchematic {
     }
 
     public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
-        return paste(origin, axisOrder, shouldPlace, SpigotSchematicPlacer.getInstance());
+        return paste(origin, axisOrder, shouldPlace, BlockPlacement::block);
     }
 
-    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, SpigotSchematicPlacer placer) {
+    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
+        return paste(origin, axisOrder, shouldPlace, mapper, SpigotSchematicPlacer.getInstance());
+    }
+
+    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
         return new SpigotPasteOperation(
                 origin.clone().add(toVector(offset)),
                 sortedIterator(axisOrder),
                 axisOrder,
                 shouldPlace,
+                mapper,
                 placer
         );
     }
 
     @Override
-    public SpigotSchematicBuilder toBuilder() {
+    public SpigotSchematicBuilder
+    toBuilder() {
         return new SpigotSchematicBuilder(this);
     }
 }
