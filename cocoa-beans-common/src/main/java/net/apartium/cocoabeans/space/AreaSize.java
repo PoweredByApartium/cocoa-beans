@@ -3,18 +3,18 @@ package net.apartium.cocoabeans.space;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.46")
-public record Dimensions(double width, double height, double depth) {
+public record AreaSize(double width, double height, double depth) {
 
-    public Dimensions(Dimensions size) {
+    public AreaSize(AreaSize size) {
         this(size.width, size.height, size.depth);
     }
 
-    public static Dimensions box(double length) {
-        return new Dimensions(length, length, length);
+    public static AreaSize box(double length) {
+        return new AreaSize(length, length, length);
     }
 
-    public Dimensions floor() {
-        return new Dimensions(Math.floor(width), Math.floor(height), Math.floor(depth));
+    public AreaSize floor() {
+        return new AreaSize(Math.floor(width), Math.floor(height), Math.floor(depth));
     }
 
     public Region toBoxRegion(Position start) {

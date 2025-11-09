@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.space.axis;
 
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -74,11 +74,11 @@ public enum AxisOrder implements Comparator<Position> {
         );
     }
 
-    public Dimensions dimensions(int i0, int i1, int i2) {
+    public AreaSize dimensions(int i0, int i1, int i2) {
         Axis first = getFirst();
         Axis second = getSecond();
         Axis third = getThird();
-        return new Dimensions(
+        return new AreaSize(
                 first == Axis.X ? i0 : first == Axis.Y ? i1 : i2,
                 second == Axis.X ? i0 : second == Axis.Y ? i1 : i2,
                 third == Axis.X ? i0 : third == Axis.Y ? i1 : i2

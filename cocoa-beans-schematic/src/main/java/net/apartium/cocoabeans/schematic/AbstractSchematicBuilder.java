@@ -7,7 +7,7 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.RotatableProp;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
@@ -22,12 +22,10 @@ import java.util.UUID;
 
 public abstract class AbstractSchematicBuilder<T extends Schematic> implements SchematicBuilder<T> {
 
-    protected UUID id = UUID.randomUUID();
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
     protected Instant created = Instant.now();
-    protected String author = "";
-    protected String title = "";
-    protected Dimensions size;
+    protected SchematicMetadata metadata;
+    protected AreaSize size;
     protected BlockChunk blockChunk = new BlockChunk(AxisOrder.XYZ, 1, Position.ZERO, Position.ZERO);
     protected Position offset = Position.ZERO;
     protected AxisOrder axes = AxisOrder.XYZ;
@@ -38,20 +36,13 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         this.id = schematic.id();
         this.platform = schematic.platform();
         this.created = schematic.created();
-        this.author = schematic.author();
-        this.title = schematic.title();
+        this.metadata = schematic.metadata();
         this.size = schematic.size();
         this.offset = schematic.offset();
         this.axes = schematic.axisOrder();
 
         this.blockChunk = new BlockChunk(this.axes, 1, Position.ZERO, Position.ZERO);
         schematic.blocksIterator().forEachRemaining(this::setBlock);
-    }
-
-    @Override
-    public SchematicBuilder<T> id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     @Override
@@ -67,19 +58,13 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     }
 
     @Override
-    public SchematicBuilder<T> author(String author) {
-        this.author = author;
+    public SchematicBuilder<T> metadata(SchematicMetadata metadata) {
+        this.metadata = metadata;
         return this;
     }
 
     @Override
-    public SchematicBuilder<T> title(String title) {
-        this.title = title;
-        return this;
-    }
-
-    @Override
-    public SchematicBuilder<T> size(Dimensions size) {
+    public SchematicBuilder<T> size(AreaSize size) {
         this.size = size;
         // TODO add checks with block chunk
         return this;
@@ -151,7 +136,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
                     this.offset.getY(),
                     -this.size.width() - this.offset.getX() + 1
             );
-            this.size = new Dimensions(this.size.depth(), this.size.height(), this.size.width());
+            this.size = new AreaSize(this.size.depth(), this.size.height(), this.size.width());
         } else if  (use180Degrees) {
             this.offset = new Position(
                     -this.size.width() - this.offset.getX() + 1,
@@ -159,9 +144,9 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
                     -this.size.depth() - this.offset.getZ() + 1
             );
 
-            this.size = new Dimensions(this.size.width(), this.size.height(), this.size.depth());
+            this.size = new AreaSize(this.size.width(), this.size.height(), this.size.depth());
         } else if (use270Degrees) {
-            this.size = new Dimensions(this.size.depth(), this.size.height(), this.size.width());
+            this.size = new AreaSize(this.size.depth(), this.size.height(), this.size.width());
             this.offset = new Position(
                     -this.size.depth() - this.offset.getZ() + 2,
                     this.offset.getY(),
@@ -282,16 +267,16 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     }
 
     protected void rescaleSizeIfNeeded(int x, int y, int z) {
-        Dimensions newSize = new Dimensions(size).floor();
+        AreaSize newSize = new AreaSize(size).floor();
 
         if (x >= size.width())
-            newSize = new Dimensions(x + 1, size.height(), size.depth());
+            newSize = new AreaSize(x + 1, size.height(), size.depth());
 
         if (y >= size.height())
-            newSize = new Dimensions(size.width(), y + 1, size.depth());
+            newSize = new AreaSize(size.width(), y + 1, size.depth());
 
         if (z >= size.depth())
-            newSize = new Dimensions(size.width(), size.height(), z + 1);
+            newSize = new AreaSize(size.width(), size.height(), z + 1);
 
         this.size = newSize;
     }

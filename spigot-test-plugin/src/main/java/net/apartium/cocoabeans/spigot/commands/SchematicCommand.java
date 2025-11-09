@@ -136,7 +136,7 @@ public class SchematicCommand implements CommandNode, Listener {
                         file.toPath()
                 ));
 
-                schematics.put(schematic.title(), schematic);
+                schematics.put(schematic.metadata().title(), schematic);
             } catch (IOException e) {
                 Bukkit.getLogger().log(Level.SEVERE, "Error reading schematic file " + file.getAbsolutePath(), e);
             }
@@ -226,19 +226,19 @@ public class SchematicCommand implements CommandNode, Listener {
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic> flip <axis>")
     public void pasteFlip(Player player, SpigotSchematic schematic, Axis axis) {
-        player.sendMessage("§eAttempting to paste schematic §c" + schematic.title() + "§e while flipping axis: §c" + axis);
+        player.sendMessage("§eAttempting to paste schematic §c" + schematic.metadata().title() + "§e while flipping axis: §c" + axis);
         schematic = schematic.toBuilder().flip(axis).build();
         schematic.paste(player.getLocation()).performAll();
-        player.sendMessage("§c" + schematic.title() + " §ehas been pasted!");
+        player.sendMessage("§c" + schematic.metadata().title() + " §ehas been pasted!");
     }
 
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic> rotate <int>")
     public void paste(Player player, SpigotSchematic schematic, int degress) {
-        player.sendMessage("About to paste " + schematic.title() + " degress: " + degress);
+        player.sendMessage("About to paste " + schematic.metadata().title() + " degress: " + degress);
         SpigotSchematic newSchematic = schematic.toBuilder().rotate(degress).build();
         newSchematic.paste(player.getLocation()).performAll();
-        player.sendMessage(Component.text("You paste " + schematic.title(), NamedTextColor.GREEN));
+        player.sendMessage(Component.text("You paste " + schematic.metadata().title(), NamedTextColor.GREEN));
     }
 
     @SenderLimit(SenderType.PLAYER)
@@ -255,9 +255,9 @@ public class SchematicCommand implements CommandNode, Listener {
     @SenderLimit(SenderType.PLAYER)
     @SubCommand("paste <schematic>")
     public void paste(Player player, SpigotSchematic schematic) {
-        player.sendMessage("About to paste " + schematic.title());
+        player.sendMessage("About to paste " + schematic.metadata().title());
         schematic.paste(player.getLocation()).performAll();
-        player.sendMessage(Component.text("You paste " + schematic.title(), NamedTextColor.GREEN));
+        player.sendMessage(Component.text("You paste " + schematic.metadata().title(), NamedTextColor.GREEN));
     }
 
     @SenderLimit(SenderType.PLAYER)
@@ -318,8 +318,6 @@ public class SchematicCommand implements CommandNode, Listener {
             sender.sendMessage(
                     Component.text()
                             .append(Component.text(entry.getKey(), NamedTextColor.RED))
-                            .append(Component.text(": ", NamedTextColor.GRAY))
-                            .append(Component.text(entry.getValue().id().toString(), NamedTextColor.YELLOW))
                             .build()
             );
         }

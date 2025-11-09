@@ -5,7 +5,7 @@ import net.apartium.cocoabeans.schematic.block.BlockChunk;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
@@ -35,7 +35,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
     public static class Headers {
 
-        public static final int ID = 0x01;
         public static final int AXIS_ORDER = 0x02;
         public static final int OFFSET = 0x03;
         public static final int SIZE = 0x04;
@@ -128,7 +127,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             final AxisOrder axes = schematic.axisOrder();
 
-            Dimensions dimensions = schematic.size();
+            AreaSize dimensions = schematic.size();
 
             long maxDimensions = (long) Math.max(dimensions.width(), Math.max(dimensions.height(), dimensions.depth()));
             long scaler = Mathf.nextPowerOfFour(maxDimensions);
@@ -199,10 +198,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bOut);
 
-        out.write(writeU16(Headers.ID));
-        out.write(writeU64(schematic.id().getMostSignificantBits()));
-        out.write(writeU64(schematic.id().getLeastSignificantBits()));
-
         out.write(writeU16(Headers.AXIS_ORDER));
         out.write(schematic.axisOrder().getId());
 
@@ -233,11 +228,17 @@ public class CocoaSchematicFormat implements SchematicFormat {
         out.write(writeU16(Headers.TIMESTAMP));
         out.write(writeU64(schematic.created().toEpochMilli()));
 
-        out.write(writeU16(Headers.AUTHOR));
-        out.write(writeString(schematic.author()));
+        SchematicMetadata metadata = schematic.metadata();
 
-        out.write(writeU16(Headers.TITLE));
-        out.write(writeString(schematic.title()));
+        if (metadata.author() != null) {
+            out.write(writeU16(Headers.AUTHOR));
+            out.write(writeString(metadata.author()));
+        }
+
+        if (metadata.title() != null) {
+            out.write(writeU16(Headers.TITLE));
+            out.write(writeString(metadata.title()));
+        }
 
         MinecraftPlatform platform = schematic.platform();
 
@@ -308,14 +309,19 @@ public class CocoaSchematicFormat implements SchematicFormat {
             IndexEncoder indexEncoder = (IndexEncoder) headers.get(Headers.INDEX_ENCODING);
             BlockIterator blocks = indexEncoder.read(indexIn, axes, blockEncoder, blockIn);
 
+            Map<String, Object> metadata = new HashMap<>();
+            if (headers.containsKey(Headers.AUTHOR))
+                metadata.put("author", headers.get(Headers.AUTHOR));
+
+            if (headers.containsKey(Headers.TITLE))
+                metadata.put("title", headers.get(Headers.TITLE));
+
             return schematicFactory.createSchematic(
-                    (UUID) headers.get(Headers.ID),
                     (Instant) headers.get(Headers.TIMESTAMP),
                     (MinecraftPlatform) headers.get(Headers.PLATFORM),
-                    (String) headers.get(Headers.AUTHOR),
-                    (String) headers.get(Headers.TITLE),
+                    schematicFactory.createMetadata(metadata),
                     blocks,
-                    (Dimensions) headers.get(Headers.SIZE),
+                    (AreaSize) headers.get(Headers.SIZE),
                     (AxisOrder) headers.get(Headers.AXIS_ORDER),
                     (Position) headers.get(Headers.OFFSET)
 
@@ -328,9 +334,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
     private void assertBaseHeaders(Map<Integer, Object> headers) {
         if (headers.isEmpty())
             throw new IllegalStateException("No headers found!");
-
-        if (!headers.containsKey(Headers.ID))
-            throw new IllegalStateException("ID Header not found!");
 
         if (!headers.containsKey(Headers.AXIS_ORDER))
             throw new IllegalStateException("Axis Order Header not found!");
@@ -356,12 +359,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
         if (!headers.containsKey(Headers.TIMESTAMP))
             throw new IllegalStateException("Timestamp Header not found!");
 
-        if (!headers.containsKey(Headers.AUTHOR))
-            throw new IllegalStateException("Author Header not found!");
-
-        if (!headers.containsKey(Headers.TITLE))
-            throw new IllegalStateException("Title Header not found!");
-
         if (!headers.containsKey(Headers.PLATFORM))
             throw new IllegalStateException("Platform Header not found!");
     }
@@ -376,10 +373,6 @@ public class CocoaSchematicFormat implements SchematicFormat {
             index += 2;
 
             index = switch (id) {
-                case Headers.ID -> {
-                    map.put(Headers.ID, toUUID(splitFromAToB(headers, index, index + 16)));
-                    yield index + 16;
-                }
                 case Headers.AXIS_ORDER -> {
                     map.put(Headers.AXIS_ORDER, AxisOrder.byId(headers[index]));
                     yield index + 1;
@@ -393,7 +386,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
                 case Headers.SIZE -> {
                     DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 12)));
-                    map.put(Headers.SIZE, new Dimensions(readU32(in), readU32(in), readU32(in)));
+                    map.put(Headers.SIZE, new AreaSize(readU32(in), readU32(in), readU32(in)));
                     yield index + 12;
                 }
 

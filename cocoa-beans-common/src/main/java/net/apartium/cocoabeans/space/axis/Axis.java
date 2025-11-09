@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.space.axis;
 
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -13,7 +13,7 @@ public enum Axis {
         }
 
         @Override
-        public double getAlong(Dimensions dimensions) {
+        public double getAlong(AreaSize dimensions) {
             return dimensions.width();
         }
     },
@@ -24,7 +24,7 @@ public enum Axis {
         }
 
         @Override
-        public double getAlong(Dimensions dimensions) {
+        public double getAlong(AreaSize dimensions) {
             return dimensions.height();
         }
     },
@@ -35,11 +35,11 @@ public enum Axis {
         }
 
         @Override
-        public double getAlong(Dimensions dimensions) {
+        public double getAlong(AreaSize dimensions) {
             return dimensions.depth();
         }
     };
 
     public abstract double getAlong(Position position);
-    public abstract double getAlong(Dimensions dimensions);
+    public abstract double getAlong(AreaSize dimensions);
 }

@@ -5,24 +5,23 @@ import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic> {
 
     @Override
-    public SpigotSchematic createSchematic(UUID id, Instant created, MinecraftPlatform platform, String author, String title, BlockIterator blocks, Dimensions size, AxisOrder axisOrder, Position offset) {
+    public SpigotSchematic createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset) {
         SpigotSchematicBuilder builder = new SpigotSchematicBuilder();
 
-        builder.id(id);
         builder.created(created);
         builder.platform(platform);
-        builder.author(author);
-        builder.title(title);
+        builder.metadata(metadata);
 
         builder.translate(axisOrder);
         builder.translate(offset);
@@ -37,6 +36,11 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
         }
 
         return builder.build();
+    }
+
+    @Override
+    public SchematicMetadata createMetadata(Map<String, Object> metadata) {
+        return new SpigotSchematicMetadata(metadata);
     }
 
 }

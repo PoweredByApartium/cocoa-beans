@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.schematic.block;
 
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.Nullable;
@@ -249,9 +249,9 @@ public class BlockChunk {
         return axisOrder;
     }
 
-    public Dimensions getSizeOfEntireChunk() {
+    public AreaSize getSizeOfEntireChunk() {
         if (mask == 0)
-            return new Dimensions(0, 0, 0);
+            return new AreaSize(0, 0, 0);
 
         if (scaler == 1) {
             int bitPos = Long.numberOfTrailingZeros(mask);
@@ -262,7 +262,7 @@ public class BlockChunk {
 
             Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
 
-            return new Dimensions(
+            return new AreaSize(
                     pos.getX() + 1,
                     pos.getY() + 1,
                     pos.getZ() + 1

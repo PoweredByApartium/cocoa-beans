@@ -7,7 +7,7 @@ import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
@@ -19,14 +19,12 @@ import java.util.*;
 @ApiStatus.AvailableSince("0.0.46")
 public abstract class AbstractSchematic implements Schematic {
 
-    protected UUID id = UUID.randomUUID();
     protected MinecraftPlatform platform;
     protected Instant created = Instant.now();
-    protected String author;
-    protected String title;
+    protected SchematicMetadata metadata;
 
     protected Position offset = Position.ZERO;
-    protected Dimensions size = Dimensions.box(0);
+    protected AreaSize size = AreaSize.box(0);
     protected AxisOrder axes = AxisOrder.XYZ;
 
     protected BlockChunk blockChunk;
@@ -36,21 +34,17 @@ public abstract class AbstractSchematic implements Schematic {
     }
 
     public AbstractSchematic(
-            UUID id,
             MinecraftPlatform platform,
             Instant created,
-            String author,
-            String title,
+            SchematicMetadata metadata,
             Position offset,
-            Dimensions size,
+            AreaSize size,
             AxisOrder axes,
             BlockIterator iterator
     ) {
-        this.id = id;
         this.platform = platform;
         this.created = created;
-        this.author = author;
-        this.title = title;
+        this.metadata = metadata;
         this.offset = offset;
         this.size = size;
         this.axes = axes;
@@ -69,8 +63,7 @@ public abstract class AbstractSchematic implements Schematic {
                 schematic.id(),
                 schematic.platform(),
                 schematic.created(),
-                schematic.author(),
-                schematic.title(),
+                schematic.metadata(),
                 schematic.offset(),
                 schematic.size(),
                 schematic.axisOrder(),
@@ -95,32 +88,27 @@ public abstract class AbstractSchematic implements Schematic {
     }
 
     @Override
-    public Instant created() {
+    public @NotNull Instant created() {
         return created;
     }
 
     @Override
-    public String author() {
-        return author;
+    public @NonNull SchematicMetadata metadata() {
+        return metadata;
     }
 
     @Override
-    public String title() {
-        return title;
-    }
-
-    @Override
-    public Position offset() {
+    public @NotNull Position offset() {
         return offset;
     }
 
     @Override
-    public Dimensions size() {
+    public @NotNull AreaSize size() {
         return size;
     }
 
     @Override
-    public AxisOrder axisOrder() {
+    public @NotNull AxisOrder axisOrder() {
         return axes;
     }
 

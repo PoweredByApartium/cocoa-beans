@@ -1,17 +1,14 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
-import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.block.BlockData;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
-import net.apartium.cocoabeans.spigot.schematic.prop.*;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.*;
 
 import java.time.Instant;
 
@@ -20,7 +17,7 @@ public class SpigotSchematicHelper {
     public static final MinecraftVersion VERSION = ServerUtils.getVersion();
 
     public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {
-        Dimensions size = new Dimensions(
+        AreaSize size = new AreaSize(
                 Math.abs(pos0.getX() - pos1.getX()) + 1,
                 Math.abs(pos0.getY() - pos1.getY()) + 1,
                 Math.abs(pos0.getZ() - pos1.getZ()) + 1
@@ -54,8 +51,10 @@ public class SpigotSchematicHelper {
             }
         }
 
-        builder.title(title);
-        builder.author(author);
+        builder.metadata(new SpigotSchematicMetadataBuilder()
+                .title(title)
+                .author(author)
+                .build());
         builder.created(Instant.now());
         builder.platform(new MinecraftPlatform(VERSION, "spigot/paper", "---"));
 

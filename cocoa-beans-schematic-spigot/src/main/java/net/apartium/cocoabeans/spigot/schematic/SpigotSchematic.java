@@ -6,7 +6,7 @@ import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
-import net.apartium.cocoabeans.space.Dimensions;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,8 +25,8 @@ public class SpigotSchematic extends AbstractSchematic {
         super();
     }
 
-    public SpigotSchematic(UUID id, MinecraftPlatform platform, Instant created, String author, String title, Position offset, Dimensions size, AxisOrder axes, BlockIterator iterator) {
-        super(id, platform, created, author, title, offset, size, axes, iterator);
+    public SpigotSchematic(MinecraftPlatform platform, Instant created, SchematicMetadata metadata, Position offset, AreaSize size, AxisOrder axes, BlockIterator iterator) {
+        super(platform, created, metadata, offset, size, axes, iterator);
     }
 
     public SpigotSchematic(Schematic schematic) {

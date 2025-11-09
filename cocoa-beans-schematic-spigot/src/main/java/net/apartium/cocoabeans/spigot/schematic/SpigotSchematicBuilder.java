@@ -15,11 +15,9 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
     @Override
     public SpigotSchematic build() {
         return new SpigotSchematic(
-                id,
                 platform,
                 created,
-                author,
-                title,
+                metadata,
                 offset,
                 size,
                 axes,
