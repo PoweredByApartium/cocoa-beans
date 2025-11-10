@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public interface BlockData {
 
     /**

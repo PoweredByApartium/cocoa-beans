@@ -11,14 +11,15 @@ import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.time.Instant;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematic extends AbstractSchematic {
 
     public SpigotSchematic() {

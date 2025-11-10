@@ -11,7 +11,6 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Represents a 3d schematic

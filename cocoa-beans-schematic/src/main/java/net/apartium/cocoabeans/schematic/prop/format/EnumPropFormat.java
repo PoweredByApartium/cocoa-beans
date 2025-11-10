@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.schematic.prop.format;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.*;
 import java.util.function.Function;
@@ -9,6 +10,7 @@ import java.util.function.Supplier;
 import static net.apartium.cocoabeans.utils.FileUtils.readString;
 import static net.apartium.cocoabeans.utils.FileUtils.writeString;
 
+@ApiStatus.AvailableSince("0.0.46")
 public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropFormat<T> {
 
     private final Class<T> enumClass;

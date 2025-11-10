@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.schematic.prop;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.46")
 public class ByteBlockProp implements BlockProp<Byte> {
 
     protected final byte value;

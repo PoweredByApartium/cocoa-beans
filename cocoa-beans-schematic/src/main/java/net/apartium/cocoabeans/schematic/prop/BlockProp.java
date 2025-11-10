@@ -4,7 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public interface BlockProp<T> {
 
     class Legacy {

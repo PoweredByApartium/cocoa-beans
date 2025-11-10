@@ -1,8 +1,5 @@
 package net.apartium.cocoabeans.schematic.compression;
 
-import org.jetbrains.annotations.ApiStatus;
-
-@ApiStatus.AvailableSince("0.0.45")
 /* package-private */ class RawCompressionEngine implements CompressionEngine {
 
     /* package-private */ static final RawCompressionEngine INSTANCE = new RawCompressionEngine();

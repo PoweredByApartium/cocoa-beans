@@ -15,7 +15,7 @@ import java.util.*;
 
 import static net.apartium.cocoabeans.utils.FileUtils.*;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public class SimpleBlockDataEncoder implements BlockDataEncoder {
 
     public static final int ID = 0b1;

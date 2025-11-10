@@ -9,9 +9,11 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.time.Instant;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematicHelper {
 
     public static final MinecraftVersion VERSION = ServerUtils.getVersion();

@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.schematic.prop.format;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.StringBlockProp;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import static net.apartium.cocoabeans.utils.FileUtils.readString;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class StringBlockPropFormat implements BlockPropFormat<String> {
 
     public static final int MAX_LENGTH = (int) (Math.pow(2, 8) - 1);

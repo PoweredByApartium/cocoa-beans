@@ -3,10 +3,12 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class BlockChunk {
 
     public static final int SIZE = 4;

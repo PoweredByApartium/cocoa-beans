@@ -4,8 +4,10 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.AvailableSince("0.0.46")
 public abstract class AbstractPasteOperation implements PasteOperation {
 
     protected final BlockIterator iterator;

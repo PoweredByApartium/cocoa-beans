@@ -6,9 +6,11 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Iterator;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class SortedAxisBlockIterator implements BlockIterator {
 
     private final BlockChunk chunk;

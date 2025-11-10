@@ -10,6 +10,7 @@ import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.Entry;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -21,6 +22,7 @@ import static net.apartium.cocoabeans.utils.FileUtils.writeU64;
 import static net.apartium.cocoabeans.space.Position.add;
 import static net.apartium.cocoabeans.space.Position.multiply;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkIndexEncoder implements IndexEncoder {
 
     public static final int ID = 0b1;

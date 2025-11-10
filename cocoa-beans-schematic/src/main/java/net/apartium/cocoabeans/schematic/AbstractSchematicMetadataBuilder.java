@@ -1,11 +1,14 @@
 package net.apartium.cocoabeans.schematic;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.apartium.cocoabeans.schematic.AbstractSchematicMetadata.AUTHOR_KEY;
 import static net.apartium.cocoabeans.schematic.AbstractSchematicMetadata.TITLE_KEY;
 
+@ApiStatus.AvailableSince("0.0.46")
 public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetadata> implements SchematicMetadataBuilder<M> {
 
     protected Map<String, Object> metadata = new HashMap<>();

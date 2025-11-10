@@ -3,7 +3,9 @@ package net.apartium.cocoabeans.spigot.schematic.prop;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.prop.ByteBlockProp;
 import net.apartium.cocoabeans.schematic.prop.RotatableProp;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class LegacyDataProp extends ByteBlockProp implements RotatableProp<LegacyDataProp> {
 
     public LegacyDataProp(byte value) {

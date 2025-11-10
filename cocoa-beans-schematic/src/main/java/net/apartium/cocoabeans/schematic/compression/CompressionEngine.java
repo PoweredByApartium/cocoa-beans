@@ -2,7 +2,7 @@ package net.apartium.cocoabeans.schematic.compression;
 
 import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public interface CompressionEngine {
 
     static CompressionEngine gzip() {

@@ -1,10 +1,12 @@
 package net.apartium.cocoabeans.schematic.prop.format;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 
-public record ArrayIntPropFormat(Function<int[], BlockProp<int[]>> constructor) implements BlockPropFormat<int[]> {
+@ApiStatus.AvailableSince("0.0.46")
+public record IntArrayPropFormat(Function<int[], BlockProp<int[]>> constructor) implements BlockPropFormat<int[]> {
 
     @Override
     public BlockProp<int[]> decode(byte[] value) {

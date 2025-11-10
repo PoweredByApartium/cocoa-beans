@@ -6,7 +6,7 @@ import java.io.*;
 
 import static net.apartium.cocoabeans.utils.FileUtils.*;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public record CompressionBlockInfo(
         byte compressionType,
         long uncompressedSize,

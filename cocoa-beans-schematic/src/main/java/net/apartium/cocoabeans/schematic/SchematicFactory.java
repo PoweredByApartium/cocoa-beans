@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public interface SchematicFactory<S extends Schematic> {
 
     S createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset);

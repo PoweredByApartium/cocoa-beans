@@ -17,7 +17,7 @@ import net.apartium.cocoabeans.schematic.format.BlockChunkIndexEncoder;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
 import net.apartium.cocoabeans.schematic.format.SimpleBlockDataEncoder;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
-import net.apartium.cocoabeans.schematic.prop.format.ArrayIntPropFormat;
+import net.apartium.cocoabeans.schematic.prop.format.IntArrayPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.ByteBlockPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.IntPropFormat;
@@ -109,7 +109,7 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.BEEHIVE_HONEY_LEVEL, new IntPropFormat(BeeHiveHoneyLevelProp::new));
             propFormatMap.put(BlockProp.BELL_ATTACHMENT, BellAttachmentPropFormat.INSTANCE);
             propFormatMap.put(BlockProp.BIG_DRIP_LEAF_TILT, BigDripleafTiltPropFormat.INSTANCE);
-            propFormatMap.put(BlockProp.BREWING_STAND_BOTTLES, new ArrayIntPropFormat(BrewingStandBottlesProp::new));
+            propFormatMap.put(BlockProp.BREWING_STAND_BOTTLES, new IntArrayPropFormat(BrewingStandBottlesProp::new));
         }
 
         this.format = new CocoaSchematicFormat(

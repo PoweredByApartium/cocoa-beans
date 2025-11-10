@@ -2,9 +2,11 @@ package net.apartium.cocoabeans.schematic.prop.format;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.BooleanBlockProp;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 
+@ApiStatus.AvailableSince("0.0.46")
 public record BooleanPropFormat(Function<Boolean, BlockProp<Boolean>> constructor) implements BlockPropFormat<Boolean> {
 
     public BooleanPropFormat() {

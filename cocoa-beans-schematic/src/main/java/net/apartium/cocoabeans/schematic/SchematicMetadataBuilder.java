@@ -1,5 +1,8 @@
 package net.apartium.cocoabeans.schematic;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.46")
 public interface SchematicMetadataBuilder<M extends SchematicMetadata> {
 
     SchematicMetadataBuilder<M> author(String author);

@@ -3,7 +3,9 @@ package net.apartium.cocoabeans.spigot.schematic.prop.format;
 import net.apartium.cocoabeans.schematic.prop.format.EnumPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.BigDripleafTiltProp;
 import org.bukkit.block.data.type.BigDripleaf;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class BigDripleafTiltPropFormat extends EnumPropFormat<BigDripleaf.Tilt> {
 
     public static final BigDripleafTiltPropFormat INSTANCE = new BigDripleafTiltPropFormat();

@@ -7,9 +7,11 @@ import net.apartium.cocoabeans.schematic.block.Pointer;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
+import org.jetbrains.annotations.ApiStatus;
 
 import static net.apartium.cocoabeans.schematic.block.BlockChunk.SIZE;
 
+@ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkIterator implements BlockIterator {
 
     private final long mask;

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static net.apartium.cocoabeans.utils.FileUtils.*;
 
-@ApiStatus.AvailableSince("0.0.45")
+@ApiStatus.AvailableSince("0.0.46")
 public class CocoaSchematicFormat implements SchematicFormat {
 
     public static final String FINGERPRINT = "CBSC";

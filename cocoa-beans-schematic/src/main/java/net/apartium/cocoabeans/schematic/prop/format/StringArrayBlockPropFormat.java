@@ -2,13 +2,15 @@ package net.apartium.cocoabeans.schematic.prop.format;
 
 import net.apartium.cocoabeans.schematic.prop.ArrayStringBlockProp;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 import static net.apartium.cocoabeans.utils.FileUtils.readString;
 
-public class ArrayStringBlockPropFormat implements BlockPropFormat<String[]> {
+@ApiStatus.AvailableSince("0.0.46")
+public class StringArrayBlockPropFormat implements BlockPropFormat<String[]> {
 
     public static final int MAX_LENGTH = (int) (Math.pow(2, 8) - 1);
 

@@ -1,7 +1,10 @@
 package net.apartium.cocoabeans.schematic;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Map;
 
+@ApiStatus.AvailableSince("0.0.46")
 public abstract class AbstractSchematicMetadata implements SchematicMetadata{
 
     public static final String AUTHOR_KEY = "author";
