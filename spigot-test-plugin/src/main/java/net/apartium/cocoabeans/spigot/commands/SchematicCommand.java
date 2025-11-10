@@ -9,6 +9,7 @@ import net.apartium.cocoabeans.commands.parsers.SourceParser;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
 import net.apartium.cocoabeans.commands.spigot.requirements.SenderLimit;
 import net.apartium.cocoabeans.schematic.*;
+import net.apartium.cocoabeans.schematic.prop.format.*;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
@@ -17,10 +18,6 @@ import net.apartium.cocoabeans.schematic.format.BlockChunkIndexEncoder;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
 import net.apartium.cocoabeans.schematic.format.SimpleBlockDataEncoder;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
-import net.apartium.cocoabeans.schematic.prop.format.IntArrayPropFormat;
-import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
-import net.apartium.cocoabeans.schematic.prop.format.ByteBlockPropFormat;
-import net.apartium.cocoabeans.schematic.prop.format.IntPropFormat;
 import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
@@ -28,9 +25,7 @@ import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.spigot.TestCocoaBeansSpigotLoader;
 import net.apartium.cocoabeans.spigot.inventory.ItemBuilder;
 import net.apartium.cocoabeans.spigot.schematic.*;
-import net.apartium.cocoabeans.spigot.schematic.prop.BeeHiveHoneyLevelProp;
-import net.apartium.cocoabeans.spigot.schematic.prop.BrewingStandBottlesProp;
-import net.apartium.cocoabeans.spigot.schematic.prop.LegacyDataProp;
+import net.apartium.cocoabeans.spigot.schematic.prop.*;
 import net.apartium.cocoabeans.spigot.schematic.prop.format.*;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.kyori.adventure.text.Component;
@@ -110,6 +105,9 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.BELL_ATTACHMENT, BellAttachmentPropFormat.INSTANCE);
             propFormatMap.put(BlockProp.BIG_DRIP_LEAF_TILT, BigDripleafTiltPropFormat.INSTANCE);
             propFormatMap.put(BlockProp.BREWING_STAND_BOTTLES, new IntArrayPropFormat(BrewingStandBottlesProp::new));
+            propFormatMap.put(BlockProp.CAKE_BITES, new IntPropFormat(CakeBitesProp::new));
+            propFormatMap.put(BlockProp.CAMPFIRE_SIGNAL_FIRE, new BooleanPropFormat(CampfireSignalFireProp::new));
+            propFormatMap.put(BlockProp.BUBBLE_COLUMN_DRAG, new BooleanPropFormat(BubbleColumnProp::new));
         }
 
         this.format = new CocoaSchematicFormat(

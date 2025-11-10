@@ -5,7 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.46")
 public class BooleanBlockProp implements BlockProp<Boolean> {
 
-    private final boolean value;
+    protected final boolean value;
     public BooleanBlockProp(boolean value) {
         this.value = value;
     }

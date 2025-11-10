@@ -86,6 +86,15 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
         if (blockData instanceof BrewingStand brewingStand)
             props.put(BlockProp.BREWING_STAND_BOTTLES, new BrewingStandBottlesProp(brewingStand.getBottles().stream().mapToInt(Integer::intValue).toArray()));
+
+        if (blockData instanceof Cake cake)
+            props.put(BlockProp.CAKE_BITES, new CakeBitesProp(cake.getBites()));
+
+        if (blockData instanceof Campfire campfire)
+            props.put(BlockProp.CAMPFIRE_SIGNAL_FIRE, new CampfireSignalFireProp(campfire.isSignalFire()));
+
+        if (blockData instanceof BubbleColumn bubbleColumn)
+            props.put(BlockProp.BUBBLE_COLUMN_DRAG, new BubbleColumnProp(bubbleColumn.isDrag()));
     }
 
 }
