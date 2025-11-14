@@ -9,7 +9,7 @@ public class TestMetaData extends AbstractSchematicMetadata {
     }
 
     @Override
-    public SchematicMetadataBuilder<TestMetaData> builder() {
+    public SchematicMetadataBuilder<TestMetaData> toBuilder() {
         return new AbstractSchematicMetadataBuilder<>() {
             @Override
             public TestMetaData build() {

@@ -108,6 +108,9 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.CAKE_BITES, new IntPropFormat(CakeBitesProp::new));
             propFormatMap.put(BlockProp.CAMPFIRE_SIGNAL_FIRE, new BooleanPropFormat(CampfireSignalFireProp::new));
             propFormatMap.put(BlockProp.BUBBLE_COLUMN_DRAG, new BooleanPropFormat(BubbleColumnProp::new));
+            propFormatMap.put(BlockProp.CANDLE_CANDLES, new IntPropFormat(CandleProp::new));
+            propFormatMap.put(BlockProp.CAVE_VINES_PLANT_BERRIES, new BooleanPropFormat(CaveVinesPlantBerriesProp::new));
+            propFormatMap.put(BlockProp.CHEST_TYPE, ChestTypePropFormat.INSTANCE);
         }
 
         this.format = new CocoaSchematicFormat(

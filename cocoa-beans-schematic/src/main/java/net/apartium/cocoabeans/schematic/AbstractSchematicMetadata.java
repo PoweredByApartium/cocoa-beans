@@ -1,19 +1,29 @@
 package net.apartium.cocoabeans.schematic;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
+import java.util.Set;
 
-@ApiStatus.AvailableSince("0.0.46")
-public abstract class AbstractSchematicMetadata implements SchematicMetadata{
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
+public abstract class AbstractSchematicMetadata implements SchematicMetadata {
 
     public static final String AUTHOR_KEY = "author";
     public static final String TITLE_KEY = "title";
 
-    private final Map<String, Object> metadata;
+    protected final Map<String, Object> metadata;
 
     public AbstractSchematicMetadata(Map<String, Object> metadata) {
         this.metadata = Map.copyOf(metadata);
+    }
+
+    @Override
+    public @NonNull Set<String> keys() {
+        return metadata.keySet();
     }
 
     @Override

@@ -7,7 +7,10 @@ import net.apartium.cocoabeans.space.Position;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-@ApiStatus.AvailableSince("0.0.46")
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public abstract class AbstractPasteOperation implements PasteOperation {
 
     protected final BlockIterator iterator;

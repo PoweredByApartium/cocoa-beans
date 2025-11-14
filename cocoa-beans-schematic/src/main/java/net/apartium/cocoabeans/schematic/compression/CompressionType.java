@@ -2,6 +2,10 @@ package net.apartium.cocoabeans.schematic.compression;
 
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Represents a compression type supported by the library
+ * @see CompressionEngine
+ */
 @ApiStatus.AvailableSince("0.0.46")
 public enum CompressionType {
     RAW((byte) 0),
@@ -12,6 +16,12 @@ public enum CompressionType {
 
     private final byte id;
 
+    /**
+     * Get compression type by id
+     * @param id id
+     * @return compression type
+     * @throws IllegalArgumentException if id is not known
+     */
     public static CompressionType fromId(int id){
         for (CompressionType type : values())
             if ((type.id & 0xFF) == id)
@@ -24,6 +34,10 @@ public enum CompressionType {
         this.id = id;
     }
 
+    /**
+     * Get compression format id
+     * @return id
+     */
     public byte getId() {
         return id;
     }

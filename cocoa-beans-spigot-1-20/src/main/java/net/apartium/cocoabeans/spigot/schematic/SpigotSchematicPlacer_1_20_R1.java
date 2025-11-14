@@ -14,6 +14,8 @@ import org.bukkit.block.data.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
@@ -62,6 +64,8 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
         );
     }
 
+
+
     private void loadProps(org.bukkit.block.data.BlockData blockData, Map<String, BlockProp<?>> props) {
         if (blockData instanceof Stairs stairs)
             props.put(BlockProp.STAIRS_SHAPE, new StairsProp(stairs.getShape()));
@@ -95,6 +99,15 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
         if (blockData instanceof BubbleColumn bubbleColumn)
             props.put(BlockProp.BUBBLE_COLUMN_DRAG, new BubbleColumnProp(bubbleColumn.isDrag()));
+
+        if (blockData instanceof Candle candle)
+            props.put(BlockProp.CANDLE_CANDLES, new CandleProp(candle.getCandles()));
+
+        if (blockData instanceof CaveVinesPlant caveVinesPlant)
+            props.put(BlockProp.CAVE_VINES_PLANT_BERRIES, new CaveVinesPlantBerriesProp(caveVinesPlant.isBerries()));
+
+        if (blockData instanceof Chest chest)
+            props.put(BlockProp.CHEST_TYPE, new ChestTypeProp(chest.getType()));
     }
 
 }

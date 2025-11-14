@@ -30,6 +30,10 @@ public interface Schematic {
      */
     @NonNull Instant created();
 
+    /**
+     * Get schematic metadata
+     * @return schematic metadata container
+     */
     @NonNull SchematicMetadata metadata();
 
     /**
@@ -64,19 +68,19 @@ public interface Schematic {
      * Note this iterator does not provide a sorting guarantee.
      * @return blocks iterator instance
      */
-    BlockIterator blocksIterator();
+    @NonNull BlockIterator blocksIterator();
 
     /**
      * Iterate over schematic with specified axis order
      * @param axisOrder axis order
      * @return blocks iterator instance
      */
-    BlockIterator sortedIterator(AxisOrder axisOrder);
+    @NonNull BlockIterator sortedIterator(@NonNull AxisOrder axisOrder);
 
     /**
      * Creates a builder with the existing values of this schematic
      * @return a new builder instance
      */
-    SchematicBuilder<?> toBuilder();
+    @NonNull SchematicBuilder<?> toBuilder();
 
 }

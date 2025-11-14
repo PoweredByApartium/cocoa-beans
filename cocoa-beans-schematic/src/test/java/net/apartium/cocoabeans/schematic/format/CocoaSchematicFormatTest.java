@@ -128,6 +128,12 @@ class CocoaSchematicFormatTest {
             @Override
             public SchematicMetadata metadata() {
                 return new SchematicMetadata() {
+
+                    @Override
+                    public Set<String> keys() {
+                        return Set.of();
+                    }
+
                     @Override
                     public <T> T get(String key) {
                         return null;
@@ -149,7 +155,7 @@ class CocoaSchematicFormatTest {
                     }
 
                     @Override
-                    public <T extends SchematicMetadata> SchematicMetadataBuilder<T> builder() {
+                    public <T extends SchematicMetadata> SchematicMetadataBuilder<T> toBuilder() {
                         return null;
                     }
                 };

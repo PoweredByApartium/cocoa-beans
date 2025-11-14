@@ -19,9 +19,11 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 
-@ApiStatus.AvailableSince("0.0.46")
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public abstract class AbstractSchematicBuilder<T extends Schematic> implements SchematicBuilder<T> {
 
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");

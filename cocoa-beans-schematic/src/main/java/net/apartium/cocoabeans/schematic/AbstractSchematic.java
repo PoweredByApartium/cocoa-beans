@@ -18,7 +18,10 @@ import org.jspecify.annotations.NonNull;
 import java.time.Instant;
 import java.util.*;
 
-@ApiStatus.AvailableSince("0.0.46")
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public abstract class AbstractSchematic implements Schematic {
 
     protected MinecraftPlatform platform;

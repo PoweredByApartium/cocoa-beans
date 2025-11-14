@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-@ApiStatus.AvailableSince("0.0.46")
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
 public record GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) implements BlockData {
 
     public GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) {

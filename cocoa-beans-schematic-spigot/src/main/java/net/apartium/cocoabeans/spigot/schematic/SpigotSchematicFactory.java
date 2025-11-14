@@ -9,6 +9,7 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.Map;
@@ -18,7 +19,13 @@ import java.util.UUID;
 public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic> {
 
     @Override
-    public SpigotSchematic createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset) {
+    public @NotNull SpigotSchematicBuilder createSchematic() {
+        return new SpigotSchematicBuilder();
+    }
+
+    @Override
+    public SpigotSchematic createSchematic(@NotNull Instant created, @NotNull MinecraftPlatform platform, @NotNull SchematicMetadata metadata,
+                                           BlockIterator blocks, @NotNull AreaSize size, @NotNull AxisOrder axisOrder, @NotNull Position offset) {
         SpigotSchematicBuilder builder = new SpigotSchematicBuilder();
 
         builder.created(created);
@@ -41,7 +48,7 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
     }
 
     @Override
-    public SchematicMetadata createMetadata(Map<String, Object> metadata) {
+    public @NotNull SchematicMetadata createMetadata(@NotNull Map<String, Object> metadata) {
         return new SpigotSchematicMetadata(metadata);
     }
 

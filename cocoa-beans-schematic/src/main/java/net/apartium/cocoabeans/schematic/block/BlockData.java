@@ -6,6 +6,9 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
+/**
+ * Represents a block data
+ */
 @ApiStatus.AvailableSince("0.0.46")
 public interface BlockData {
 

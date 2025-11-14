@@ -8,10 +8,22 @@ import java.util.Map;
 import static net.apartium.cocoabeans.schematic.AbstractSchematicMetadata.AUTHOR_KEY;
 import static net.apartium.cocoabeans.schematic.AbstractSchematicMetadata.TITLE_KEY;
 
-@ApiStatus.AvailableSince("0.0.46")
+/**
+ * @hidden
+ * @param <M>
+ */
+@ApiStatus.Internal
 public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetadata> implements SchematicMetadataBuilder<M> {
 
-    protected Map<String, Object> metadata = new HashMap<>();
+    protected Map<String, Object> metadata;
+
+    public AbstractSchematicMetadataBuilder() {
+        this(Map.of());
+    }
+
+    public AbstractSchematicMetadataBuilder(Map<String, Object> metadata) {
+        this.metadata = new HashMap<>(metadata);
+    }
 
     @Override
     public SchematicMetadataBuilder<M> author(String author) {
@@ -28,6 +40,12 @@ public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetada
     @Override
     public <T> SchematicMetadataBuilder<M> set(String key, T value) {
         metadata.put(key, value);
+        return this;
+    }
+
+    @Override
+    public SchematicMetadataBuilder<M> remove(String key) {
+        metadata.remove(key);
         return this;
     }
 
