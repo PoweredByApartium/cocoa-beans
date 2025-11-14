@@ -13,7 +13,8 @@ dependencies {
 reporting {
     reports {
         val unifiedCoverageReport by creating(JacocoCoverageReport::class) {
-            testType = TestSuiteType.UNIT_TEST
+            testSuiteName = "unit-test"
+
         }
     }
 }
