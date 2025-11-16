@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.schematic.block.*;
+import net.apartium.cocoabeans.schematic.prop.FlippableProp;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
@@ -176,10 +177,21 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
                 case Z -> new Position(pos.getX(), pos.getY(), this.size.depth() - 1 - pos.getZ());
             };
 
+            BlockData data = placement.block();
+            Map<String, BlockProp<?>> props = new HashMap<>();
+            for (Map.Entry<String, BlockProp<?>> prop : data.props().entrySet()) {
+                if (!(prop.getValue() instanceof FlippableProp<?> flippableProp)) {
+                    props.put(prop.getKey(), prop.getValue());
+                    continue;
+                }
+
+                props.put(prop.getKey(), (BlockProp<?>) flippableProp.flip(data.type(), axis));
+            }
+
             newChunk.setBlock(new BlockPlacement(
                     pos,
-                    placement.block()
-            ));
+                    new GenericBlockData(data.type(), props))
+            );
         }
 
         // TODO add offset
