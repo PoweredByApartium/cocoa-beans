@@ -117,6 +117,9 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.DISPENSER_TRIGGERED, new BooleanPropFormat(DispenserTriggeredProp::new));
             propFormatMap.put(BlockProp.DOOR_HINGE, DoorHingePropFormat.INSTANCE);
             propFormatMap.put(BlockProp.END_PORTAL_FRAME_EYE, new BooleanPropFormat(EndPortalFrameEyeProp::new));
+            propFormatMap.put(BlockProp.FARM_LAND_MOISTURE, new IntPropFormat(FarmLandMoistureProp::new));
+            propFormatMap.put(BlockProp.GATE_IN_WALL, new BooleanPropFormat(GateInWallProp::new));
+            propFormatMap.put(BlockProp.HOPPER_ENABLED, new BooleanPropFormat(HopperEnabledProp::new));
         }
 
         this.format = new CocoaSchematicFormat(

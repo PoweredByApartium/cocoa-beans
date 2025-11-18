@@ -122,6 +122,15 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
         if (blockData instanceof EndPortalFrame endPortalFrame)
             props.put(BlockProp.END_PORTAL_FRAME_EYE, new EndPortalFrameEyeProp(endPortalFrame.hasEye()));
+
+        if (blockData instanceof Farmland farmland)
+            props.put(BlockProp.FARM_LAND_MOISTURE, new FarmLandMoistureProp(farmland.getMoisture()));
+
+        if (blockData instanceof Gate gate)
+            props.put(BlockProp.GATE_IN_WALL, new GateInWallProp(gate.isInWall()));
+
+        if (blockData instanceof Hopper hopper)
+            props.put(BlockProp.HOPPER_ENABLED, new HopperEnabledProp(hopper.isEnabled()));
     }
 
 }
