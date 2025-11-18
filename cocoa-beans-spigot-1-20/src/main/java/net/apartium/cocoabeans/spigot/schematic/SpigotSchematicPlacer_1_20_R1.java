@@ -14,8 +14,6 @@ import org.bukkit.block.data.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
@@ -64,8 +62,6 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
         );
     }
 
-
-
     private void loadProps(org.bukkit.block.data.BlockData blockData, Map<String, BlockProp<?>> props) {
         if (blockData instanceof Stairs stairs)
             props.put(BlockProp.STAIRS_SHAPE, new StairsProp(stairs.getShape()));
@@ -108,6 +104,24 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
         if (blockData instanceof Chest chest)
             props.put(BlockProp.CHEST_TYPE, new ChestTypeProp(chest.getType()));
+
+        if (blockData instanceof CommandBlock commandBlock)
+            props.put(BlockProp.COMMAND_BLOCK_CONDITIONAL, new CommandBlockConditionalProp(commandBlock.isConditional()));
+
+        if (blockData instanceof Comparator comparator)
+            props.put(BlockProp.COMPARATOR_MODE, new ComparatorModeProp(comparator.getMode()));
+
+        if (blockData instanceof DaylightDetector daylightDetector)
+            props.put(BlockProp.DAY_LIGHT_DETECTOR_INVERTED, new DayLightDetectorInvertedProp(daylightDetector.isInverted()));
+
+        if (blockData instanceof Dispenser dispenser)
+            props.put(BlockProp.DISPENSER_TRIGGERED, new DispenserTriggeredProp(dispenser.isTriggered()));
+
+        if (blockData instanceof Door door)
+            props.put(BlockProp.DOOR_HINGE, new DoorHingeProp(door.getHinge()));
+
+        if (blockData instanceof EndPortalFrame endPortalFrame)
+            props.put(BlockProp.END_PORTAL_FRAME_EYE, new EndPortalFrameEyeProp(endPortalFrame.hasEye()));
     }
 
 }
