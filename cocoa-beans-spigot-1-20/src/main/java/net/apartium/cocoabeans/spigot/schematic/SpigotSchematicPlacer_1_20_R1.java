@@ -131,6 +131,30 @@ public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
         if (blockData instanceof Hopper hopper)
             props.put(BlockProp.HOPPER_ENABLED, new HopperEnabledProp(hopper.isEnabled()));
+
+        if (blockData instanceof Jigsaw jigsaw)
+            props.put(BlockProp.JIGSAW_ORIENTATION, new JigsawOrientationProp(jigsaw.getOrientation()));
+
+        if (blockData instanceof Leaves leaves) {
+            props.put(BlockProp.LEAVES_PERSISTENT, new LeavesPersistentProp(leaves.isPersistent()));
+            props.put(BlockProp.LEAVES_DISTANCE, new LeavesDistanceProp(leaves.getDistance()));
+        }
+
+        if (blockData instanceof NoteBlock noteBlock) {
+            props.put(BlockProp.NOTE_BLOCK_INSTRUMENT, new NoteBlockInstrumentProp(noteBlock.getInstrument()));
+            props.put(BlockProp.NOTE_BLOCK_NOTE, new NoteBlockNoteProp(noteBlock.getNote()));
+        }
+
+        if (blockData instanceof Piston piston)
+            props.put(BlockProp.PISTON_EXTENDED, new PistonExtendedProp(piston.isExtended()));
+
+        if (blockData instanceof PistonHead pistonHead)
+            props.put(BlockProp.PISTON_HEAD_IS_SHORT, new PistonHeadIsShortProp(pistonHead.isShort()));
+
+        if (blockData instanceof PointedDripstone pointedDripstone) {
+            props.put(BlockProp.POINTED_DRIPSTONE_VERTICAL_DIRECTION, new PointedDripstoneVerticalDirectionProp(pointedDripstone.getVerticalDirection()));
+            props.put(BlockProp.POINTED_DRIPSTONE_THICKNESS, new PointedDripstoneThicknessProp(pointedDripstone.getThickness()));
+        }
     }
 
 }

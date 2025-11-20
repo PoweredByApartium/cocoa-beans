@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.zip.CRC32;
 
 @ApiStatus.AvailableSince("0.0.46")
@@ -131,6 +132,38 @@ public class FileUtils {
         }
 
         return result;
+    }
+
+    public static <T extends Enum<T>> T readEnum(DataInput in, Class<T> clazz, Supplier<T[]> values) {
+        try {
+            String name = readString(in);
+            int fallbackOrdinal = in.readInt();
+
+            try {
+                return Enum.valueOf(clazz, name);
+            } catch (IllegalArgumentException e) {
+                return values.get()[fallbackOrdinal];
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T extends Enum<T>> byte[] writeEnum(Enum<T> value) {
+        int ordinal = value.ordinal();
+        String name = value.name();
+
+        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(byteArray);
+
+        try {
+            out.write(writeString(name));
+            out.writeInt(ordinal);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return byteArray.toByteArray();
     }
 
     public static <T> byte[] createOccupancyMask(List<T> list) {

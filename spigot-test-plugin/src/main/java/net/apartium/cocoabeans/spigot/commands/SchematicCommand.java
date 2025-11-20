@@ -120,6 +120,15 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.FARM_LAND_MOISTURE, new IntPropFormat(FarmLandMoistureProp::new));
             propFormatMap.put(BlockProp.GATE_IN_WALL, new BooleanPropFormat(GateInWallProp::new));
             propFormatMap.put(BlockProp.HOPPER_ENABLED, new BooleanPropFormat(HopperEnabledProp::new));
+            propFormatMap.put(BlockProp.JIGSAW_ORIENTATION, JigsawOrientationPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.LEAVES_PERSISTENT, new BooleanPropFormat(LeavesPersistentProp::new));
+            propFormatMap.put(BlockProp.LEAVES_DISTANCE, new IntPropFormat(LeavesDistanceProp::new));
+            propFormatMap.put(BlockProp.NOTE_BLOCK_INSTRUMENT, NoteBlockInstrumentPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.NOTE_BLOCK_NOTE, NoteBlockNotePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.PISTON_EXTENDED, new BooleanPropFormat(PistonExtendedProp::new));
+            propFormatMap.put(BlockProp.PISTON_HEAD_IS_SHORT, new BooleanPropFormat(PistonHeadIsShortProp::new));
+            propFormatMap.put(BlockProp.POINTED_DRIPSTONE_VERTICAL_DIRECTION, new BlockFacePropFormat(PointedDripstoneVerticalDirectionProp::new));
+            propFormatMap.put(BlockProp.POINTED_DRIPSTONE_THICKNESS, PointedDripstoneThicknessPropFormat.INSTANCE);
         }
 
         this.format = new CocoaSchematicFormat(
