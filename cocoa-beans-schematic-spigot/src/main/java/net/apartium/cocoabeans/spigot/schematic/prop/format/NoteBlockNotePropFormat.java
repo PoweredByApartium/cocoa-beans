@@ -46,7 +46,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
     private Note getNoteOrElseThrow(BlockProp<?> prop) {
         Object value = prop.value();
         if (value == null)
-            throw new IllegalArgumentException("");
+            throw new NullPointerException("NoteBlockNoteProp prop value is null");
 
         if (!(value instanceof Note note))
             throw new IllegalArgumentException("BlockProp expected Note but got " + value.getClass().getName());

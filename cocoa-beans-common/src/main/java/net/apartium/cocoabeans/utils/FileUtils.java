@@ -150,8 +150,8 @@ public class FileUtils {
     }
 
     public static <T extends Enum<T>> byte[] writeEnum(Enum<T> value) {
-        int ordinal = value.ordinal();
         String name = value.name();
+        int ordinal = value.ordinal();
 
         ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(byteArray);
