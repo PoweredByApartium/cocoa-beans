@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
+import net.apartium.cocoabeans.schematic.prop.ListStringBlockProp;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
@@ -12,6 +13,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,8 +72,7 @@ public class SpigotSchematicPlacer_1_8_R1 implements SpigotSchematicPlacer {
 
         BlockState state = block.getState();
         if (state instanceof Sign sign) {
-            String[] lines = sign.getLines();
-            props.put(BlockProp.Legacy.SIGN_LINES, BlockProp.ARRAY_STRING.apply(lines));
+            props.put(BlockProp.Legacy.SIGN_LINES, new ListStringBlockProp(Arrays.asList(sign.getLines())));
         }
 
         return new GenericBlockData(

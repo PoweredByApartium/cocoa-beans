@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.schematic.prop.format;
 
-import net.apartium.cocoabeans.schematic.prop.ArrayStringBlockProp;
+import net.apartium.cocoabeans.schematic.prop.ListStringBlockProp;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -15,7 +15,7 @@ public class StringArrayBlockPropFormat implements BlockPropFormat<String[]> {
     public static final int MAX_LENGTH = (int) (Math.pow(2, 8) - 1);
 
     @Override
-    public ArrayStringBlockProp decode(byte[] value) {
+    public ListStringBlockProp decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
 
         try {
@@ -25,7 +25,7 @@ public class StringArrayBlockPropFormat implements BlockPropFormat<String[]> {
                 result[i] = readString(in, length);
             }
 
-            return new ArrayStringBlockProp(result);
+            return new ListStringBlockProp(result);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

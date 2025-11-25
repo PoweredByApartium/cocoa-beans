@@ -10,7 +10,6 @@ import static net.apartium.cocoabeans.schematic.AbstractSchematicMetadata.TITLE_
 
 /**
  * @hidden
- * @param <M>
  */
 @ApiStatus.Internal
 public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetadata> implements SchematicMetadataBuilder<M> {

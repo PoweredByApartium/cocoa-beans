@@ -129,6 +129,15 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.PISTON_HEAD_IS_SHORT, new BooleanPropFormat(PistonHeadIsShortProp::new));
             propFormatMap.put(BlockProp.POINTED_DRIPSTONE_VERTICAL_DIRECTION, new BlockFacePropFormat(PointedDripstoneVerticalDirectionProp::new));
             propFormatMap.put(BlockProp.POINTED_DRIPSTONE_THICKNESS, PointedDripstoneThicknessPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.REDSTONE_WIRE_CONNECTIONS, RedstoneWireConnectionsPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.REPEATER_DELAY, new IntPropFormat(RepeaterDelayProp::new));
+            propFormatMap.put(BlockProp.REPEATER_LOCKED, new BooleanPropFormat(RepeaterLockedProp::new));
+            propFormatMap.put(BlockProp.RESPAWN_ANCHOR_CHARGES, new IntPropFormat(RespawnAnchorChargesProp::new));
+            propFormatMap.put(BlockProp.SAPLING_STAGE, new IntPropFormat(SaplingStageProp::new));
+            propFormatMap.put(BlockProp.SCAFFOLDING_BOTTOM, new BooleanPropFormat(ScaffoldingBottomProp::new));
+            propFormatMap.put(BlockProp.SCAFFOLDING_DISTANCE, new IntPropFormat(ScaffoldingDistanceProp::new));
+            propFormatMap.put(BlockProp.SCULK_CATALYST_BLOOM, new BooleanPropFormat(SculkCatalystBloomProp::new));
+            propFormatMap.put(BlockProp.SCULK_SENSOR_PHASE, SculkSensorPhasePropFormat.INSTANCE);
         }
 
         this.format = new CocoaSchematicFormat(

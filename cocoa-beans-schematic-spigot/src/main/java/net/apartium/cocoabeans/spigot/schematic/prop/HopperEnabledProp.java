@@ -1,7 +1,6 @@
-package net.apartium.cocoabeans.spigot.schematic;
+package net.apartium.cocoabeans.spigot.schematic.prop;
 
 import net.apartium.cocoabeans.schematic.prop.BooleanBlockProp;
-import net.apartium.cocoabeans.spigot.schematic.prop.SpigotPropHandler;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Hopper;
 

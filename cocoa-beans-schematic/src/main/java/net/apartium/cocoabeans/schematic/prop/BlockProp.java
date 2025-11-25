@@ -4,9 +4,18 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 
+/**
+ * Represents a block metadata.
+ * The metadata is usually specific to the block type, and is used to preserve block state (such as direction) in the schematic format.
+ * @param <T> container type
+ * @see net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat
+ */
 @ApiStatus.AvailableSince("0.0.46")
 public interface BlockProp<T> {
 
+    /**
+     * Contains legacy (1.8) block data keys
+     */
     class Legacy {
         public static final String DATA = "LEGACY_DATA";
         public static final String SIGN_LINES = "LEGACY_SIGN_LINES";
@@ -83,8 +92,10 @@ public interface BlockProp<T> {
     String SNOWABLE_SNOWY = "SNOWABLE_SNOWY";
     String WATERLOGGED_IS =  "WATERLOGGED_IS";
 
-    Function<String[], ArrayStringBlockProp> ARRAY_STRING = ArrayStringBlockProp::new;
-
+    /**
+     * Get the value encapsulate in this block prop
+     * @return block prop underlying value
+     */
     T value();
 
 }
