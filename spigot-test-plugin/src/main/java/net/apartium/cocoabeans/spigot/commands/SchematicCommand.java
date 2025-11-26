@@ -138,6 +138,8 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.SCAFFOLDING_DISTANCE, new IntPropFormat(ScaffoldingDistanceProp::new));
             propFormatMap.put(BlockProp.SCULK_CATALYST_BLOOM, new BooleanPropFormat(SculkCatalystBloomProp::new));
             propFormatMap.put(BlockProp.SCULK_SENSOR_PHASE, SculkSensorPhasePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.SCULK_SHRIEKER_CAN_SUMMON, new BooleanPropFormat(SculkShriekerCanSummonProp::new));
+            propFormatMap.put(BlockProp.SCULK_SHRIEKER_SHRIEKING, new BooleanPropFormat(SculkShriekerShrinkingProp::new));
         }
 
         this.format = new CocoaSchematicFormat(

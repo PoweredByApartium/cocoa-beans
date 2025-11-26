@@ -2,8 +2,6 @@ package net.apartium.cocoabeans.schematic.prop;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.function.Function;
-
 /**
  * Represents a block metadata.
  * The metadata is usually specific to the block type, and is used to preserve block state (such as direction) in the schematic format.

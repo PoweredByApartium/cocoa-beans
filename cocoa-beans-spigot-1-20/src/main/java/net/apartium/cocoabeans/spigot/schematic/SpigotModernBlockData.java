@@ -62,6 +62,8 @@ import java.util.stream.Collectors;
         register(temp, Scaffolding.class, BlockProp.SCAFFOLDING_DISTANCE, scaffolding -> new ScaffoldingDistanceProp(scaffolding.getDistance()));
         register(temp, SculkCatalyst.class, BlockProp.SCULK_CATALYST_BLOOM, sculkCatalyst -> new SculkCatalystBloomProp(sculkCatalyst.isBloom()));
         register(temp, SculkSensor.class, BlockProp.SCULK_SENSOR_PHASE, sculkSensor -> new SculkSensorPhaseProp(sculkSensor.getPhase()));
+        register(temp, SculkShrieker.class, BlockProp.SCULK_SHRIEKER_CAN_SUMMON, sculkShrieker -> new SculkShriekerCanSummonProp(sculkShrieker.isCanSummon()));
+        register(temp, SculkShrieker.class, BlockProp.SCULK_SHRIEKER_SHRIEKING, sculkShrieker -> new SculkShriekerShrinkingProp(sculkShrieker.isShrieking()));
 
 
         temp.replaceAll((k, v) -> List.copyOf(v));
