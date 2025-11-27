@@ -64,6 +64,9 @@ import java.util.stream.Collectors;
         register(temp, SculkSensor.class, BlockProp.SCULK_SENSOR_PHASE, sculkSensor -> new SculkSensorPhaseProp(sculkSensor.getPhase()));
         register(temp, SculkShrieker.class, BlockProp.SCULK_SHRIEKER_CAN_SUMMON, sculkShrieker -> new SculkShriekerCanSummonProp(sculkShrieker.isCanSummon()));
         register(temp, SculkShrieker.class, BlockProp.SCULK_SHRIEKER_SHRIEKING, sculkShrieker -> new SculkShriekerShrinkingProp(sculkShrieker.isShrieking()));
+        register(temp, SeaPickle.class, BlockProp.SEA_PICKLE_PICKLES, seaPickle -> new SeaPicklePicklesProp(seaPickle.getPickles()));
+        register(temp, Slab.class, BlockProp.SLAB_TYPE, slab -> new SlabTypeProp(slab.getType()));
+        register(temp, Snow.class, BlockProp.SNOW_LAYERS, snow -> new SnowLayersProp(snow.getLayers()));
 
 
         temp.replaceAll((k, v) -> List.copyOf(v));
