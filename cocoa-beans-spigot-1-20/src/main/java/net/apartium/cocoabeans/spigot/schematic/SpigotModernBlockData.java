@@ -3,7 +3,6 @@ package net.apartium.cocoabeans.spigot.schematic;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.*;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.*;
 
 import java.util.ArrayList;
@@ -67,7 +66,13 @@ import java.util.stream.Collectors;
         register(temp, SeaPickle.class, BlockProp.SEA_PICKLE_PICKLES, seaPickle -> new SeaPicklePicklesProp(seaPickle.getPickles()));
         register(temp, Slab.class, BlockProp.SLAB_TYPE, slab -> new SlabTypeProp(slab.getType()));
         register(temp, Snow.class, BlockProp.SNOW_LAYERS, snow -> new SnowLayersProp(snow.getLayers()));
-
+        register(temp, StructureBlock.class, BlockProp.STRUCTURE_BLOCK_MODE, structureBlock -> new StructureBlockModeProp(structureBlock.getMode()));
+        register(temp, TechnicalPiston.class, BlockProp.TECHNICAL_PISTON_TYPE, technicalPiston -> new TechnicalPistonTypeProp(technicalPiston.getType()));
+        register(temp, TNT.class, BlockProp.TNT_UNSTABLE, tnt -> new TNTUnstableProp(tnt.isUnstable()));
+        register(temp, Tripwire.class, BlockProp.TRIPWIRE_DISARMED, tripwire -> new TripwireDisarmedProp(tripwire.isDisarmed()));
+        register(temp, TurtleEgg.class, BlockProp.TURTLE_EGG_EGGS, turtleEgg -> new TurtleEggEggsProp(turtleEgg.getEggs()));
+        register(temp, TurtleEgg.class, BlockProp.TURTLE_EGG_HATCH, turtleEgg -> new TurtleEggHatchProp(turtleEgg.getHatch()));
+        register(temp, Wall.class, BlockProp.WALL_UP, wall -> new WallUpProp(wall.isUp()));
 
         temp.replaceAll((k, v) -> List.copyOf(v));
         knownTypes = Map.copyOf(temp);

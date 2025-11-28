@@ -143,6 +143,13 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.SEA_PICKLE_PICKLES, new IntPropFormat(SeaPicklePicklesProp::new));
             propFormatMap.put(BlockProp.SLAB_TYPE, SlabTypePropFormat.INSTANCE);
             propFormatMap.put(BlockProp.SNOW_LAYERS, new IntPropFormat(SnowLayersProp::new));
+            propFormatMap.put(BlockProp.STRUCTURE_BLOCK_MODE, StructureBlockModePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.TECHNICAL_PISTON_TYPE, TechnicalPistonTypePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.TNT_UNSTABLE, new BooleanPropFormat(TNTUnstableProp::new));
+            propFormatMap.put(BlockProp.TRIPWIRE_DISARMED, new BooleanPropFormat(TripwireDisarmedProp::new));
+            propFormatMap.put(BlockProp.TURTLE_EGG_EGGS, new IntPropFormat(TurtleEggEggsProp::new));
+            propFormatMap.put(BlockProp.TURTLE_EGG_HATCH, new IntPropFormat(TurtleEggHatchProp::new));
+            propFormatMap.put(BlockProp.WALL_UP, new BooleanPropFormat(WallUpProp::new));
         }
 
         this.format = new CocoaSchematicFormat(
