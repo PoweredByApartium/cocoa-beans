@@ -15,12 +15,9 @@ import java.util.function.Function;
 
 public class RedstoneWireConnectionsPropFormat implements BlockPropFormat<Map<BlockFace, RedstoneWire.Connection>> {
 
-    private static final BlockFace[] BLOCK_FACES_VALUES = BlockFace.values();
-    private static final RedstoneWire.Connection[] CONNECTION_VALUES = RedstoneWire.Connection.values();
+    public static final RedstoneWireConnectionsPropFormat INSTANCE = new RedstoneWireConnectionsPropFormat();
 
     private final Function<Map<BlockFace, RedstoneWire.Connection>, BlockProp<Map<BlockFace, RedstoneWire.Connection>>> constructor;
-
-    public static final RedstoneWireConnectionsPropFormat INSTANCE = new RedstoneWireConnectionsPropFormat();
 
     private RedstoneWireConnectionsPropFormat() {
         this(RedstoneWireConnectionsProp::new);
@@ -32,21 +29,13 @@ public class RedstoneWireConnectionsPropFormat implements BlockPropFormat<Map<Bl
 
     @Override
     public BlockProp<Map<BlockFace, RedstoneWire.Connection>> decode(byte[] value) {
-        try {
-            DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
-            Map<BlockFace, RedstoneWire.Connection> connections = new HashMap<>();
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
 
-            while (in.available() > 0) {
-                connections.put(
-                        FileUtils.readEnum(in, BlockFace.class, () -> BLOCK_FACES_VALUES),
-                        FileUtils.readEnum(in, RedstoneWire.Connection.class, () -> CONNECTION_VALUES)
-                );
-            }
-
-            return constructor.apply(Collections.unmodifiableMap(connections));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return constructor.apply(Collections.unmodifiableMap(FileUtils.readMapOfEnums(
+                in,
+                BlockFace.class, BlockFace::values,
+                RedstoneWire.Connection.class, RedstoneWire.Connection::values
+        )));
     }
 
     private Map<BlockFace, RedstoneWire.Connection> getConnectionsOrElseThrow(BlockProp<?> prop) {
@@ -57,29 +46,33 @@ public class RedstoneWireConnectionsPropFormat implements BlockPropFormat<Map<Bl
         if (!(value instanceof Map<?,?> map))
             throw new IllegalArgumentException("RedstoneWireConnectionsProp prop value is of wrong type");
 
-        return (Map<BlockFace, RedstoneWire.Connection>) map;
+        Map<BlockFace, RedstoneWire.Connection> result = new HashMap<>();
+
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Object k = entry.getKey();
+            Object v = entry.getValue();
+
+            if (!(k instanceof BlockFace blockFace))
+                throw new IllegalArgumentException(
+                        "Map key is not a BlockFace: " + k + " (" + k.getClass().getName() + ")"
+                );
+
+            if (!(v instanceof RedstoneWire.Connection connection))
+                throw new IllegalArgumentException(
+                        "Map value is not a RedstoneWire.Connection: " + v + " (" + v.getClass().getName() + ")"
+                );
+
+
+            result.put(blockFace, connection);
+        }
+
+        return result;
     }
 
     @Override
     public byte[] encode(BlockProp<?> prop) {
         Map<BlockFace, RedstoneWire.Connection> connections = getConnectionsOrElseThrow(prop);
-
-        ByteArrayOutputStream byteArray = new ByteArrayOutputStream(1 + connections.size() * 16);
-        DataOutputStream out = new DataOutputStream(byteArray);
-
-        try {
-            for (Map.Entry<BlockFace, RedstoneWire.Connection> entry : connections.entrySet()) {
-                BlockFace face = entry.getKey();
-                RedstoneWire.Connection connection = entry.getValue();
-
-                out.write(FileUtils.writeEnum(face));
-                out.write(FileUtils.writeEnum(connection));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return byteArray.toByteArray();
+        return FileUtils.writeMapOfEnums(connections);
     }
 
 }

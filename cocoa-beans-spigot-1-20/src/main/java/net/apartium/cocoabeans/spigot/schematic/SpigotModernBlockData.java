@@ -2,13 +2,12 @@ package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.*;
+import org.bukkit.block.data.type.Comparator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,6 +72,19 @@ import java.util.stream.Collectors;
         register(temp, TurtleEgg.class, BlockProp.TURTLE_EGG_EGGS, turtleEgg -> new TurtleEggEggsProp(turtleEgg.getEggs()));
         register(temp, TurtleEgg.class, BlockProp.TURTLE_EGG_HATCH, turtleEgg -> new TurtleEggHatchProp(turtleEgg.getHatch()));
         register(temp, Wall.class, BlockProp.WALL_UP, wall -> new WallUpProp(wall.isUp()));
+        register(temp, Wall.class, BlockProp.WALL_HEIGHTS, wall -> {
+            final BlockFace[] DIRECTIONS = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+
+            return new WallHeightsProp(
+                    Arrays.stream(DIRECTIONS)
+                            .map(face -> Map.entry(
+                                    face,
+                                    wall.getHeight(face)
+                            ))
+                            .filter(entry -> entry.getValue() != Wall.Height.NONE)
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+            );
+        });
 
         temp.replaceAll((k, v) -> List.copyOf(v));
         knownTypes = Map.copyOf(temp);

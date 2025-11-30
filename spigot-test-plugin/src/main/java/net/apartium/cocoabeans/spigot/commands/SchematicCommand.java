@@ -95,7 +95,7 @@ public class SchematicCommand implements CommandNode, Listener {
 
         if (VERSION.isLowerThanOrEqual(MinecraftVersion.V1_12_2)) {
             propFormatMap.put(BlockProp.Legacy.DATA, new ByteBlockPropFormat(LegacyDataProp::new));
-            propFormatMap.put(BlockProp.Legacy.SIGN_LINES, BlockPropFormat.ARRAY_STRING);
+            propFormatMap.put(BlockProp.Legacy.SIGN_LINES, ListStringBlockPropFormat.INSTANCE);
         } else {
             propFormatMap.put(BlockProp.STAIRS_SHAPE, StairsPropFormat.INSTANCE);
             propFormatMap.put(BlockProp.DIRECTIONAL, DirectionalPropFormat.INSTANCE);
@@ -150,6 +150,7 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.TURTLE_EGG_EGGS, new IntPropFormat(TurtleEggEggsProp::new));
             propFormatMap.put(BlockProp.TURTLE_EGG_HATCH, new IntPropFormat(TurtleEggHatchProp::new));
             propFormatMap.put(BlockProp.WALL_UP, new BooleanPropFormat(WallUpProp::new));
+            propFormatMap.put(BlockProp.WALL_HEIGHTS, WallHeightsPropFormat.INSTANCE);
         }
 
         this.format = new CocoaSchematicFormat(
