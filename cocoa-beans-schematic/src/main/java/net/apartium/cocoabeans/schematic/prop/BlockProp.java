@@ -88,7 +88,7 @@ public interface BlockProp<T> {
     String RAIL_SHAPE = "RAIL_SHAPE";
     String ROTATABLE_ROTATION = "ROTATABLE_ROTATION";
     String SNOWABLE_SNOWY = "SNOWABLE_SNOWY";
-    String WATERLOGGED_IS =  "WATERLOGGED_IS";
+    String WATERLOGGED =  "WATERLOGGED";
 
     /**
      * Get the value encapsulate in this block prop

@@ -166,6 +166,39 @@ public class FileUtils {
         return byteArray.toByteArray();
     }
 
+    public static <K extends Enum<K>> Map<K, Boolean> readMapOfEnumBoolean(DataInputStream in, Class<K> keyType, Supplier<K[]> keyValues) {
+        Map<K, Boolean> result = new HashMap<>();
+
+        try {
+            while (in.available() > 0) {
+                result.put(
+                        readEnum(in, keyType, keyValues),
+                        in.readBoolean()
+                );
+            }
+
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <K extends Enum<K>> byte[] writeMapOfEnumBoolean(Map<K, Boolean> map) {
+        ByteArrayOutputStream byteArray = new ByteArrayOutputStream(1 + map.size() * 16);
+        DataOutputStream out = new DataOutputStream(byteArray);
+
+        try {
+            for (Map.Entry<K, Boolean> entry : map.entrySet()) {
+                out.write(writeEnum(entry.getKey()));
+                out.writeBoolean(entry.getValue());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return byteArray.toByteArray();
+    }
+
     public static <K extends Enum<K>, V extends Enum<V>> Map<K, V> readMapOfEnums(DataInputStream in, Class<K> keyType, Supplier<K[]> keyValues, Class<V> valueType, Supplier<V[]> valueValues) {
         Map<K, V> result = new HashMap<>();
 

@@ -151,6 +151,22 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.TURTLE_EGG_HATCH, new IntPropFormat(TurtleEggHatchProp::new));
             propFormatMap.put(BlockProp.WALL_UP, new BooleanPropFormat(WallUpProp::new));
             propFormatMap.put(BlockProp.WALL_HEIGHTS, WallHeightsPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.AGEABLE_AGE, new IntPropFormat(AgeableAgeProp::new));
+            propFormatMap.put(BlockProp.ANALOGUE_POWERABLE_POWER, new IntPropFormat(AnaloguePowerablePowerProp::new));
+            propFormatMap.put(BlockProp.ATTACHABLE_ATTACHED, new BooleanPropFormat(AttachableAttachedProp::new));
+            propFormatMap.put(BlockProp.BISECTED_HALF, BisectedHalfPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.FACE_ATTACHABLE_ATTACHED_FACE, FaceAttachableAttachedFacePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.HANGABLE_HANGING, new BooleanPropFormat(HangableHangingProp::new));
+            propFormatMap.put(BlockProp.LEVELLED_LEVEL, new IntPropFormat(LevelledLevelProp::new));
+            propFormatMap.put(BlockProp.LIGHTABLE_LIT, new BooleanPropFormat(LightableLitProp::new));
+            propFormatMap.put(BlockProp.MULTIPLE_FACING_FACES, MultipleFacingFacesPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.OPENABLE_OPEN, new BooleanPropFormat(OpenableOpenProp::new));
+            propFormatMap.put(BlockProp.ORIENTABLE_AXIS, OrientableAxisPropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.POWERABLE_POWERED, new BooleanPropFormat(PowerablePoweredProp::new));
+            propFormatMap.put(BlockProp.RAIL_SHAPE, RailShapePropFormat.INSTANCE);
+            propFormatMap.put(BlockProp.ROTATABLE_ROTATION, new BlockFacePropFormat(RotatableRotationProp::new));
+            propFormatMap.put(BlockProp.SNOWABLE_SNOWY, new BooleanPropFormat(SnowableSnowyProp::new));
+            propFormatMap.put(BlockProp.WATERLOGGED, new BooleanPropFormat(WaterloggedProp::new));
         }
 
         this.format = new CocoaSchematicFormat(

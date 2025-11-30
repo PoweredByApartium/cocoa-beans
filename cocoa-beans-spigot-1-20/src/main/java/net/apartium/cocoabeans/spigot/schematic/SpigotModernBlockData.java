@@ -2,8 +2,9 @@ package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.*;
+import net.apartium.cocoabeans.spigot.schematic.prop.PowerablePoweredProp;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.*;
 import org.bukkit.block.data.type.*;
 import org.bukkit.block.data.type.Comparator;
 
@@ -18,9 +19,17 @@ import java.util.stream.Collectors;
 
     static {
         Map<Class<?>, List<BlockPropEntry>> temp = new HashMap<>();
+
+        register(temp, Stairs.class, BlockProp.STAIRS_SHAPE, stairs -> new StairsProp(stairs.getShape()));
+        register(temp, Bamboo.class, BlockProp.BAMBOO_LEAVES, bamboo -> new BambooProp(bamboo.getLeaves()));
+        register(temp, Bed.class, BlockProp.BED_PART, bed -> new BedPartProp(bed.getPart()));
+        register(temp, Beehive.class, BlockProp.BEEHIVE_HONEY_LEVEL, beehive -> new BeeHiveHoneyLevelProp(beehive.getHoneyLevel()));
+        register(temp, Bell.class, BlockProp.BELL_ATTACHMENT, bell -> new BellAttachmentProp(bell.getAttachment()));
+        register(temp, BigDripleaf.class, BlockProp.BIG_DRIP_LEAF_TILT, bigDripleaf -> new BigDripleafTiltProp(bigDripleaf.getTilt()));
+        register(temp, BrewingStand.class, BlockProp.BREWING_STAND_BOTTLES, brewingStand -> new BrewingStandBottlesProp(brewingStand.getBottles().stream().mapToInt(value -> value).toArray()));
         register(temp, Cake.class, BlockProp.CAKE_BITES, cake -> new CakeBitesProp(cake.getBites()));
         register(temp, Campfire.class, BlockProp.CAMPFIRE_SIGNAL_FIRE, campfire -> new CampfireSignalFireProp(campfire.isSignalFire()));
-
+        register(temp, Directional.class, BlockProp.DIRECTIONAL, directional -> new DirectionalFaceProp(directional.getFacing()));
         register(temp, BubbleColumn.class, BlockProp.BUBBLE_COLUMN_DRAG, bubbleColumn -> new BubbleColumnProp(bubbleColumn.isDrag()));
         register(temp, Candle.class, BlockProp.CANDLE_CANDLES, candle -> new CandleProp(candle.getCandles()));
         register(temp, CaveVinesPlant.class, BlockProp.CAVE_VINES_PLANT_BERRIES, caveVinesPlant -> new CaveVinesPlantBerriesProp(caveVinesPlant.isBerries()));
@@ -85,6 +94,26 @@ import java.util.stream.Collectors;
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
             );
         });
+        register(temp, Ageable.class, BlockProp.AGEABLE_AGE, ageable -> new AgeableAgeProp(ageable.getAge()));
+        register(temp, AnaloguePowerable.class, BlockProp.ANALOGUE_POWERABLE_POWER, powerable -> new AnaloguePowerablePowerProp(powerable.getPower()));
+        register(temp, Attachable.class, BlockProp.ATTACHABLE_ATTACHED, attachable -> new AttachableAttachedProp(attachable.isAttached()));
+        register(temp, Bisected.class, BlockProp.BISECTED_HALF, bisected -> new BisectedHalfProp(bisected.getHalf()));
+        register(temp, FaceAttachable.class, BlockProp.FACE_ATTACHABLE_ATTACHED_FACE, faceAttachable -> new FaceAttachableAttachedFaceProp(faceAttachable.getAttachedFace()));
+        register(temp, Hangable.class, BlockProp.HANGABLE_HANGING, hangable -> new HangableHangingProp(hangable.isHanging()));
+        register(temp, Levelled.class, BlockProp.LEVELLED_LEVEL, levelled -> new LevelledLevelProp(levelled.getLevel()));
+        register(temp, Lightable.class, BlockProp.LIGHTABLE_LIT, lightable -> new LightableLitProp(lightable.isLit()));
+        register(temp, MultipleFacing.class, BlockProp.MULTIPLE_FACING_FACES, multipleFacing -> new MultipleFacingFacesProp(multipleFacing.getFaces().stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        multipleFacing::hasFace
+                ))));
+        register(temp, Openable.class, BlockProp.OPENABLE_OPEN, openable -> new OpenableOpenProp(openable.isOpen()));
+        register(temp, Orientable.class, BlockProp.ORIENTABLE_AXIS, orientable -> new OrientableAxisProp(orientable.getAxis()));
+        register(temp, Powerable.class, BlockProp.POWERABLE_POWERED, powerable -> new PowerablePoweredProp(powerable.isPowered()));
+        register(temp, Rail.class, BlockProp.RAIL_SHAPE, rail -> new RailShapeProp(rail.getShape()));
+        register(temp, Rotatable.class, BlockProp.ROTATABLE_ROTATION, rotatable -> new RotatableRotationProp(rotatable.getRotation()));
+        register(temp, Snowable.class, BlockProp.SNOWABLE_SNOWY, snowable -> new SnowableSnowyProp(snowable.isSnowy()));
+        register(temp, Waterlogged.class, BlockProp.WATERLOGGED, waterlogged -> new WaterloggedProp(waterlogged.isWaterlogged()));
 
         temp.replaceAll((k, v) -> List.copyOf(v));
         knownTypes = Map.copyOf(temp);
