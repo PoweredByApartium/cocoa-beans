@@ -123,7 +123,7 @@ import java.util.stream.Collectors;
         for (Map.Entry<Class<?>, List<BlockPropEntry>> entry : knownTypes.entrySet()) {
             Class<?> type = entry.getKey();
 
-            if (type.isAssignableFrom(blockData.getClass()))
+            if (!type.isAssignableFrom(blockData.getClass()))
                 continue;
 
             for (BlockPropEntry blockPropEntry : entry.getValue()) {
