@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.AbstractPasteOperation;
+import net.apartium.cocoabeans.schematic.PasteOperation;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
@@ -9,6 +10,9 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -18,9 +22,10 @@ import static net.apartium.cocoabeans.spigot.Locations.toVector;
 public class SpigotPasteOperation extends AbstractPasteOperation {
 
     private final Location origin;
-    private final BiFunction<Block, BlockPlacement, Boolean> shouldPlace;
-    private final Function<BlockPlacement, BlockData> mapper;
+    private BiFunction<Block, BlockPlacement, Boolean> shouldPlace;
+    private Function<BlockPlacement, BlockData> mapper;
     private final SpigotSchematicPlacer placer;
+    private final List<BiConsumer<Block, BlockData>> postPlaceActions = new ArrayList<>();
 
     public SpigotPasteOperation(Location origin, BlockIterator iterator, AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
         super(iterator, axisOrder);
@@ -28,6 +33,21 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         this.shouldPlace = shouldPlace;
         this.mapper = mapper;
         this.placer = placer;
+    }
+
+    public PasteOperation setShouldPlace(BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+        this.shouldPlace = shouldPlace;
+        return this;
+    }
+
+    public PasteOperation setMapper(Function<BlockPlacement, BlockData> mapper) {
+        this.mapper = mapper;
+        return this;
+    }
+
+    public PasteOperation addPostPlaceAction(BiConsumer<Block, BlockData> action) {
+        postPlaceActions.add(action);
+        return this;
     }
 
     @Override
@@ -39,6 +59,10 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
             return false;
 
         placer.place(block, placement);
+
+        for (BiConsumer<Block, BlockData> action : postPlaceActions)
+            action.accept(block, placement.block());
+
         return true;
     }
 
