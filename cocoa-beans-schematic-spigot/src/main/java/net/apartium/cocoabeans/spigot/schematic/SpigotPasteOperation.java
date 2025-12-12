@@ -50,6 +50,10 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         return this;
     }
 
+    public Location origin() {
+        return origin.clone();
+    }
+
     @Override
     protected boolean place(BlockPlacement placement) {
         placement = mapping(placement);
