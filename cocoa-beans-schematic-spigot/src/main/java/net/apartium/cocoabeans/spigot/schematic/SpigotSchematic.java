@@ -34,23 +34,23 @@ public class SpigotSchematic extends AbstractSchematic {
         super(schematic);
     }
 
-    public PasteOperation paste(final Location origin) {
+    public SpigotPasteOperation paste(final Location origin) {
         return paste(origin, axisOrder());
     }
 
-    public PasteOperation paste(final Location origin, final AxisOrder axisOrder) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder) {
         return paste(origin, axisOrder, (block, blockPlacement) -> block.getType() == Material.AIR);
     }
 
-    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
         return paste(origin, axisOrder, shouldPlace, BlockPlacement::block);
     }
 
-    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
         return paste(origin, axisOrder, shouldPlace, mapper, SpigotSchematicPlacer.getInstance());
     }
 
-    public PasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
         return new SpigotPasteOperation(
                 origin.clone().add(toVector(offset)),
                 sortedIterator(axisOrder),

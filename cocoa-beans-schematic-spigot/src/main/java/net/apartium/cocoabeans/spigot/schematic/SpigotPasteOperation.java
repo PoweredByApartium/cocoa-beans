@@ -35,17 +35,17 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         this.placer = placer;
     }
 
-    public PasteOperation setShouldPlace(BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+    public SpigotPasteOperation setShouldPlace(BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
         this.shouldPlace = shouldPlace;
         return this;
     }
 
-    public PasteOperation setMapper(Function<BlockPlacement, BlockData> mapper) {
+    public SpigotPasteOperation setMapper(Function<BlockPlacement, BlockData> mapper) {
         this.mapper = mapper;
         return this;
     }
 
-    public PasteOperation addPostPlaceAction(BiConsumer<Block, BlockData> action) {
+    public SpigotPasteOperation addPostPlaceAction(BiConsumer<Block, BlockData> action) {
         postPlaceActions.add(action);
         return this;
     }
