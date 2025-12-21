@@ -6,10 +6,12 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.function.Function;
 
+@NullMarked
 public class TestSchematic extends AbstractSchematic {
 
     public TestSchematic() {
@@ -29,7 +31,7 @@ public class TestSchematic extends AbstractSchematic {
         return new AbstractSchematicBuilder<>(schematic) {
             @Override
             public SchematicBuilder<TestSchematic> metadata(Function<SchematicMetadataBuilder<?>, SchematicMetadata> block) {
-                return null;
+                throw new IllegalStateException("Cannot modify metadata of a test schematic");
             }
 
             @Override

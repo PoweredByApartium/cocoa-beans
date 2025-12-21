@@ -5,12 +5,19 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 
+/**
+ * Represents a batch of blocks in a schematic
+ * @see BlockData
+ */
+// todo kfir make immutable
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunk {
 
+    // todo kfir tf
     public static final int SIZE = 4;
 
     private final AxisOrder axisOrder;
@@ -21,7 +28,7 @@ public class BlockChunk {
     private Pointer[] pointers = new Pointer[0];
     private long mask = 0;
 
-    public BlockChunk(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    public BlockChunk(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         this.axisOrder = axisOrder;
         this.scaler = scaler;
         this.nextScaler = Math.floor(scaler / SIZE);
@@ -161,12 +168,10 @@ public class BlockChunk {
         } else if (count >= this.pointers.length) {
             System.arraycopy(clone, 0, this.pointers, 0, this.pointers.length);
         } else {
-            for (int i = 0; i < count; i++)
-                this.pointers[i] = clone[i];
+            System.arraycopy(clone, 0, this.pointers, 0, count);
 
-            for (int i = count; i < this.pointers.length; i++) {
-                this.pointers[i] = clone[i + 1];
-            }
+            if (this.pointers.length - count >= 0)
+                System.arraycopy(clone, count + 1, this.pointers, count, this.pointers.length - count);
         }
 
         long prev = mask;

@@ -8,7 +8,6 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
@@ -25,7 +24,7 @@ import java.util.function.Function;
 public interface SchematicBuilder<T extends Schematic> {
 
     /**
-     * Specifies schematic platform
+     * Specifies a schematic platform
      * @param platform platform
      * @return this builder instance
      */
@@ -71,12 +70,13 @@ public interface SchematicBuilder<T extends Schematic> {
      * @param axis axis to rotate on
      * @return this builder instance
      */
-    SchematicBuilder<T> flip(@NotNull Axis axis);
+    SchematicBuilder<T> flip(Axis axis);
 
     /**
      * Translate the schematic offset
      * @param offset offset
      * @return this builder instance
+     * TODO kfir having 2 translate methods that do different things is confusing
      */
     SchematicBuilder<T> translate(Position offset);
 

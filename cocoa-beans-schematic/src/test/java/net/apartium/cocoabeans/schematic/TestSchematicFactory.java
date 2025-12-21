@@ -5,10 +5,12 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.Map;
 
+@NullMarked
 public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
 
     @Override

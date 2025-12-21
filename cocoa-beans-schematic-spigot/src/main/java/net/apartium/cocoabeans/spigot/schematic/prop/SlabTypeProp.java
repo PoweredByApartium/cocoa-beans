@@ -6,7 +6,9 @@ import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public record SlabTypeProp(Slab.Type type) implements BlockProp<Slab.Type>, SpigotPropHandler, FlippableProp<Slab.Type> {
 
     @Override

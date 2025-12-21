@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 public class TestMetaData extends AbstractSchematicMetadata {
@@ -9,7 +11,7 @@ public class TestMetaData extends AbstractSchematicMetadata {
     }
 
     @Override
-    public SchematicMetadataBuilder<TestMetaData> toBuilder() {
+    public @NotNull SchematicMetadataBuilder<TestMetaData> toBuilder() {
         return new AbstractSchematicMetadataBuilder<>() {
             @Override
             public TestMetaData build() {

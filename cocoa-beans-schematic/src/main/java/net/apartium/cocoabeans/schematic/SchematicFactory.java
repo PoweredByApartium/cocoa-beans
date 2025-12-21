@@ -12,8 +12,8 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * Platform specific schematic factory
- * @param <S> schematic tpye
+ * Platform-specific schematic factory
+ * @param <S> schematic type
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")

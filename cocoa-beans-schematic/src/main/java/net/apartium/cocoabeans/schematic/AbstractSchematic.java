@@ -14,6 +14,8 @@ import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.*;
@@ -21,7 +23,9 @@ import java.util.*;
 /**
  * @hidden
  */
+// todo kfir make immutable
 @ApiStatus.Internal
+@NullMarked
 public abstract class AbstractSchematic implements Schematic {
 
     protected MinecraftPlatform platform;
@@ -82,37 +86,37 @@ public abstract class AbstractSchematic implements Schematic {
     }
 
     @Override
-    public @NotNull MinecraftPlatform originPlatform() {
+    public MinecraftPlatform originPlatform() {
         return platform;
     }
 
     @Override
-    public @NotNull Instant created() {
+    public Instant created() {
         return created;
     }
 
     @Override
-    public @NonNull SchematicMetadata metadata() {
+    public SchematicMetadata metadata() {
         return metadata;
     }
 
     @Override
-    public @NotNull Position offset() {
+    public Position offset() {
         return offset;
     }
 
     @Override
-    public @NotNull AreaSize size() {
+    public AreaSize size() {
         return size;
     }
 
     @Override
-    public @NotNull AxisOrder axisOrder() {
+    public AxisOrder axisOrder() {
         return axes;
     }
 
     @Override
-    public BlockData getBlockData(int x, int y, int z) {
+    public @Nullable BlockData getBlockData(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0)
             return null;
 

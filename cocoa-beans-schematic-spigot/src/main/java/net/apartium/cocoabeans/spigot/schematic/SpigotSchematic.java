@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.function.BiFunction;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematic extends AbstractSchematic {
 

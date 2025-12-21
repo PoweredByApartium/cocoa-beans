@@ -8,6 +8,7 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.time.Instant;
 /**
  * Represents a 3d schematic
  */
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public interface Schematic {
 
@@ -22,37 +24,37 @@ public interface Schematic {
      * Platform the schematic was created on
      * @return platform the schematic was created on
      */
-    @NonNull MinecraftPlatform originPlatform();
+    MinecraftPlatform originPlatform();
 
     /**
      * Get the time the schematic was created in
      * @return time the schematic was created in
      */
-    @NonNull Instant created();
+    Instant created();
 
     /**
      * Get schematic metadata
      * @return schematic metadata container
      */
-    @NonNull SchematicMetadata metadata();
+    SchematicMetadata metadata();
 
     /**
      * Get the offset of (0,0,0) in this schematic from the player pov
      * @return schematic offset
      */
-    @NonNull Position offset();
+    Position offset();
 
     /**
      * Get the area size of this schematic
      * @return schematic size
      */
-    @NonNull AreaSize size();
+    AreaSize size();
 
     /**
      * Get the default axis order of this schematic
      * @return schematic default axis order
      */
-    @NonNull AxisOrder axisOrder();
+    AxisOrder axisOrder();
 
     /**
      * Get schematic block data for certain position, may be nullable
@@ -68,19 +70,19 @@ public interface Schematic {
      * Note this iterator does not provide a sorting guarantee.
      * @return blocks iterator instance
      */
-    @NonNull BlockIterator blocksIterator();
+    BlockIterator blocksIterator();
 
     /**
      * Iterate over schematic with specified axis order
      * @param axisOrder axis order
      * @return blocks iterator instance
      */
-    @NonNull BlockIterator sortedIterator(@NonNull AxisOrder axisOrder);
+    BlockIterator sortedIterator(AxisOrder axisOrder);
 
     /**
      * Creates a builder with the existing values of this schematic
      * @return a new builder instance
      */
-    @NonNull SchematicBuilder<?> toBuilder();
+    SchematicBuilder<?> toBuilder();
 
 }

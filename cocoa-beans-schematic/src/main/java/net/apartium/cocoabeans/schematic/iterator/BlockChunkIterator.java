@@ -49,8 +49,7 @@ public class BlockChunkIterator implements BlockIterator {
         }
 
         while (remaining != 0) {
-            int bitOffset = Long.numberOfTrailingZeros(remaining);
-            int bitPos = bitOffset;
+            int bitPos = Long.numberOfTrailingZeros(remaining);
             long bit = 1L << bitPos;
 
             remaining ^= bit;

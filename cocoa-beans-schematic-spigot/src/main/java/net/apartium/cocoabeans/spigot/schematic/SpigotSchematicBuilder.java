@@ -3,9 +3,11 @@ package net.apartium.cocoabeans.spigot.schematic;
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchematic> {
 

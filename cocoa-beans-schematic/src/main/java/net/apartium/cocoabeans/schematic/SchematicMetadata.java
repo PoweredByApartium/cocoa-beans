@@ -35,7 +35,7 @@ public interface SchematicMetadata {
      * @return metadata value, default if not present
      * @param <T> metadata type
      */
-    <T> @NonNull T get(@NonNull String key, @NonNull T defaultValue);
+    <T> @Nullable T get(@NonNull String key, @NonNull T defaultValue);
 
     /**
      * Gets schematic author
@@ -54,6 +54,6 @@ public interface SchematicMetadata {
      * @return a new builder instance
      * @param <T> schematic metadata type
      */
-    @NonNull <T extends SchematicMetadata> SchematicMetadataBuilder<T> toBuilder();
+    @NonNull <T extends SchematicMetadata> SchematicMetadataBuilder<@NonNull T> toBuilder();
 
 }

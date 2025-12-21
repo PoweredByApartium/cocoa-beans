@@ -14,13 +14,13 @@ public interface BlockData {
 
     /**
      * Type of block
-     * @return the type as namespace key
+     * @return the type as a namespace key
      */
     NamespacedKey type();
 
     /**
-     * props are metadata for blocks
-     * for example "facing"=Direction.NORTH
+     * props are metadata for blocks,
+     * for example, "facing"=Direction.NORTH
      * @return block props or empty if it has none
      */
     Map<String, BlockProp<?>> props();

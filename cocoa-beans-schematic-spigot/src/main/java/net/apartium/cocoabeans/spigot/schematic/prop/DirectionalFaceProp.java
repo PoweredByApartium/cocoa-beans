@@ -10,7 +10,9 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public record DirectionalFaceProp(BlockFace value) implements BlockProp<BlockFace>, SpigotPropHandler, RotatableProp<@NotNull DirectionalFaceProp>, FlippableProp<DirectionalFaceProp> {
     @Override

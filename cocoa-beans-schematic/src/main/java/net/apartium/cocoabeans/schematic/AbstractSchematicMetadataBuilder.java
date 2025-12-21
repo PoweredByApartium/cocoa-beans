@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,25 +26,25 @@ public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetada
     }
 
     @Override
-    public SchematicMetadataBuilder<M> author(String author) {
+    public @NotNull SchematicMetadataBuilder<@NotNull M> author(@NotNull String author) {
         metadata.put(AUTHOR_KEY, author);
         return this;
     }
 
     @Override
-    public SchematicMetadataBuilder<M> title(String title) {
+    public @NotNull SchematicMetadataBuilder<@NotNull M> title(@NotNull String title) {
         metadata.put(TITLE_KEY, title);
         return this;
     }
 
     @Override
-    public <T> SchematicMetadataBuilder<M> set(String key, T value) {
+    public <T> @NotNull SchematicMetadataBuilder<@NotNull M> set(@NotNull String key, T value) {
         metadata.put(key, value);
         return this;
     }
 
     @Override
-    public SchematicMetadataBuilder<M> remove(String key) {
+    public @NotNull SchematicMetadataBuilder<@NotNull M> remove(@NotNull String key) {
         metadata.remove(key);
         return this;
     }

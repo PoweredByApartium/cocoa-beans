@@ -36,10 +36,10 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
     public byte[] encode(BlockProp<?> prop) {
         Object value = prop.value();
         if (value == null || !value.getClass().equals(enumClass))
-            throw new IllegalArgumentException("BlockProp excepted " + enumClass.getName() + " and got " + (value == null ? "null" : value.getClass().getName()));
+            throw new IllegalArgumentException("Excepted instance of " + enumClass.getName() + " but got " + (value == null ? "null" : value.getClass().getName()));
 
         if (!(value instanceof Enum<?> valueEnum))
-            throw new IllegalArgumentException("BlockProp excepted " + enumClass.getName() + " but got " + value.getClass().getName());
+            throw new IllegalArgumentException("Excepted instance of " + enumClass.getName() + " but got " + value.getClass().getName());
 
         return writeEnum(valueEnum);
     }

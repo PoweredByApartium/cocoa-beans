@@ -15,6 +15,7 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.Map;
  * @hidden
  */
 @ApiStatus.Internal
+@NullMarked
 public abstract class AbstractSchematicBuilder<T extends Schematic> implements SchematicBuilder<T> {
 
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");

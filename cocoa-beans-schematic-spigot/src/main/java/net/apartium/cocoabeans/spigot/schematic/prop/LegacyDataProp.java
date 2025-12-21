@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.prop.ByteBlockProp;
 import net.apartium.cocoabeans.schematic.prop.RotatableProp;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.AvailableSince("0.0.46")
 public class LegacyDataProp extends ByteBlockProp implements RotatableProp<LegacyDataProp> {
@@ -13,7 +14,7 @@ public class LegacyDataProp extends ByteBlockProp implements RotatableProp<Legac
     }
 
     @Override
-    public LegacyDataProp rotate(NamespacedKey type, int degrees) {
+    public LegacyDataProp rotate(@NotNull NamespacedKey type, int degrees) {
         if (!type.namespace().equals("minecraft"))
             return this;
 

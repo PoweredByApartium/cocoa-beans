@@ -10,31 +10,33 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic> {
 
     @Override
-    public @NotNull SpigotSchematicBuilder createSchematic() {
+    public SpigotSchematicBuilder createSchematic() {
         return new SpigotSchematicBuilder();
     }
 
     @Override
-    public SpigotSchematic createSchematic(@NotNull Instant created, @NotNull MinecraftPlatform platform, @NotNull SchematicMetadata metadata,
-                                           BlockIterator blocks, @NotNull AreaSize size, @NotNull AxisOrder axisOrder, @NotNull Position offset) {
+    public SpigotSchematic createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata,
+                                           BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset) {
         SpigotSchematicBuilder builder = new SpigotSchematicBuilder();
 
-        builder.created(created);
-        builder.platform(platform);
-        builder.metadata(metadata);
-
-        builder.translate(axisOrder);
-        builder.translate(offset);
-        builder.size(size);
+        builder
+                .created(created)
+                .platform(platform)
+                .metadata(metadata)
+                .translate(axisOrder)
+                .translate(offset)
+                .size(size);
 
         while (blocks.hasNext()) {
             BlockPlacement placement = blocks.next();
@@ -48,7 +50,7 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
     }
 
     @Override
-    public @NotNull SchematicMetadata createMetadata(@NotNull Map<String, Object> metadata) {
+    public SchematicMetadata createMetadata(Map<String, Object> metadata) {
         return new SpigotSchematicMetadata(metadata);
     }
 

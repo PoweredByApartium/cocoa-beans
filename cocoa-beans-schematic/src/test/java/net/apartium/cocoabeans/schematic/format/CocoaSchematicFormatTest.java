@@ -18,6 +18,8 @@ import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -70,6 +72,7 @@ class CocoaSchematicFormatTest {
         GenericBlockData ironBlock = new GenericBlockData(new NamespacedKey("minecraft", "iron_block"), Map.of());
         GenericBlockData goldBlock = new GenericBlockData(new NamespacedKey("minecraft", "gold_block"), Map.of());
         GenericBlockData diamondBlock = new GenericBlockData(new NamespacedKey("minecraft", "diamondBlock"), Map.of());
+
 
         Schematic schematic = new Schematic() {
 
@@ -126,21 +129,21 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
-            public SchematicMetadata metadata() {
+            public @NotNull SchematicMetadata metadata() {
                 return new SchematicMetadata() {
 
                     @Override
-                    public Set<String> keys() {
+                    public @NotNull Set<String> keys() {
                         return Set.of();
                     }
 
                     @Override
-                    public <T> T get(String key) {
+                    public <T> T get(@NotNull String key) {
                         return null;
                     }
 
                     @Override
-                    public <T> T get(String key, T defaultValue) {
+                    public <T> T get(@NotNull String key, @NotNull T defaultValue) {
                         return null;
                     }
 
@@ -155,8 +158,8 @@ class CocoaSchematicFormatTest {
                     }
 
                     @Override
-                    public <T extends SchematicMetadata> SchematicMetadataBuilder<T> toBuilder() {
-                        return null;
+                    public <T extends SchematicMetadata> @NotNull SchematicMetadataBuilder<T> toBuilder() {
+                        throw new UnsupportedOperationException();
                     }
                 };
             }
@@ -182,7 +185,7 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
-            public BlockIterator blocksIterator() {
+            public @NotNull BlockIterator blocksIterator() {
                 final Iterator<Position> iterator = axisOrder().iterator(
                         Position.ZERO,
                         new Position(
@@ -233,14 +236,14 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
-            public BlockIterator sortedIterator(AxisOrder axisOrder) {
-                return null;
+            public @NotNull BlockIterator sortedIterator(@NonNull AxisOrder axisOrder) {
+                throw new UnsupportedOperationException();
             }
 
 
             @Override
-            public SchematicBuilder toBuilder() {
-                return null;
+            public @NotNull SchematicBuilder<?> toBuilder() {
+                throw new UnsupportedOperationException();
             }
 
         };
@@ -348,7 +351,7 @@ class CocoaSchematicFormatTest {
         for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
                 for (int z = 0; z < 5; z++) {
-                    builder.setBlock(x, y, z, dirtBlock);
+                    builder = builder.setBlock(x, y, z, dirtBlock);
                 }
             }
         }
@@ -367,7 +370,7 @@ class CocoaSchematicFormatTest {
 
         builder = schematic.toBuilder();
 
-        builder.removeBlock(0, 3, 2);
+        builder = builder.removeBlock(0, 3, 2);
 
         schematic = builder.build();
 

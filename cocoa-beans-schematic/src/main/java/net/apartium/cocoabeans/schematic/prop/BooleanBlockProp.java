@@ -10,7 +10,6 @@ public class BooleanBlockProp implements BlockProp<Boolean> {
 
     protected final boolean value;
 
-
     /**
      * Construct a new boolean block prop
      * @param value value

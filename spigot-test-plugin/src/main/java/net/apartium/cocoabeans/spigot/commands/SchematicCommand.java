@@ -210,6 +210,7 @@ public class SchematicCommand implements CommandNode, Listener {
                     }
 
                     slowBuildSchematic.pasteOperation().advanceOnSingleAxis(slowBuildSchematic.numsOfBlock());
+
                 }
 
                 for (SlowBuildSchematic slowBuildSchematic : toRemove) {
@@ -285,8 +286,8 @@ public class SchematicCommand implements CommandNode, Listener {
     public void pasteFlip(Player player, SpigotSchematic schematic, Axis axis) {
         player.sendMessage("§eAttempting to paste schematic §c" + schematic.metadata().title() + "§e while flipping axis: §c" + axis);
         schematic = schematic.toBuilder().flip(axis).build();
-        schematic.paste(player.getLocation()).performAll();
-        player.sendMessage("§c" + schematic.metadata().title() + " §ehas been pasted!");
+        PasteResult result = schematic.paste(player.getLocation()).performAll();
+        player.sendMessage("§c" + schematic.metadata().title() + " §ehas been pasted! (" + result.blockPlaces() + " blocks placed)");
     }
 
     @SenderLimit(SenderType.PLAYER)

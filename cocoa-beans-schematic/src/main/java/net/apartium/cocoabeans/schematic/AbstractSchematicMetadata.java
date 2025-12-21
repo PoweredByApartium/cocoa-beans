@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.schematic;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,17 +24,19 @@ public abstract class AbstractSchematicMetadata implements SchematicMetadata {
     }
 
     @Override
-    public @NonNull Set<String> keys() {
+    public @NonNull @NotNull Set<@NotNull String> keys() {
         return metadata.keySet();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String key) {
+    public @Nullable <T> T get(@NotNull String key) {
         return (T) metadata.get(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String key, T defaultValue) {
+    public <T> T get(@NotNull String key, @NotNull T defaultValue) {
         return (T) metadata.getOrDefault(key, defaultValue);
     }
 
