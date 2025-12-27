@@ -1,15 +1,11 @@
 package net.apartium.cocoabeans.schematic.iterator;
 
-import net.apartium.cocoabeans.schematic.block.BlockChunk;
-import net.apartium.cocoabeans.schematic.block.BlockPointer;
-import net.apartium.cocoabeans.schematic.block.ChunkPointer;
-import net.apartium.cocoabeans.schematic.block.Pointer;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
 
-import static net.apartium.cocoabeans.schematic.block.BlockChunk.SIZE;
+import static net.apartium.cocoabeans.schematic.block.BlockChunkImpl.SIZE;
 
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkIterator implements BlockIterator {
@@ -113,4 +109,5 @@ public class BlockChunkIterator implements BlockIterator {
         advance();
         return placement;
     }
+
 }

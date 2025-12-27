@@ -32,7 +32,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         int layers = indexIn.read();
         long scaler = (long) Math.pow(4, layers);
 
-        BlockChunk[] blockChunk = new BlockChunk[]{new BlockChunk(axisOrder, 1, Position.ZERO, Position.ZERO)};
+        BlockChunkImpl[] blockChunk = new BlockChunkImpl[]{new BlockChunkImpl(axisOrder, 1, Position.ZERO, Position.ZERO)};
 
         readIndexLayer(
                 indexIn,
@@ -49,7 +49,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         return new BlockChunkIterator(blockChunk[0]);
     }
 
-    private void readIndexLayer(SeekableInputStream in, DataInputStream din, BlockChunk[] blockChunk, long fileOffset, long scaler, Position actualPosition, AxisOrder axes, BlockDataEncoder encoder, SeekableInputStream blockIn) throws IOException {
+    private void readIndexLayer(SeekableInputStream in, DataInputStream din, BlockChunkImpl[] blockChunk, long fileOffset, long scaler, Position actualPosition, AxisOrder axes, BlockDataEncoder encoder, SeekableInputStream blockIn) throws IOException {
         if (scaler < 0)
             throw new IllegalStateException("Scaler must be positive!");
 
@@ -60,9 +60,9 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
             if (!mask[i])
                 continue;
 
-            int i0 = i % BlockChunk.SIZE;
-            int i1 = (i / BlockChunk.SIZE) % BlockChunk.SIZE;
-            int i2 = i / (BlockChunk.SIZE * BlockChunk.SIZE);
+            int i0 = i % BlockChunkImpl.SIZE;
+            int i1 = (i / BlockChunkImpl.SIZE) % BlockChunkImpl.SIZE;
+            int i2 = i / (BlockChunkImpl.SIZE * BlockChunkImpl.SIZE);
 
             Position chunkPoint = axes.position(i0, i1, i2);
             Position actualPos = add(actualPosition, multiply(chunkPoint, scaler));
@@ -104,7 +104,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
         SeekableOutputStream indexesOut = new SeekableOutputStream(channel);
 
-        BlockChunk blockChunk = convertToBlockChunk(placements, axisOrder);
+        BlockChunkImpl blockChunk = convertToBlockChunk(placements, axisOrder);
         try {
             writeIndexes(indexesOut, (long) blockChunk.getScaler(), blockChunk, blockIndexes);
             return channel.toByteArray();
@@ -113,26 +113,26 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         }
     }
 
-    private BlockChunk convertToBlockChunk(Iterator<BlockPlacement> placements, AxisOrder axisOrder) {
-        BlockChunk blockChunk = new BlockChunk(axisOrder, 1, Position.ZERO, Position.ZERO);
+    private BlockChunkImpl convertToBlockChunk(Iterator<BlockPlacement> placements, AxisOrder axisOrder) {
+        BlockChunkImpl blockChunk = new BlockChunkImpl(axisOrder, 1, Position.ZERO, Position.ZERO);
         while (placements.hasNext())
             blockChunk = setBlock(blockChunk, placements.next());
 
         return blockChunk;
     }
 
-    private BlockChunk setBlock(BlockChunk blockChunk, BlockPlacement placement) {
+    private BlockChunkImpl setBlock(BlockChunkImpl blockChunk, BlockPlacement placement) {
         Position pos = placement.position();
 
         int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
         if (maxAxis >= blockChunk.getScaler())
-            blockChunk = new BlockChunk(blockChunk.getAxisOrder(), Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, blockChunk);
+            blockChunk = new BlockChunkImpl(blockChunk.getAxisOrder(), Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, blockChunk);
 
         blockChunk.setBlock(placement);
         return blockChunk;
     }
 
-    private void writeIndexes(SeekableOutputStream indexesOut, long scaler, BlockChunk blockChunk, Map<BlockData, Long> blockIndexes) throws IOException {
+    private void writeIndexes(SeekableOutputStream indexesOut, long scaler, BlockChunkImpl blockChunk, Map<BlockData, Long> blockIndexes) throws IOException {
         Map<Pointer, Long> pointerFileOffsets = new IdentityHashMap<>();
         Map<Pointer, Entry<Pointer, Integer>> pointToParent = new IdentityHashMap<>();
 

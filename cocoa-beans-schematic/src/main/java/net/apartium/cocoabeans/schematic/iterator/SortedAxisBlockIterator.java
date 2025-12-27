@@ -1,6 +1,6 @@
 package net.apartium.cocoabeans.schematic.iterator;
 
-import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.block.BlockChunkImpl;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
@@ -13,12 +13,12 @@ import java.util.Iterator;
 @ApiStatus.AvailableSince("0.0.46")
 public class SortedAxisBlockIterator implements BlockIterator {
 
-    private final BlockChunk chunk;
+    private final BlockChunkImpl chunk;
     private final Iterator<Position> positionIterator;
     private final AxisOrder axisOrder;
     private BlockPlacement next;
 
-    public SortedAxisBlockIterator(BlockChunk chunk, AreaSize size, AxisOrder axisOrder) {
+    public SortedAxisBlockIterator(BlockChunkImpl chunk, AreaSize size, AxisOrder axisOrder) {
         this.chunk = chunk;
         this.axisOrder = axisOrder;
         this.positionIterator = axisOrder.iterator(

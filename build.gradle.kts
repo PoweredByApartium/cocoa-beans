@@ -121,6 +121,7 @@ allprojects {
         compileOnly(rootProject.libs.jetbrains.annotations)
 
         testCompileOnly(rootProject.libs.jetbrains.annotations)
+        testCompileOnly(rootProject.libs.jspecify)
 
         testImplementation(platform(rootProject.libs.junit.bom))
 

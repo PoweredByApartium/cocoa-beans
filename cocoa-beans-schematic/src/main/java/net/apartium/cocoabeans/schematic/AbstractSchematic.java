@@ -1,9 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.Mathf;
-import net.apartium.cocoabeans.schematic.block.BlockChunk;
-import net.apartium.cocoabeans.schematic.block.BlockData;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
@@ -12,13 +10,10 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.*;
 
 /**
  * @hidden
@@ -28,19 +23,15 @@ import java.util.*;
 @NullMarked
 public abstract class AbstractSchematic implements Schematic {
 
-    protected MinecraftPlatform platform;
-    protected Instant created = Instant.now();
-    protected SchematicMetadata metadata;
+    protected final MinecraftPlatform platform;
+    protected final Instant created;
+    protected final SchematicMetadata metadata;
 
-    protected Position offset = Position.ZERO;
-    protected AreaSize size = AreaSize.box(0);
-    protected AxisOrder axes = AxisOrder.XYZ;
+    protected final Position offset;
+    protected final AreaSize size;
+    protected final AxisOrder axes;
 
-    protected BlockChunk blockChunk;
-
-    public AbstractSchematic() {
-        this.blockChunk = new BlockChunk(axes, 1, Position.ZERO, Position.ZERO);
-    }
+    protected final BlockChunk blockChunk;
 
     public AbstractSchematic(
             MinecraftPlatform platform,
@@ -58,13 +49,8 @@ public abstract class AbstractSchematic implements Schematic {
         this.size = size;
         this.axes = axes;
 
-        this.blockChunk = new BlockChunk(axes, 1, Position.ZERO, Position.ZERO);
-        while (iterator.hasNext()) {
-            BlockPlacement placement = iterator.next();
+        this.blockChunk = iterator.toBlockChunk(axes);
 
-            rescaleChunkIfNeeded(placement.position());
-            this.blockChunk.setBlock(placement);
-        }
     }
 
     public AbstractSchematic(Schematic schematic) {
@@ -79,11 +65,6 @@ public abstract class AbstractSchematic implements Schematic {
         );
     }
 
-    protected void rescaleChunkIfNeeded(Position pos) {
-        int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
-        if (maxAxis >= this.blockChunk.getScaler())
-            this.blockChunk = new BlockChunk(axes, Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, this.blockChunk);
-    }
 
     @Override
     public MinecraftPlatform originPlatform() {

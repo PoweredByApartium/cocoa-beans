@@ -24,10 +24,6 @@ import static net.apartium.cocoabeans.spigot.Locations.toVector;
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematic extends AbstractSchematic {
 
-    public SpigotSchematic() {
-        super();
-    }
-
     public SpigotSchematic(MinecraftPlatform platform, Instant created, SchematicMetadata metadata, Position offset, AreaSize size, AxisOrder axes, BlockIterator iterator) {
         super(platform, created, metadata, offset, size, axes, iterator);
     }
