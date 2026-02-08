@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.schematic.block;
 
-import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +19,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         this(chunk.getAxisOrder(), chunk.getScaler(), chunk.getActualPos(), chunk.getChunkPos(), chunk);
     }
 
+    @Override
     public boolean setBlock(BlockPlacement placement) {
         Position pos = placement.position();
         BlockData data = placement.block();
@@ -79,13 +79,13 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             }
             else {
                 Position chunkPoint = axisOrder.position(i0, i1, i2);
-                pointer = new ChunkPointer(new BlockChunkImpl(
+                pointer = new ChunkPointer(new MutableBlockChunkImpl(
                         axisOrder,
                         nextScaler,
                         new Position(actualPos).add(new Position(chunkPoint).multiply(scaler)),
                         chunkPoint
                 ));
-                ((ChunkPointer) pointer).getChunk().setBlock(placement);
+                ((MutableBlockChunk) ((ChunkPointer) pointer).getChunk()).setBlock(placement);
             }
 
             pointers[count] = pointer;
@@ -98,7 +98,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             pointers[count] = new BlockPointer(data);
             return true;
         } else if (pointer instanceof ChunkPointer chunkPointer) {
-            return chunkPointer.getChunk().setBlock(placement);
+            BlockChunk chunk = chunkPointer.getChunk();
+            if (!(chunk instanceof MutableBlockChunk mutableChunk))
+                throw new RuntimeException("Unexpected chunk type: " + chunk.getClass().getSimpleName());
+
+            return mutableChunk.setBlock(placement);
         }
 
         return false;
@@ -130,6 +134,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
 
     }
 
+    @Override
     public @Nullable BlockData removeBlock(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
             return null;
@@ -158,7 +163,10 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         if (!(pointer instanceof ChunkPointer chunkPointer))
             return null;
 
-        BlockData blockData = chunkPointer.getChunk().removeBlock(pos);
+        if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))
+            throw new RuntimeException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
+
+        BlockData blockData = chunk.removeBlock(pos);
         if (chunkPointer.getChunk().getMask() == 0)
             removeChunk(count, index);
 

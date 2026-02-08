@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
@@ -344,7 +346,19 @@ class CocoaSchematicFormatTest {
 
     @Test
     void removeBlock() {
-        SchematicBuilder<?> builder = new TestSchematic().toBuilder();
+        SchematicBuilder<?> builder = new TestSchematic(
+                new MinecraftPlatform(
+                        MinecraftVersion.V1_8_9, "test", "0.0.1"
+                ),
+                Instant.now(),
+                new TestMetaData(
+                        Map.of()
+                ),
+                Position.ZERO,
+                AreaSize.box(1),
+                AxisOrder.XYZ,
+                new BlockChunkIterator(BlockChunk.empty())
+        ).toBuilder();
 
         GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
 

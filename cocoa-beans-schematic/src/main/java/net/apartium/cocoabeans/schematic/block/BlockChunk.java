@@ -7,11 +7,13 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 public interface BlockChunk {
 
     static MutableBlockChunk empty() {
-
+        return new MutableBlockChunkImpl(AxisOrder.XYZ, 1, Position.ZERO, Position.ZERO);
     }
 
     // todo make not array
     Pointer[] getPointers();
+
+    BlockData getBlock(Position pos);
 
     long getMask();
 

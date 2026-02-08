@@ -1,9 +1,7 @@
 package net.apartium.cocoabeans.schematic.format;
 
 import net.apartium.cocoabeans.Mathf;
-import net.apartium.cocoabeans.schematic.block.BlockChunkImpl;
-import net.apartium.cocoabeans.schematic.block.BlockData;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
@@ -131,7 +129,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
             long maxDimensions = (long) Math.max(dimensions.width(), Math.max(dimensions.height(), dimensions.depth()));
             long scaler = Mathf.nextPowerOfFour(maxDimensions);
-            BlockChunkImpl blockChunk = new BlockChunkImpl(axes, scaler, Position.ZERO, Position.ZERO);
+            MutableBlockChunk blockChunk = new MutableBlockChunkImpl(axes, scaler, Position.ZERO, Position.ZERO);
 
             while (iterator.hasNext()) {
                 BlockPlacement placement = iterator.next();

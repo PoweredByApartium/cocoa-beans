@@ -33,7 +33,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     protected Instant created = Instant.now();
     protected SchematicMetadata metadata;
     protected AreaSize size;
-    protected BlockChunk blockChunk = new BlockChunkImpl(AxisOrder.XYZ, 1, Position.ZERO, Position.ZERO);
+    protected MutableBlockChunk blockChunk = BlockChunk.empty();
     protected Position offset = Position.ZERO;
     protected AxisOrder axes = AxisOrder.XYZ;
 
@@ -47,7 +47,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         this.offset = schematic.offset();
         this.axes = schematic.axisOrder();
 
-        this.blockChunk = new BlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
         schematic.blocksIterator().forEachRemaining(this::setBlock);
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
 
     @Override
     public SchematicBuilder<T> rotate(int degrees) {
-        BlockChunkImpl newChunk = new BlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
 
@@ -166,7 +166,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
 
     @Override
     public SchematicBuilder<T> flip(@NonNls @NotNull Axis axis) {
-        BlockChunkImpl newChunk = new BlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
         while (iterator.hasNext()) {
@@ -212,7 +212,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     public SchematicBuilder<T> translate(AxisOrder axisOrder) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
         this.axes = axisOrder;
-        this.blockChunk = new BlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();
 
@@ -225,7 +225,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     @Override
     public SchematicBuilder<T> shift(Axis axis, int amount) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
-        this.blockChunk = new BlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();
             Position position = new Position(placement.position());
@@ -301,7 +301,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     protected void rescaleChunkIfNeeded(Position pos) {
         int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
         if (maxAxis >= this.blockChunk.getScaler())
-            this.blockChunk = new BlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, this.blockChunk);
+            this.blockChunk = new MutableBlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, this.blockChunk);
     }
 
     @Override
@@ -313,7 +313,10 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
             if (!(this.blockChunk.getPointers()[0] instanceof ChunkPointer chunkPointer))
                 break;
 
-            this.blockChunk = chunkPointer.getChunk();
+            if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))
+                throw new RuntimeException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
+
+            this.blockChunk = chunk;
         }
 
         this.rescaleSize();

@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic.block;
 
+import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
@@ -51,6 +52,7 @@ public class BlockChunkImpl implements BlockChunk {
         this(axisOrder, scaler, actualPos, chunkPos, null);
     }
 
+    @Override
     public BlockData getBlock(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
             return null;

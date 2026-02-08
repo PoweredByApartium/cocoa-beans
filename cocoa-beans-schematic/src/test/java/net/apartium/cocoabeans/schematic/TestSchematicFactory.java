@@ -1,10 +1,13 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.block.BlockChunk;
+import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
@@ -15,7 +18,19 @@ public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
 
     @Override
     public SchematicBuilder<TestSchematic> createSchematic() {
-        return new TestSchematic().toBuilder();
+        return new TestSchematic(
+                new MinecraftPlatform(
+                        MinecraftVersion.V1_8_9, "test", "0.0.1"
+                ),
+                Instant.now(),
+                new TestMetaData(
+                        Map.of()
+                ),
+                Position.ZERO,
+                AreaSize.box(1),
+                AxisOrder.XYZ,
+                new BlockChunkIterator(BlockChunk.empty())
+        ).toBuilder();
     }
 
     @Override

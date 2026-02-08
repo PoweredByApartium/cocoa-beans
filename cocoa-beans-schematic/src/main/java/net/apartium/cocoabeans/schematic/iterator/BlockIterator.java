@@ -24,12 +24,11 @@ public interface BlockIterator extends Iterator<BlockPlacement> {
     @Nullable Position current();
 
     default @NonNull BlockChunk toBlockChunk(AxisOrder axisOrder) {
-        MutableBlockChunkImpl chunk = (MutableBlockChunkImpl) BlockChunk.empty();
+        MutableBlockChunk chunk = BlockChunk.empty();
         while (hasNext()) {
             BlockPlacement placement = next();
 
-            // todo kfir what the FUCK
-            HomoUtils.rescaleChunkIfNeeded(chunk, axisOrder, placement.position());
+            chunk = BlockChunkUtils.rescaleChunkIfNeeded(chunk, axisOrder, placement.position());
             chunk.setBlock(placement);
         }
 
