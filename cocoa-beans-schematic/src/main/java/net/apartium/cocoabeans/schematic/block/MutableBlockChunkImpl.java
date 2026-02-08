@@ -20,6 +20,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
     }
 
     @Override
+    protected BlockChunk create(BlockChunk blockChunk) {
+        return new MutableBlockChunkImpl(blockChunk);
+    }
+
+    @Override
     protected BlockChunk create(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         return new MutableBlockChunkImpl(axisOrder, scaler, actualPos, chunkPos, prev);
     }
