@@ -20,6 +20,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
     }
 
     @Override
+    protected BlockChunk create(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+        return new MutableBlockChunkImpl(axisOrder, scaler, actualPos, chunkPos, prev);
+    }
+
+    @Override
     public boolean setBlock(BlockPlacement placement) {
         Position pos = placement.position();
         BlockData data = placement.block();
@@ -79,11 +84,12 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             }
             else {
                 Position chunkPoint = axisOrder.position(i0, i1, i2);
-                pointer = new ChunkPointer(new MutableBlockChunkImpl(
+                pointer = new ChunkPointer(create(
                         axisOrder,
                         nextScaler,
                         new Position(actualPos).add(new Position(chunkPoint).multiply(scaler)),
-                        chunkPoint
+                        chunkPoint,
+                        null
                 ));
                 ((MutableBlockChunk) ((ChunkPointer) pointer).getChunk()).setBlock(placement);
             }

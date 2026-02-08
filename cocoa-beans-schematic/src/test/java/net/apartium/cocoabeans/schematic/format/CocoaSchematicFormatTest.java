@@ -441,4 +441,58 @@ class CocoaSchematicFormatTest {
         assertEquals(new AreaSize(5, 5, 5), schematic.size());
     }
 
+    @Test
+    void simpleSetBlock() {
+        SchematicBuilder<?> builder = new TestSchematic(
+                new MinecraftPlatform(
+                        MinecraftVersion.V1_8_9, "test", "0.0.1"
+                ),
+                Instant.now(),
+                new TestMetaData(
+                        Map.of()
+                ),
+                Position.ZERO,
+                AreaSize.box(1),
+                AxisOrder.XYZ,
+                new BlockChunkIterator(BlockChunk.empty())
+        ).toBuilder();
+
+        GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
+
+        for (int x = 0; x < 2; x++) {
+            for (int y = 0; y < 2; y++) {
+                for (int z = 0; z < 2; z++) {
+                    builder.setBlock(x, y, z, dirtBlock);
+                }
+            }
+        }
+
+        Schematic schematic = builder.build();
+
+        assertEquals(dirtBlock, schematic.getBlockData(0, 0, 0));
+        assertEquals(dirtBlock, schematic.getBlockData(1, 0, 0));
+        assertEquals(dirtBlock, schematic.getBlockData(0, 1, 0));
+        assertEquals(dirtBlock, schematic.getBlockData(0, 0, 1));
+        assertEquals(dirtBlock, schematic.getBlockData(1, 1, 0));
+        assertEquals(dirtBlock, schematic.getBlockData(1, 0, 1));
+        assertEquals(dirtBlock, schematic.getBlockData(0, 1, 1));
+        assertEquals(dirtBlock, schematic.getBlockData(1, 1, 1));
+
+        assertNull(schematic.getBlockData(-1, 0, 0));
+        assertNull(schematic.getBlockData(0, -1, 0));
+        assertNull(schematic.getBlockData(0, 0, -1));
+        assertNull(schematic.getBlockData(-1, -1, 0));
+        assertNull(schematic.getBlockData(0, -1, -1));
+        assertNull(schematic.getBlockData(-1, -1, -1));
+
+        for (int x = 2; x < 10; x++) {
+            for (int y = 2; y < 10; y++) {
+                for (int z = 2; z < 10; z++) {
+                    assertNull(schematic.getBlockData(x, y, z), "Should be null at (" + x + ", " + y + ", " + z + ")");
+                    assertNull(schematic.getBlockData(-x, -y, -z), "Should be null at (" + -x + ", " + -y + ", " + -z + ")");
+                }
+            }
+        }
+    }
+
 }

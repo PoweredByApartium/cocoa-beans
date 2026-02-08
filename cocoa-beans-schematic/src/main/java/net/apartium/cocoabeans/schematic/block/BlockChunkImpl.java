@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 /**
  * Represents a batch of blocks in a schematic
@@ -28,20 +29,47 @@ public class BlockChunkImpl implements BlockChunk {
     /* package-private */ Pointer[] pointers = new Pointer[0];
     /* package-private */ long mask = 0;
 
-    public BlockChunkImpl(BlockChunkImpl chunk) {
-        this(chunk.getAxisOrder(), chunk.getScaler(), chunk.getActualPos(), chunk.getChunkPos(), chunk);
+    public BlockChunkImpl(BlockChunk chunk) {
+        this.axisOrder = chunk.getAxisOrder();
+        this.scaler = chunk.getScaler();
+        this.nextScaler = Math.floor(scaler / SIZE);
+        this.actualPos = chunk.getActualPos();
+        this.chunkPos = chunk.getChunkPos();
+
+        // Copy pointers as immutable
+        this.mask = chunk.getMask();
+
+        Pointer[] chunkPointers = chunk.getPointers();
+        this.pointers = new Pointer[chunkPointers.length];
+
+        for (int i = 0; i < chunkPointers.length; i++) {
+            Pointer pointer = chunkPointers[i];
+            if (pointer instanceof ChunkPointer chunkPointer) {
+                pointer = new ChunkPointer(
+                        create(chunkPointer.getChunk())
+                );
+            } else if (pointer instanceof BlockPointer blockPointer) {
+                pointer = new BlockPointer(
+                        blockPointer.getData()
+                );
+            } else {
+                throw new IllegalArgumentException("Invalid pointer type: " + pointer.getClass().getSimpleName());
+            }
+
+            this.pointers[i] = pointer;
+        }
     }
 
-    public BlockChunkImpl(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    protected BlockChunkImpl(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         this.axisOrder = axisOrder;
         this.scaler = scaler;
         this.nextScaler = Math.floor(scaler / SIZE);
         this.actualPos = actualPos;
         this.chunkPos = chunkPos;
-        if (prev != null) {
+        if (prev != null && scaler != 0) {
             mask = 1;
             if (prev.getScaler() != nextScaler) {
-                pointers = new Pointer[]{new ChunkPointer(new BlockChunkImpl(axisOrder, nextScaler, actualPos, chunkPos, prev))};
+                pointers = new Pointer[]{new ChunkPointer(create(axisOrder, nextScaler, actualPos, chunkPos, prev))};
             } else {
                 pointers = new Pointer[]{new ChunkPointer(prev)};
             }
@@ -50,6 +78,20 @@ public class BlockChunkImpl implements BlockChunk {
 
     public BlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
         this(axisOrder, scaler, actualPos, chunkPos, null);
+    }
+
+    protected BlockChunk create(BlockChunk blockChunk) {
+        return new BlockChunkImpl(blockChunk);
+    }
+
+    protected BlockChunk create(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+        return new BlockChunkImpl(
+                axisOrder,
+                scaler,
+                actualPos,
+                chunkPos,
+                prev
+        );
     }
 
     @Override
