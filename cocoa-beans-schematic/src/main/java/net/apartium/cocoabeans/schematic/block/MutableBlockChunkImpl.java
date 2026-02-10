@@ -5,6 +5,8 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.OptionalInt;
+
 /**
  * MutableBlockChunkImpl provides a mutable implementation of BlockChunk,
  * allowing for dynamic modification of block data within a chunk.
@@ -236,23 +238,15 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
      */
     @Override
     public @Nullable BlockData removeBlock(Position pos) {
-        if (axisOrder.compare(pos, actualPos) < 0)
+        OptionalInt optIndex = getIndex(pos);
+        OptionalInt optCount = getCountBits(optIndex);
+
+        if (optIndex.isEmpty() || optCount.isEmpty())
             return null;
 
-        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
-        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
-            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+        int index = optIndex.getAsInt();
+        int count = optCount.getAsInt();
 
-        int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
-        int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
-        int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
-
-        int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
-        if (((mask >> index) & 1) == 0)
-            return null;
-
-
-        int count = countBits(mask, index) - 1;
         Pointer pointer = this.pointers[count];
 
         if (scaler == 1) {

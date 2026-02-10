@@ -8,6 +8,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.OptionalInt;
 
 /**
  * Implementation of the {@link BlockChunk} interface representing a batch of blocks in a schematic.
@@ -138,17 +139,9 @@ public class BlockChunkImpl implements BlockChunk {
         );
     }
 
-    /**
-     * Retrieves the block data at the specified position.
-     * Returns null if the position is outside the chunk or not present in the mask.
-     * @param pos the position to query
-     * @return the BlockData at the position, or null if not present
-     */
-    @Nullable
-    @Override
-    public BlockData getBlock(Position pos) {
+    protected OptionalInt getIndex(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
-            return null;
+            return OptionalInt.empty();
 
         Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
         if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
@@ -158,12 +151,36 @@ public class BlockChunkImpl implements BlockChunk {
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
         int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
 
-        int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
+        return OptionalInt.of(i0 + (i1 * SIZE) + (i2 * SIZE * SIZE));
+    }
+
+    protected OptionalInt getCountBits(OptionalInt optIndex) {
+        if (optIndex.isEmpty())
+            return OptionalInt.empty();
+
+        int index = optIndex.getAsInt();
 
         if (((mask >> index) & 1) == 0)
+            return OptionalInt.empty();
+
+        return OptionalInt.of(countBits(mask, index) - 1);
+    }
+
+    /**
+     * Retrieves the block data at the specified position.
+     * Returns null if the position is outside the chunk or not present in the mask.
+     * @param pos the position to query
+     * @return the BlockData at the position, or null if not present
+     */
+    @Nullable
+    @Override
+    public BlockData getBlock(Position pos) {
+        OptionalInt optCount = getCountBits(getIndex(pos));
+        if (optCount.isEmpty())
             return null;
 
-        int count = countBits(mask, index) - 1;
+        int count = optCount.getAsInt();
+
         Pointer pointer = pointers[count];
         if (pointer instanceof BlockPointer blockPointer)
             return blockPointer.getData();
