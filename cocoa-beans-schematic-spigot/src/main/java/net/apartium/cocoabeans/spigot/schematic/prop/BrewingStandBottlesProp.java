@@ -5,6 +5,9 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.BrewingStand;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 @ApiStatus.AvailableSince("0.0.46")
 public record BrewingStandBottlesProp(int[] value) implements BlockProp<int[]>, SpigotPropHandler {
 
@@ -17,4 +20,15 @@ public record BrewingStandBottlesProp(int[] value) implements BlockProp<int[]>, 
             brewingStand.setBottle(bottle, true);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BrewingStandBottlesProp that = (BrewingStandBottlesProp) o;
+        return Objects.deepEquals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(value);
+    }
 }

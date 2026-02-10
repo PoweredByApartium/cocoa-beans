@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
@@ -40,15 +40,15 @@ public class SpigotSchematic extends AbstractSchematic {
         return paste(origin, axisOrder, (block, blockPlacement) -> block.getType() == Material.AIR);
     }
 
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace) {
         return paste(origin, axisOrder, shouldPlace, BlockPlacement::block);
     }
 
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
         return paste(origin, axisOrder, shouldPlace, mapper, SpigotSchematicPlacer.getInstance());
     }
 
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
+    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
         return new SpigotPasteOperation(
                 origin.clone().add(toVector(offset)),
                 sortedIterator(axisOrder),

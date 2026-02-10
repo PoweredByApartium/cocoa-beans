@@ -16,6 +16,8 @@ import java.time.Instant;
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematicHelper {
 
+    private SpigotSchematicHelper() {}
+    
     public static final MinecraftVersion VERSION = ServerUtils.getVersion();
 
     public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {

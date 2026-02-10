@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.AbstractPasteOperation;
-import net.apartium.cocoabeans.schematic.PasteOperation;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
@@ -22,12 +21,12 @@ import static net.apartium.cocoabeans.spigot.Locations.toVector;
 public class SpigotPasteOperation extends AbstractPasteOperation {
 
     private final Location origin;
-    private BiFunction<Block, BlockPlacement, Boolean> shouldPlace;
+    private BiPredicate<Block, BlockPlacement> shouldPlace;
     private Function<BlockPlacement, BlockData> mapper;
     private final SpigotSchematicPlacer placer;
     private final List<BiConsumer<Block, BlockData>> postPlaceActions = new ArrayList<>();
 
-    public SpigotPasteOperation(Location origin, BlockIterator iterator, AxisOrder axisOrder, BiFunction<Block, BlockPlacement, Boolean> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
+    public SpigotPasteOperation(Location origin, BlockIterator iterator, AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
         super(iterator, axisOrder);
         this.origin = origin;
         this.shouldPlace = shouldPlace;
@@ -35,7 +34,7 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         this.placer = placer;
     }
 
-    public SpigotPasteOperation setShouldPlace(BiFunction<Block, BlockPlacement, Boolean> shouldPlace) {
+    public SpigotPasteOperation setShouldPlace(BiPredicate<Block, BlockPlacement> shouldPlace) {
         this.shouldPlace = shouldPlace;
         return this;
     }
@@ -59,7 +58,7 @@ public class SpigotPasteOperation extends AbstractPasteOperation {
         placement = mapping(placement);
         Block block = origin.clone().add(toVector(placement.position())).getBlock();
 
-        if (!shouldPlace.apply(block, placement))
+        if (!shouldPlace.test(block, placement))
             return false;
 
         placer.place(block, placement);

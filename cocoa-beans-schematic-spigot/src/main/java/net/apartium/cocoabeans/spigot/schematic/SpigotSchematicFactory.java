@@ -9,12 +9,10 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")

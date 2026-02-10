@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-// todo remove
 @ApiStatus.AvailableSince("0.0.46")
 public class SpigotSchematicMetadata extends AbstractSchematicMetadata {
 
