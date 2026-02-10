@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.seekable;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +65,23 @@ public final class SeekableInputStream extends InputStream {
         one.clear();
         int n = channel.read(one);
         return (n == -1) ? -1 : (one.get(0) & 0xFF);
+    }
+
+    @Override
+    public int read(@NonNull byte[] b, int off, int len) throws IOException {
+        if (b == null)
+            throw new NullPointerException();
+
+        if (off < 0 || len < 0 || off + len > b.length)
+            throw new IndexOutOfBoundsException();
+
+        if (len == 0)
+            return 0;
+
+
+        ByteBuffer buffer = ByteBuffer.wrap(b, off, len);
+        int n = channel.read(buffer);
+        return n == 0 ? -1 : n;
     }
 
     @Override

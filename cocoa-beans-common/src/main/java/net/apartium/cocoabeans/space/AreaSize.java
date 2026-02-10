@@ -42,18 +42,6 @@ public record AreaSize(double width, double height, double depth) {
     }
 
     /**
-     * Converts this AreaSize to a box-shaped region starting at the given position.
-     * @param start the starting position
-     * @return a StrictBoxRegion representing the area
-     */
-    public Region toBoxRegion(Position start) {
-        return new StrictBoxRegion(
-                start,
-                new Position(start.getX() + width, start.getY() + height, start.getZ() + depth)
-        );
-    }
-
-    /**
      * Calculates the volume of the area as an integer, flooring each dimension first.
      * @return the volume as an integer
      */

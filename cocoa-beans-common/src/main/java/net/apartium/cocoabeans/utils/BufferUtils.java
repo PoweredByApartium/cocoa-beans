@@ -26,6 +26,8 @@ import java.util.zip.CRC32;
 @ApiStatus.AvailableSince("0.0.46")
 public class BufferUtils {
 
+    private BufferUtils() { }
+
     private static final CRC32 crc = new CRC32();
 
     /**
@@ -239,17 +241,20 @@ public class BufferUtils {
      * @return the enum value
      */
     public static <T extends Enum<T>> T readEnum(DataInput in, Class<T> clazz, Supplier<T[]> values) {
+        String name;
+        int fallbackOrdinal;
         try {
-            String name = readString(in);
-            int fallbackOrdinal = in.readInt();
-
-            try {
-                return Enum.valueOf(clazz, name);
-            } catch (IllegalArgumentException e) {
-                return values.get()[fallbackOrdinal];
-            }
+            name = readString(in);
+            fallbackOrdinal = in.readInt();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+
+        try {
+            return Enum.valueOf(clazz, name);
+        } catch (IllegalArgumentException e) {
+            return values.get()[fallbackOrdinal];
         }
     }
 

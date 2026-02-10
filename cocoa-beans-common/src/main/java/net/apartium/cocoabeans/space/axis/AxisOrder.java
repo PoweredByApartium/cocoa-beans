@@ -142,13 +142,32 @@ public enum AxisOrder implements Comparator<Position> {
      * @return a Position object
      */
     public Position position(int i0, int i1, int i2) {
-        Axis first = getFirst();
-        Axis second = getSecond();
-        Axis third = getThird();
+        int x = 0;
+        int y = 0;
+        int z = 0;
+
+        switch (getFirst()) {
+            case X -> x = i0;
+            case Y -> y = i0;
+            case Z -> z = i0;
+        }
+
+        switch (getSecond()) {
+            case X -> x = i1;
+            case Y -> y = i1;
+            case Z -> z = i1;
+        }
+
+        switch (getThird()) {
+            case X -> x = i2;
+            case Y -> y = i2;
+            case Z -> z = i2;
+        }
+
         return new Position(
-                first == Axis.X ? i0 : first == Axis.Y ? i1 : i2,
-                second == Axis.X ? i0 : second == Axis.Y ? i1 : i2,
-                third == Axis.X ? i0 : third == Axis.Y ? i1 : i2
+                x,
+                y,
+                z
         );
     }
 
@@ -159,14 +178,12 @@ public enum AxisOrder implements Comparator<Position> {
      * @param i2 value for the third axis
      * @return an AreaSize object
      */
-    public AreaSize dimensions(int i0, int i1, int i2) {
-        Axis first = getFirst();
-        Axis second = getSecond();
-        Axis third = getThird();
+    public AreaSize areaSize(int i0, int i1, int i2) {
+        Position position = position(i0, i1, i2);
         return new AreaSize(
-                first == Axis.X ? i0 : first == Axis.Y ? i1 : i2,
-                second == Axis.X ? i0 : second == Axis.Y ? i1 : i2,
-                third == Axis.X ? i0 : third == Axis.Y ? i1 : i2
+                position.getX(),
+                position.getY(),
+                position.getZ()
         );
     }
 

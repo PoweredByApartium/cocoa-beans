@@ -15,7 +15,10 @@ import static net.apartium.cocoabeans.CollectionHelpers.range;
     private final int idxY;
     private final int idxZ;
 
-    private int i0 = 0, i1 = 0, i2 = 0;
+    private int i0 = 0;
+    private int i1 = 0;
+    private int i2 = 0;
+
     private final List<Double> range0;
     private final List<Double> range1;
     private final List<Double> range2;
