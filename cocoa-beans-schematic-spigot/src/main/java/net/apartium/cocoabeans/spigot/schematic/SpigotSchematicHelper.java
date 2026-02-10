@@ -5,12 +5,12 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
-import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 
@@ -38,7 +38,7 @@ public class SpigotSchematicHelper {
      * @param placer     The placer used to convert blocks to schematic block data.
      * @return           The loaded {@link SpigotSchematic}, or {@code null} if an error occurs during extraction.
      */
-    public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {
+    public static @Nullable SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {
         AreaSize size = new AreaSize(
                 Math.abs(pos0.getX() - pos1.getX()) + 1,
                 Math.abs(pos0.getY() - pos1.getY()) + 1,
