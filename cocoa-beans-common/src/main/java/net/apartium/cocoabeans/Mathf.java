@@ -66,6 +66,15 @@ public class Mathf {
         return a + (b - a) * t;
     }
 
+    /**
+     * Returns the next power of four greater than or equal to the given value.
+     * <p>
+     * If {@code x} is less than or equal to 1, returns 1. If {@code x} is too large to fit in a long,
+     * returns 0 as an overflow guard.
+     * </p>
+     * @param x the input value
+     * @return the next power of four greater than or equal to {@code x}, or 0 if overflow
+     */
     public static long nextPowerOfFour(long x) {
         if (x <= 1)
             return 1L;
@@ -79,6 +88,14 @@ public class Mathf {
         return 1L << shift;
     }
 
+    /**
+     * Computes the base-4 logarithm of the given value.
+     * <p>
+     * Uses the natural logarithm and divides by the precomputed value of log(4).
+     * </p>
+     * @param x the value to compute the logarithm for
+     * @return the base-4 logarithm of {@code x}
+     */
     @ApiStatus.AvailableSince("0.0.46")
     public static double log4(long x) {
         return Math.log(x) / LOG4_AS_VALUE;
