@@ -47,5 +47,6 @@
         <toc-element topic="display-team.md"/>
     </toc-element>
     <toc-element topic="spaces.md"/>
+    <toc-element topic="schematic.md"/>
 
 </instance-profile>
