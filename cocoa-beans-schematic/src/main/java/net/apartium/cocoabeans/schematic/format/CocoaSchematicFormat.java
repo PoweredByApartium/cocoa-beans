@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static net.apartium.cocoabeans.utils.FileUtils.*;
+import static net.apartium.cocoabeans.utils.BufferUtils.*;
 
 @ApiStatus.AvailableSince("0.0.46")
 public class CocoaSchematicFormat implements SchematicFormat {

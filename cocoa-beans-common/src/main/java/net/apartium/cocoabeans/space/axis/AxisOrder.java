@@ -51,7 +51,7 @@ public enum AxisOrder implements Comparator<Position> {
         byIds = AxisOrder.values();
         for (int i = 0; i <= 5; i++) {
             if (byIds[i].id != i)
-                throw new RuntimeException("AxisOrder as been loaded incorrectly: " + Arrays.toString(byIds));
+                throw new IllegalStateException("AxisOrder as been loaded incorrectly: " + Arrays.toString(byIds));
         }
     }
 

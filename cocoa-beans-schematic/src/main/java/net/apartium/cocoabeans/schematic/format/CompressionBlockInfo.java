@@ -4,7 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.*;
 
-import static net.apartium.cocoabeans.utils.FileUtils.*;
+import static net.apartium.cocoabeans.utils.BufferUtils.*;
 
 @ApiStatus.AvailableSince("0.0.46")
 public record CompressionBlockInfo(

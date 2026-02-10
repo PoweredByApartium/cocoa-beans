@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.schematic.prop.format;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.NoteBlockNoteProp;
-import net.apartium.cocoabeans.utils.FileUtils;
+import net.apartium.cocoabeans.utils.BufferUtils;
 import org.bukkit.Note;
 
 import java.io.*;
@@ -34,7 +34,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
             }
 
             int octave = in.readInt();
-            Note.Tone tone = FileUtils.readEnum(in, Note.Tone.class, Note.Tone::values);
+            Note.Tone tone = BufferUtils.readEnum(in, Note.Tone.class, Note.Tone::values);
             boolean sharped = in.readBoolean();
 
             return constructor.apply(new Note(octave, tone, sharped));
@@ -70,7 +70,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
             }
 
             out.writeInt(note.getOctave());
-            out.write(FileUtils.writeEnum(note.getTone()));
+            out.write(BufferUtils.writeEnum(note.getTone()));
             out.writeBoolean(note.isSharped());
 
             return byteArray.toByteArray();

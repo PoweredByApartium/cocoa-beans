@@ -12,7 +12,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.39")
 public class Mathf {
 
-    public static final double LOG4 = Math.log(4);
+    @ApiStatus.AvailableSince("0.0.46")
+    public static final double LOG4_AS_VALUE = Math.log(4);
 
     private Mathf () { }
 
@@ -78,8 +79,9 @@ public class Mathf {
         return 1L << shift;
     }
 
+    @ApiStatus.AvailableSince("0.0.46")
     public static double log4(long x) {
-        return Math.log(x) / LOG4;
+        return Math.log(x) / LOG4_AS_VALUE;
     }
 
 }

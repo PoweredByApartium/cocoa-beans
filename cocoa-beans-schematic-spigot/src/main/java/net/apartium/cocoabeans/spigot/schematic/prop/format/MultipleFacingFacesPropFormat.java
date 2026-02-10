@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.schematic.prop.format;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.MultipleFacingFacesProp;
-import net.apartium.cocoabeans.utils.FileUtils;
+import net.apartium.cocoabeans.utils.BufferUtils;
 import org.bukkit.block.BlockFace;
 
 import java.io.ByteArrayInputStream;
@@ -27,7 +27,7 @@ public record MultipleFacingFacesPropFormat(
     public BlockProp<Map<BlockFace, Boolean>> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
 
-        return constructor.apply(Collections.unmodifiableMap(FileUtils.readMapOfEnumBoolean(
+        return constructor.apply(Collections.unmodifiableMap(BufferUtils.readMapOfEnumBoolean(
                 in,
                 BlockFace.class, BlockFace::values
         )));
@@ -67,7 +67,7 @@ public record MultipleFacingFacesPropFormat(
     @Override
     public byte[] encode(BlockProp<?> prop) {
         Map<BlockFace, Boolean> multipleFacingFaces = getMultipleFacingFacesOrElseThrow(prop);
-        return FileUtils.writeMapOfEnumBoolean(multipleFacingFaces);
+        return BufferUtils.writeMapOfEnumBoolean(multipleFacingFaces);
     }
 
 }

@@ -3,7 +3,7 @@ package net.apartium.cocoabeans.spigot.schematic.prop.format;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.WallHeightsProp;
-import net.apartium.cocoabeans.utils.FileUtils;
+import net.apartium.cocoabeans.utils.BufferUtils;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Wall;
 
@@ -32,7 +32,7 @@ public class WallHeightsPropFormat implements BlockPropFormat<Map<BlockFace, Wal
     public BlockProp<Map<BlockFace, Wall.Height>> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
 
-        return constructor.apply(Collections.unmodifiableMap(FileUtils.readMapOfEnums(
+        return constructor.apply(Collections.unmodifiableMap(BufferUtils.readMapOfEnums(
                 in,
                 BlockFace.class, BlockFace::values,
                 Wall.Height.class, Wall.Height::values
@@ -73,7 +73,7 @@ public class WallHeightsPropFormat implements BlockPropFormat<Map<BlockFace, Wal
     @Override
     public byte[] encode(BlockProp<?> prop) {
         Map<BlockFace, Wall.Height> wallHeights = getWallHeightsOrElseThrow(prop);
-        return FileUtils.writeMapOfEnums(wallHeights);
+        return BufferUtils.writeMapOfEnums(wallHeights);
     }
 
 }

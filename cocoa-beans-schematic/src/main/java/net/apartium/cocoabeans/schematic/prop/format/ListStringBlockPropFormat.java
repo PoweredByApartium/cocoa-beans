@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static net.apartium.cocoabeans.utils.FileUtils.readString;
+import static net.apartium.cocoabeans.utils.BufferUtils.readString;
 
 @ApiStatus.AvailableSince("0.0.46")
 public class ListStringBlockPropFormat implements BlockPropFormat<List<String>> {

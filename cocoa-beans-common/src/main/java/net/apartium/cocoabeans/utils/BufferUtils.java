@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import java.util.zip.CRC32;
 
 @ApiStatus.AvailableSince("0.0.46")
-public class FileUtils {
+public class BufferUtils {
 
     private static final CRC32 crc = new CRC32();
 

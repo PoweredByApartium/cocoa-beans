@@ -17,8 +17,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.*;
 
-import static net.apartium.cocoabeans.utils.FileUtils.*;
-import static net.apartium.cocoabeans.utils.FileUtils.writeU64;
+import static net.apartium.cocoabeans.utils.BufferUtils.*;
+import static net.apartium.cocoabeans.utils.BufferUtils.writeU64;
 import static net.apartium.cocoabeans.space.Position.add;
 import static net.apartium.cocoabeans.space.Position.multiply;
 
