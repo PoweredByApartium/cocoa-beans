@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic.block;
 
+import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.Nullable;
@@ -248,8 +249,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         int count = optCount.getAsInt();
 
         Pointer pointer = this.pointers[count];
-        if (pointer == null)
-            throw new NullPointerException("Something went wrong with pointer");
+        Ensures.notNull(pointer, "Something went wrong with pointers");
 
         if (scaler == 1) {
             removeChunk(count, index);
