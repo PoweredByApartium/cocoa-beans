@@ -166,7 +166,12 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
 
     @Override
     public SchematicBuilder<T> flip(@NonNls @NotNull Axis axis) {
-        MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(
+                blockChunk.getAxisOrder(),
+                blockChunk.getScaler(),
+                blockChunk.getActualPos(),
+                blockChunk.getChunkPos()
+        );
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
         while (iterator.hasNext()) {

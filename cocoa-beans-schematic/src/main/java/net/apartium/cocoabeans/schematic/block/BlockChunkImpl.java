@@ -14,11 +14,9 @@ import java.util.function.Function;
  * Represents a batch of blocks in a schematic
  * @see BlockData
  */
-// todo kfir make immutable
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkImpl implements BlockChunk {
 
-    // todo kfir tf
     public static final int SIZE = 4;
 
     /* package-private */ final AxisOrder axisOrder;

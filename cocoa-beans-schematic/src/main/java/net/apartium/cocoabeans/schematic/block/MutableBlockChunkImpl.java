@@ -16,7 +16,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
     }
 
     public MutableBlockChunkImpl(BlockChunk chunk) {
-        this(chunk.getAxisOrder(), chunk.getScaler(), chunk.getActualPos(), chunk.getChunkPos(), chunk);
+        super(chunk);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
 
     @Override
     public MutableBlockChunk mutable() {
-        return this;
+        return new MutableBlockChunkImpl(this);
     }
 
     @Override
