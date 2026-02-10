@@ -29,65 +29,52 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         return new MutableBlockChunkImpl(axisOrder, scaler, actualPos, chunkPos, prev);
     }
 
-    @Override
-    public boolean setBlock(BlockPlacement placement) {
-        Position pos = placement.position();
-        BlockData data = placement.block();
+    private void updateMaskAndShift(int index) {
+        if (((mask >> index) & 1) != 0)
+            return;
 
-        if (axisOrder.compare(pos, actualPos) < 0)
-            return false;
+        mask |= (1L << index);
+        if (((mask >> index) & 1) == 0)
+            throw new IllegalStateException("Something went wrong:\nmask: " + mask + "\nindex: " + index);
 
-        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
-        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
-            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
-
-        int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
-        int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
-        int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
-
-        int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
-        if (((mask >> index) & 1) == 0) {
-            // UPDATE MASK and shift array
-            int count = countBits(mask, index - 1);
-            if (count == 0) {
-                if (pointers.length == 0) {
-                    pointers = new Pointer[1];
-                } else {
-                    Pointer[] clone = pointers;
-                    pointers = new Pointer[pointers.length + 1];
-                    System.arraycopy(clone, 0, pointers, 1, clone.length);
-                }
-            } else {
-                if (pointers.length == count) {
-                    Pointer[] clone = pointers;
-                    pointers = new Pointer[pointers.length + 1];
-                    System.arraycopy(clone, 0, pointers, 0, clone.length);
-                } else {
-                    Pointer[] clone = pointers;
-                    pointers = new Pointer[pointers.length + 1];
-                    for (int i = 0; i < count; i++) {
-                        pointers[i] = clone[i];
-                    }
-
-
-                    for (int i = count + 1; i < pointers.length; i++) {
-                        pointers[i] = clone[i - 1];
-                    }
-                }
+        int count = countBits(mask, index - 1);
+        if (count == 0) {
+            if (pointers.length == 0) {
+                pointers = new Pointer[1];
+                return;
             }
 
-            mask |= (1L << index);
-            if (((mask >> index) & 1) == 0)
-                throw new IllegalStateException("Something went wrong:\nmask: " + mask + "\nindex: " + index);
+            Pointer[] clone = pointers;
+            pointers = new Pointer[pointers.length + 1];
+            System.arraycopy(clone, 0, pointers, 1, clone.length);
+            return;
         }
 
-        int count = countBits(mask, index) - 1;
+        if (pointers.length == count) {
+            Pointer[] clone = pointers;
+            pointers = new Pointer[pointers.length + 1];
+            System.arraycopy(clone, 0, pointers, 0, clone.length);
+            return;
+        }
+
+        Pointer[] clone = pointers;
+        pointers = new Pointer[pointers.length + 1];
+
+        if (count >= 0)
+            System.arraycopy(clone, 0, pointers, 0, count);
+
+        if (pointers.length - (count + 1) >= 0)
+            System.arraycopy(clone, count + 1 - 1, pointers, count + 1, pointers.length - (count + 1));
+    }
+
+    private boolean setPointer(BlockPlacement placement, int i0, int i1, int i2, int count) {
         Pointer pointer = pointers[count];
+        BlockData data = placement.block();
+
         if (pointer == null) {
             if (scaler == 1) {
                 pointer = new BlockPointer(data);
-            }
-            else {
+            } else {
                 Position chunkPoint = axisOrder.position(i0, i1, i2);
                 pointer = new ChunkPointer(create(
                         axisOrder,
@@ -102,13 +89,17 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             pointers[count] = pointer;
             return true;
 
-        } else if (pointer instanceof BlockPointer blockPointer) {
+        }
+
+        if (pointer instanceof BlockPointer blockPointer) {
             if (blockPointer.getData().equals(data))
                 return true;
 
             pointers[count] = new BlockPointer(data);
             return true;
-        } else if (pointer instanceof ChunkPointer chunkPointer) {
+        }
+
+        if (pointer instanceof ChunkPointer chunkPointer) {
             BlockChunk chunk = chunkPointer.getChunk();
             if (!(chunk instanceof MutableBlockChunk mutableChunk))
                 throw new RuntimeException("Unexpected chunk type: " + chunk.getClass().getSimpleName());
@@ -117,6 +108,34 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         }
 
         return false;
+    }
+
+    @Override
+    public boolean setBlock(BlockPlacement placement) {
+        Position pos = placement.position();
+
+        if (axisOrder.compare(pos, actualPos) < 0)
+            return false;
+
+        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
+        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
+            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+
+        int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
+        int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
+        int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
+
+        int index = i0 + (i1 * SIZE) + (i2 * SIZE * SIZE);
+        updateMaskAndShift(index);
+
+        int count = countBits(mask, index) - 1;
+        return setPointer(
+                placement,
+                i0,
+                i1,
+                i2,
+                count
+        );
     }
 
     private void removeChunk(int count, int index) {

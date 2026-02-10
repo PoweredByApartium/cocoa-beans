@@ -67,10 +67,9 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
             Position chunkPoint = axes.position(i0, i1, i2);
             Position actualPos = add(actualPosition, multiply(chunkPoint, scaler));
 
-
             long offsetBefore = in.position();
             if (scaler == 1) {
-                // READ BLock
+                // READ Block
                 if (in.position() >= in.size())
                     throw new EOFException("Something went wrong");
 
@@ -126,7 +125,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
 
         int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
         if (maxAxis >= blockChunk.getScaler())
-            blockChunk = new MutableBlockChunkImpl(blockChunk.getAxisOrder(), Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, blockChunk);
+            blockChunk = new MutableBlockChunkImpl(blockChunk.getAxisOrder(), Mathf.nextPowerOfFour(maxAxis) * 4.0, Position.ZERO, Position.ZERO, blockChunk);
 
         blockChunk.setBlock(placement);
         return blockChunk;

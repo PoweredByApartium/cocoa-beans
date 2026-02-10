@@ -28,10 +28,12 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
     public static final String FINGERPRINT = "CBSC";
     public static final int FINGERPRINT_SIZE = 4;
-    public final int VERSION = 1;
+    public static final int VERSION = 1;
     public static final long HEADER_START_INDEX = 9;
 
     public static class Headers {
+
+        private Headers() {}
 
         public static final int AXIS_ORDER = 0x02;
         public static final int OFFSET = 0x03;

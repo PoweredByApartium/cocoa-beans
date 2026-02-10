@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.zip.CRC32;
 
@@ -26,7 +27,7 @@ import java.util.zip.CRC32;
 @ApiStatus.AvailableSince("0.0.46")
 public class BufferUtils {
 
-    private BufferUtils() { }
+    private BufferUtils() {}
 
     private static final CRC32 crc = new CRC32();
 
@@ -387,11 +388,11 @@ public class BufferUtils {
      * @param filter the filter to determine if an element is present
      * @return the occupancy mask as a byte array
      */
-    public static <T> byte[] createOccupancyMask(List<T> list, Function<T, Boolean> filter) {
+    public static <T> byte[] createOccupancyMask(List<T> list, Predicate<T> filter) {
         byte[] result = new byte[(int) Math.ceil(list.size() / 8.0)];
 
         for (int i = 0; i < list.size(); i++)
-            result[i / 8] = (byte) (result[i / 8] | ((filter.apply(list.get(i)) ? 1 : 0) << (i % 8)));
+            result[i / 8] = (byte) (result[i / 8] | ((filter.test(list.get(i)) ? 1 : 0) << (i % 8)));
 
         return result;
     }
@@ -411,11 +412,11 @@ public class BufferUtils {
      * @param filter the filter to determine if an element is present
      * @return the occupancy mask as a byte array
      */
-    public static <T> byte[] createOccupancyMask(T[] arr, Function<T, Boolean> filter) {
+    public static <T> byte[] createOccupancyMask(T[] arr, Predicate<T> filter) {
         byte[] result = new byte[(int) Math.ceil(arr.length / 8.0)];
 
         for (int i = 0; i < arr.length; i++)
-            result[i / 8] = (byte) (result[i / 8] | ((filter.apply(arr[i]) ? 1 : 0) << (i % 8)));
+            result[i / 8] = (byte) (result[i / 8] | ((filter.test(arr[i]) ? 1 : 0) << (i % 8)));
 
         return result;
     }
