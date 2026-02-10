@@ -248,6 +248,8 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         int count = optCount.getAsInt();
 
         Pointer pointer = this.pointers[count];
+        if (pointer == null)
+            throw new NullPointerException("Something went wrong with pointer");
 
         if (scaler == 1) {
             removeChunk(count, index);
