@@ -10,7 +10,7 @@ import org.bukkit.block.data.type.Wall;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -47,7 +47,7 @@ public class WallHeightsPropFormat implements BlockPropFormat<Map<BlockFace, Wal
         if (!(value instanceof Map<?, ?> map))
             throw new IllegalArgumentException("WalLHeightsPropFormat prop value is not a Map");
 
-        Map<BlockFace, Wall.Height> result = new HashMap<>();
+        Map<BlockFace, Wall.Height> result = new EnumMap<>(BlockFace.class);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object k = entry.getKey();

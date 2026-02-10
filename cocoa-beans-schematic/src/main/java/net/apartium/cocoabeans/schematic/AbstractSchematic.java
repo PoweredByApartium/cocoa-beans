@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.schematic;
 
-import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
@@ -33,7 +32,7 @@ public abstract class AbstractSchematic implements Schematic {
 
     protected final BlockChunk blockChunk;
 
-    public AbstractSchematic(
+    protected AbstractSchematic(
             MinecraftPlatform platform,
             Instant created,
             SchematicMetadata metadata,
@@ -53,7 +52,7 @@ public abstract class AbstractSchematic implements Schematic {
 
     }
 
-    public AbstractSchematic(Schematic schematic) {
+    protected AbstractSchematic(Schematic schematic) {
         this(
                 schematic.originPlatform(),
                 schematic.created(),

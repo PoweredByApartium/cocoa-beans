@@ -37,9 +37,9 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     protected Position offset = Position.ZERO;
     protected AxisOrder axes = AxisOrder.XYZ;
 
-    public AbstractSchematicBuilder() {}
+    protected AbstractSchematicBuilder() {}
 
-    public AbstractSchematicBuilder(Schematic schematic) {
+    protected AbstractSchematicBuilder(Schematic schematic) {
         this.platform = schematic.originPlatform();
         this.created = schematic.created();
         this.metadata = schematic.metadata();
@@ -77,6 +77,11 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     }
 
 
+    private void ensureAllowedRotate(boolean use0Degrees, boolean use90Degrees, boolean use180Degrees, boolean use270Degrees) {
+        if (!use0Degrees && !use90Degrees && !use180Degrees && !use270Degrees)
+            throw new IllegalArgumentException("no!");
+    }
+
     @Override
     public SchematicBuilder<T> rotate(int degrees) {
         MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
@@ -93,9 +98,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         final int sizeX = (int) this.size.width();
         final int sizeZ = (int) this.size.depth();
 
-        if (!use0Degrees && !use90Degrees && !use180Degrees && !use270Degrees)
-            throw new IllegalArgumentException("no!");
-
+        ensureAllowedRotate(use0Degrees, use90Degrees, use180Degrees, use270Degrees);
 
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();

@@ -9,7 +9,7 @@ import org.bukkit.block.data.type.RedstoneWire;
 
 import java.io.*;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -46,7 +46,7 @@ public class RedstoneWireConnectionsPropFormat implements BlockPropFormat<Map<Bl
         if (!(value instanceof Map<?,?> map))
             throw new IllegalArgumentException("RedstoneWireConnectionsProp prop value is of wrong type");
 
-        Map<BlockFace, RedstoneWire.Connection> result = new HashMap<>();
+        Map<BlockFace, RedstoneWire.Connection> result = new EnumMap<>(BlockFace.class);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object k = entry.getKey();
