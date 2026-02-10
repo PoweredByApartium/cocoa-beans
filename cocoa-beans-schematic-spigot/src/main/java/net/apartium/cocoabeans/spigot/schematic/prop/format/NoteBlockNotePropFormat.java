@@ -26,9 +26,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
     public BlockProp<Note> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
         try {
-            boolean onlyNote = in.readBoolean();
-
-            if (onlyNote) {
+            if (in.readBoolean()) {
                 int note = in.readInt();
                 return constructor.apply(new Note(note));
             }

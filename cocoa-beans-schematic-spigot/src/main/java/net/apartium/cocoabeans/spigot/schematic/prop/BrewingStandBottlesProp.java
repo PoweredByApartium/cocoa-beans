@@ -31,4 +31,11 @@ public record BrewingStandBottlesProp(int[] value) implements BlockProp<int[]>, 
     public int hashCode() {
         return Arrays.hashCode(value);
     }
+
+    @Override
+    public String toString() {
+        return "BrewingStandBottlesProp{" +
+                "value=" + Arrays.toString(value) +
+                '}';
+    }
 }

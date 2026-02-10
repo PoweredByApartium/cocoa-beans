@@ -9,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,7 +42,7 @@ public record MultipleFacingFacesPropFormat(
         if (!(value instanceof Map<?, ?> map))
             throw new IllegalArgumentException("MultipleFacingFacesPropFormat prop value is not a Map");
 
-        Map<BlockFace, Boolean> result = new HashMap<>();
+        Map<BlockFace, Boolean> result = new EnumMap<>(BlockFace.class);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object k = entry.getKey();
