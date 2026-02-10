@@ -75,6 +75,7 @@ public class Mathf {
      * @param x the input value
      * @return the next power of four greater than or equal to {@code x}, or 0 if overflow
      */
+    @ApiStatus.AvailableSince("0.0.46")
     public static long nextPowerOfFour(long x) {
         if (x <= 1)
             return 1L;
