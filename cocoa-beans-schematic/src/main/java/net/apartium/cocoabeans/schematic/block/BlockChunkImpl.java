@@ -1,22 +1,26 @@
 package net.apartium.cocoabeans.schematic.block;
 
-import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Function;
 
 /**
- * Represents a batch of blocks in a schematic
+ * Implementation of the {@link BlockChunk} interface representing a batch of blocks in a schematic.
+ * Handles block pointers, chunk positions, and mask management for efficient block access.
  * @see BlockData
  */
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkImpl implements BlockChunk {
 
+    /**
+     * Size of the chunk along each axis.
+     */
     public static final int SIZE = 4;
 
     /* package-private */ final AxisOrder axisOrder;
@@ -24,9 +28,21 @@ public class BlockChunkImpl implements BlockChunk {
     /* package-private */ final double nextScaler;
     /* package-private */ final Position actualPos;
     /* package-private */ final Position chunkPos;
+    /**
+     * Array of pointers to block or chunk data. May be empty.
+     */
+    @Nullable
     /* package-private */ Pointer[] pointers = new Pointer[0];
+    /**
+     * Bitmask representing which blocks are present in the chunk.
+     */
     /* package-private */ long mask = 0;
 
+    /**
+     * Constructs a new immutable BlockChunkImpl from an existing BlockChunk.
+     * Copies pointers and mask from the source chunk.
+     * @param chunk the source BlockChunk to copy
+     */
     public BlockChunkImpl(BlockChunk chunk) {
         this.axisOrder = chunk.getAxisOrder();
         this.scaler = chunk.getScaler();
@@ -58,7 +74,16 @@ public class BlockChunkImpl implements BlockChunk {
         }
     }
 
-    protected BlockChunkImpl(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    /**
+     * Constructs a BlockChunkImpl with specified parameters and optionally a previous chunk.
+     * Used internally for chunk creation and pointer management.
+     * @param axisOrder the axis order for block arrangement
+     * @param scaler the scaling factor for chunk size
+     * @param actualPos the actual position of the chunk
+     * @param chunkPos the chunk position
+     * @param prev the previous chunk, may be null
+     */
+    protected BlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, @Nullable BlockChunk prev) {
         this.axisOrder = axisOrder;
         this.scaler = scaler;
         this.nextScaler = Math.floor(scaler / SIZE);
@@ -74,15 +99,36 @@ public class BlockChunkImpl implements BlockChunk {
         }
     }
 
+    /**
+     * Constructs a BlockChunkImpl with specified parameters and no previous chunk.
+     * @param axisOrder the axis order for block arrangement
+     * @param scaler the scaling factor for chunk size
+     * @param actualPos the actual position of the chunk
+     * @param chunkPos the chunk position
+     */
     public BlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
         this(axisOrder, scaler, actualPos, chunkPos, null);
     }
 
+    /**
+     * Creates a new BlockChunkImpl from an existing BlockChunk.
+     * @param blockChunk the source BlockChunk
+     * @return a new BlockChunkImpl instance
+     */
     protected BlockChunk create(BlockChunk blockChunk) {
         return new BlockChunkImpl(blockChunk);
     }
 
-    protected BlockChunk create(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    /**
+     * Creates a new BlockChunkImpl with specified parameters and previous chunk.
+     * @param axisOrder the axis order for block arrangement
+     * @param scaler the scaling factor for chunk size
+     * @param actualPos the actual position of the chunk
+     * @param chunkPos the chunk position
+     * @param prev the previous chunk
+     * @return a new BlockChunkImpl instance
+     */
+    protected BlockChunk create(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         return new BlockChunkImpl(
                 axisOrder,
                 scaler,
@@ -92,6 +138,13 @@ public class BlockChunkImpl implements BlockChunk {
         );
     }
 
+    /**
+     * Retrieves the block data at the specified position.
+     * Returns null if the position is outside the chunk or not present in the mask.
+     * @param pos the position to query
+     * @return the BlockData at the position, or null if not present
+     */
+    @Nullable
     @Override
     public BlockData getBlock(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
@@ -122,6 +175,13 @@ public class BlockChunkImpl implements BlockChunk {
     }
 
 
+    /**
+     * Counts the number of set bits in the mask up to the specified index.
+     * Used for pointer indexing.
+     * @param mask the bitmask
+     * @param index the index up to which to count
+     * @return the number of set bits
+     */
     static int countBits(long mask, int index) {
         int count = 0;
         for (int i = index; i >= 0; i--) {
@@ -133,37 +193,65 @@ public class BlockChunkImpl implements BlockChunk {
         return count;
     }
 
-    // todo make array
+    /**
+     * Returns a copy of the pointers array.
+     * @return an array of pointers
+     */
     @Override
     public Pointer[] getPointers() {
         return Arrays.copyOf(pointers, pointers.length);
     }
 
+    /**
+     * Returns the bitmask representing block presence in the chunk.
+     * @return the mask value
+     */
     @Override
     public long getMask() {
         return mask;
     }
 
+    /**
+     * Returns the scaling factor for the chunk.
+     * @return the scaler value
+     */
     @Override
     public double getScaler() {
         return scaler;
     }
 
+    /**
+     * Returns the actual position of the chunk.
+     * @return the actual position
+     */
     @Override
     public Position getActualPos() {
         return actualPos;
     }
 
+    /**
+     * Returns the chunk position.
+     * @return the chunk position
+     */
     @Override
     public Position getChunkPos() {
         return chunkPos;
     }
 
+    /**
+     * Returns the axis order used for block arrangement.
+     * @return the axis order
+     */
     @Override
     public AxisOrder getAxisOrder() {
         return axisOrder;
     }
 
+    /**
+     * Returns the size of the entire chunk as an AreaSize object.
+     * If the mask is empty, returns zero size.
+     * @return the size of the chunk
+     */
     @Override
     public AreaSize getSizeOfEntireChunk() {
         if (mask == 0)
@@ -190,11 +278,19 @@ public class BlockChunkImpl implements BlockChunk {
                 .getSizeOfEntireChunk();
     }
 
+    /**
+     * Returns a mutable version of this chunk.
+     * @return a MutableBlockChunk instance
+     */
     @Override
     public MutableBlockChunk mutable() {
         return new MutableBlockChunkImpl(this);
     }
 
+    /**
+     * Returns an immutable version of this chunk (itself).
+     * @return this BlockChunkImpl instance
+     */
     @Override
     public BlockChunk immutable() {
         return this;

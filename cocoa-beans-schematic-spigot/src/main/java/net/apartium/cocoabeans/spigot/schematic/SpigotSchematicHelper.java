@@ -10,16 +10,34 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 
+/**
+ * Utility class for creating and loading {@link SpigotSchematic} instances from a region in a Bukkit {@link World}.
+ * <p>
+ * This class provides methods to extract schematic data from a specified area, including block data and metadata.
+ * </p>
+ * <p>
+ * Usage is static-only; instantiation is not allowed.
+ * </p>
+ */
 @ApiStatus.AvailableSince("0.0.46")
+@NullMarked
 public class SpigotSchematicHelper {
-
-    private SpigotSchematicHelper() {}
-    
-    public static final MinecraftVersion VERSION = ServerUtils.getVersion();
-
+    /**
+     * Loads a schematic from a specified region in the given world.
+     *
+     * @param title      The schematic title.
+     * @param author     The schematic author.
+     * @param playerPos  The position of the player (used for offset calculation).
+     * @param world      The Bukkit world to extract blocks from.
+     * @param pos0       One corner of the region.
+     * @param pos1       The opposite corner of the region.
+     * @param placer     The placer used to convert blocks to schematic block data.
+     * @return           The loaded {@link SpigotSchematic}, or {@code null} if an error occurs during extraction.
+     */
     public static SpigotSchematic load(String title, String author, Position playerPos, World world, Position pos0, Position pos1, SpigotSchematicPlacer placer) {
         AreaSize size = new AreaSize(
                 Math.abs(pos0.getX() - pos1.getX()) + 1,
@@ -60,9 +78,13 @@ public class SpigotSchematicHelper {
                 .author(author)
                 .build());
         builder.created(Instant.now());
-        builder.platform(new MinecraftPlatform(VERSION, "spigot/paper", "---"));
+        builder.platform(new MinecraftPlatform(ServerUtils.getVersion(), "spigot/paper", "---"));
 
         return builder.build();
     }
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private SpigotSchematicHelper() {}
 }

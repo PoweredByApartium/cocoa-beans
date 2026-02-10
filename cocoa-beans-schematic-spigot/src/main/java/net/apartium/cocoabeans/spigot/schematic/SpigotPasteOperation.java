@@ -8,6 +8,7 @@ import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ import static net.apartium.cocoabeans.spigot.Locations.toVector;
  * @since 0.0.46
  */
 @ApiStatus.AvailableSince("0.0.46")
+@NullMarked
 public class SpigotPasteOperation extends AbstractPasteOperation {
     /**
      * The origin location for the paste operation.

@@ -3,32 +3,77 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
+/**
+ * MutableBlockChunkImpl provides a mutable implementation of BlockChunk,
+ * allowing for dynamic modification of block data within a chunk.
+ * Extends BlockChunkImpl and implements MutableBlockChunk.
+ * Supports block placement, removal, and chunk mutation operations.
+ */
+@NullMarked
 public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBlockChunk {
 
-    public MutableBlockChunkImpl(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    /**
+     * Constructs a mutable block chunk with a previous chunk reference.
+     * @param axisOrder The axis order for block arrangement.
+     * @param scaler The scaling factor for chunk size.
+     * @param actualPos The actual position of the chunk.
+     * @param chunkPos The logical position of the chunk.
+     * @param prev The previous block chunk.
+     */
+    public MutableBlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         super(axisOrder, scaler, actualPos, chunkPos, prev);
     }
 
+    /**
+     * Constructs a mutable block chunk without a previous chunk reference.
+     * @param axisOrder The axis order for block arrangement.
+     * @param scaler The scaling factor for chunk size.
+     * @param actualPos The actual position of the chunk.
+     * @param chunkPos The logical position of the chunk.
+     */
     public MutableBlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos) {
         super(axisOrder, scaler, actualPos, chunkPos);
     }
 
+    /**
+     * Constructs a mutable block chunk from an existing chunk.
+     * @param chunk The source block chunk.
+     */
     public MutableBlockChunkImpl(BlockChunk chunk) {
         super(chunk);
     }
 
+    /**
+     * Creates a new MutableBlockChunkImpl from an existing block chunk.
+     * @param blockChunk The source block chunk.
+     * @return A new MutableBlockChunkImpl instance.
+     */
     @Override
     protected BlockChunk create(BlockChunk blockChunk) {
         return new MutableBlockChunkImpl(blockChunk);
     }
 
+    /**
+     * Creates a new MutableBlockChunkImpl with specified parameters.
+     * @param axisOrder The axis order.
+     * @param scaler The scaling factor.
+     * @param actualPos The actual position.
+     * @param chunkPos The chunk position.
+     * @param prev The previous chunk.
+     * @return A new MutableBlockChunkImpl instance.
+     */
     @Override
-    protected BlockChunk create(@NonNull AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    protected BlockChunk create(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
         return new MutableBlockChunkImpl(axisOrder, scaler, actualPos, chunkPos, prev);
     }
 
+    /**
+     * Updates the mask and pointer array for a given block index.
+     * Ensures the mask reflects the presence of a block and shifts pointers accordingly.
+     * @param index The block index to update.
+     */
     private void updateMaskAndShift(int index) {
         if (((mask >> index) & 1) != 0)
             return;
@@ -67,6 +112,16 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             System.arraycopy(clone, count + 1 - 1, pointers, count + 1, pointers.length - (count + 1));
     }
 
+    /**
+     * Sets a pointer for a block placement at the specified indices and count.
+     * Handles both block and chunk pointers.
+     * @param placement The block placement information.
+     * @param i0 First axis index.
+     * @param i1 Second axis index.
+     * @param i2 Third axis index.
+     * @param count The pointer array index.
+     * @return True if the pointer was set successfully, false otherwise.
+     */
     private boolean setPointer(BlockPlacement placement, int i0, int i1, int i2, int count) {
         Pointer pointer = pointers[count];
         BlockData data = placement.block();
@@ -110,6 +165,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         return false;
     }
 
+    /**
+     * Sets a block at the specified placement position.
+     * @param placement The block placement information.
+     * @return True if the block was set successfully, false otherwise.
+     */
     @Override
     public boolean setBlock(BlockPlacement placement) {
         Position pos = placement.position();
@@ -138,6 +198,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         );
     }
 
+    /**
+     * Removes a chunk pointer and updates the mask for the specified count and index.
+     * @param count The pointer array index.
+     * @param index The block index.
+     */
     private void removeChunk(int count, int index) {
         Pointer[] clone = this.pointers;
         this.pointers = new Pointer[this.pointers.length - 1];
@@ -164,6 +229,11 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
 
     }
 
+    /**
+     * Removes a block at the specified position.
+     * @param pos The position to remove the block from.
+     * @return The removed BlockData, or null if not present.
+     */
     @Override
     public @Nullable BlockData removeBlock(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
@@ -203,11 +273,19 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         return blockData;
     }
 
+    /**
+     * Returns a mutable copy of this chunk.
+     * @return A new MutableBlockChunkImpl instance.
+     */
     @Override
     public MutableBlockChunk mutable() {
         return new MutableBlockChunkImpl(this);
     }
 
+    /**
+     * Returns an immutable copy of this chunk.
+     * @return A new BlockChunkImpl instance.
+     */
     @Override
     public BlockChunk immutable() {
         return new BlockChunkImpl(this);
