@@ -6,11 +6,13 @@ import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * @hidden
  */
 @ApiStatus.Internal
+@NullMarked
 public abstract class AbstractPasteOperation implements PasteOperation {
 
     protected final BlockIterator iterator;
