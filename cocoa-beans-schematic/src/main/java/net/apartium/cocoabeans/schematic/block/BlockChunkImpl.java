@@ -188,6 +188,9 @@ public class BlockChunkImpl implements BlockChunk {
         if (pointer instanceof ChunkPointer chunkPointer)
             return chunkPointer.getChunk().getBlock(pos);
 
+        if (pointer == null)
+            throw new NullPointerException("Something went wrong with pointers");
+
         throw new UnsupportedOperationException("Not supported yet: " + pointer.getClass().getName());
     }
 
