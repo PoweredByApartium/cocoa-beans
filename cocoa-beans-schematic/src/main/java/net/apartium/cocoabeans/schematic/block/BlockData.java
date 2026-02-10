@@ -3,12 +3,14 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Map;
 
 /**
  * Represents a block data
  */
+@NullMarked
 @ApiStatus.AvailableSince("0.0.46")
 public interface BlockData {
 

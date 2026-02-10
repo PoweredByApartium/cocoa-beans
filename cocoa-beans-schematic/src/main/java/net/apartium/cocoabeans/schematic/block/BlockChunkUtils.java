@@ -3,7 +3,9 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class BlockChunkUtils {
 
     public static MutableBlockChunk rescaleChunkIfNeeded(MutableBlockChunk chunk, AxisOrder axes, Position pos) {

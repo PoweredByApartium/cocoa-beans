@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Objects;
 /**
  * @hidden
  */
+@NullMarked
 @ApiStatus.Internal
 public record GenericBlockData(NamespacedKey type, Map<String, BlockProp<?>> props) implements BlockData {
 
