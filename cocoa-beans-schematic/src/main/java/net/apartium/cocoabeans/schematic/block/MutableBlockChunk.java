@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.schematic.block;
 
 import net.apartium.cocoabeans.space.Position;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A mutable chunk of blocks, allowing modification of block data.
@@ -24,6 +25,6 @@ public interface MutableBlockChunk extends BlockChunk {
      * @param position the position of the block to remove
      * @return the removed {@link BlockData}, or null if no block was present
      */
-    BlockData removeBlock(Position position);
+    @Nullable BlockData removeBlock(Position position);
 
 }

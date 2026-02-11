@@ -25,7 +25,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
      * @param chunkPos The logical position of the chunk.
      * @param prev The previous block chunk.
      */
-    public MutableBlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    public MutableBlockChunkImpl(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, @Nullable  BlockChunk prev) {
         super(axisOrder, scaler, actualPos, chunkPos, prev);
     }
 
@@ -68,7 +68,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
      * @return A new MutableBlockChunkImpl instance.
      */
     @Override
-    protected BlockChunk create(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, BlockChunk prev) {
+    protected BlockChunk create(AxisOrder axisOrder, double scaler, Position actualPos, Position chunkPos, @Nullable BlockChunk prev) {
         return new MutableBlockChunkImpl(axisOrder, scaler, actualPos, chunkPos, prev);
     }
 
@@ -180,9 +180,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         if (axisOrder.compare(pos, actualPos) < 0)
             return false;
 
-        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
-        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
-            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+        Position chunkPos = getChunkPos(pos);
 
         int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
@@ -240,9 +238,13 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
     @Override
     public @Nullable BlockData removeBlock(Position pos) {
         OptionalInt optIndex = getIndex(pos);
-        OptionalInt optCount = getCountBits(optIndex);
 
-        if (optIndex.isEmpty() || optCount.isEmpty())
+        if (optIndex.isEmpty())
+            return null;
+
+        OptionalInt optCount = getCountBits(optIndex.getAsInt());
+
+        if (optCount.isEmpty())
             return null;
 
         int index = optIndex.getAsInt();

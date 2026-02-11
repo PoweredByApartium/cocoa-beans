@@ -17,10 +17,9 @@ import java.time.Instant;
 /**
  * @hidden
  */
-// todo kfir make immutable
 @ApiStatus.Internal
 @NullMarked
-public abstract class AbstractSchematic implements Schematic {
+public abstract class AbstractSchematic<T extends Schematic<T>> implements Schematic<T> {
 
     protected final MinecraftPlatform platform;
     protected final Instant created;
@@ -52,7 +51,7 @@ public abstract class AbstractSchematic implements Schematic {
 
     }
 
-    protected AbstractSchematic(Schematic schematic) {
+    protected AbstractSchematic(Schematic<?> schematic) {
         this(
                 schematic.originPlatform(),
                 schematic.created(),

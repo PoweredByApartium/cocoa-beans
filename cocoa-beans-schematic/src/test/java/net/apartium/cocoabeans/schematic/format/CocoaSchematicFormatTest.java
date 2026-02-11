@@ -76,7 +76,7 @@ class CocoaSchematicFormatTest {
         GenericBlockData diamondBlock = new GenericBlockData(new NamespacedKey("minecraft", "diamondBlock"), Map.of());
 
 
-        Schematic schematic = new Schematic() {
+        Schematic<?> schematic = new Schematic() {
 
             private final BlockData[][][] blocks = {
                     {

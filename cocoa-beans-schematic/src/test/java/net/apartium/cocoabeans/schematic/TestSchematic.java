@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.function.Function;
 
 @NullMarked
-public class TestSchematic extends AbstractSchematic {
+public class TestSchematic extends AbstractSchematic<TestSchematic> {
 
     public TestSchematic(MinecraftPlatform platform, Instant created, SchematicMetadata metadata, Position offset, AreaSize size, AxisOrder axes, BlockIterator iterator) {
         super(platform, created, metadata, offset, size, axes, iterator);

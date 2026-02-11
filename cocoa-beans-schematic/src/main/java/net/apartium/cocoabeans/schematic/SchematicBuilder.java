@@ -21,7 +21,7 @@ import java.util.function.Function;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface SchematicBuilder<T extends Schematic> {
+public interface SchematicBuilder<T extends Schematic<T>> {
 
     /**
      * Specifies a schematic platform

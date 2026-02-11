@@ -39,7 +39,7 @@ import static net.apartium.cocoabeans.spigot.Locations.toVector;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public class SpigotSchematic extends AbstractSchematic {
+public class SpigotSchematic extends AbstractSchematic<SpigotSchematic> {
 
     /**
      * Constructs a SpigotSchematic with explicit parameters.
@@ -61,7 +61,7 @@ public class SpigotSchematic extends AbstractSchematic {
      *
      * @param schematic the schematic to copy
      */
-    public SpigotSchematic(Schematic schematic) {
+    public SpigotSchematic(Schematic<?> schematic) {
         super(schematic);
     }
 

@@ -14,7 +14,6 @@ import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
@@ -27,7 +26,7 @@ import java.util.Map;
  */
 @ApiStatus.Internal
 @NullMarked
-public abstract class AbstractSchematicBuilder<T extends Schematic> implements SchematicBuilder<T> {
+public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implements SchematicBuilder<T> {
 
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
     protected Instant created = Instant.now();
@@ -39,7 +38,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
 
     protected AbstractSchematicBuilder() {}
 
-    protected AbstractSchematicBuilder(Schematic schematic) {
+    protected AbstractSchematicBuilder(Schematic<?> schematic) {
         this.platform = schematic.originPlatform();
         this.created = schematic.created();
         this.metadata = schematic.metadata();
@@ -168,7 +167,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     }
 
     @Override
-    public SchematicBuilder<T> flip(@NonNls @NotNull Axis axis) {
+    public SchematicBuilder<T> flip(@NonNls Axis axis) {
         MutableBlockChunk newChunk = new MutableBlockChunkImpl(
                 blockChunk.getAxisOrder(),
                 blockChunk.getScaler(),
@@ -309,7 +308,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
     protected void rescaleChunkIfNeeded(Position pos) {
         int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
         if (maxAxis >= this.blockChunk.getScaler())
-            this.blockChunk = new MutableBlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4, Position.ZERO, Position.ZERO, this.blockChunk);
+            this.blockChunk = new MutableBlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4.0, Position.ZERO, Position.ZERO, this.blockChunk);
     }
 
     @Override
@@ -318,7 +317,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic> implements S
         blockChunk.removeBlock(pos);
 
         while (this.blockChunk.getMask() == 1) {
-            if (!(this.blockChunk.getPointers()[0] instanceof ChunkPointer chunkPointer))
+            if (!(this.blockChunk.getPointers().get(0) instanceof ChunkPointer chunkPointer))
                 break;
 
             if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))

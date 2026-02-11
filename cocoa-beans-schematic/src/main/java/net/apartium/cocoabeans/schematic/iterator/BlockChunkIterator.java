@@ -5,13 +5,15 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
+
 import static net.apartium.cocoabeans.schematic.block.BlockChunkImpl.SIZE;
 
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkIterator implements BlockIterator {
 
     private final long mask;
-    private final Pointer[] pointers;
+    private final List<Pointer> pointers;
     private final Position actualPos;
     private final AxisOrder axisOrder;
     private long remaining;
@@ -49,10 +51,10 @@ public class BlockChunkIterator implements BlockIterator {
             long bit = 1L << bitPos;
 
             remaining ^= bit;
-            if (pointerIdx >= pointers.length)
+            if (pointerIdx >= pointers.size())
                 throw new IllegalStateException("Mask has more set bits than pointers length\nMask: " + mask + "\nRemaining: " + remaining + "\nBitPos: " + bitPos);
 
-            Pointer ptr = pointers[pointerIdx++];
+            Pointer ptr = pointers.get(pointerIdx++);
             if (ptr == null)
                 throw new NullPointerException("pointer is null at compact index " + (pointerIdx - 1));
 
@@ -83,8 +85,8 @@ public class BlockChunkIterator implements BlockIterator {
             throw new UnsupportedOperationException("Not supported: " + ptr.getClass().getName());
         }
 
-        if (pointerIdx != pointers.length)
-            throw new IllegalStateException("pointers length (" + pointers.length + ") does not match popcount(mask) (" + pointers.length + ")");
+        if (pointerIdx != pointers.size())
+            throw new IllegalStateException("pointers length (" + pointers.size() + ") does not match popcount(mask) (" + pointerIdx + ")");
 
 
         next = null;

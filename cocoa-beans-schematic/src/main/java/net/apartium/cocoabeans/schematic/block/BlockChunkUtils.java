@@ -8,13 +8,15 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class BlockChunkUtils {
 
+    private BlockChunkUtils() {}
+
     public static MutableBlockChunk rescaleChunkIfNeeded(MutableBlockChunk chunk, AxisOrder axes, Position pos) {
         int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
 
         if (maxAxis >= chunk.getScaler())
             return new MutableBlockChunkImpl(
                     axes,
-                    Mathf.nextPowerOfFour(maxAxis) * 4,
+                    Mathf.nextPowerOfFour(maxAxis) * 4.0,
                     Position.ZERO,
                     Position.ZERO,
                     chunk

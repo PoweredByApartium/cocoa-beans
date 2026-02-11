@@ -7,7 +7,6 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -18,7 +17,7 @@ import java.time.Instant;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface Schematic {
+public interface Schematic<T extends Schematic<T>> {
 
     /**
      * Platform the schematic was created on
@@ -83,6 +82,6 @@ public interface Schematic {
      * Creates a builder with the existing values of this schematic
      * @return a new builder instance
      */
-    SchematicBuilder<?> toBuilder();
+    SchematicBuilder<T> toBuilder();
 
 }

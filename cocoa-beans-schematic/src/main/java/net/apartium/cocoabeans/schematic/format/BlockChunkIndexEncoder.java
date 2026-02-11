@@ -189,11 +189,11 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
             throw new IllegalStateException("Chunk mask is zero");
 
         out.write(writeU64(mask));
-        Pointer[] pointers = blockChunk.getPointers();
+        List<Pointer> pointers = blockChunk.getPointers();
 
 
-        for (int i = 0; i < pointers.length; i++) {
-            Pointer child = pointers[i];
+        for (int i = 0; i < pointers.size(); i++) {
+            Pointer child = pointers.get(i);
             if (pointToParent.containsKey(child))
                 throw new RuntimeException("Duplicate pointer at " + child);
 

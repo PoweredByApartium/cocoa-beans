@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface SchematicFactory<S extends Schematic> {
+public interface SchematicFactory<S extends Schematic<S>> {
 
     /**
      * Creates an empty schematic builder

@@ -41,7 +41,7 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
      *
      * @param schematic the schematic to initialize from
      */
-    public SpigotSchematicBuilder(Schematic schematic) {
+    public SpigotSchematicBuilder(Schematic<?> schematic) {
         super(schematic);
     }
 

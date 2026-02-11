@@ -6,6 +6,8 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Represents a chunk of blocks in a schematic, providing access to block data, chunk position, and chunk properties.
  * Implementations may be mutable or immutable.
@@ -24,10 +26,9 @@ public interface BlockChunk {
 
     /**
      * Returns the pointers for this chunk. The pointers represent block locations or references.
-     * @return an array of {@link Pointer} objects
+     * @return a list of {@link Pointer} objects
      */
-    // todo make not array
-    Pointer[] getPointers();
+    List<Pointer> getPointers();
 
     /**
      * Gets the block data at the specified position.

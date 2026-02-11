@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.OptionalInt;
 
 /**
@@ -33,7 +34,6 @@ public class BlockChunkImpl implements BlockChunk {
     /**
      * Array of pointers to block or chunk data. May be empty.
      */
-    @Nullable
     /* package-private */ Pointer[] pointers = new Pointer[0];
     /**
      * Bitmask representing which blocks are present in the chunk.
@@ -55,11 +55,11 @@ public class BlockChunkImpl implements BlockChunk {
         // Copy pointers as immutable
         this.mask = chunk.getMask();
 
-        Pointer[] chunkPointers = chunk.getPointers();
-        this.pointers = new Pointer[chunkPointers.length];
+        List<Pointer> chunkPointers = chunk.getPointers();
+        this.pointers = new Pointer[chunkPointers.size()];
 
-        for (int i = 0; i < chunkPointers.length; i++) {
-            Pointer pointer = chunkPointers[i];
+        for (int i = 0; i < chunkPointers.size(); i++) {
+            Pointer pointer = chunkPointers.get(i);
             if (pointer instanceof ChunkPointer chunkPointer) {
                 pointer = new ChunkPointer(
                         create(chunkPointer.getChunk())
@@ -140,13 +140,19 @@ public class BlockChunkImpl implements BlockChunk {
         );
     }
 
+    protected Position getChunkPos(Position pos) {
+        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
+        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
+            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+
+        return chunkPos;
+    }
+
     protected OptionalInt getIndex(Position pos) {
         if (axisOrder.compare(pos, actualPos) < 0)
             return OptionalInt.empty();
 
-        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
-        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
-            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+        Position chunkPos = getChunkPos(pos);
 
         int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
@@ -155,12 +161,7 @@ public class BlockChunkImpl implements BlockChunk {
         return OptionalInt.of(i0 + (i1 * SIZE) + (i2 * SIZE * SIZE));
     }
 
-    protected OptionalInt getCountBits(OptionalInt optIndex) {
-        if (optIndex.isEmpty())
-            return OptionalInt.empty();
-
-        int index = optIndex.getAsInt();
-
+    protected OptionalInt getCountBits(Integer index) {
         if (((mask >> index) & 1) == 0)
             return OptionalInt.empty();
 
@@ -176,7 +177,11 @@ public class BlockChunkImpl implements BlockChunk {
     @Nullable
     @Override
     public BlockData getBlock(Position pos) {
-        OptionalInt optCount = getCountBits(getIndex(pos));
+        OptionalInt optIndex = getIndex(pos);
+        if (optIndex.isEmpty())
+            return null;
+
+        OptionalInt optCount = getCountBits(optIndex.getAsInt());
         if (optCount.isEmpty())
             return null;
 
@@ -214,11 +219,11 @@ public class BlockChunkImpl implements BlockChunk {
 
     /**
      * Returns a copy of the pointers array.
-     * @return an array of pointers
+     * @return a list of pointers
      */
     @Override
-    public Pointer[] getPointers() {
-        return Arrays.copyOf(pointers, pointers.length);
+    public List<Pointer> getPointers() {
+        return Arrays.asList(this.pointers);
     }
 
     /**
