@@ -73,7 +73,7 @@ public class SchematicCommand implements CommandNode, Listener {
     private final TestCocoaBeansSpigotLoader plugin;
 
     private final Map<UUID, SchematicSettings> settings = new HashMap<>();
-    private final CocoaSchematicFormat format;
+    private final CocoaSchematicFormat<SpigotSchematic> format;
 
     private final Set<SlowBuildSchematic> slowBuild = new HashSet<>();
 
@@ -169,7 +169,7 @@ public class SchematicCommand implements CommandNode, Listener {
             propFormatMap.put(BlockProp.WATERLOGGED, new BooleanPropFormat(WaterloggedProp::new));
         }
 
-        this.format = new CocoaSchematicFormat(
+        this.format = new CocoaSchematicFormat<>(
                 Map.of(
                         SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(propFormatMap)
                 ),

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static net.apartium.cocoabeans.utils.BufferUtils.*;
 
 @ApiStatus.AvailableSince("0.0.46")
-public class CocoaSchematicFormat implements SchematicFormat {
+public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFormat<T> {
 
     public static final String FINGERPRINT = "CBSC";
     public static final int FINGERPRINT_SIZE = 4;
@@ -57,9 +57,9 @@ public class CocoaSchematicFormat implements SchematicFormat {
     private CompressionEngine defaultCompressionEngineForIndexes;
     private Map.Entry<Integer, BlockDataEncoder> preferBlockEncoder;
     private Map.Entry<Integer, IndexEncoder> preferIndexEncoder;
-    private final SchematicFactory<?> schematicFactory;
+    private final SchematicFactory<T> schematicFactory;
 
-    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Map<Integer, IndexEncoder> indexEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory<?> schematicFactory) {
+    public CocoaSchematicFormat(Map<Integer, BlockDataEncoder> blockDataEncoderMap, Map<Integer, IndexEncoder> indexEncoderMap, Set<CompressionEngine> compressionEngines, byte defaultCompressionForBlock, byte defaultCompressionForIndexes, SchematicFactory<T> schematicFactory) {
         this.blockDataEncoderMap = new HashMap<>(blockDataEncoderMap);
         if (!blockDataEncoderMap.isEmpty())
             preferBlockEncoder = blockDataEncoderMap.entrySet().iterator().next();
@@ -105,7 +105,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
     }
 
     @Override
-    public void write(Schematic schematic, SeekableOutputStream out) {
+    public void write(Schematic<T> schematic, SeekableOutputStream out) {
         try {
             for (int i = 0; i < FINGERPRINT_SIZE; i++)
                 out.write(FINGERPRINT.charAt(i));
@@ -194,7 +194,7 @@ public class CocoaSchematicFormat implements SchematicFormat {
 
     private record HeaderResult(byte[] data, long offsetBlockInfo, long offsetIndexInfo) { }
 
-    private HeaderResult headers(Schematic schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
+    private HeaderResult headers(Schematic<T> schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bOut);
 
@@ -259,21 +259,26 @@ public class CocoaSchematicFormat implements SchematicFormat {
         );
     }
 
+    private void ensuresFingerprint(SeekableInputStream in) throws IOException {
+        for (int i = 0; i < FINGERPRINT_SIZE; i++) {
+            if (in.read() != FINGERPRINT.charAt(i))
+                throw new EOFException("Invalid fingerprint!");
+        }
+    }
+
+    private void ensuresVersion(DataInputStream in) throws IOException {
+        int version = readU16(in);
+        if (version != VERSION)
+            throw new UnsupportedEncodingException("Version aren't match\nexpected: " + VERSION + "\ngot: " + version);
+    }
+
     @Override
-    public Schematic read(SeekableInputStream in) {
+    public Schematic<T> read(SeekableInputStream in) {
         try {
             DataInputStream din = new DataInputStream(in);
 
-            for (int i = 0; i < FINGERPRINT_SIZE; i++) {
-                if (in.read() != FINGERPRINT.charAt(i))
-                    throw new EOFException("Invalid fingerprint!");
-            }
-
-            {
-                int version = readU16(din);
-                if (version != VERSION)
-                    throw new UnsupportedEncodingException("Version aren't match\nexpected: " + VERSION + "\ngot: " + version);
-            }
+            ensuresFingerprint(in);
+            ensuresVersion(din);
 
             int headerSize = readU24(din);
             byte[] header = in.readNBytes(headerSize);
