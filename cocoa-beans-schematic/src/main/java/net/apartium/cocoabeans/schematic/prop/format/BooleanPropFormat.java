@@ -24,7 +24,7 @@ public record BooleanPropFormat(Function<Boolean, BlockProp<Boolean>> constructo
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof Boolean value))
-            return null;
+            throw new IllegalArgumentException("Prop value isn't type of boolean instead: " + prop.value().getClass().getSimpleName());
 
         return new byte[]{(byte) (value ? 1 : 0)};
     }

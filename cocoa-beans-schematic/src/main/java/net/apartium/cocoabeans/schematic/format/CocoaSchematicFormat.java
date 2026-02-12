@@ -188,7 +188,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
             // TODO add additional body here
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -332,7 +332,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -374,7 +374,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         Map<Integer, Object> map = new HashMap<>();
 
         while (index < headers.length) {
-            int id = (headers[index] << 8) | (headers[index + 1]);
+            int id = (headers[index] << 8) | (Byte.toUnsignedInt(headers[index + 1]));
             index += 2;
 
             index = switch (id) {

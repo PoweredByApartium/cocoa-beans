@@ -24,7 +24,7 @@ public record ByteBlockPropFormat(Function<Byte, BlockProp<Byte>> constructor) i
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof Byte value))
-            return null;
+            throw new IllegalArgumentException("Prop value isn't type of byte instead: " + prop.value().getClass().getSimpleName());
 
         return new byte[]{value};
     }

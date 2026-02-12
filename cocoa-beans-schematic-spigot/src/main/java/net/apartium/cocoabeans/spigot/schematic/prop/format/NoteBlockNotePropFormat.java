@@ -37,7 +37,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
 
             return constructor.apply(new Note(octave, tone, sharped));
         } catch (IOException exception) {
-            throw new RuntimeException(exception);
+            throw new UncheckedIOException(exception);
         }
     }
 
@@ -73,7 +73,7 @@ public class NoteBlockNotePropFormat implements BlockPropFormat<Note> {
 
             return byteArray.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

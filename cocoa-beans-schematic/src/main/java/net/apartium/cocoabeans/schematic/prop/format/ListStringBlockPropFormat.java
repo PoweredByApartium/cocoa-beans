@@ -42,7 +42,7 @@ public class ListStringBlockPropFormat implements BlockPropFormat<List<String>> 
 
             return constructor.apply(result);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -81,7 +81,7 @@ public class ListStringBlockPropFormat implements BlockPropFormat<List<String>> 
                 out.write(data);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         return byteArray.toByteArray();

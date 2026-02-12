@@ -7,6 +7,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 import static net.apartium.cocoabeans.utils.BufferUtils.readString;
@@ -24,7 +25,7 @@ public class StringBlockPropFormat implements BlockPropFormat<String> {
             int length = in.readUnsignedByte();
             return new StringBlockProp(readString(in, length));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

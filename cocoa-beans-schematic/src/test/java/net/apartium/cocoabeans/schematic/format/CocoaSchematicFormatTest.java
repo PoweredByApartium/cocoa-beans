@@ -116,7 +116,6 @@ class CocoaSchematicFormatTest {
                     },
             };
 
-            private final UUID id = UUID.randomUUID();
             private final Instant created = Instant.now();
             private final MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "unit-test", "0.0.1");
 

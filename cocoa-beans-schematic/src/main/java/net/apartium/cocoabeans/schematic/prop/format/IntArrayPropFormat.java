@@ -25,7 +25,7 @@ public record IntArrayPropFormat(Function<int[], BlockProp<int[]>> constructor) 
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof int[] array))
-            return null;
+            throw new IllegalArgumentException("Prop value isn't type of int[] instead: " + prop.value().getClass().getSimpleName());
 
 
         byte[] result = new byte[array.length * 4 + 4];

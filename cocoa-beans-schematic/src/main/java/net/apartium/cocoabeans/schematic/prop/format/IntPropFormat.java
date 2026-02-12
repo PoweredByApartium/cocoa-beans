@@ -29,7 +29,7 @@ public record IntPropFormat(Function<Integer, BlockProp<Integer>> constructor) i
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof Integer value))
-            return null;
+            throw new IllegalArgumentException("Prop value isn't type of int instead: " + prop.value().getClass().getSimpleName());
 
         return new byte[] {
                 (byte) ((value >> 24) & 0xFF),

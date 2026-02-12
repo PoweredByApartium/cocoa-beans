@@ -48,7 +48,7 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
         try {
             return writeEnum(valueEnum);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

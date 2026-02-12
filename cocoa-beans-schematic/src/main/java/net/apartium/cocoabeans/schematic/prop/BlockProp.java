@@ -15,6 +15,9 @@ public interface BlockProp<T> {
      * Contains legacy (1.8) block data keys
      */
     class Legacy {
+
+        private Legacy() {}
+
         public static final String DATA = "LEGACY_DATA";
         public static final String SIGN_LINES = "LEGACY_SIGN_LINES";
     }
