@@ -29,7 +29,11 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
     @Override
     public BlockProp<T> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
-        return constructor.apply(readEnum(in, enumClass, valuesSupplier));
+        try {
+            return constructor.apply(readEnum(in, enumClass, valuesSupplier));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
@@ -41,6 +45,10 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
         if (!(value instanceof Enum<?> valueEnum))
             throw new IllegalArgumentException("Excepted instance of " + enumClass.getName() + " but got " + value.getClass().getName());
 
-        return writeEnum(valueEnum);
+        try {
+            return writeEnum(valueEnum);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

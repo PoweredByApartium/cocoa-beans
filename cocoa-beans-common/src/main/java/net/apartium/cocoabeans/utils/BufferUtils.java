@@ -240,16 +240,9 @@ public class BufferUtils {
      * @param values a supplier for the enum values array
      * @return the enum value
      */
-    public static <T extends Enum<T>> T readEnum(DataInput in, Class<T> clazz, Supplier<T[]> values) {
-        String name;
-        int fallbackOrdinal;
-        try {
-            name = readString(in);
-            fallbackOrdinal = in.readInt();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    public static <T extends Enum<T>> T readEnum(DataInput in, Class<T> clazz, Supplier<T[]> values) throws IOException {
+        String name = readString(in);
+        int fallbackOrdinal = in.readInt();
 
         try {
             return Enum.valueOf(clazz, name);
@@ -263,19 +256,15 @@ public class BufferUtils {
      * @param value the enum value
      * @return the byte array representing the enum
      */
-    public static <T extends Enum<T>> byte[] writeEnum(Enum<T> value) {
+    public static <T extends Enum<T>> byte[] writeEnum(Enum<T> value) throws IOException {
         String name = value.name();
         int ordinal = value.ordinal();
 
         ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(byteArray);
 
-        try {
-            out.write(writeString(name));
-            out.writeInt(ordinal);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        out.write(writeString(name));
+        out.writeInt(ordinal);
 
         return byteArray.toByteArray();
     }
@@ -300,7 +289,7 @@ public class BufferUtils {
 
             return result;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("Failed to read enum map", e);
         }
     }
 
@@ -319,7 +308,7 @@ public class BufferUtils {
                 out.writeBoolean(entry.getValue());
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("Failed to write enum map", e);
         }
 
         return byteArray.toByteArray();
@@ -347,7 +336,7 @@ public class BufferUtils {
 
             return result;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("Failed to read map of enums", e);
         }
     }
 
@@ -366,7 +355,7 @@ public class BufferUtils {
                 out.write(writeEnum(entry.getValue()));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("Failed to write map of enums", e);
         }
 
         return byteArray.toByteArray();
@@ -391,7 +380,7 @@ public class BufferUtils {
         byte[] result = new byte[(int) Math.ceil(list.size() / 8.0)];
 
         for (int i = 0; i < list.size(); i++)
-            result[i / 8] = (byte) (result[i / 8] | ((filter.test(list.get(i)) ? 1 : 0) << (i % 8)));
+            result[i / 8] = (byte) (Byte.toUnsignedInt(result[i / 8]) | ((filter.test(list.get(i)) ? 1 : 0) << (i % 8)));
 
         return result;
     }
@@ -415,7 +404,7 @@ public class BufferUtils {
         byte[] result = new byte[(int) Math.ceil(arr.length / 8.0)];
 
         for (int i = 0; i < arr.length; i++)
-            result[i / 8] = (byte) (result[i / 8] | ((filter.test(arr[i]) ? 1 : 0) << (i % 8)));
+            result[i / 8] = (byte) (Byte.toUnsignedInt(result[i / 8]) | ((filter.test(arr[i]) ? 1 : 0) << (i % 8)));
 
         return result;
     }

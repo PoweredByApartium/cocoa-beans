@@ -106,7 +106,9 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
             int lx = (int) pos.getX();
             int lz = (int) pos.getZ();
 
-            int nx, nz;
+            int nx;
+            int nz;
+
             if (use0Degrees) {
                 nx = lx;
                 nz = lz;
@@ -321,7 +323,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
                 break;
 
             if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))
-                throw new RuntimeException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
+                throw new IllegalArgumentException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
 
             this.blockChunk = chunk;
         }
