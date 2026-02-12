@@ -25,48 +25,23 @@ public class LegacyDataProp extends ByteBlockProp implements RotatableProp<Legac
     }
 
     private LegacyDataProp rotateForLadder(int degrees) {
-        // TODO improve this
         if (degrees == 0)
             return this;
 
 
+        int currentDegrees = switch(value) {
+            case 3 -> 180;
+            case 4 -> 270;
+            case 5 -> 90;
+            default -> 0;
+        };
 
-        if (value == 2) { // NORTH
-            if (degrees == 90)
-                return new LegacyDataProp((byte) 4);
-            if (degrees == 180)
-                return new LegacyDataProp((byte) 3);
-            if (degrees == 270)
-                return new LegacyDataProp((byte) 5);
-        }
-
-        if (value == 3) { // SOUTH
-            if (degrees == 90)
-                return new LegacyDataProp((byte) 5);
-            if (degrees == 180)
-                return new LegacyDataProp((byte) 2);
-            if (degrees == 270)
-                return new LegacyDataProp((byte) 4);
-        }
-
-        if (value == 4) { // WEST
-            if (degrees == 90)
-                return new LegacyDataProp((byte) 3);
-            if (degrees == 180)
-                return new LegacyDataProp((byte) 5);
-            if (degrees == 270)
-                return new LegacyDataProp((byte) 2);
-        }
-
-        if (value == 5) { // EAST
-            if (degrees == 90)
-                return new LegacyDataProp((byte) 2);
-            if (degrees == 180)
-                return new LegacyDataProp((byte) 4);
-            if (degrees == 270)
-                return new LegacyDataProp((byte) 3);
-        }
-
-        return this;
+        degrees = (currentDegrees + degrees) % 360;
+        return new LegacyDataProp((byte) switch (degrees) {
+            case 90 -> 5;
+            case 180 -> 3;
+            case 270 -> 4;
+            default -> 2;
+        });
     }
 }
