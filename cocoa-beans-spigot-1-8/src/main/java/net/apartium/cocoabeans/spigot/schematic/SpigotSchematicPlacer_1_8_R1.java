@@ -56,7 +56,6 @@ public class SpigotSchematicPlacer_1_8_R1 implements SpigotSchematicPlacer {
                 sign.setLine(i, lines[i]);
 
             sign.update();
-            return;
         }
     }
 

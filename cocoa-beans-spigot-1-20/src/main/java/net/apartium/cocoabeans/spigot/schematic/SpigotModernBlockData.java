@@ -82,10 +82,10 @@ import java.util.stream.Collectors;
         register(temp, TurtleEgg.class, BlockProp.TURTLE_EGG_HATCH, turtleEgg -> new TurtleEggHatchProp(turtleEgg.getHatch()));
         register(temp, Wall.class, BlockProp.WALL_UP, wall -> new WallUpProp(wall.isUp()));
         register(temp, Wall.class, BlockProp.WALL_HEIGHTS, wall -> {
-            final BlockFace[] DIRECTIONS = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+            final BlockFace[] directions = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 
             return new WallHeightsProp(
-                    Arrays.stream(DIRECTIONS)
+                    Arrays.stream(directions)
                             .map(face -> Map.entry(
                                     face,
                                     wall.getHeight(face)

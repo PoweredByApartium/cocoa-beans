@@ -13,7 +13,6 @@ import org.bukkit.block.data.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 

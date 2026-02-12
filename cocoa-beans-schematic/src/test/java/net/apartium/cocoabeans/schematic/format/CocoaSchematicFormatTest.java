@@ -21,7 +21,6 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
