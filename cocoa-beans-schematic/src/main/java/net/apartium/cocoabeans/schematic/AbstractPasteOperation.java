@@ -66,10 +66,7 @@ public abstract class AbstractPasteOperation implements PasteOperation {
         int startI0 = currentI0();
 
         int placed = 0;
-        while (iterator.hasNext()) {
-            if (startI0 != currentI0())
-                break;
-
+        while (iterator.hasNext() && startI0 == currentI0()) {
             if (!place(iterator.next()))
                 continue;
 
@@ -88,10 +85,11 @@ public abstract class AbstractPasteOperation implements PasteOperation {
         int startI1 = currentI1();
 
         int placed = 0;
-        while (iterator.hasNext()) {
-            if (startI0 != currentI0() || startI1 != currentI1())
-                break;
-
+        while (
+                iterator.hasNext()
+                && startI0 == currentI0()
+                && startI1 == currentI1()
+        ) {
             if (!place(iterator.next()))
                 continue;
 
@@ -126,10 +124,11 @@ public abstract class AbstractPasteOperation implements PasteOperation {
         int startI0 = currentI0();
 
         int placed = 0;
-        while (iterator.hasNext() && numOfBlocks > 0) {
-            if (startI0 != currentI0())
-                break;
-
+        while (
+                iterator.hasNext()
+                && numOfBlocks > 0
+                && startI0 == currentI0()
+        ) {
             if (!place(iterator.next()))
                 continue;
 
@@ -150,10 +149,12 @@ public abstract class AbstractPasteOperation implements PasteOperation {
         int startI1 = currentI1();
 
         int placed = 0;
-        while (iterator.hasNext() && numOfBlocks > 0) {
-            if (startI0 != currentI0() || startI1 != currentI1())
-                break;
-
+        while (
+                iterator.hasNext()
+                && numOfBlocks > 0
+                && startI0 == currentI0()
+                && startI1 == currentI1()
+        ) {
             if (!place(iterator.next()))
                 continue;
 
