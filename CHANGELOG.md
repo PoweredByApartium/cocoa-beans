@@ -2,7 +2,7 @@
 ## 0.0.46
 - [schematic] Introduce schematic API
 - [scoreboard-spigot] Add support for minecraft 1.21.6
-- [common] Bump Minecraft versions from 1.21.6 to 1.21.10
+- [common] Bump Minecraft versions from 1.21.6 to 1.21.11
 - [common] Make MinecraftVersion comparable
 - [repo] Remove all references to the old nexus instance
 
