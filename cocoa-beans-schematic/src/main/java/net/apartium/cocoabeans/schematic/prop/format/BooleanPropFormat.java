@@ -26,9 +26,8 @@ public record BooleanPropFormat(Function<Boolean, BlockProp<Boolean>> constructo
         if (!(prop.value() instanceof Boolean value))
             throw new IllegalArgumentException("Prop value isn't type of boolean instead: " + prop.value().getClass().getSimpleName());
 
-        if (value == null)
-            throw new NullPointerException();
+        boolean state = value;
 
-        return new byte[]{(byte) (value ? 1 : 0)};
+        return new byte[]{(byte) (state ? 1 : 0)};
     }
 }
