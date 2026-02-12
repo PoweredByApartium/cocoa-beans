@@ -33,18 +33,48 @@ public class BlockChunkIterator implements BlockIterator {
         this.advance();
     }
 
-    private void advance() {
-        if (child != null) {
-            if (child.hasNext()) {
-                next = child.next();
-                if (!child.hasNext())
-                    child = null;
+    private void advanceBlockPointer(BlockPointer blockPointer, int bitPos) {
+        int i0 = bitPos % SIZE;
+        int i1 = (bitPos / SIZE) % SIZE;
+        int i2 = bitPos / (SIZE * SIZE);
 
-                return;
-            } else {
+        Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
+        next = new BlockPlacement(pos, blockPointer.getData());
+    }
+
+    private boolean advanceChunkPointer(ChunkPointer chunkPointer) {
+        child = new BlockChunkIterator(chunkPointer.getChunk());
+        if (child.hasNext()) {
+            next = child.next();
+            if (!child.hasNext())
                 child = null;
-            }
+
+            return true;
         }
+
+        child = null;
+        return false;
+    }
+
+    private boolean advanceCurrentChild() {
+        if (this.child == null)
+            return false;
+
+        if (this.child.hasNext()) {
+            next = this.child.next();
+            if (!this.child.hasNext())
+                this.child = null;
+
+            return true;
+        }
+
+        this.child = null;
+        return false;
+    }
+
+    private void advance() {
+        if (advanceCurrentChild())
+            return;
 
         while (remaining != 0) {
             int bitPos = Long.numberOfTrailingZeros(remaining);
@@ -59,34 +89,22 @@ public class BlockChunkIterator implements BlockIterator {
                 throw new NullPointerException("pointer is null at compact index " + (pointerIdx - 1));
 
             if (ptr instanceof BlockPointer blockPointer) {
-                int i0 = bitPos % SIZE;
-                int i1 = (bitPos / SIZE) % SIZE;
-                int i2 = bitPos / (SIZE * SIZE);
-
-                Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
-                next = new BlockPlacement(pos, blockPointer.getData());
+                advanceBlockPointer(blockPointer, bitPos);
                 return;
             }
 
             if (ptr instanceof ChunkPointer chunkPointer) {
-                child = new BlockChunkIterator(chunkPointer.getChunk());
-                if (child.hasNext()) {
-                    next = child.next();
-                    if (!child.hasNext())
-                        child = null;
-
+                if (advanceChunkPointer(chunkPointer))
                     return;
-                } else {
-                    child = null;
-                    continue;
-                }
+
+                continue;
             }
 
             throw new UnsupportedOperationException("Not supported: " + ptr.getClass().getName());
         }
 
         if (pointerIdx != pointers.size())
-            throw new IllegalStateException("pointers length (" + pointers.size() + ") does not match popcount(mask) (" + pointerIdx + ")");
+            throw new IllegalStateException("Pointer index: " + pointerIdx + " shouldn't point out from the pointer size: " + pointers.size());
 
 
         next = null;

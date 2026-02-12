@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.schematic.iterator;
 
 import net.apartium.cocoabeans.schematic.block.BlockChunk;
-import net.apartium.cocoabeans.schematic.block.BlockChunkImpl;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.axis.AxisOrder;

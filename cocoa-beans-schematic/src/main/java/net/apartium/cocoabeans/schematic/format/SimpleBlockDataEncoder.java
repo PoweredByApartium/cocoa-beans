@@ -11,6 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 
 import static net.apartium.cocoabeans.utils.BufferUtils.*;
@@ -48,10 +49,10 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
                 BlockPropFormat<?> propFormat = propFormatMap.get(type);
 
                 if (propFormat == null)
-                    throw new RuntimeException("Unknown prop type: " + type);
+                    throw new NoSuchElementException("Unknown prop type: " + type);
 
                 if (props.containsKey(type))
-                    throw new RuntimeException("Duplicate prop of type: " + type);
+                    throw new IllegalArgumentException("Duplicate prop of type: " + type);
 
                 int valueLength = readU24(din);
                 byte[] valueBytes = din.readNBytes(valueLength);
@@ -61,7 +62,7 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
 
             return new GenericBlockData(namespacedKey, props);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

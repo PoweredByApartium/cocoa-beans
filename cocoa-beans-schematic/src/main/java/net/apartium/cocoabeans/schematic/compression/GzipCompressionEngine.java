@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.schematic.compression;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -22,7 +23,7 @@ import java.util.zip.GZIPOutputStream;
         try (GZIPOutputStream g = new GZIPOutputStream(b)) {
             g.write(data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         return b.toByteArray();
@@ -33,7 +34,7 @@ import java.util.zip.GZIPOutputStream;
         try (GZIPInputStream gin = new GZIPInputStream(new ByteArrayInputStream(data))) {
             return gin.readAllBytes();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

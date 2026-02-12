@@ -15,6 +15,7 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NonNls;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,13 +31,16 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
 
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
     protected Instant created = Instant.now();
-    protected SchematicMetadata metadata;
+    @Nullable protected SchematicMetadata metadata;
     protected AreaSize size;
     protected MutableBlockChunk blockChunk = BlockChunk.empty();
     protected Position offset = Position.ZERO;
     protected AxisOrder axes = AxisOrder.XYZ;
 
-    protected AbstractSchematicBuilder() {}
+    protected AbstractSchematicBuilder() {
+        this.metadata = null;
+        this.size = new AreaSize(0, 0, 0);
+    }
 
     protected AbstractSchematicBuilder(Schematic<?> schematic) {
         this.platform = schematic.originPlatform();

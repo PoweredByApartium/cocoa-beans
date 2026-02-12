@@ -160,7 +160,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
         if (pointer instanceof ChunkPointer chunkPointer) {
             BlockChunk chunk = chunkPointer.getChunk();
             if (!(chunk instanceof MutableBlockChunk mutableChunk))
-                throw new RuntimeException("Unexpected chunk type: " + chunk.getClass().getSimpleName());
+                throw new IllegalArgumentException("Unexpected chunk type: " + chunk.getClass().getSimpleName());
 
             return mutableChunk.setBlock(placement);
         }
@@ -262,7 +262,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             return null;
 
         if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))
-            throw new RuntimeException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
+            throw new IllegalArgumentException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
 
         BlockData blockData = chunk.removeBlock(pos);
         if (chunkPointer.getChunk().getMask() == 0)

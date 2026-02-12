@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 
 import static net.apartium.cocoabeans.utils.BufferUtils.*;
@@ -108,7 +109,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
             writeIndexes(indexesOut, (long) blockChunk.getScaler(), blockChunk, blockIndexes);
             return channel.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -168,7 +169,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
                 }
 
                 if (pointer instanceof BlockPointer)
-                    throw new RuntimeException("BlockPointers are not supported while outside of chunk pointers");
+                    throw new IllegalStateException("BlockPointers are not supported while outside of chunk pointers");
 
 
 
@@ -195,7 +196,7 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         for (int i = 0; i < pointers.size(); i++) {
             Pointer child = pointers.get(i);
             if (pointToParent.containsKey(child))
-                throw new RuntimeException("Duplicate pointer at " + child);
+                throw new IllegalStateException("Duplicate pointer at " + child);
 
             if (child instanceof BlockPointer blockPointer) {
                 Long fileOffset = blockIndexes.get(blockPointer.getData());

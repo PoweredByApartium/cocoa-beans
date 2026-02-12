@@ -34,7 +34,9 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
     /**
      * Constructs a new empty SpigotSchematicBuilder.
      */
-    public SpigotSchematicBuilder() {}
+    public SpigotSchematicBuilder() {
+        super();
+    }
 
     /**
      * Constructs a SpigotSchematicBuilder initialized with an existing schematic.

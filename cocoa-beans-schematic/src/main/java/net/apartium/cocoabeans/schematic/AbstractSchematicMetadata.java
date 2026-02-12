@@ -19,7 +19,7 @@ public abstract class AbstractSchematicMetadata implements SchematicMetadata {
 
     protected final Map<String, Object> metadata;
 
-    public AbstractSchematicMetadata(Map<String, Object> metadata) {
+    protected AbstractSchematicMetadata(Map<String, Object> metadata) {
         this.metadata = Map.copyOf(metadata);
     }
 

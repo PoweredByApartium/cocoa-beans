@@ -17,11 +17,11 @@ public abstract class AbstractSchematicMetadataBuilder<M extends SchematicMetada
 
     protected Map<String, Object> metadata;
 
-    public AbstractSchematicMetadataBuilder() {
+    protected AbstractSchematicMetadataBuilder() {
         this(Map.of());
     }
 
-    public AbstractSchematicMetadataBuilder(Map<String, Object> metadata) {
+    protected AbstractSchematicMetadataBuilder(Map<String, Object> metadata) {
         this.metadata = new HashMap<>(metadata);
     }
 
