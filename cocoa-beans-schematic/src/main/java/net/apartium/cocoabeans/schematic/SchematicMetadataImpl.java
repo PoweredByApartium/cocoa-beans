@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,14 +13,16 @@ import java.util.Set;
  * @hidden
  */
 @ApiStatus.Internal
-public abstract class AbstractSchematicMetadata implements SchematicMetadata {
+/* package-private */ class SchematicMetadataImpl implements SchematicMetadata {
+
+    static final SchematicMetadata EMPTY = new SchematicMetadataImpl(Map.of());
 
     public static final String AUTHOR_KEY = "author";
     public static final String TITLE_KEY = "title";
 
     protected final Map<String, Object> metadata;
 
-    protected AbstractSchematicMetadata(Map<String, Object> metadata) {
+    public SchematicMetadataImpl(Map<String, Object> metadata) {
         this.metadata = Map.copyOf(metadata);
     }
 
@@ -50,4 +53,8 @@ public abstract class AbstractSchematicMetadata implements SchematicMetadata {
         return (String) metadata.get(TITLE_KEY);
     }
 
+    @Override
+    public @NonNull SchematicMetadataBuilder toBuilder() {
+        return new SchematicMetadataBuilderImpl(new HashMap<>(metadata));
+    }
 }

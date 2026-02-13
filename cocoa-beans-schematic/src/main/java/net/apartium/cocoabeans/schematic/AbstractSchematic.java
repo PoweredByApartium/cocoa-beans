@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
@@ -13,6 +14,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.Set;
 
 /**
  * @hidden

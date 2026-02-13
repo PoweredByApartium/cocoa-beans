@@ -324,7 +324,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
             return schematicFactory.createSchematic(
                     (Instant) headers.get(Headers.TIMESTAMP),
                     (MinecraftPlatform) headers.get(Headers.PLATFORM),
-                    schematicFactory.createMetadata(metadata),
+                    SchematicMetadata.of(metadata),
                     blocks,
                     (AreaSize) headers.get(Headers.SIZE),
                     (AxisOrder) headers.get(Headers.AXIS_ORDER),

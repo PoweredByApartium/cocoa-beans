@@ -4,6 +4,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,6 +15,18 @@ import java.util.Set;
  */
 @ApiStatus.AvailableSince("0.0.46")
 public interface SchematicMetadata {
+
+    static SchematicMetadataBuilder builder() {
+        return new SchematicMetadataBuilderImpl(Collections.emptyMap());
+    }
+
+    static SchematicMetadata of() {
+        return SchematicMetadataImpl.EMPTY;
+    }
+
+    static SchematicMetadata of(Map<String, Object> metadata) {
+        return new SchematicMetadataImpl(metadata);
+    }
 
     /**
      * Get All Schematic metadata keys
@@ -52,8 +66,7 @@ public interface SchematicMetadata {
     /**
      * Creates a new builder with the same values as this instance
      * @return a new builder instance
-     * @param <T> schematic metadata type
      */
-    @NonNull <T extends SchematicMetadata> SchematicMetadataBuilder<@NonNull T> toBuilder();
+    @NonNull SchematicMetadataBuilder toBuilder();
 
 }

@@ -72,15 +72,4 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
         return builder.build();
     }
 
-    /**
-     * Creates schematic metadata for Spigot from a map.
-     *
-     * @param metadata the metadata map
-     * @return a {@link SpigotSchematicMetadata} instance
-     */
-    @Override
-    public SchematicMetadata createMetadata(Map<String, Object> metadata) {
-        return new SpigotSchematicMetadata(metadata);
-    }
-
 }

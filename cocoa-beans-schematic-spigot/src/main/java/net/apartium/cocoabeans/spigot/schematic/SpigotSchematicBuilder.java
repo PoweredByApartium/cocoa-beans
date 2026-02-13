@@ -54,8 +54,8 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
      * @return this builder instance
      */
     @Override
-    public SchematicBuilder<SpigotSchematic> metadata(Function<SchematicMetadataBuilder<?>, SchematicMetadata> block) {
-        return metadata(block.apply(new SpigotSchematicMetadataBuilder()));
+    public SchematicBuilder<SpigotSchematic> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block) {
+        return metadata(block.apply(SchematicMetadata.builder()));
     }
 
     /**
@@ -68,7 +68,7 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
         return new SpigotSchematic(
                 platform,
                 created,
-                metadata,
+                metadata == null ? SchematicMetadata.of() : metadata,
                 offset,
                 size,
                 axes,

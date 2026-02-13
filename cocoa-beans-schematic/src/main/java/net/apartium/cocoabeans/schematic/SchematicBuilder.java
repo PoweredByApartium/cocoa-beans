@@ -49,7 +49,7 @@ public interface SchematicBuilder<T extends Schematic<T>> {
      * @param block metadata construction block
      * @return this builder instance
      */
-    SchematicBuilder<T> metadata(Function<SchematicMetadataBuilder<?>, SchematicMetadata> block);
+    SchematicBuilder<T> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block);
 
     /**
      * Specifies schematic size
@@ -73,24 +73,24 @@ public interface SchematicBuilder<T extends Schematic<T>> {
     SchematicBuilder<T> flip(Axis axis);
 
     /**
-     * Translate the schematic offset
+     * Translate the schematic offset from the pasting point of the schematic
      * @param offset offset
      * @return this builder instance
-     * TODO kfir having 2 translate methods that do different things is confusing
      */
     SchematicBuilder<T> translate(Position offset);
 
     /**
-     * Translate the schematic offset
+     * Translate the schematic axis order, reordering the schematic blocks in memory and file.
+     * This can help improve efficiency if we know we will paste a schematic in a specific axis order.
      * @param axisOrder axisOrder
      * @return this builder instance
      */
     SchematicBuilder<T> translate(AxisOrder axisOrder);
 
     /**
-     * todo kfir tf is that
-     * @param axis
-     * @param amount
+     * Move all contents of the schematic on a specific axis
+     * @param axis axis to move on
+     * @param amount amount to move by
      * @return this builder instance
      */
     SchematicBuilder<T> shift(Axis axis, int amount);

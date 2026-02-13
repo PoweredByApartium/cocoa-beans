@@ -21,11 +21,11 @@ public interface PasteOperation {
     boolean hasNext();
 
     /**
-     * The current paste position for this operation
-     * TODO kfir this needs claryifying
-     * @return current paste position
+     * Returns the next placement position for this operation.
+     * This method does not alter the state of the operation
+     * @return next paste position
      */
-    @Nullable Position current();
+    @Nullable Position getNextPosition();
 
     /**
      * Paste all remaining blocks in their natural order
@@ -34,39 +34,41 @@ public interface PasteOperation {
     PasteResult performAll();
 
     /**
-     * Paste all remaining blocks on dual axis
-     * TODO kfir this needs claryifying
-     * @return paste result
-     */
-    PasteResult performAllOnDualAxis();
-
-    /**
-     * Paste all remaining blocks on single axis
-     * TODO kfir this needs claryifying
+     * Paste all remaining blocks on single axis.
+     * For example, if the axis order is {@link net.apartium.cocoabeans.space.axis.AxisOrder#XYZ}, the paste will be on the Z axis
+     * @see net.apartium.cocoabeans.space.axis.AxisOrder
      * @return paste result
      */
     PasteResult performAllOnSingleAxis();
 
     /**
-     * Paste specified number of blocks on all axis
+     * Paste all remaining blocks on dual axis
+     * For example, if the axis order is {@link net.apartium.cocoabeans.space.axis.AxisOrder#XYZ}, the paste will be on the Y and Z axis simultaniously
+     * @return paste result
+     */
+    PasteResult performAllOnDualAxis();
+
+    /**
+     * Paste specified-number of blocks on all axis (X, Y, Z), advancing by the order of the axis
      * @param numOfBlocks number of blocks to paste
-     * TODO kfir this needs claryifying
      * @return paste result
      */
     PasteResult advanceAllAxis(int numOfBlocks);
 
     /**
-     * Paste specified number of blocks on dual axis
+     * Paste specified-number of blocks on dual axis
+     * For example, if the axis order is {@link net.apartium.cocoabeans.space.axis.AxisOrder#XYZ}, the paste will be on the Y and Z axis simultaniously
+     * @see net.apartium.cocoabeans.space.axis.AxisOrder
      * @param numOfBlocks number of blocks to paste
-     * TODO kfir this needs claryifying
      * @return paste result
      */
     PasteResult advanceOnDualAxis(int numOfBlocks);
 
     /**
      * Paste specified number of blocks on single axis
+     * For example, if the axis order is {@link net.apartium.cocoabeans.space.axis.AxisOrder#XYZ}, the paste will be on the Z axis
+     * @see net.apartium.cocoabeans.space.axis.AxisOrder
      * @param numOfBlocks number of blocks to paste
-     * TODO kfir this needs claryifying
      * @return paste result
      */
     PasteResult advanceOnSingleAxis(int numOfBlocks);

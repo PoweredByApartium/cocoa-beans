@@ -29,19 +29,19 @@ public abstract class AbstractPasteOperation implements PasteOperation {
     }
 
     @Override
-    public @Nullable Position current() {
+    public @Nullable Position getNextPosition() {
         return iterator.current();
     }
 
     protected int currentI0() {
         return iterator.current() != null
-                ? (int) axisOrder.getFirst().getAlong(current())
+                ? (int) axisOrder.getFirst().getAlong(getNextPosition())
                 : 0;
     }
 
     protected int currentI1() {
         return iterator.current() != null
-                ? (int) axisOrder.getSecond().getAlong(current())
+                ? (int) axisOrder.getSecond().getAlong(getNextPosition())
                 : 0;
     }
 

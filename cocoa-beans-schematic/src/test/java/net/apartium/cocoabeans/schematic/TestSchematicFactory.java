@@ -11,7 +11,6 @@ import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
-import java.util.Map;
 
 @NullMarked
 public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
@@ -23,9 +22,7 @@ public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
                         MinecraftVersion.V1_8_9, "test", "0.0.1"
                 ),
                 Instant.now(),
-                new TestMetaData(
-                        Map.of()
-                ),
+                SchematicMetadata.of(),
                 Position.ZERO,
                 AreaSize.box(1),
                 AxisOrder.XYZ,
@@ -36,11 +33,6 @@ public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
     @Override
     public TestSchematic createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset) {
         return new TestSchematic(platform, created, metadata, offset, size, axisOrder, blocks);
-    }
-
-    @Override
-    public SchematicMetadata createMetadata(Map<String, Object> metadata) {
-        return new TestMetaData(metadata);
     }
 
 }

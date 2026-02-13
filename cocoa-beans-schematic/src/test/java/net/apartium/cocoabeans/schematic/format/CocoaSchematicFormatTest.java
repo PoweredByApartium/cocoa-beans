@@ -130,38 +130,7 @@ class CocoaSchematicFormatTest {
 
             @Override
             public @NotNull SchematicMetadata metadata() {
-                return new SchematicMetadata() {
-
-                    @Override
-                    public @NotNull Set<String> keys() {
-                        return Set.of();
-                    }
-
-                    @Override
-                    public <T> T get(@NotNull String key) {
-                        return null;
-                    }
-
-                    @Override
-                    public <T> T get(@NotNull String key, @NotNull T defaultValue) {
-                        return null;
-                    }
-
-                    @Override
-                    public String author() {
-                        return "kfir";
-                    }
-
-                    @Override
-                    public String title() {
-                        return "Cool schematic!";
-                    }
-
-                    @Override
-                    public <T extends SchematicMetadata> @NotNull SchematicMetadataBuilder<T> toBuilder() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+                return SchematicMetadata.of();
             }
 
             @Override
@@ -349,9 +318,7 @@ class CocoaSchematicFormatTest {
                         MinecraftVersion.V1_8_9, "test", "0.0.1"
                 ),
                 Instant.now(),
-                new TestMetaData(
-                        Map.of()
-                ),
+                SchematicMetadata.of(),
                 Position.ZERO,
                 AreaSize.box(1),
                 AxisOrder.XYZ,
@@ -446,9 +413,7 @@ class CocoaSchematicFormatTest {
                         MinecraftVersion.V1_8_9, "test", "0.0.1"
                 ),
                 Instant.now(),
-                new TestMetaData(
-                        Map.of()
-                ),
+                SchematicMetadata.of(),
                 Position.ZERO,
                 AreaSize.box(1),
                 AxisOrder.XYZ,

@@ -26,13 +26,13 @@ public class TestSchematic extends AbstractSchematic<TestSchematic> {
     private static SchematicBuilder<TestSchematic> builder(TestSchematic schematic) {
         return new AbstractSchematicBuilder<>(schematic) {
             @Override
-            public SchematicBuilder<TestSchematic> metadata(Function<SchematicMetadataBuilder<?>, SchematicMetadata> block) {
+            public SchematicBuilder<TestSchematic> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block) {
                 throw new IllegalStateException("Cannot modify metadata of a test schematic");
             }
 
             @Override
             public TestSchematic build() {
-                return new TestSchematic(platform, created, metadata, offset, size, axes, new BlockChunkIterator(blockChunk));
+                return new TestSchematic(platform, created, metadata == null ? SchematicMetadata.of() : metadata, offset, size, axes, new BlockChunkIterator(blockChunk));
             }
         };
     }

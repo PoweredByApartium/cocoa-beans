@@ -38,11 +38,4 @@ public interface SchematicFactory<S extends Schematic<S>> {
      */
     S createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset);
 
-    /**
-     * Create a metadata by its content
-     * @param metadata metadata
-     * @return a new schematic metadata instance
-     */
-    SchematicMetadata createMetadata(Map<String, Object> metadata);
-
 }
