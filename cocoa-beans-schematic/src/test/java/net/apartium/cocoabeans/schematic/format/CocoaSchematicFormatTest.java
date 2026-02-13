@@ -209,6 +209,11 @@ class CocoaSchematicFormatTest {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
+            public BlockIterator reverseIterator(AxisOrder axisOrder, Set reverseAxis) {
+                return null;
+            }
+
 
             @Override
             public @NotNull SchematicBuilder<?> toBuilder() {
