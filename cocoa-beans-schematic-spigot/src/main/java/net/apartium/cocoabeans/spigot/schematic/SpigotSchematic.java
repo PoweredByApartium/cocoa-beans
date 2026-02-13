@@ -71,7 +71,7 @@ public class SpigotSchematic extends AbstractSchematic<SpigotSchematic> {
      * @param origin the origin location
      * @return the paste operation
      */
-    public SpigotPasteOperation paste(final Location origin) {
+    public SpigotPasteOperation paste(Location origin) {
         return paste(origin, axisOrder());
     }
 
@@ -83,53 +83,27 @@ public class SpigotSchematic extends AbstractSchematic<SpigotSchematic> {
      * @param axisOrder the axis order
      * @return the paste operation
      */
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder) {
-        return paste(origin, axisOrder, (block, blockPlacement) -> block.getType() == Material.AIR);
+    public SpigotPasteOperation paste(Location origin, AxisOrder axisOrder) {
+        return paste(origin, axisOrder, sortedIterator(axisOrder));
     }
 
     /**
-     * Pastes the schematic at the given origin location with a specified axis order and block placement filter.
+     * Pastes the schematic at the given origin location with a specified axis order.
+     * Only places blocks if the current block is air.
      *
      * @param origin the origin location
      * @param axisOrder the axis order
-     * @param shouldPlace predicate to determine if a block should be placed
+     * @param iterator the block iterator, used to determine the order of block placement
      * @return the paste operation
      */
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace) {
-        return paste(origin, axisOrder, shouldPlace, BlockPlacement::block);
-    }
-
-    /**
-     * Pastes the schematic at the given origin location with a specified axis order, block placement filter, and block data mapper.
-     *
-     * @param origin the origin location
-     * @param axisOrder the axis order
-     * @param shouldPlace predicate to determine if a block should be placed
-     * @param mapper function to map block placements to block data
-     * @return the paste operation
-     */
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace, Function<BlockPlacement, BlockData> mapper) {
-        return paste(origin, axisOrder, shouldPlace, mapper, SpigotSchematicPlacer.getInstance());
-    }
-
-    /**
-     * Pastes the schematic at the given origin location with full customization.
-     *
-     * @param origin the origin location
-     * @param axisOrder the axis order
-     * @param shouldPlace predicate to determine if a block should be placed
-     * @param mapper function to map block placements to block data
-     * @param placer the schematic placer implementation
-     * @return the paste operation
-     */
-    public SpigotPasteOperation paste(final Location origin, final AxisOrder axisOrder, BiPredicate<Block, BlockPlacement> shouldPlace, Function<BlockPlacement, BlockData> mapper, SpigotSchematicPlacer placer) {
+    public SpigotPasteOperation paste(Location origin, AxisOrder axisOrder, BlockIterator iterator) {
         return new SpigotPasteOperation(
                 origin.clone().add(toVector(offset)),
-                sortedIterator(axisOrder),
+                iterator,
                 axisOrder,
-                shouldPlace,
-                mapper,
-                placer
+                (block, blockPlacement) -> block.getType() == Material.AIR,
+                BlockPlacement::block,
+                SpigotSchematicPlacer.getInstance()
         );
     }
 

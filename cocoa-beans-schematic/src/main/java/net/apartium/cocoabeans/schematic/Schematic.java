@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.jetbrains.annotations.ApiStatus;
@@ -11,6 +12,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.Set;
 
 /**
  * Represents a 3d schematic
@@ -78,6 +80,15 @@ public interface Schematic<T extends Schematic<T>> {
      */
     BlockIterator sortedIterator(AxisOrder axisOrder);
 
+    /**
+     * Iterate over schematic with specified axis order, while reading blocks on each axis from end to start
+     * @param axisOrder axis order
+     * @param reverseAxis axes to read on reverse
+     * @return blocks iterator instance
+     * @see Schematic#sortedIterator(AxisOrder) 
+     */
+    BlockIterator reverseIterator(AxisOrder axisOrder, Set<Axis> reverseAxis);
+    
     /**
      * Creates a builder with the existing values of this schematic
      * @return a new builder instance

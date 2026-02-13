@@ -119,4 +119,9 @@ public abstract class AbstractSchematic<T extends Schematic<T>> implements Schem
         return new SortedAxisBlockIterator(this.blockChunk, size, axisOrder);
     }
 
+    @Override
+    public BlockIterator reverseIterator(AxisOrder axisOrder, Set<Axis> reverseAxis) {
+        return new SortedAxisBlockIterator(this.blockChunk, size, axisOrder, reverseAxis);
+    }
+
 }
