@@ -17,7 +17,6 @@ plugins {
 }
 
 val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
-val isCi = System.getenv("GITHUB_EVENT_NAME") != null
 
 fun figureVersion() : String {
     val prodVersion = System.getenv("VERSION")
@@ -128,15 +127,6 @@ allprojects {
     tasks {
         test {
             useJUnitPlatform()
-        }
-    }
-
-    repositories {
-        maven {
-            name = "ApartiumNexus"
-
-            val base = if (isCi) "nexus-de.apartium.net" else "nexus.apartium.net"
-            url = uri("https://$base/repository/maven-public")
         }
     }
 

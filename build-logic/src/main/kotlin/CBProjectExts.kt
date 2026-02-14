@@ -1,4 +1,5 @@
 import org.gradle.api.Project
+import org.gradle.api.initialization.Settings
 
 val alternateModuleNames = mapOf(
     "cocoa-beans-spigot-1-8" to "cocoa-beans-spigot-1.8",
@@ -13,3 +14,7 @@ val Project.mavenName: String?
             project.name
         }
 
+val ci = System.getenv("GITHUB_EVENT_NAME") != null
+
+val Project.isCi: Boolean
+    get() = ci
