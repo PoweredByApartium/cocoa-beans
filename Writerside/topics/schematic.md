@@ -1,7 +1,10 @@
 # 🏗 Schematic
 
 Paste schematic files into block worlds using the `cocoa-beans-schematic` modules.
-<video src="schematic-tower-paste.mp4" preview-src="scoreboard-hellowolrd.png" />
+<video 
+    src="schematic-tower-paste.mp4" 
+    preview-src="scoreboard-hellowolrd.png"
+/>
 
 ## Getting Started
 
