@@ -1,5 +1,4 @@
 import org.gradle.api.Project
-import org.gradle.api.initialization.Settings
 
 val alternateModuleNames = mapOf(
     "cocoa-beans-spigot-1-8" to "cocoa-beans-spigot-1.8",
