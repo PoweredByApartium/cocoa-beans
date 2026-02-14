@@ -1,6 +1,6 @@
 plugins {
     id("apartium-maven-publish")
-    id("com.gradleup.shadow") version "9.0.2"
+    id("com.gradleup.shadow")
 }
 
 group = parent!!.group
