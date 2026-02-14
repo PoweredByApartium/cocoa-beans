@@ -11,7 +11,7 @@ plugins {
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
     id("idea")
-    id("com.gradleup.nmcp").version("0.0.8")
+    id("com.gradleup.nmcp") version "0.0.8"
     id("signing")
     id("jacoco")
 }
