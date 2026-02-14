@@ -22,7 +22,7 @@ dependencyResolutionManagement {
             name = "PaperMC"
             url = uri("https://artifactory.papermc.io/artifactory/snapshots/")
             content {
-                include("io.papermc.paper:paper-api")
+                includeModule("io.papermc.paper", "paper-api")
             }
         }
     }
