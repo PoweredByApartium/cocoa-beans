@@ -11,9 +11,7 @@ dependencies {
 
     compileOnly(libs.paper)
 
-    testImplementation(libs.mock.bukkit) {
-        exclude(group = "io.papermc.paper", module = "paper-api")
-    }
+    testImplementation(libs.mock.bukkit)
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
