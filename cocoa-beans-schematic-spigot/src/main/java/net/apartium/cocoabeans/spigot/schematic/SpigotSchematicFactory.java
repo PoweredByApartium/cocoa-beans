@@ -12,7 +12,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
-import java.util.Map;
 
 /**
  * Factory for creating {@link SpigotSchematic} instances and related metadata.

@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.SchematicMetadata;
-import net.apartium.cocoabeans.schematic.SchematicMetadataBuilder;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;

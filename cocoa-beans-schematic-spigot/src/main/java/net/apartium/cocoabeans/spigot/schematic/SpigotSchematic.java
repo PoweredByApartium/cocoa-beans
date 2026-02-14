@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
-import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
@@ -10,13 +9,10 @@ import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
