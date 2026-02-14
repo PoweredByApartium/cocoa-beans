@@ -13,3 +13,5 @@ val Project.mavenName: String?
             project.name
         }
 
+val Project.isCi: Boolean
+    get() = System.getenv("GITHUB_EVENT_NAME") != null

@@ -11,13 +11,12 @@ plugins {
     id("apartium-maven-publish")
     id("org.sonarqube") version "5.1.0.4882"
     id("idea")
-    id("com.gradleup.nmcp").version("0.0.8")
+    id("com.gradleup.nmcp") version "0.0.8"
     id("signing")
     id("jacoco")
 }
 
 val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
-val isCi = System.getenv("GITHUB_EVENT_NAME") != null
 
 fun figureVersion() : String {
     val prodVersion = System.getenv("VERSION")
@@ -130,15 +129,6 @@ allprojects {
     tasks {
         test {
             useJUnitPlatform()
-        }
-    }
-
-    repositories {
-        maven {
-            name = "ApartiumNexus"
-
-            val base = if (isCi) "nexus-de.apartium.net" else "nexus.apartium.net"
-            url = uri("https://$base/repository/maven-public")
         }
     }
 
