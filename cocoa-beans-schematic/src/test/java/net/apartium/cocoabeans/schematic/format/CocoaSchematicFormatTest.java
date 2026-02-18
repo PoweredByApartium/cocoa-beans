@@ -149,6 +149,11 @@ class CocoaSchematicFormatTest {
             }
 
             @Override
+            public Set<BodyExtension<?>> bodyExtensions() {
+                return Set.of();
+            }
+
+            @Override
             public BlockData getBlockData(int x, int y, int z) {
                 return blocks[x][y][z];
             }

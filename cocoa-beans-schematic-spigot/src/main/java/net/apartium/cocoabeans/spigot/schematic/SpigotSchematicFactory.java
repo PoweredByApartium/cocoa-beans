@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Factory for creating {@link SpigotSchematic} instances and related metadata.
@@ -45,11 +47,20 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
      * @param size     the schematic area size
      * @param axisOrder the axis order for translation
      * @param offset   the position offset
+     * @param bodyExtensions body extensions
      * @return a built {@link SpigotSchematic}
      */
     @Override
-    public SpigotSchematic createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata,
-                                           BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset) {
+    public SpigotSchematic createSchematic(
+            Instant created,
+            MinecraftPlatform platform,
+            SchematicMetadata metadata,
+            BlockIterator blocks,
+            AreaSize size,
+            AxisOrder axisOrder,
+            Position offset,
+            Map<Long, BodyExtension<?>> bodyExtensions
+    ) {
         SpigotSchematicBuilder builder = new SpigotSchematicBuilder();
 
         builder

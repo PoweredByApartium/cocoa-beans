@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.schematic.block.*;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
@@ -94,6 +95,11 @@ public abstract class AbstractSchematic<T extends Schematic<T>> implements Schem
     @Override
     public AxisOrder axisOrder() {
         return axes;
+    }
+
+    @Override
+    public Set<BodyExtension<?>> bodyExtensions() {
+        return Set.of();
     }
 
     @Override

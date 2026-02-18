@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.schematic.block.BlockData;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
@@ -58,7 +59,13 @@ public interface Schematic<T extends Schematic<T>> {
     AxisOrder axisOrder();
 
     /**
-     * Get schematic block data for certain position, may be nullable
+     * Get body extensions of this schematic (like mobs etc...)
+     * @return schematic body extensions
+     */
+    Set<BodyExtension<?>> bodyExtensions();
+
+    /**
+     * Get schematic block data for a certain position, may be nullable
      * @param x position x
      * @param y position y
      * @param z position z

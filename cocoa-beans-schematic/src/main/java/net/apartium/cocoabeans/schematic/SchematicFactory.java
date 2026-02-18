@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Platform-specific schematic factory
@@ -33,8 +35,18 @@ public interface SchematicFactory<S extends Schematic<S>> {
      * @param size size
      * @param axisOrder axis order
      * @param offset offset
+     * @param bodyExtensions body extensions
      * @return schematic instance
      */
-    S createSchematic(Instant created, MinecraftPlatform platform, SchematicMetadata metadata, BlockIterator blocks, AreaSize size, AxisOrder axisOrder, Position offset);
+    S createSchematic(
+            Instant created,
+            MinecraftPlatform platform,
+            SchematicMetadata metadata,
+            BlockIterator blocks,
+            AreaSize size,
+            AxisOrder axisOrder,
+            Position offset,
+            Map<Long, BodyExtension<?>> bodyExtensions
+    );
 
 }

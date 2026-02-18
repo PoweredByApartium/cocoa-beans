@@ -46,15 +46,18 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         public static final int AUTHOR = 0x0A;
         public static final int TITLE = 0x0B;
         public static final int PLATFORM = 0x0C;
+        public static final int BODY_EXTENSION = 0x0E;
 
     }
 
     private final Map<Integer, BlockDataEncoder> blockDataEncoderMap;
     private final Map<Integer, IndexEncoder> indexEncoderMap;
     private final Map<Byte, CompressionEngine> compressionEngines;
+    private final Map<Long, BodyExtensionFormat<?>> bodyExtensionFormat;
 
     private CompressionEngine defaultCompressionEngineForBlocks;
     private CompressionEngine defaultCompressionEngineForIndexes;
+    private CompressionEngine defaultCompressionEngineForBodyExtensions;
     private Map.Entry<Integer, BlockDataEncoder> preferBlockEncoder;
     private Map.Entry<Integer, IndexEncoder> preferIndexEncoder;
     private final SchematicFactory<T> schematicFactory;
@@ -72,8 +75,18 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
         this.defaultCompressionEngineForBlocks = this.compressionEngines.get(defaultCompressionForBlock);
         this.defaultCompressionEngineForIndexes = this.compressionEngines.get(defaultCompressionForIndexes);
+        this.defaultCompressionEngineForBodyExtensions = this.compressionEngines.get(defaultCompressionForBlock);
 
         this.schematicFactory = schematicFactory;
+        this.bodyExtensionFormat = new HashMap<>();
+    }
+
+    public void registerBodyExtensionFormat(long id, BodyExtensionFormat<?> format) {
+        bodyExtensionFormat.put(id, format);
+    }
+
+    public void registerAllBodyExtensionsFormat(Map<Long, BodyExtensionFormat<?>> bodyExtensionFormat) {
+        this.bodyExtensionFormat.putAll(bodyExtensionFormat);
     }
 
     public void registerBlockEncoder(int id, BlockDataEncoder encoder) {
@@ -102,6 +115,38 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
     public void setDefaultCompressionEngineForIndexes(CompressionEngine engine) {
         defaultCompressionEngineForIndexes = engine;
+    }
+
+    public void setDefaultCompressionEngineForBodyExtensions(CompressionEngine engine) {
+        defaultCompressionEngineForBodyExtensions = engine;
+    }
+
+    private <E> void writeBodyExtension(SeekableOutputStream out, BodyExtension<E> bodyExtension, HeaderResult headerResult) throws IOException {
+        Long offset = headerResult.bodyExtensionsOffset().get(bodyExtension.id());
+        if (offset == null)
+            throw new IllegalStateException("Body extension not found in header!\nSomething went wrong with schematic!");
+
+        if (bodyExtensionFormat.containsKey(bodyExtension.id()))
+            throw new IllegalStateException("Unknown body extension format: " + bodyExtension.id());
+
+        BodyExtensionFormat<E> format = (BodyExtensionFormat<E>) bodyExtensionFormat.get(bodyExtension.id());
+
+        byte[] data = format.write(bodyExtension);
+        byte[] compressed = compressionEngines.get(defaultCompressionEngineForBodyExtensions.type()).compress(data);
+
+        CompressionBlockInfo bodyExtensionInfo = new CompressionBlockInfo(
+                defaultCompressionEngineForBodyExtensions.type(),
+                data.length,
+                compressed.length,
+                out.position(),
+                crc32(data)
+        );
+
+        out.position(HEADER_START_INDEX + offset);
+        out.write(bodyExtensionInfo.toByteArray());
+
+        out.position(bodyExtensionInfo.offset());
+        out.write(compressed);
     }
 
     @Override
@@ -186,13 +231,34 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
             out.position(indexInfo.offset());
             out.write(compressed);
 
+            for (BodyExtension<?> bodyExtension : schematic.bodyExtensions())
+                writeBodyExtension(out, bodyExtension, headerResult);
+
             // TODO add additional body here
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private record HeaderResult(byte[] data, long offsetBlockInfo, long offsetIndexInfo) { }
+    private record HeaderResult(byte[] data, long offsetBlockInfo, long offsetIndexInfo, Map<Long, Long> bodyExtensionsOffset) { }
+
+    private void writeAuthorHeader(SchematicMetadata metadata, OutputStream out) throws IOException {
+        String author = metadata.author();
+        if (author == null)
+            return;
+
+        out.write(writeU16(Headers.AUTHOR));
+        out.write(writeString(author));
+    }
+
+    private void writeTitleHeader(SchematicMetadata metadata, OutputStream out) throws IOException {
+        String title = metadata.title();
+        if (title == null)
+            return;
+
+        out.write(writeU16(Headers.TITLE));
+        out.write(writeString(title));
+    }
 
     private HeaderResult headers(Schematic<T> schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
@@ -230,15 +296,8 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
         SchematicMetadata metadata = schematic.metadata();
 
-        if (metadata.author() != null) {
-            out.write(writeU16(Headers.AUTHOR));
-            out.write(writeString(metadata.author()));
-        }
-
-        if (metadata.title() != null) {
-            out.write(writeU16(Headers.TITLE));
-            out.write(writeString(metadata.title()));
-        }
+        writeAuthorHeader(metadata, out);
+        writeTitleHeader(metadata, out);
 
         MinecraftPlatform platform = schematic.originPlatform();
 
@@ -250,12 +309,24 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         out.write(writeString(platform.platformName()));
         out.write(writeString(platform.platformVersion()));
 
+        Map<Long, Long> bodyExtensionsOffset = new HashMap<>();
+        for (BodyExtension<?> bodyExtension : schematic.bodyExtensions()) {
+            out.write(writeU16(Headers.BODY_EXTENSION));
+            out.write(writeU64(bodyExtension.id()));
+
+            long offset = out.size();
+            out.write(new byte[CompressionBlockInfo.SIZE]);
+
+            bodyExtensionsOffset.put(bodyExtension.id(), offset);
+        }
+
         // TODO add tlv headers here
 
         return new HeaderResult(
                 bOut.toByteArray(),
                 blockInfoIndex,
-                indexInfoIndex
+                indexInfoIndex,
+                bodyExtensionsOffset
         );
     }
 
@@ -270,6 +341,35 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         int version = readU16(in);
         if (version != VERSION)
             throw new UnsupportedEncodingException("Version aren't match\nexpected: " + VERSION + "\ngot: " + version);
+    }
+
+    private void readBodyExtensions(SeekableInputStream in, Map<Long, BodyExtension<?>> bodyExtensions, Map<Long, CompressionBlockInfo> bodyExtensionCompressionInfo) throws IOException {
+        for (Map.Entry<Long, CompressionBlockInfo> infoEntry : bodyExtensionCompressionInfo.entrySet()) {
+            BodyExtension<?> bodyExtension = readBodyExtension(in, infoEntry.getKey(), infoEntry.getValue());
+            if (bodyExtension == null)
+                continue;
+
+            bodyExtensions.put(infoEntry.getKey(), bodyExtension);
+        }
+    }
+
+    private BodyExtension<?> readBodyExtension(SeekableInputStream in, long bodyExtensionId, CompressionBlockInfo bodyExtensionInfo) throws IOException {
+        BodyExtensionFormat<?> format = bodyExtensionFormat.get(bodyExtensionId);
+        if (format == null)
+            throw new IllegalArgumentException("Unknown body extension format: " + bodyExtensionId);
+
+        in.position(bodyExtensionInfo.offset());
+
+        byte[] compressedBodyExtensionInfo = in.readNBytes((int) bodyExtensionInfo.uncompressedSize());
+        byte[] originalBodyExtensionInfo = compressionEngines.get(bodyExtensionInfo.compressionType()).decompress(compressedBodyExtensionInfo);
+        if (originalBodyExtensionInfo.length != bodyExtensionInfo.uncompressedSize())
+            throw new EOFException("Body Extensions info length mismatch\nExpected: " + bodyExtensionInfo.uncompressedSize() + "\nActual:" + originalBodyExtensionInfo.length);
+
+        long hash = crc32(originalBodyExtensionInfo);
+        if (hash != bodyExtensionInfo.checksum())
+            throw new EOFException("Checksum mismatch\nExpected: " + bodyExtensionInfo.checksum() + "\nActual:" + hash);
+
+        return format.read(new ByteArrayInputStream(originalBodyExtensionInfo), originalBodyExtensionInfo.length);
     }
 
     @Override
@@ -314,6 +414,12 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
             IndexEncoder indexEncoder = (IndexEncoder) headers.get(Headers.INDEX_ENCODING);
             BlockIterator blocks = indexEncoder.read(indexIn, axes, blockEncoder, blockIn);
 
+            Map<Long, BodyExtension<?>> bodyExtensions = new HashMap<>();
+            if (headers.getOrDefault(Headers.BODY_EXTENSION, null) instanceof Map<?, ?> map) {
+                Map<Long, CompressionBlockInfo> bodyExtensionCompressionInfo = (Map<Long, CompressionBlockInfo>) map;
+                readBodyExtensions(in, bodyExtensions, bodyExtensionCompressionInfo);
+            }
+
             Map<String, Object> metadata = new HashMap<>();
             if (headers.containsKey(Headers.AUTHOR))
                 metadata.put("author", headers.get(Headers.AUTHOR));
@@ -328,8 +434,8 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
                     blocks,
                     (AreaSize) headers.get(Headers.SIZE),
                     (AxisOrder) headers.get(Headers.AXIS_ORDER),
-                    (Position) headers.get(Headers.OFFSET)
-
+                    (Position) headers.get(Headers.OFFSET),
+                    bodyExtensions
             );
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -385,7 +491,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
                 case Headers.OFFSET -> {
                     DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 12)));
-                    map.put(Headers.OFFSET, new Position(in.readInt(), in.readInt(), in.readInt())); // TODO may change to 10 bytes instead of 12 because we only need 25 bits for 30m blocks
+                    map.put(Headers.OFFSET, new Position(in.readInt(), in.readInt(), in.readInt()));
                     yield index + 12;
                 }
 
@@ -463,6 +569,18 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
                     map.put(Headers.PLATFORM, new MinecraftPlatform(version, platformName, platformVersion));
                     yield index + 24 + lengthName + lengthPlatform;
 
+                }
+
+                case Headers.BODY_EXTENSION -> {
+                    DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 8)));
+                    long bodyExtensionId = readU64(in);
+
+                    CompressionBlockInfo info = CompressionBlockInfo.fromBytes(splitFromAToB(headers, index + 8, index + 8 + CompressionBlockInfo.SIZE));
+
+                    if (map.computeIfAbsent(Headers.BODY_EXTENSION, (key) -> new HashMap<>()) instanceof Map<?, ?> bodyExtensionMap)
+                        ((Map<Long, CompressionBlockInfo>) bodyExtensionMap).put(bodyExtensionId, info);
+
+                    yield index + 8 + CompressionBlockInfo.SIZE;
                 }
 
                 default -> {
