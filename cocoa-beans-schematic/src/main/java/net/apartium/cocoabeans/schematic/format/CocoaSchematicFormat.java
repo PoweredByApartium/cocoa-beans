@@ -234,7 +234,6 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
             for (BodyExtension<?> bodyExtension : schematic.bodyExtensions())
                 writeBodyExtension(out, bodyExtension, headerResult);
 
-            // TODO add additional body here
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -577,7 +576,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
                     CompressionBlockInfo info = CompressionBlockInfo.fromBytes(splitFromAToB(headers, index + 8, index + 8 + CompressionBlockInfo.SIZE));
 
-                    if (map.computeIfAbsent(Headers.BODY_EXTENSION, (key) -> new HashMap<>()) instanceof Map<?, ?> bodyExtensionMap)
+                    if (map.computeIfAbsent(Headers.BODY_EXTENSION, key -> new HashMap<>()) instanceof Map<?, ?> bodyExtensionMap)
                         ((Map<Long, CompressionBlockInfo>) bodyExtensionMap).put(bodyExtensionId, info);
 
                     yield index + 8 + CompressionBlockInfo.SIZE;
