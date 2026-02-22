@@ -432,7 +432,6 @@ public abstract class CocoaBoard {
             this.title.delete();
 
         this.title = ComponentEntry.create(component);
-//        this.title.observe();
 
         updateTitle();
     }
