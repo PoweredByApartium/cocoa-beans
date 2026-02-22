@@ -1,6 +1,7 @@
 # CHANGELOG
 ## 0.0.46
 - [schematic] Introduce schematic API
+- [scoreboard] Fixes identity issue with internal stuff
 - [scoreboard-spigot] Add support for minecraft 1.21.6
 - [common] Bump Minecraft versions from 1.21.6 to 1.21.11
 - [common] Make MinecraftVersion comparable

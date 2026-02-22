@@ -45,35 +45,12 @@ public abstract class CocoaBoard {
                 return null;
 
             ComponentEntry componentEntry = new ComponentEntry(component);
-            component.observe(componentEntry);
+            componentEntry.observe();
             return componentEntry;
         }
 
         private ComponentEntry(Observable<Component> component) {
             this.component = component;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this)
-                return true;
-
-            if (obj == null)
-                return false;
-
-            if (obj.getClass() != this.getClass())
-                return false;
-
-            ComponentEntry other = (ComponentEntry) obj;
-            if (this.component != other.component)
-                return false;
-
-            return this.isDirty() == other.isDirty();
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.component, this.isDirty);
         }
 
         @Override
@@ -87,6 +64,10 @@ public abstract class CocoaBoard {
         public void delete() {
             component.removeObserver(this);
             prevComponent = null;
+        }
+
+        private void observe() {
+            this.component.observe(this);
         }
 
         /**
@@ -447,6 +428,9 @@ public abstract class CocoaBoard {
     }
 
     public void title(Observable<Component> component) {
+        if (this.title != null)
+            this.title.delete();
+
         this.title = ComponentEntry.create(component);
 
         updateTitle();
