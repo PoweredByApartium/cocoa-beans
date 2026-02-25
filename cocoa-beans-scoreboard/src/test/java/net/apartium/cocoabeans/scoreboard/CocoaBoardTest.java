@@ -888,12 +888,6 @@ class CocoaBoardTest {
                                 null
                         ),
                         new TeamPacket(
-                                0,
-                                TeamMode.UPDATE,
-                                line1.get(),
-                                null
-                        ),
-                        new TeamPacket(
                                 1,
                                 TeamMode.UPDATE,
                                 line1.get(),
@@ -993,12 +987,6 @@ class CocoaBoardTest {
                                 2,
                                 TeamMode.CREATE,
                                 line.get(),
-                                null
-                        ),
-                        new TeamPacket(
-                                0,
-                                TeamMode.UPDATE,
-                                line1.get(),
                                 null
                         ),
                         new TeamPacket(
