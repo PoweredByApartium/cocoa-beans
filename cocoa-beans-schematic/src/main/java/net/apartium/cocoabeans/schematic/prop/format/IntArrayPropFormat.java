@@ -29,7 +29,7 @@ public record IntArrayPropFormat(Function<int[], BlockProp<int[]>> constructor) 
 
 
         byte[] result = new byte[array.length * 4 + 4];
-        writeIntAt(result, 0, array.length);
+        writeIntAt(result, array.length, 0);
         for (int i = 0; i < array.length; i++)
             writeIntAt(result, array[i], i + 1);
 

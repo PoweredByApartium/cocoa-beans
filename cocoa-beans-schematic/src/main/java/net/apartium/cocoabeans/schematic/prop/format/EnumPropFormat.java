@@ -30,7 +30,11 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
     public BlockProp<T> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
         try {
-            return constructor.apply(readEnum(in, enumClass, valuesSupplier));
+            BlockProp<T> prop = constructor.apply(readEnum(in, enumClass, valuesSupplier));
+            if (in.available() > 0)
+                throw new IllegalArgumentException("Unexpected data after enum");
+
+            return prop;
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

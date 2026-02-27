@@ -300,13 +300,13 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         AreaSize newSize = new AreaSize(size).floor();
 
         if (x >= size.width())
-            newSize = new AreaSize(x + 1, size.height(), size.depth());
+            newSize = new AreaSize(x + 1, newSize.height(), newSize.depth());
 
         if (y >= size.height())
-            newSize = new AreaSize(size.width(), y + 1, size.depth());
+            newSize = new AreaSize(newSize.width(), y + 1, newSize.depth());
 
         if (z >= size.depth())
-            newSize = new AreaSize(size.width(), size.height(), z + 1);
+            newSize = new AreaSize(newSize.width(), newSize.height(), z + 1);
 
         this.size = newSize;
     }
