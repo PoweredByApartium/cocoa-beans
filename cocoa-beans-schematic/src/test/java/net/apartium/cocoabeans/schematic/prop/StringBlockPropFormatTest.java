@@ -79,8 +79,11 @@ class StringBlockPropFormatTest {
     void failedSerializeWrongType() {
         StringBlockPropFormat format = new StringBlockPropFormat();
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new IntBlockProp(1)));
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new ByteBlockProp((byte) 1)));
+        IntBlockProp intProp = new IntBlockProp(1);
+        ByteBlockProp byteProp = new ByteBlockProp((byte) 1);
+
+        assertThrows(IllegalArgumentException.class, () -> format.encode(intProp));
+        assertThrows(IllegalArgumentException.class, () -> format.encode(byteProp));
     }
 
     @Test
