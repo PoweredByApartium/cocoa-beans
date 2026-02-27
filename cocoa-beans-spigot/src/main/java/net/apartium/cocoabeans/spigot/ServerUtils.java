@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot;
 
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
@@ -29,6 +30,8 @@ public class ServerUtils {
 
     private static final MinecraftVersion version = detectVersion();
 
+    private static final MinecraftPlatform platform = new MinecraftPlatform(version, "spigot", Bukkit.getVersion());
+
     /**
      * Get game version of the running server
      * For example GameVersion(1, 8, 0)
@@ -37,6 +40,15 @@ public class ServerUtils {
      */
     public static @NotNull MinecraftVersion getVersion() {
         return version;
+    }
+
+    /**
+     * Get the platform of the running server, including version and implementation details
+     * @return platform details
+     * @see MinecraftPlatform
+     */
+    public static @NotNull MinecraftPlatform getPlatform() {
+        return platform;
     }
 
     @ApiStatus.Internal

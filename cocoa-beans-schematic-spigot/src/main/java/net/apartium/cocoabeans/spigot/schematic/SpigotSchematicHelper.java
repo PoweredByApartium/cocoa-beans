@@ -79,7 +79,7 @@ public class SpigotSchematicHelper {
                 .author(author)
                 .build());
         builder.created(Instant.now());
-        builder.platform(new MinecraftPlatform(ServerUtils.getVersion(), "spigot/paper", "---"));
+        builder.platform(ServerUtils.getPlatform());
 
         return builder.build();
     }

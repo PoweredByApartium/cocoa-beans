@@ -50,24 +50,7 @@ dependencies {
 </tabs>
 
 ### Quick Start {id="quick-start"}
-
-```java
-import net.apartium.cocoabeans.spigot.schematic.*;
-import org.bukkit.Location;
-
-// Create factory
-SpigotSchematicFactory factory = new SpigotSchematicFactory();
-
-// Build a schematic
-SpigotSchematic schematic = factory.createSchematic()
-    .platform(MinecraftPlatform.SPIGOT)
-    .setBlock(0, 0, 0, SpigotBlockData.of(Material.DIAMOND_BLOCK))
-    .build();
-
-// Paste it
-Location origin = player.getLocation();
-schematic.paste(origin).performAll();
-```
+<code-block lang="java" src="schematic-spigot/SchematicSnippets.java" include-symbol="quickStart"/>
 
 ## Building Schematics
 
