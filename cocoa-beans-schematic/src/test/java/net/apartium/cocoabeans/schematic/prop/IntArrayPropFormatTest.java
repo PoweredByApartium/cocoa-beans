@@ -3,17 +3,11 @@ package net.apartium.cocoabeans.schematic.prop;
 import net.apartium.cocoabeans.schematic.prop.format.IntArrayPropFormat;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class IntArrayPropFormatTest {
 
-    private static final class IntArrayBlockProp implements BlockProp<int[]> {
-        private final int[] value;
-        private IntArrayBlockProp(int[] value) { this.value = value; }
-        @Override public int[] value() { return value; }
-    }
+    private record IntArrayBlockProp(int[] value) implements BlockProp<int[]> { }
 
     private static int readIntBE(byte[] arr, int byteOffset) {
         return (arr[byteOffset] & 0xFF) << 24
@@ -80,8 +74,11 @@ class IntArrayPropFormatTest {
     void failedSerialize() {
         IntArrayPropFormat format = new IntArrayPropFormat(IntArrayBlockProp::new);
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new IntBlockProp(1)));
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new ByteBlockProp((byte) 1)));
+        IntBlockProp intProp = new IntBlockProp(1);
+        ByteBlockProp byteProp = new ByteBlockProp((byte) 1);
+
+        assertThrows(IllegalArgumentException.class, () -> format.encode(intProp));
+        assertThrows(IllegalArgumentException.class, () -> format.encode(byteProp));
 
         BlockProp<?> nullProp = () -> null;
         assertThrows(NullPointerException.class, () -> format.encode(nullProp));

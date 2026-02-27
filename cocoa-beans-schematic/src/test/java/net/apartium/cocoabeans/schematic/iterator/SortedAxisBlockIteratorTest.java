@@ -1,7 +1,6 @@
-package net.apartium.cocoabeans.schematic;
+package net.apartium.cocoabeans.schematic.iterator;
 
 import net.apartium.cocoabeans.schematic.block.*;
-import net.apartium.cocoabeans.schematic.iterator.SortedAxisBlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.Axis;

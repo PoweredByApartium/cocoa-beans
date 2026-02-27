@@ -99,7 +99,8 @@ class StringBlockPropFormatTest {
         String tooLong = "a".repeat(StringBlockPropFormat.MAX_LENGTH + 1);
         assertEquals(256, tooLong.getBytes(StandardCharsets.UTF_8).length);
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new StringBlockProp(tooLong)));
+        StringBlockProp prop = new StringBlockProp(tooLong);
+        assertThrows(IllegalArgumentException.class, () -> format.encode(prop));
     }
 
     @Test

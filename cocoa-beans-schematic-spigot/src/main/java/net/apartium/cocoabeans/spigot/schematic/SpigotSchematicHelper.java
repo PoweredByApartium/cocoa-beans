@@ -5,7 +5,6 @@ import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.ServerUtils;
-import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;

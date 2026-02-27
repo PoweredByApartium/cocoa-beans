@@ -68,7 +68,8 @@ class ListStringBlockPropFormatTest {
     void failedEncodeWrongType() {
         ListStringBlockPropFormat format = ListStringBlockPropFormat.INSTANCE;
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new IntBlockProp(1)));
+        IntBlockProp prop = new IntBlockProp(1);
+        assertThrows(IllegalArgumentException.class, () -> format.encode(prop));
     }
 
     @Test
@@ -90,7 +91,8 @@ class ListStringBlockPropFormatTest {
         String tooLong = "a".repeat(ListStringBlockPropFormat.MAX_LENGTH + 1);
         assertEquals(256, tooLong.getBytes(StandardCharsets.UTF_8).length);
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new ListStringProp(List.of(tooLong))));
+        ListStringProp prop = new ListStringProp(List.of(tooLong));
+        assertThrows(IllegalArgumentException.class, () -> format.encode(prop));
     }
 
     @Test

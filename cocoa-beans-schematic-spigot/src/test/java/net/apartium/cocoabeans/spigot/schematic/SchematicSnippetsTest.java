@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SchematicSnippets extends SpigotTestBase {
+class SchematicSnippetsTest extends SpigotTestBase {
 
     PlayerMock player;
 

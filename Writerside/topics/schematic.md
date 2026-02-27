@@ -50,7 +50,7 @@ dependencies {
 </tabs>
 
 ### Quick Start {id="quick-start"}
-<code-block lang="java" src="schematic-spigot/SchematicSnippets.java" include-symbol="quickStart"/>
+<code-block lang="java" src="schematic-spigot/SchematicSnippetsTest.java" include-symbol="quickStart"/>
 
 ## Building Schematics
 

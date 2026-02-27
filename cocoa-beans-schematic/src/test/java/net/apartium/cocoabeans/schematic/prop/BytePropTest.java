@@ -1,6 +1,5 @@
 package net.apartium.cocoabeans.schematic.prop;
 
-import net.apartium.cocoabeans.schematic.prop.format.BooleanPropFormat;
 import net.apartium.cocoabeans.schematic.prop.format.ByteBlockPropFormat;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +34,8 @@ class BytePropTest {
     void failedSerialize() {
         ByteBlockPropFormat format = new ByteBlockPropFormat();
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new IntBlockProp(1)));
+        IntBlockProp prop = new IntBlockProp(1);
+        assertThrows(IllegalArgumentException.class, () -> format.encode(prop));
     }
 
     @Test

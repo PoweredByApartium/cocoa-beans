@@ -38,7 +38,8 @@ class BooleanPropTest {
     void failedSerialize() {
         BooleanPropFormat format = new BooleanPropFormat(BooleanBlockProp::new);
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new IntBlockProp(1)));
+        IntBlockProp prop = new IntBlockProp(1);
+        assertThrows(IllegalArgumentException.class, () -> format.encode(prop));
     }
 
     @Test

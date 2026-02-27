@@ -76,7 +76,8 @@ class IntPropFormatTest {
     void failedSerialize() {
         IntPropFormat format = new IntPropFormat();
 
-        assertThrows(IllegalArgumentException.class, () -> format.encode(new ByteBlockProp((byte) 1)));
+        ByteBlockProp byteProp = new ByteBlockProp((byte) 1);
+        assertThrows(IllegalArgumentException.class, () -> format.encode(byteProp));
 
         BlockProp<?> nullProp = () -> null;
         assertThrows(NullPointerException.class, () -> format.encode(nullProp));
