@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AxisIteratorTest {
+class AxisIteratorTest {
 
     @Test
     void iteratesInXYZOrder() {
@@ -67,16 +67,20 @@ public class AxisIteratorTest {
 
     @Test
     void stepMustBePositive() {
+        Position pos0 = new Position(0, 0, 0);
+        Position pos1 = new Position(1, 1, 1);
+
         assertThrows(IllegalArgumentException.class, () -> new AxisIterator(
                 AxisOrder.XYZ,
-                new Position(0, 0, 0),
-                new Position(1, 1, 1),
+                pos0,
+                pos1,
                 0
         ));
+
         assertThrows(IllegalArgumentException.class, () -> new AxisIterator(
                 AxisOrder.XYZ,
-                new Position(0, 0, 0),
-                new Position(1, 1, 1),
+                pos0,
+                pos1,
                 -1
         ));
     }
