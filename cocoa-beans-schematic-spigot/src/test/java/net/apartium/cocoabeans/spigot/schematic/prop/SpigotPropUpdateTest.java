@@ -14,8 +14,6 @@ import static org.mockito.Mockito.*;
 
 class SpigotPropUpdateTest {
 
-    // region AgeableAgeProp
-
     @Test
     void ageableAgeProp_updatesAge() {
         Ageable ageable = mock(Ageable.class);
@@ -30,10 +28,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region AnaloguePowerablePowerProp
-
     @Test
     void analoguePowerablePowerProp_updatesPower() {
         AnaloguePowerable powerable = mock(AnaloguePowerable.class);
@@ -47,10 +41,6 @@ class SpigotPropUpdateTest {
         new AnaloguePowerablePowerProp(10).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region AttachableAttachedProp
 
     @Test
     void attachableAttachedProp_setsAttachedTrue() {
@@ -73,10 +63,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BambooProp
-
     @Test
     void bambooProp_setsLeaves() {
         Bamboo bamboo = mock(Bamboo.class);
@@ -90,10 +76,6 @@ class SpigotPropUpdateTest {
         new BambooProp(Bamboo.Leaves.LARGE).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region BeeHiveHoneyLevelProp
 
     @Test
     void beeHiveHoneyLevelProp_setsHoneyLevel() {
@@ -109,10 +91,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BigDripleafTiltProp
-
     @Test
     void bigDripleafTiltProp_setsTilt() {
         BigDripleaf bigDripleaf = mock(BigDripleaf.class);
@@ -127,10 +105,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BisectedHalfProp
-
     @Test
     void bisectedHalfProp_setsHalf() {
         Bisected bisected = mock(Bisected.class);
@@ -144,10 +118,6 @@ class SpigotPropUpdateTest {
         new BisectedHalfProp(Bisected.Half.TOP).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region BrewingStandBottlesProp
 
     @Test
     void brewingStandBottlesProp_setsBottles() {
@@ -164,10 +134,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BubbleColumnProp
-
     @Test
     void bubbleColumnProp_setsDragTrue() {
         BubbleColumn bubbleColumn = mock(BubbleColumn.class);
@@ -181,10 +147,6 @@ class SpigotPropUpdateTest {
         new BubbleColumnProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region CakeBitesProp
 
     @Test
     void cakeBitesProp_setsBites() {
@@ -200,10 +162,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region CampfireSignalFireProp
-
     @Test
     void campfireSignalFireProp_setsSignalFire() {
         Campfire campfire = mock(Campfire.class);
@@ -217,10 +175,6 @@ class SpigotPropUpdateTest {
         new CampfireSignalFireProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region CandleProp
 
     @Test
     void candleProp_setsCandles() {
@@ -236,10 +190,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region CaveVinesPlantBerriesProp
-
     @Test
     void caveVinesPlantBerriesProp_setsBerries() {
         CaveVinesPlant caveVinesPlant = mock(CaveVinesPlant.class);
@@ -253,10 +203,6 @@ class SpigotPropUpdateTest {
         new CaveVinesPlantBerriesProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region ChestTypeProp
 
     @Test
     void chestTypeProp_setsType() {
@@ -272,10 +218,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region CommandBlockConditionalProp
-
     @Test
     void commandBlockConditionalProp_setsConditional() {
         CommandBlock commandBlock = mock(CommandBlock.class);
@@ -290,9 +232,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region ComparatorModeProp
 
     @Test
     void comparatorModeProp_setsMode() {
@@ -308,9 +247,7 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
 
-    // region DayLightDetectorInvertedProp
 
     @Test
     void dayLightDetectorInvertedProp_setsInverted() {
@@ -326,10 +263,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region DirectionalFaceProp
-
     @Test
     void directionalFaceProp_setsFacing() {
         Directional directional = mock(Directional.class);
@@ -343,10 +276,6 @@ class SpigotPropUpdateTest {
         new DirectionalFaceProp(BlockFace.NORTH).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region DispenserTriggeredProp
 
     @Test
     void dispenserTriggeredProp_setsTriggered() {
@@ -362,10 +291,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region DoorHingeProp
-
     @Test
     void doorHingeProp_setsHinge() {
         Door door = mock(Door.class);
@@ -379,10 +304,6 @@ class SpigotPropUpdateTest {
         new DoorHingeProp(Door.Hinge.RIGHT).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region EndPortalFrameEyeProp
 
     @Test
     void endPortalFrameEyeProp_setsEye() {
@@ -398,10 +319,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region FaceAttachableAttachedFaceProp
-
     @Test
     void faceAttachableAttachedFaceProp_setsAttachedFace() {
         FaceAttachable faceAttachable = mock(FaceAttachable.class);
@@ -416,9 +333,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region FarmLandMoistureProp
 
     @Test
     void farmLandMoistureProp_setsMoisture() {
@@ -434,10 +348,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region GateInWallProp
-
     @Test
     void gateInWallProp_setsInWall() {
         Gate gate = mock(Gate.class);
@@ -451,10 +361,6 @@ class SpigotPropUpdateTest {
         new GateInWallProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region HangableHangingProp
 
     @Test
     void hangableHangingProp_setsHanging() {
@@ -470,10 +376,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region HopperEnabledProp
-
     @Test
     void hopperEnabledProp_setsEnabled() {
         Hopper hopper = mock(Hopper.class);
@@ -487,10 +389,6 @@ class SpigotPropUpdateTest {
         new HopperEnabledProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region JigsawOrientationProp
 
     @Test
     void jigsawOrientationProp_setsOrientation() {
@@ -506,10 +404,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region LeavesDistanceProp
-
     @Test
     void leavesDistanceProp_setsDistance() {
         Leaves leaves = mock(Leaves.class);
@@ -523,10 +417,6 @@ class SpigotPropUpdateTest {
         new LeavesDistanceProp(3).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region LeavesPersistentProp
 
     @Test
     void leavesPersistentProp_setsPersistent() {
@@ -542,9 +432,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region LevelledLevelProp
 
     @Test
     void levelledLevelProp_setsLevel() {
@@ -560,10 +447,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region LightableLitProp
-
     @Test
     void lightableLitProp_setsLit() {
         Lightable lightable = mock(Lightable.class);
@@ -577,10 +460,6 @@ class SpigotPropUpdateTest {
         new LightableLitProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region MultipleFacingFacesProp
 
     @Test
     void multipleFacingFacesProp_setsFaces() {
@@ -598,10 +477,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region NoteBlockInstrumentProp
-
     @Test
     void noteBlockInstrumentProp_setsInstrument() {
         NoteBlock noteBlock = mock(NoteBlock.class);
@@ -615,10 +490,6 @@ class SpigotPropUpdateTest {
         new NoteBlockInstrumentProp(Instrument.BASS_DRUM).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region NoteBlockNoteProp
 
     @Test
     void noteBlockNoteProp_setsNote() {
@@ -635,10 +506,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region OpenableOpenProp
-
     @Test
     void openableOpenProp_setsOpen() {
         Openable openable = mock(Openable.class);
@@ -652,10 +519,6 @@ class SpigotPropUpdateTest {
         new OpenableOpenProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region OrientableAxisProp
 
     @Test
     void orientableAxisProp_setsAxis() {
@@ -671,10 +534,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region PistonExtendedProp
-
     @Test
     void pistonExtendedProp_setsExtended() {
         Piston piston = mock(Piston.class);
@@ -688,10 +547,6 @@ class SpigotPropUpdateTest {
         new PistonExtendedProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region PistonHeadIsShortProp
 
     @Test
     void pistonHeadIsShortProp_setsShort() {
@@ -707,10 +562,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region PointedDripstoneThicknessProp
-
     @Test
     void pointedDripstoneThicknessProp_setsThickness() {
         PointedDripstone pointedDripstone = mock(PointedDripstone.class);
@@ -724,10 +575,6 @@ class SpigotPropUpdateTest {
         new PointedDripstoneThicknessProp(PointedDripstone.Thickness.TIP).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region PointedDripstoneVerticalDirectionProp
 
     @Test
     void pointedDripstoneVerticalDirectionProp_setsVerticalDirection() {
@@ -743,10 +590,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region PowerablePoweredProp
-
     @Test
     void powerablePoweredProp_setsPowered() {
         Powerable powerable = mock(Powerable.class);
@@ -761,10 +604,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region RailShapeProp
-
     @Test
     void railShapeProp_setsShape() {
         Rail rail = mock(Rail.class);
@@ -778,10 +617,6 @@ class SpigotPropUpdateTest {
         new RailShapeProp(Rail.Shape.ASCENDING_EAST).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region RedstoneWireConnectionsProp
 
     @Test
     void redstoneWireConnectionsProp_setsConnections() {
@@ -801,10 +636,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region RepeaterDelayProp
-
     @Test
     void repeaterDelayProp_setsDelay() {
         Repeater repeater = mock(Repeater.class);
@@ -818,10 +649,6 @@ class SpigotPropUpdateTest {
         new RepeaterDelayProp(2).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region RepeaterLockedProp
 
     @Test
     void repeaterLockedProp_setsLocked() {
@@ -837,10 +664,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region RespawnAnchorChargesProp
-
     @Test
     void respawnAnchorChargesProp_setsCharges() {
         RespawnAnchor respawnAnchor = mock(RespawnAnchor.class);
@@ -854,10 +677,6 @@ class SpigotPropUpdateTest {
         new RespawnAnchorChargesProp(4).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region RotatableRotationProp
 
     @Test
     void rotatableRotationProp_setsRotation() {
@@ -873,10 +692,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region SaplingStageProp
-
     @Test
     void saplingStageProp_setsStage() {
         Sapling sapling = mock(Sapling.class);
@@ -890,10 +705,6 @@ class SpigotPropUpdateTest {
         new SaplingStageProp(1).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region ScaffoldingBottomProp
 
     @Test
     void scaffoldingBottomProp_setsBottom() {
@@ -909,10 +720,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region ScaffoldingDistanceProp
-
     @Test
     void scaffoldingDistanceProp_setsDistance() {
         Scaffolding scaffolding = mock(Scaffolding.class);
@@ -926,10 +733,6 @@ class SpigotPropUpdateTest {
         new ScaffoldingDistanceProp(5).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region SculkCatalystBloomProp
 
     @Test
     void sculkCatalystBloomProp_setsBloom() {
@@ -945,10 +748,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region SculkSensorPhaseProp
-
     @Test
     void sculkSensorPhaseProp_setsPhase() {
         SculkSensor sculkSensor = mock(SculkSensor.class);
@@ -962,10 +761,6 @@ class SpigotPropUpdateTest {
         new SculkSensorPhaseProp(SculkSensor.Phase.ACTIVE).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region SculkShriekerCanSummonProp
 
     @Test
     void sculkShriekerCanSummonProp_setsCanSummon() {
@@ -981,10 +776,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region SculkShriekerShrinkingProp
-
     @Test
     void sculkShriekerShrinkingProp_setShrieking() {
         SculkShrieker sculkShrieker = mock(SculkShrieker.class);
@@ -998,10 +789,6 @@ class SpigotPropUpdateTest {
         new SculkShriekerShrinkingProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region SeaPicklePicklesProp
 
     @Test
     void seaPicklePicklesProp_setsPickles() {
@@ -1017,10 +804,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region SlabTypeProp
-
     @Test
     void slabTypeProp_setsType() {
         Slab slab = mock(Slab.class);
@@ -1034,10 +817,6 @@ class SpigotPropUpdateTest {
         new SlabTypeProp(Slab.Type.DOUBLE).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region SnowableSnowyProp
 
     @Test
     void snowableSnowyProp_setsSnowy() {
@@ -1053,10 +832,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region SnowLayersProp
-
     @Test
     void snowLayersProp_setsLayers() {
         Snow snow = mock(Snow.class);
@@ -1070,10 +845,6 @@ class SpigotPropUpdateTest {
         new SnowLayersProp(4).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region StairsProp
 
     @Test
     void stairsProp_setsShape() {
@@ -1089,10 +860,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region StructureBlockModeProp
-
     @Test
     void structureBlockModeProp_setsMode() {
         StructureBlock structureBlock = mock(StructureBlock.class);
@@ -1106,10 +873,6 @@ class SpigotPropUpdateTest {
         new StructureBlockModeProp(StructureBlock.Mode.SAVE).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region TechnicalPistonTypeProp
 
     @Test
     void technicalPistonTypeProp_setsType() {
@@ -1125,10 +888,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region TNTUnstableProp
-
     @Test
     void tntUnstableProp_setsUnstable() {
         TNT tnt = mock(TNT.class);
@@ -1142,10 +901,6 @@ class SpigotPropUpdateTest {
         new TNTUnstableProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region TripwireDisarmedProp
 
     @Test
     void tripwireDisarmedProp_setsDisarmed() {
@@ -1161,10 +916,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region TurtleEggEggsProp
-
     @Test
     void turtleEggEggsProp_setsEggs() {
         TurtleEgg turtleEgg = mock(TurtleEgg.class);
@@ -1179,10 +930,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region TurtleEggHatchProp
-
     @Test
     void turtleEggHatchProp_setsHatch() {
         TurtleEgg turtleEgg = mock(TurtleEgg.class);
@@ -1196,10 +943,6 @@ class SpigotPropUpdateTest {
         new TurtleEggHatchProp(2).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region WallHeightsProp
 
     @Test
     void wallHeightsProp_setsHeights() {
@@ -1219,10 +962,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region WallUpProp
-
     @Test
     void wallUpProp_setsUp() {
         Wall wall = mock(Wall.class);
@@ -1236,10 +975,6 @@ class SpigotPropUpdateTest {
         new WallUpProp(true).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
-
-    // region WaterloggedProp
 
     @Test
     void waterloggedProp_setsWaterlogged() {
@@ -1255,10 +990,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BedPartProp
-
     @Test
     void bedPartProp_setPart() {
         Bed bed = mock(Bed.class);
@@ -1273,10 +1004,6 @@ class SpigotPropUpdateTest {
         verifyNoInteractions(blockData);
     }
 
-    // endregion
-
-    // region BellAttachmentProp
-
     @Test
     void bellAttachmentProp_setsAttachment() {
         Bell bell = mock(Bell.class);
@@ -1290,7 +1017,5 @@ class SpigotPropUpdateTest {
         new BellAttachmentProp(Bell.Attachment.CEILING).update(blockData);
         verifyNoInteractions(blockData);
     }
-
-    // endregion
 
 }
