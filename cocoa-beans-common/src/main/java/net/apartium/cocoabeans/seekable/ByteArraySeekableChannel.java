@@ -18,7 +18,9 @@ public final class ByteArraySeekableChannel implements SeekableByteChannel {
     private boolean open = true;
 
     public ByteArraySeekableChannel(int initialCapacity) {
-        if (initialCapacity < 0) throw new IllegalArgumentException("initialCapacity < 0");
+        if (initialCapacity < 0)
+            throw new IllegalArgumentException("initialCapacity < 0");
+
         this.buf = new byte[initialCapacity];
         this.size = 0;
         this.pos = 0;
