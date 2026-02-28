@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -414,6 +415,304 @@ class CocoaSchematicFormatTest {
 
         assertNull(schematic.getBlockData(10, 3, 2));
         assertEquals(new AreaSize(5, 5, 5), schematic.size());
+    }
+
+    private static TestSchematic buildOneBlockSchematic(SchematicMetadata metadata, AxisOrder axisOrder) {
+        GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
+        SchematicBuilder<TestSchematic> builder = new TestSchematic(
+                new MinecraftPlatform(MinecraftVersion.UNKNOWN, "unit-test", "0.0.1"),
+                Instant.ofEpochMilli(1_000_000_000_000L),
+                metadata,
+                Position.ZERO,
+                AreaSize.box(1),
+                axisOrder,
+                new BlockChunkIterator(BlockChunk.empty())
+        ).toBuilder();
+        return builder.setBlock(0, 0, 0, dirtBlock).build();
+    }
+
+    @Test
+    void readStoredSchematicMetadata() {
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(simpleSchematic));
+        Schematic<?> schematic = format.read(in);
+
+        assertEquals("kfir", schematic.metadata().author());
+        assertEquals("Cool schematic!", schematic.metadata().title());
+        assertEquals("unit-test", schematic.originPlatform().platformName());
+        assertEquals("0.0.1", schematic.originPlatform().platformVersion());
+        assertEquals(new AreaSize(5, 5, 5), schematic.size());
+        assertEquals(new Position(5, 0, -5), schematic.offset());
+        assertEquals(AxisOrder.XYZ, schematic.axisOrder());
+        assertNotNull(schematic.created());
+    }
+
+    @Test
+    void writeAndReadWithAuthorAndTitle() {
+        SchematicMetadata metadata = SchematicMetadata.of(Map.of("author", "Test Author", "title", "Test Title"));
+        Schematic<?> source = buildOneBlockSchematic(metadata, AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = format.read(in);
+
+            assertEquals("Test Author", result.metadata().author());
+            assertEquals("Test Title", result.metadata().title());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void writeAndReadWithAuthorOnly() {
+        SchematicMetadata metadata = SchematicMetadata.of(Map.of("author", "Solo Author"));
+        Schematic<?> source = buildOneBlockSchematic(metadata, AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = format.read(in);
+
+            assertEquals("Solo Author", result.metadata().author());
+            assertNull(result.metadata().title());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void writeAndReadWithTitleOnly() {
+        SchematicMetadata metadata = SchematicMetadata.of(Map.of("title", "Solo Title"));
+        Schematic<?> source = buildOneBlockSchematic(metadata, AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = format.read(in);
+
+            assertNull(result.metadata().author());
+            assertEquals("Solo Title", result.metadata().title());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void invalidFingerprint() {
+        byte[] corrupted = Arrays.copyOf(simpleSchematic, simpleSchematic.length);
+        corrupted[0] = 'X';
+
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(corrupted));
+        assertThrows(UncheckedIOException.class, () -> format.read(in));
+    }
+
+    @Test
+    void invalidVersion() {
+        byte[] corrupted = Arrays.copyOf(simpleSchematic, simpleSchematic.length);
+        corrupted[4] = 0;
+        corrupted[5] = 99;
+
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(corrupted));
+        assertThrows(UncheckedIOException.class, () -> format.read(in));
+    }
+
+    @Test
+    void rawCompressionRoundTrip() {
+        CocoaSchematicFormat<TestSchematic> rawFormat = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.raw()),
+                CompressionType.RAW.getId(),
+                CompressionType.RAW.getId(),
+                new TestSchematicFactory()
+        );
+
+        GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
+        TestSchematic source = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            rawFormat.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = rawFormat.read(in);
+
+            assertEquals(source.size(), result.size());
+            assertEquals(source.offset(), result.offset());
+            assertEquals(source.axisOrder(), result.axisOrder());
+            assertEquals(dirtBlock, result.getBlockData(0, 0, 0));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void differentAxisOrderRoundTrip() {
+        GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
+        Schematic<?> source = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.ZYX);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = format.read(in);
+
+            assertEquals(AxisOrder.ZYX, result.axisOrder());
+            assertEquals(source.size(), result.size());
+            assertEquals(dirtBlock, result.getBlockData(0, 0, 0));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void registerBlockEncoder() {
+        CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                new HashMap<>(),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        readFormat.registerBlockEncoder(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of()));
+
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(simpleSchematic));
+        Schematic<?> result = readFormat.read(in);
+
+        assertNotNull(result);
+        assertEquals(new AreaSize(5, 5, 5), result.size());
+        assertEquals(AxisOrder.XYZ, result.axisOrder());
+    }
+
+    @Test
+    void registerIndexEncoder() {
+        CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                new HashMap<>(),
+                Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        readFormat.registerIndexEncoder(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder());
+
+        SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(simpleSchematic));
+        Schematic<?> result = readFormat.read(in);
+
+        assertNotNull(result);
+        assertEquals(new AreaSize(5, 5, 5), result.size());
+    }
+
+    @Test
+    void registerCompressionEngine() {
+        Schematic<?> source = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(source, new SeekableOutputStream(channel));
+
+            CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                    Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                    Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                    Set.of(CompressionEngine.raw()),
+                    CompressionType.RAW.getId(),
+                    CompressionType.RAW.getId(),
+                    new TestSchematicFactory()
+            );
+            readFormat.registerCompressionEngine(CompressionType.GZIP.getId(), CompressionEngine.gzip());
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = readFormat.read(in);
+
+            assertNotNull(result);
+            assertEquals(source.size(), result.size());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void setPreferBlockEncoder() {
+        int customId = 42;
+        CocoaSchematicFormat<TestSchematic> writeFormat = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        writeFormat.setPreferBlockEncoder(customId, new SimpleBlockDataEncoder(Map.of()));
+
+        TestSchematic source = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            writeFormat.write(source, new SeekableOutputStream(channel));
+
+            CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                    Map.of(customId, new SimpleBlockDataEncoder(Map.of())),
+                    Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                    Set.of(CompressionEngine.gzip()),
+                    CompressionType.GZIP.getId(),
+                    CompressionType.GZIP.getId(),
+                    new TestSchematicFactory()
+            );
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = readFormat.read(in);
+
+            assertNotNull(result);
+            assertEquals(source.size(), result.size());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void setPreferIndexEncoder() {
+        int customId = 99;
+        CocoaSchematicFormat<TestSchematic> writeFormat = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        writeFormat.setPreferIndexEncoder(customId, new BlockChunkIndexEncoder());
+
+        TestSchematic source = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            writeFormat.write(source, new SeekableOutputStream(channel));
+
+            CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                    Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                    Map.of(customId, new BlockChunkIndexEncoder()),
+                    Set.of(CompressionEngine.gzip()),
+                    CompressionType.GZIP.getId(),
+                    CompressionType.GZIP.getId(),
+                    new TestSchematicFactory()
+            );
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            Schematic<?> result = readFormat.read(in);
+
+            assertNotNull(result);
+            assertEquals(source.size(), result.size());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

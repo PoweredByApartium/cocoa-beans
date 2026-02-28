@@ -359,7 +359,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
         in.position(bodyExtensionInfo.offset());
 
-        byte[] compressedBodyExtensionInfo = in.readNBytes((int) bodyExtensionInfo.uncompressedSize());
+        byte[] compressedBodyExtensionInfo = in.readNBytes((int) bodyExtensionInfo.compressedSize());
         byte[] originalBodyExtensionInfo = compressionEngines.get(bodyExtensionInfo.compressionType()).decompress(compressedBodyExtensionInfo);
         if (originalBodyExtensionInfo.length != bodyExtensionInfo.uncompressedSize())
             throw new EOFException("Body Extensions info length mismatch\nExpected: " + bodyExtensionInfo.uncompressedSize() + "\nActual:" + originalBodyExtensionInfo.length);
@@ -396,7 +396,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
 
             CompressionBlockInfo indexInfo = (CompressionBlockInfo) headers.get(Headers.INDEX_INFO);
             in.position(indexInfo.offset());
-            byte[] compressedIndexInfo = in.readNBytes((int) indexInfo.uncompressedSize());
+            byte[] compressedIndexInfo = in.readNBytes((int) indexInfo.compressedSize());
             byte[] originalIndexInfo = compressionEngines.get(indexInfo.compressionType()).decompress(compressedIndexInfo);
             if (originalIndexInfo.length != indexInfo.uncompressedSize())
                 throw new EOFException("Index info length mismatch");
