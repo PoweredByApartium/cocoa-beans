@@ -11,6 +11,7 @@ dependencies {
 
     compileOnly(libs.paper)
 
+    testImplementation(libs.mockito.core)
     testImplementation(testFixtures(project(":cocoa-beans-spigot")))
     testImplementation(libs.mock.bukkit)
     testImplementation("org.junit.jupiter:junit-jupiter-api")

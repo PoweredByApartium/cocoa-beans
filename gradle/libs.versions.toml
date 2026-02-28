@@ -22,3 +22,4 @@ jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-an
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version = "1.17.0" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version = "5.17.0" }
