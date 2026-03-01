@@ -182,15 +182,13 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         );
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
+        final Position from = new Position(size.width(), size.height(), size.depth()).immutable();
+
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();
 
             Position pos = placement.position();
-            pos = switch (axis) {
-                case X -> new Position(this.size.width() - 1 - pos.getX(), pos.getY(), pos.getZ());
-                case Y -> new Position(pos.getX(), this.size.height() - 1 - pos.getY(), pos.getZ());
-                case Z -> new Position(pos.getX(), pos.getY(), this.size.depth() - 1 - pos.getZ());
-            };
+            pos = flipPosition(axis, pos, from);
 
             BlockData data = placement.block();
             Map<String, BlockProp<?>> props = new HashMap<>();
@@ -213,6 +211,15 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
 
         this.blockChunk = newChunk;
         return this;
+    }
+
+    private Position flipPosition(@NonNls Axis axis, Position position, Position from) {
+        position = switch (axis) {
+            case X -> new Position(from.getX()  - 1 - position.getX(), position.getY(), position.getZ());
+            case Y -> new Position(position.getX(), from.getY() - 1 - position.getY(), position.getZ());
+            case Z -> new Position(position.getX(), position.getY(), from.getZ()  - 1 - position.getZ());
+        };
+        return position;
     }
 
     @Override
