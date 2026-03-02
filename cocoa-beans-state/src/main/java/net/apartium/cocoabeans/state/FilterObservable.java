@@ -29,7 +29,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     private final Set<Observable<Boolean>> flagged = new HashSet<>();
 
     private final Map<Observable<Boolean>, Boolean> cacheValueMap = new HashMap<>();
-    private final Map<Observable<Boolean>, E> dependsOn = new LinkedHashMap<>();
+    private final Map<Observable<Boolean>, Set<E>> dependsOn = new IdentityHashMap<>();
 
 
     private final Observable<Integer> size;
@@ -50,6 +50,8 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
      */
     public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, Function<Integer, Collection<E>> constructCollection) {
         this.base = base;
+        this.base.observe(this);
+
         this.filter = filter;
         this.collectionMapper = collectionMapper;
         this.constructCollection = constructCollection;
@@ -65,18 +67,21 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
             Observable<Boolean> observable = filter.apply(e);
             keep.add(observable);
 
-            E prev = dependsOn.put(observable, e);
-            if (prev == null)
+            boolean prev = dependsOn.computeIfAbsent(observable, key -> new LinkedHashSet<>()).add(e);
+            if (prev)
                 observable.observe(this);
         }
 
-        Iterator<Map.Entry<Observable<Boolean>, E>> it = dependsOn.entrySet().iterator();
+        Iterator<Map.Entry<Observable<Boolean>, Set<E>>> it = dependsOn.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Observable<Boolean>, E> entry = it.next();
+            Map.Entry<Observable<Boolean>, Set<E>> entry = it.next();
             if (!keep.contains(entry.getKey())) {
                 entry.getKey().removeObserver(this);
                 it.remove();
+            } else {
+                entry.getValue().removeIf(e -> !newDepends.contains(e));
             }
+
         }
 
         cacheValueMap.clear();
@@ -86,11 +91,12 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     }
 
     private boolean updateFromScratch(Collection<E> newCollection) {
-        for (Map.Entry<Observable<Boolean>, E> entry : dependsOn.entrySet()) {
+        for (Map.Entry<Observable<Boolean>, Set<E>> entry : dependsOn.entrySet()) {
             Observable<Boolean> observable = entry.getKey();
             boolean value = observable.get();
             if (value)
-                newCollection.add(entry.getValue());
+                newCollection.addAll(entry.getValue());
+
 
             cacheValueMap.put(observable, value);
         }
@@ -98,13 +104,10 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
         return true;
     }
 
-    private boolean updateFlagged(Collection<E> newCollection) {
+    private boolean updateElements(Set<E> elements, Collection<E> newCollection, Observable<Boolean> observable) {
         boolean hasChange = false;
-        if (cachedCollection != null)
-            newCollection.addAll(cachedCollection);
 
-        for (Observable<Boolean> observable : flagged) {
-            E element = dependsOn.get(observable);
+        for (E element : elements) {
             boolean contains = newCollection.contains(element);
 
             boolean value = observable.get();
@@ -117,6 +120,19 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
                 if (contains)
                     hasChange = true;
             }
+        }
+
+        return hasChange;
+    }
+
+    private boolean updateFlagged(Collection<E> newCollection) {
+        boolean hasChange = false;
+        if (cachedCollection != null)
+            newCollection.addAll(cachedCollection);
+
+        for (Observable<Boolean> observable : flagged) {
+            Set<E> elements = dependsOn.get(observable);
+            hasChange |= updateElements(elements, newCollection, observable);
         }
 
         flagged.clear();
@@ -202,8 +218,6 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
 
     @Override
     public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        FilterObservable<E, C> observable = new FilterObservable<>(this, filter, collectionMapper, constructCollection);
-        this.observe(observable);
-        return observable;
+        return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
     }
 }

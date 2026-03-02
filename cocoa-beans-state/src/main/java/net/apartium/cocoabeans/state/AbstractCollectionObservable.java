@@ -129,9 +129,7 @@ import java.util.function.Predicate;
 
     @Override
     public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        FilterObservable<E, C> observable = new FilterObservable<>(this, filter, this::createFilteredCollection, this::createCollection);
-        this.observe(observable);
-        return observable;
+        return new FilterObservable<>(this, filter, this::createFilteredCollection, this::createCollection);
     }
 
     protected abstract C createFilteredCollection(Collection<E> elements);
