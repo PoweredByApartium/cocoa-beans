@@ -100,7 +100,8 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
 
     private boolean updateFlagged(Collection<E> newCollection) {
         boolean hasChange = false;
-        newCollection.addAll(cachedCollection);
+        if (cachedCollection != null)
+            newCollection.addAll(cachedCollection);
 
         for (Observable<Boolean> observable : flagged) {
             E element = dependsOn.get(observable);
@@ -180,9 +181,9 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
         return observers.remove(observer);
     }
 
-    @Override public boolean add(Object element) { throw new UnsupportedOperationException("FilterObservable does not support adding elements"); }
+    @Override public boolean add(E element) { throw new UnsupportedOperationException("FilterObservable does not support adding elements"); }
 
-    @Override public boolean remove(Object element) { throw new UnsupportedOperationException("FilterObservable does not support removing elements"); }
+    @Override public boolean remove(E element) { throw new UnsupportedOperationException("FilterObservable does not support removing elements"); }
 
     @Override public boolean addAll(Collection<? extends E> collection) { throw new UnsupportedOperationException("FilterObservable does not support adding elements"); }
 

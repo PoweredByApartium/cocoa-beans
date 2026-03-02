@@ -151,6 +151,7 @@ class CollectionObservableFilterTest {
         Set<Player> snapshot = alivePlayers.get();
         assertEquals(Set.of(a), snapshot);
 
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.add(new Player("x", true)));
+        Player x = new Player("x", true);
+        assertThrows(UnsupportedOperationException.class, () -> snapshot.add(x));
     }
 }

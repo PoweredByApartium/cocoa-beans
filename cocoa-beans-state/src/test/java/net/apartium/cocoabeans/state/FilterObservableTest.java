@@ -284,10 +284,13 @@ class FilterObservableTest {
 
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove(1));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(List.of()));
+
+        List<Object> empty = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(empty));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(empty));
         assertThrows(UnsupportedOperationException.class, () -> filtered.removeIf(e -> true));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(empty));
         assertThrows(UnsupportedOperationException.class, filtered::clear);
     }
 
