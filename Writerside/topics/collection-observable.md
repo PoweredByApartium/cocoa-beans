@@ -29,3 +29,4 @@ That's where `CollectionObservable` shines:
 ## Implementations
 - [](list-observable.md)
 - [](set-observable.md)
+- [](filtering-collection-observable.md)
