@@ -3,6 +3,8 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -74,5 +76,32 @@ public interface CollectionObservable<E, C extends Collection<E>> extends Observ
      * @return size observable
      */
     Observable<Integer> size();
+
+    /**
+     * Filters the elements of this observable based on the provided filter function.
+     * Only elements for which the provided function evaluates to an observable that emits {@code true}
+     * will be included in the resulting observable.
+     *
+     * @param filter a function that takes an element of type {@code E} as input and returns
+     *               an {@link Observable} of {@link Boolean} indicating whether the element should be included.
+     * @return a new {@link CollectionObservable} containing the filtered elements.
+     */
+    CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter);
+
+    /**
+     * Filters the elements of this observable based on a mapping function and a predicate.
+     * The mapping function transforms each element into an {@link Observable} of type {@code T},
+     * and the predicate determines whether the resulting value should be included.
+     *
+     * @param <T>   the type of the values produced by the mapping function.
+     * @param mapper a function that takes an element of type {@code E} as input and returns an
+     *               {@link Observable} of type {@code T}.
+     * @param filter a predicate that determines whether the mapped value of type {@code T}
+     *               should be included in the resulting observable.
+     * @return a new {@link CollectionObservable} containing the elements that pass the filter criteria.
+     */
+    default <T> CollectionObservable<E, C> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
+        return this.filter(element -> mapper.apply(element).map(filter::test));
+    }
 
 }

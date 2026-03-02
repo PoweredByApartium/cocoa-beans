@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,4 +23,13 @@ import java.util.Set;
         return Set.copyOf(this.collection);
     }
 
+    @Override
+    protected Set<E> createFilteredCollection(Collection<E> elements) {
+        return Set.copyOf(elements);
+    }
+
+    @Override
+    protected Set<E> createCollection(int initialCapacity) {
+        return new HashSet<>(initialCapacity);
+    }
 }

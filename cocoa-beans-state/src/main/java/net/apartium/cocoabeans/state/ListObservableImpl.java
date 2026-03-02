@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.CollectionHelpers;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,6 +59,16 @@ import java.util.List;
     @Override
     public List<E> get() {
         return List.copyOf(collection);
+    }
+
+    @Override
+    protected List<E> createFilteredCollection(Collection<E> elements) {
+        return List.copyOf(elements);
+    }
+
+    @Override
+    protected List<E> createCollection(int initialCapacity) {
+        return new ArrayList<>(initialCapacity);
     }
 
 }

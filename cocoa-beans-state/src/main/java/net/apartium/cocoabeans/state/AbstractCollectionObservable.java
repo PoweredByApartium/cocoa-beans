@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
+
 
 @ApiStatus.Internal
 /* package-private */ abstract class AbstractCollectionObservable<E, C extends Collection<E>> implements CollectionObservable<E, C> {
@@ -124,4 +126,15 @@ import java.util.function.Predicate;
     public Observable<Integer> size() {
         return this.size;
     }
+
+    @Override
+    public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
+        FilterObservable<E, C> observable = new FilterObservable<>(this, filter, this::createFilteredCollection, this::createCollection);
+        this.observe(observable);
+        return observable;
+    }
+
+    protected abstract C createFilteredCollection(Collection<E> elements);
+
+    protected abstract C createCollection(int initialCapacity);
 }
