@@ -319,8 +319,6 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
             bodyExtensionsOffset.put(bodyExtension.id(), offset);
         }
 
-        // TODO add tlv headers here
-
         return new HeaderResult(
                 bOut.toByteArray(),
                 blockInfoIndex,
@@ -585,7 +583,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
                 default -> {
                     DataInputStream in = new DataInputStream(new ByteArrayInputStream(splitFromAToB(headers, index, index + 3)));
                     int length = readU24(in);
-                    map.put(id, splitFromAToB(headers, index + 3, index + 3 + length)); // TODO add way to parse those bytes
+                    map.put(id, splitFromAToB(headers, index + 3, index + 3 + length));
                     yield index + 3 + length;
 
                 }

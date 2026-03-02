@@ -75,7 +75,6 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
     @Override
     public SchematicBuilder<T> size(AreaSize size) {
         this.size = size;
-        // TODO add checks with block chunk
         return this;
     }
 
@@ -206,8 +205,6 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
                     new GenericBlockData(data.type(), props))
             );
         }
-
-        // TODO add offset
 
         this.blockChunk = newChunk;
         return this;
