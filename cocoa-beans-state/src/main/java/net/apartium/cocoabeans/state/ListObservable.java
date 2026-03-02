@@ -4,6 +4,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Represents an observable containing multiple values
@@ -37,4 +39,13 @@ public interface ListObservable<E> extends CollectionObservable<E, List<E>> {
      */
     void sort(Comparator<? super E> comparator);
 
+    @Override
+    default ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
+        throw new UnsupportedOperationException();
+    }
 }

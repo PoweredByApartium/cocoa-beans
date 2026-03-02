@@ -92,7 +92,7 @@ class CollectionObservableFilterTest {
     @Test
     void filter_tracksMembership_onAddRemoveAndToggle() {
         SetObservable<Player> players = Observable.set();
-        CollectionObservable<Player, Set<Player>> alivePlayers = players.filter(Player::alive);
+        SetObservable<Player> alivePlayers = players.filter(Player::alive);
 
         Player a = new Player("a", true);
         Player b = new Player("b", false);
@@ -120,7 +120,7 @@ class CollectionObservableFilterTest {
     @Test
     void filter_unsubscribesPredicateObservers_whenElementRemoved() {
         SetObservable<Player> players = Observable.set();
-        CollectionObservable<Player, Set<Player>> alivePlayers = players.filter(Player::alive);
+        SetObservable<Player> alivePlayers = players.filter(Player::alive);
 
         Player a = new Player("a", true);
 
@@ -143,7 +143,7 @@ class CollectionObservableFilterTest {
     @Test
     void filter_resultIsSnapshot_andImmutableLikeOtherCollectionObservables() {
         SetObservable<Player> players = Observable.set();
-        CollectionObservable<Player, Set<Player>> alivePlayers = players.filter(Player::alive);
+        SetObservable<Player> alivePlayers = players.filter(Player::alive);
 
         Player a = new Player("a", true);
         players.add(a);

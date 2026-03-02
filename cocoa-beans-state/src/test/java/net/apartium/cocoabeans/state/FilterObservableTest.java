@@ -83,7 +83,7 @@ class FilterObservableTest {
                 ikfir5
         )));
 
-        Observable<Set<Player>> onlinePlayers = players.filter(Player::getOnline);
+        SetObservable<Player> onlinePlayers = players.filter(Player::getOnline);
 
         assertEquals(
                 Set.of(
@@ -217,7 +217,7 @@ class FilterObservableTest {
                 ikfir4
         )));
 
-        CollectionObservable<Player, Set<Player>> alivePlayers = players.filter(Player::getAlive);
+        SetObservable<Player> alivePlayers = players.filter(Player::getAlive);
         Observable<Integer> size = alivePlayers.size();
 
         assertEquals(
@@ -280,7 +280,7 @@ class FilterObservableTest {
 
     @Test
     void unsupportedMethods() {
-        CollectionObservable<Object, Set<Object>> filtered = Observable.set().filter(element -> Observable.immutable(true));
+        SetObservable<Object> filtered = Observable.set().filter(element -> Observable.immutable(true));
 
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove(1));
@@ -310,7 +310,7 @@ class FilterObservableTest {
                 ikfir4
         )));
 
-        CollectionObservable<Player, Set<Player>> alivePlayers = players.filter(Player::getAlive);
+        SetObservable<Player> alivePlayers = players.filter(Player::getAlive);
 
         LazyWatcher<Set<Player>> watcher = alivePlayers.lazyWatch();
 
@@ -369,7 +369,7 @@ class FilterObservableTest {
                 ikfir4
         )));
 
-        CollectionObservable<Player, Set<Player>> playersStartWithI = players.filter(player -> Observable.immutable(player.name.startsWith("i")));
+        SetObservable<Player> playersStartWithI = players.filter(player -> Observable.immutable(player.name.startsWith("i")));
 
         assertEquals(
                 Set.of(
@@ -398,7 +398,7 @@ class FilterObservableTest {
                 ikfir5
         )));
 
-        Observable<Set<Player>> onlinePlayers = players.filter(Player::getOnline);
+        SetObservable<Player> onlinePlayers = players.filter(Player::getOnline);
 
         assertEquals(
                 Set.of(),
@@ -483,7 +483,7 @@ class FilterObservableTest {
 
         SetObservable<Player> players = Observable.set(new HashSet<>(Set.of(p1, p2, p3, p4)));
 
-        Observable<Set<Player>> onlinePlayers = players.filter(Player::getOnline);
+        SetObservable<Player> onlinePlayers = players.filter(Player::getOnline);
 
         Set<Player> inSource = new HashSet<>(Set.of(p1, p2, p3, p4));
         Set<Player> onlineExpected = new HashSet<>();
@@ -546,7 +546,7 @@ class FilterObservableTest {
         )));
 
 
-        CollectionObservable<Player, Set<Player>> spectatorPlayers = players.filter(Player::getSpectatorSince, Objects::nonNull);
+        SetObservable<Player> spectatorPlayers = players.filter(Player::getSpectatorSince, Objects::nonNull);
         assertEquals(
                 Set.of(),
                 spectatorPlayers.get()
