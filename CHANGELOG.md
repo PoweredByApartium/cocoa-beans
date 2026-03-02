@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.46
+- [state] Add `CollectionObservable#filter(Function<E, Observable<Boolean>>)` for live filtered collection views
 - [scoreboard] Fixes identity issue with internal stuff
 - [scoreboard-spigot] Add support for minecraft 1.21.6
 - [common] Bump Minecraft versions from 1.21.6 to 1.21.11
