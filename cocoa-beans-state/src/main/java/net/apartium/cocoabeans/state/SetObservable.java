@@ -16,13 +16,9 @@ import java.util.function.Predicate;
 public interface SetObservable<E> extends CollectionObservable<E, Set<E>> {
 
     @Override
-    default SetObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        throw new UnsupportedOperationException();
-    }
+    SetObservable<E> filter(Function<E, Observable<Boolean>> filter);
 
     @Override
-    default <T> SetObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        throw new UnsupportedOperationException();
-    }
+    <T> SetObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter);
 
 }

@@ -40,12 +40,8 @@ public interface ListObservable<E> extends CollectionObservable<E, List<E>> {
     void sort(Comparator<? super E> comparator);
 
     @Override
-    default ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        throw new UnsupportedOperationException();
-    }
+    ListObservable<E> filter(Function<E, Observable<Boolean>> filter);
 
     @Override
-    default <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        throw new UnsupportedOperationException();
-    }
+    <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter);
 }
