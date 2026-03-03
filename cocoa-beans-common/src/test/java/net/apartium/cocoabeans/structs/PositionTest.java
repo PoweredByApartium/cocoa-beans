@@ -5,6 +5,8 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.Rotation;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PositionTest {
@@ -201,6 +203,33 @@ public class PositionTest {
     void hashCodeTest() {
         Position position = new Position(1, 2, 3);
         assertEquals(position.hashCode(), new Position(1, 2, 3).hashCode());
+    }
+
+    @Test
+    void minMaxTest() {
+        Random random = new Random(1359);
+        for (int i = 0; i < 1000; i++) {
+            int x0 = random.nextInt(1000);
+            int y0 = random.nextInt(1000);
+            int z0 = random.nextInt(1000);
+
+            int x1 = random.nextInt(1000);
+            int y1 = random.nextInt(1000);
+            int z1 = random.nextInt(1000);
+
+            Position p0 = new Position(x0, y0, z0);
+            Position p1 = new Position(x1, y1, z1);
+
+            Position min = Position.min(p0, p1);
+            assertEquals(Math.min(x0, x1), min.getX());
+            assertEquals(Math.min(y0, y1), min.getY());
+            assertEquals(Math.min(z0, z1), min.getZ());
+
+            Position max = Position.max(p0, p1);
+            assertEquals(Math.max(x0, x1), max.getX());
+            assertEquals(Math.max(y0, y1), max.getY());
+            assertEquals(Math.max(z0, z1), max.getZ());
+        }
     }
 
 }
