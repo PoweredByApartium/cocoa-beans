@@ -126,7 +126,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         if (offset == null)
             throw new IllegalStateException("Body extension not found in header!\nSomething went wrong with schematic!");
 
-        if (bodyExtensionFormat.containsKey(bodyExtension.id()))
+        if (!bodyExtensionFormat.containsKey(bodyExtension.id()))
             throw new IllegalStateException("Unknown body extension format: " + bodyExtension.id());
 
         BodyExtensionFormat<E> format = (BodyExtensionFormat<E>) bodyExtensionFormat.get(bodyExtension.id());

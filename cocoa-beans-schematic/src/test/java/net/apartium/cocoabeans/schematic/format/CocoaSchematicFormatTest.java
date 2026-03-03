@@ -24,7 +24,9 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
@@ -417,6 +419,28 @@ class CocoaSchematicFormatTest {
         assertEquals(new AreaSize(5, 5, 5), schematic.size());
     }
 
+    record TestBodyExtension(long id, String data) implements BodyExtension<String> {}
+
+    static class TestBodyExtensionFormat implements BodyExtensionFormat<String> {
+
+        private final long id;
+
+        TestBodyExtensionFormat(long id) {
+            this.id = id;
+        }
+
+        @Override
+        public BodyExtension<String> read(InputStream in, long size) throws IOException {
+            byte[] bytes = in.readNBytes((int) size);
+            return new TestBodyExtension(id, new String(bytes, StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public byte[] write(BodyExtension<String> extension) {
+            return extension.data().getBytes(StandardCharsets.UTF_8);
+        }
+    }
+
     private static TestSchematic buildOneBlockSchematic(SchematicMetadata metadata, AxisOrder axisOrder) {
         GenericBlockData dirtBlock = new GenericBlockData(new NamespacedKey("minecraft", "dirt"), Map.of());
         SchematicBuilder<TestSchematic> builder = new TestSchematic(
@@ -710,6 +734,137 @@ class CocoaSchematicFormatTest {
 
             assertNotNull(result);
             assertEquals(source.size(), result.size());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void writeAndReadBodyExtension() {
+        long extensionId = 42L;
+        TestBodyExtension extension = new TestBodyExtension(extensionId, "hello body extension");
+
+        CocoaSchematicFormat<TestSchematic> formatWithExtension = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        formatWithExtension.registerBodyExtensionFormat(extensionId, new TestBodyExtensionFormat(extensionId));
+
+        TestSchematic base = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+        TestSchematic source = new TestSchematic(
+                base.originPlatform(), base.created(), base.metadata(),
+                base.offset(), base.size(), base.axisOrder(),
+                base.blocksIterator(), Map.of(extensionId, extension)
+        );
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            formatWithExtension.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            TestSchematic result = (TestSchematic) formatWithExtension.read(in);
+
+            Set<BodyExtension<?>> resultExtensions = result.bodyExtensions();
+            assertEquals(1, resultExtensions.size());
+
+            BodyExtension<?> resultExtension = resultExtensions.iterator().next();
+            assertEquals(extensionId, resultExtension.id());
+            assertEquals("hello body extension", resultExtension.data());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void writeAndReadMultipleBodyExtensions() {
+        long idA = 10L;
+        long idB = 20L;
+        TestBodyExtension extensionA = new TestBodyExtension(idA, "alpha");
+        TestBodyExtension extensionB = new TestBodyExtension(idB, "beta");
+
+        CocoaSchematicFormat<TestSchematic> formatWithExtension = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        formatWithExtension.registerAllBodyExtensionsFormat(Map.of(
+                idA, new TestBodyExtensionFormat(idA),
+                idB, new TestBodyExtensionFormat(idB)
+        ));
+
+        TestSchematic base = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+        TestSchematic source = new TestSchematic(
+                base.originPlatform(), base.created(), base.metadata(),
+                base.offset(), base.size(), base.axisOrder(),
+                base.blocksIterator(), Map.of(idA, extensionA, idB, extensionB)
+        );
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            formatWithExtension.write(source, new SeekableOutputStream(channel));
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            TestSchematic result = (TestSchematic) formatWithExtension.read(in);
+
+            Set<BodyExtension<?>> resultExtensions = result.bodyExtensions();
+            assertEquals(2, resultExtensions.size());
+
+            Map<Long, Object> dataById = new HashMap<>();
+            for (BodyExtension<?> ext : resultExtensions)
+                dataById.put(ext.id(), ext.data());
+
+            assertEquals("alpha", dataById.get(idA));
+            assertEquals("beta", dataById.get(idB));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void unknownBodyExtensionThrowsOnRead() {
+        long extensionId = 99L;
+        TestBodyExtension extension = new TestBodyExtension(extensionId, "payload");
+
+        CocoaSchematicFormat<TestSchematic> writeFormat = new CocoaSchematicFormat<>(
+                Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+        writeFormat.registerBodyExtensionFormat(extensionId, new TestBodyExtensionFormat(extensionId));
+
+        TestSchematic base = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
+        TestSchematic source = new TestSchematic(
+                base.originPlatform(), base.created(), base.metadata(),
+                base.offset(), base.size(), base.axisOrder(),
+                base.blocksIterator(), Map.of(extensionId, extension)
+        );
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            writeFormat.write(source, new SeekableOutputStream(channel));
+
+            // Read format has no body extension format registered
+            CocoaSchematicFormat<TestSchematic> readFormat = new CocoaSchematicFormat<>(
+                    Map.of(SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of())),
+                    Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
+                    Set.of(CompressionEngine.gzip(), CompressionEngine.raw()),
+                    CompressionType.GZIP.getId(),
+                    CompressionType.GZIP.getId(),
+                    new TestSchematicFactory()
+            );
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+            assertThrows(IllegalArgumentException.class, () -> readFormat.read(in));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

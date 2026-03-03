@@ -43,7 +43,7 @@ public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
             Position offset,
             Map<Long, BodyExtension<?>> bodyExtensions
     ) {
-        return new TestSchematic(platform, created, metadata, offset, size, axisOrder, blocks);
+        return new TestSchematic(platform, created, metadata, offset, size, axisOrder, blocks, bodyExtensions);
     }
 
 }
