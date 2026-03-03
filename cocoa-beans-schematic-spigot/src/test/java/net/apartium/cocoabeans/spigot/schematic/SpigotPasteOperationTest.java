@@ -24,9 +24,6 @@ import static org.mockito.Mockito.*;
 
 class SpigotPasteOperationTest extends SpigotTestBase {
 
-    @Override
-    public void initialize() {}
-
     private static BlockData stone() {
         return new GenericBlockData(new NamespacedKey("minecraft", "stone"), Map.of());
     }
