@@ -232,4 +232,21 @@ public class PositionTest {
         }
     }
 
+    @Test
+    void staticAdd() {
+        Position p0 = new Position(1, 2, 3);
+        Position p1 = new Position(4, 5, 6);
+
+        Position p2 = Position.add(p0, p1);
+        assertEquals(new Position(5, 7, 9), p2);
+    }
+
+    @Test
+    void staticMultiply() {
+        Position p0 = new Position(1, 2, 3);
+
+        Position p2 = Position.multiply(p0, 2);
+        assertEquals(new Position(2, 4, 6), p2);
+    }
+
 }
