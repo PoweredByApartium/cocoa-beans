@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.PasteResult;
+import net.apartium.cocoabeans.schematic.Schematic;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
@@ -11,7 +12,9 @@ import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.seekable.ByteArraySeekableChannel;
 import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import net.apartium.cocoabeans.seekable.SeekableOutputStream;
+import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.spigot.SpigotTestBase;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.bukkit.Location;
@@ -20,6 +23,11 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +79,7 @@ class SpigotSchematicE2ETest extends SpigotTestBase {
         ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
         SeekableOutputStream out = new SeekableOutputStream(channel);
         format.write(original, out);
+
         byte[] bytes = channel.toByteArray();
 
         assertNotNull(bytes);
@@ -97,6 +106,47 @@ class SpigotSchematicE2ETest extends SpigotTestBase {
         assertNull(loaded.getBlockData(1, 1, 1), "Interior position should be absent (was AIR)");
 
         // Step 4: paste at a different location in the same world
+        Location pasteTarget = new Location(world, 10, FLOOR_Y, 10);
+        PasteResult result = loaded.paste(pasteTarget).performAll();
+
+        assertEquals(EXPECTED_BLOCK_COUNT, result.blockPlaces(),
+                "All non-air blocks should be placed at the target location");
+
+        assertHouseInWorld(pasteTarget);
+    }
+
+    @Test
+    void loadFromFileAndPasteToWorld() {
+        Path path = null;
+        try {
+            URL resource = getClass().getClassLoader().getResource("house_v1.cbschm");
+            if (resource == null)
+                fail("Could not find resource: house_v1.cbschm");
+
+            path = Path.of(resource.toURI());
+        } catch (URISyntaxException e) {
+            fail(e);
+        }
+
+        SpigotSchematic loaded = null;
+        try {
+            loaded = (SpigotSchematic) format.read(SeekableInputStream.open(path));
+        } catch (IOException e) {
+            fail(e);
+        }
+
+        assertNotNull(loaded, "Schematic should not be null");
+        assertEquals("house", loaded.metadata().title());
+        assertEquals("test-author", loaded.metadata().author());
+
+        assertEquals(new AreaSize(3, 2, 3), loaded.size());
+        assertEquals(new Position(0, 0, 0), loaded.offset());
+        assertEquals(AxisOrder.XYZ, loaded.axisOrder());
+
+        assertEquals(EXPECTED_BLOCK_COUNT, countBlocks(loaded));
+
+        World world = server.addSimpleWorld("house-world");
+
         Location pasteTarget = new Location(world, 10, FLOOR_Y, 10);
         PasteResult result = loaded.paste(pasteTarget).performAll();
 
