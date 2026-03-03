@@ -142,4 +142,18 @@ class SortedAxisBlockIteratorTest {
         assertNull(it.current());
         assertFalse(it.hasNext());
     }
+
+    @Test
+    void getAxisOrder() {
+        MutableBlockChunk chunk = chunkXYZ();
+        AreaSize size = new AreaSize(3, 1, 1);
+
+        set(chunk, 0, 0, 0);
+        set(chunk, 2, 0, 0);
+
+        for (AxisOrder order : AxisOrder.values()) {
+            SortedAxisBlockIterator it = new SortedAxisBlockIterator(chunk, size, order);
+            assertEquals(order, it.axisOrder());
+        }
+    }
 }
