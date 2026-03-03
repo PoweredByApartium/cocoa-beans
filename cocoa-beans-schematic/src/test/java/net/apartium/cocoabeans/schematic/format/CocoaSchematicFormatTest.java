@@ -959,8 +959,7 @@ class CocoaSchematicFormatTest {
     }
 
     static class NullBodyExtensionFormat implements BodyExtensionFormat<String> {
-        private final long id;
-        NullBodyExtensionFormat(long id) { this.id = id; }
+        NullBodyExtensionFormat() {  }
 
         @Override public BodyExtension<String> read(InputStream in, long size) { return null; }
         @Override public byte[] write(BodyExtension<String> extension) { return new byte[0]; }
@@ -1059,7 +1058,8 @@ class CocoaSchematicFormatTest {
         );
 
         try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
-            assertThrows(IllegalStateException.class, () -> fmt.write(source, new SeekableOutputStream(channel)));
+            SeekableOutputStream out = new SeekableOutputStream(channel);
+            assertThrows(IllegalStateException.class, () -> fmt.write(source, out));
         }
     }
 
@@ -1076,7 +1076,8 @@ class CocoaSchematicFormatTest {
         );
 
         try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
-            assertThrows(IllegalStateException.class, () -> fmt.write(source, new SeekableOutputStream(channel)));
+            SeekableOutputStream out = new SeekableOutputStream(channel);
+            assertThrows(IllegalStateException.class, () -> fmt.write(source, out));
         }
     }
 
@@ -1171,7 +1172,7 @@ class CocoaSchematicFormatTest {
                 CompressionType.GZIP.getId(),
                 new TestSchematicFactory()
         );
-        fmt.registerBodyExtensionFormat(id, new NullBodyExtensionFormat(id));
+        fmt.registerBodyExtensionFormat(id, new NullBodyExtensionFormat());
 
         TestSchematic base = buildOneBlockSchematic(SchematicMetadata.of(), AxisOrder.XYZ);
         TestSchematic source = new TestSchematic(
@@ -1258,15 +1259,6 @@ class CocoaSchematicFormatTest {
     void assertBaseHeadersMissingPlatform() {
         SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(
                 buildSchematicWithCustomHeaders(concat(HDR_AXIS_ORDER, HDR_OFFSET, HDR_SIZE, HDR_BLOCK_DATA_ENCODING, HDR_BLOCK_INFO, HDR_INDEX_ENCODING, HDR_INDEX_INFO, HDR_TIMESTAMP, HDR_UNKNOWN))));
-        assertThrows(IllegalStateException.class, () -> format.read(in));
-    }
-
-    @Test
-    void parseHeadersDefaultCase() {
-        // HDR_UNKNOWN exercises the default switch case (unknown header ID),
-        // then assertBaseHeaders fires because no required headers are present.
-        SeekableInputStream in = new SeekableInputStream(
-                ByteArraySeekableChannel.of(buildSchematicWithCustomHeaders(HDR_UNKNOWN)));
         assertThrows(IllegalStateException.class, () -> format.read(in));
     }
 
