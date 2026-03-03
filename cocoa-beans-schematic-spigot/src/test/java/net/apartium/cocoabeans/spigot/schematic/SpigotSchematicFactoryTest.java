@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertmions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SpigotSchematicFactoryTest {
 
