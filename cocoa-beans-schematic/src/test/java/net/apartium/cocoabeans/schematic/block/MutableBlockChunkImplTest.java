@@ -235,7 +235,7 @@ class MutableBlockChunkImplTest {
     void maskBit0SetAfterSetBlockAtIndex0() {
         MutableBlockChunkImpl chunk = chunk1();
         chunk.setBlock(bp(0, 0, 0));
-        assertTrue((chunk.getMask() & 1L) != 0);
+        assertNotEquals(0, (chunk.getMask() & 1L));
     }
 
     @Test
@@ -246,9 +246,9 @@ class MutableBlockChunkImplTest {
         chunk.setBlock(bp(2, 0, 0));
 
         long mask = chunk.getMask();
-        assertTrue((mask & 1L) != 0);
-        assertTrue((mask & (1L << 1)) != 0);
-        assertTrue((mask & (1L << 2)) != 0);
+        assertNotEquals(0, (mask & 1L));
+        assertNotEquals(0, (mask & (1L << 1)));
+        assertNotEquals(0, (mask & (1L << 2)));
     }
 
     @Test

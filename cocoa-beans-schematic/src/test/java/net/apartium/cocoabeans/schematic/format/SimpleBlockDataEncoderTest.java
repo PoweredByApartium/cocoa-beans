@@ -147,11 +147,15 @@ class SimpleBlockDataEncoderTest {
 
         byte[] bytes = writeEncoder.write(block);
 
-        assertThrows(NoSuchElementException.class, () -> readEncoder.read(toStream(bytes)));
+        try(SeekableInputStream stream = toStream(bytes)) {
+            assertThrows(NoSuchElementException.class, () -> readEncoder.read(stream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void readThrowsOnDuplicatePropType() throws IOException {
+    void readThrowsOnDuplicatePropType() {
         TestBlockPropFormat format = new TestBlockPropFormat();
         SimpleBlockDataEncoder encoder = new SimpleBlockDataEncoder(Map.of("count", format));
 
@@ -182,7 +186,11 @@ class SimpleBlockDataEncoderTest {
 
         byte[] fullBytes = fullOut.toByteArray();
 
-        assertThrows(IllegalArgumentException.class, () -> encoder.read(toStream(fullBytes)));
+        try (SeekableInputStream stream = toStream(fullBytes)) {
+            assertThrows(IllegalArgumentException.class, () -> encoder.read(stream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
