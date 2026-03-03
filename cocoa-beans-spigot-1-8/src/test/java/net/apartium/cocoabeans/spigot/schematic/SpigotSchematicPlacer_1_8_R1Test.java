@@ -51,7 +51,7 @@ class SpigotSchematicPlacer_1_8_R1Test {
     }
 
     @Test
-    void placeAppliesLegacyData() throws Exception {
+    void placeAppliesLegacyData() {
         Block block = mock(Block.class);
         BlockState state = mock(BlockState.class);
         when(block.getState()).thenReturn(state);
@@ -68,7 +68,7 @@ class SpigotSchematicPlacer_1_8_R1Test {
     }
 
     @Test
-    void placeSetsSignLinesAndUpdates() throws Exception {
+    void placeSetsSignLinesAndUpdates() {
         Block block = mock(Block.class);
         Sign sign = mock(Sign.class);
         when(block.getState()).thenReturn(sign);
