@@ -81,11 +81,17 @@ loadScripts(document, 'script');</script>
 <div class="block">Set schematic author</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#AUTHOR" class="member-name-link">AUTHOR</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Optional author string: length-prefixed UTF-8.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#AXIS_ORDER" class="member-name-link">AXIS_ORDER</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Axis-order entry: 1 byte axis-order identifier (see <code>AxisOrder.getId()</code>).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#axisOrder()" class="member-name-link">axisOrder()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns the axis order used by this iterator.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#axisOrder()" class="member-name-link">axisOrder()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Get the default axis order of this schematic</div>
@@ -110,9 +116,13 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the value of the <a href="./net/apartium/cocoabeans/schematic/block/BlockPlacement.html#param-block"><code>block</code></a> record component.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#BLOCK_DATA_ENCODING" class="member-name-link">BLOCK_DATA_ENCODING</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Block-data encoder identifier: unsigned 16-bit encoder ID.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#BLOCK_INFO" class="member-name-link">BLOCK_INFO</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Compression metadata for the block-data body section (<a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a> - Interface in <a href="net/apartium/cocoabeans/schematic/block/package-summary.html">net.apartium.cocoabeans.schematic.block</a></dt>
 <dd>
 <div class="block">Represents a chunk of blocks in a schematic, providing access to block data, chunk position, and chunk properties.</div>
@@ -134,13 +144,20 @@ loadScripts(document, 'script');</script>
 <div class="block">Constructs a BlockChunkImpl with specified parameters and optionally a previous chunk.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a> - Class in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">An <a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that organises block placements in a recursive quadtree-like chunk
+ hierarchy and serialises that hierarchy to a compact binary index.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html#%3Cinit%3E()" class="member-name-link">BlockChunkIndexEncoder()</a> - Constructor for class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a> - Class in <a href="net/apartium/cocoabeans/schematic/iterator/package-summary.html">net.apartium.cocoabeans.schematic.iterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A <a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator"><code>BlockIterator</code></a> that performs a depth-first traversal of a <a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a> tree.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk)" class="member-name-link">BlockChunkIterator(BlockChunk)</a> - Constructor for class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates an iterator over all block placements in <code>chunk</code> and its descendants.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/block/BlockChunkUtils.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.block">BlockChunkUtils</a> - Class in <a href="net/apartium/cocoabeans/schematic/block/package-summary.html">net.apartium.cocoabeans.schematic.block</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/block/BlockData.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a> - Interface in <a href="net/apartium/cocoabeans/schematic/block/package-summary.html">net.apartium.cocoabeans.schematic.block</a></dt>
@@ -148,7 +165,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Represents a block data</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a> - Interface in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Strategy interface for encoding and decoding individual <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> values in a schematic
+ file's block-data section.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a> - Interface in <a href="net/apartium/cocoabeans/schematic/iterator/package-summary.html">net.apartium.cocoabeans.schematic.iterator</a></dt>
 <dd>
 <div class="block">An iterator for a 3d block-based map</div>
@@ -177,18 +197,25 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" title="type parameter in BlockPropFormat">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>
-<div class="block">An encoder/decoder class responsible for converting block props to and from binary from</div>
+<div class="block">An encoder/decoder responsible for converting block props to and from binary form</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#blocksIterator()" class="member-name-link">blocksIterator()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Iterate over schematic with the data order.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#BODY_EXTENSION" class="member-name-link">BODY_EXTENSION</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Body-extension entry (repeatable): unsigned 64-bit extension ID followed by
+ <a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a> metadata for the extension's body section.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" title="type parameter in BodyExtension">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Custom data that can be stored on the schematic file.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt; - Interface in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes and decodes a body extension</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#bodyExtensions()" class="member-name-link">bodyExtensions()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Get body extensions of this schematic (like mobs etc...)</div>
@@ -204,7 +231,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">BooleanPropFormat</a> - Record Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html#%3Cinit%3E()" class="member-name-link">BooleanPropFormat()</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">BooleanPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>BooleanPropFormat</code> using the default <a href="net/apartium/cocoabeans/schematic/prop/BooleanBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop"><code>BooleanBlockProp</code></a> constructor.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html#%3Cinit%3E(java.util.function.Function)" class="member-name-link">BooleanPropFormat(Function&lt;Boolean, BlockProp&lt;Boolean&gt;&gt;)</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">BooleanPropFormat</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>BooleanPropFormat</code> record class.</div>
@@ -234,7 +263,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">ByteBlockPropFormat</a> - Record Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html#%3Cinit%3E()" class="member-name-link">ByteBlockPropFormat()</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ByteBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>ByteBlockPropFormat</code> using the default <a href="net/apartium/cocoabeans/schematic/prop/ByteBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop"><code>ByteBlockProp</code></a> constructor.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html#%3Cinit%3E(java.util.function.Function)" class="member-name-link">ByteBlockPropFormat(Function&lt;Byte, BlockProp&lt;Byte&gt;&gt;)</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ByteBlockPropFormat</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>ByteBlockPropFormat</code> record class.</div>
@@ -261,11 +292,17 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/block/ChunkPointer.html#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk)" class="member-name-link">ChunkPointer(BlockChunk)</a> - Constructor for class net.apartium.cocoabeans.schematic.block.<a href="net/apartium/cocoabeans/schematic/block/ChunkPointer.html" title="class in net.apartium.cocoabeans.schematic.block">ChunkPointer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt; - Class in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The primary <a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>SchematicFormat</code></a> implementation for the Cocoa Beans Schematic (CBSC) format.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#%3Cinit%3E(java.util.Map,java.util.Map,java.util.Set,byte,byte,net.apartium.cocoabeans.schematic.SchematicFactory)" class="member-name-link">CocoaSchematicFormat(Map&lt;Integer, BlockDataEncoder&gt;, Map&lt;Integer, IndexEncoder&gt;, Set&lt;CompressionEngine&gt;, byte, byte, SchematicFactory&lt;T&gt;)</a> - Constructor for class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>CocoaSchematicFormat</code> with the given encoders and compression settings.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a> - Class in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Tag constants for the typed header entries in a CBSC file.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#COMMAND_BLOCK_CONDITIONAL" class="member-name-link">COMMAND_BLOCK_CONDITIONAL</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#COMPARATOR_MODE" class="member-name-link">COMPARATOR_MODE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
@@ -279,7 +316,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the value of the <code>compressedSize</code> record component.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">CompressionBlockInfo</a> - Record Class in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Immutable metadata record that describes a single compressed body section within a CBSC
+ schematic file (block-data section, index section, or a body extension).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html#%3Cinit%3E(byte,long,long,long,long)" class="member-name-link">CompressionBlockInfo(byte, long, long, long, long)</a> - Constructor for record class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format">CompressionBlockInfo</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>CompressionBlockInfo</code> record class.</div>
@@ -345,38 +385,60 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates a schematic with specified values</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html#current()" class="member-name-link">current()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns the current block position of the iterator</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html#current()" class="member-name-link">current()</a> - Method in interface net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a></dt>
 <dd>
 <div class="block">Returns the current block position of the iterator</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#current()" class="member-name-link">current()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns the current block position of the iterator</div>
+</dd>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html#data()" class="member-name-link">data()</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Body extension compound data</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.Legacy.html#DATA" class="member-name-link">DATA</a> - Static variable in class net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.Legacy.html" title="class in net.apartium.cocoabeans.schematic.prop">BlockProp.Legacy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#DAY_LIGHT_DETECTOR_INVERTED" class="member-name-link">DAY_LIGHT_DETECTOR_INVERTED</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in interface net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">BooleanPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ByteBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">EnumPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntArrayPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ListStringBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/StringBlockPropFormat.html#decode(byte%5B%5D)" class="member-name-link">decode(byte[])</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/StringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">StringBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Decodes a binary representation into a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/compression/CompressionEngine.html#decompress(byte%5B%5D)" class="member-name-link">decompress(byte[])</a> - Method in interface net.apartium.cocoabeans.schematic.compression.<a href="net/apartium/cocoabeans/schematic/compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a></dt>
 <dd>
 <div class="block">Decompress given data</div>
@@ -395,27 +457,45 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates an empty mutable block chunk with default parameters.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in interface net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/BooleanPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">BooleanPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ByteBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ByteBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">EnumPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntArrayPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ListStringBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/StringBlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode(BlockProp&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/StringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">StringBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Encodes a <a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#END_PORTAL_FRAME_EYE" class="member-name-link">END_PORTAL_FRAME_EYE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">EnumPropFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" title="type parameter in EnumPropFormat">T</a> extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;<a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" title="type parameter in EnumPropFormat">T</a>&gt;&gt; - Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html#%3Cinit%3E(java.lang.Class,java.util.function.Supplier,java.util.function.Function)" class="member-name-link">EnumPropFormat(Class&lt;T&gt;, Supplier&lt;T[]&gt;, Function&lt;T, BlockProp&lt;T&gt;&gt;)</a> - Constructor for class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/EnumPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">EnumPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>EnumPropFormat</code> for the given enum type.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/block/BlockPlacement.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class net.apartium.cocoabeans.schematic.block.<a href="net/apartium/cocoabeans/schematic/block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -456,9 +536,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#FARM_LAND_MOISTURE" class="member-name-link">FARM_LAND_MOISTURE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#FINGERPRINT" class="member-name-link">FINGERPRINT</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Magic bytes at the start of every CBSC file ("CBSC").</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#FINGERPRINT_SIZE" class="member-name-link">FINGERPRINT_SIZE</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Number of bytes occupied by the fingerprint (4).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/SchematicBuilder.html#flip(net.apartium.cocoabeans.space.axis.Axis)" class="member-name-link">flip(Axis)</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/SchematicBuilder.html" title="interface in net.apartium.cocoabeans.schematic">SchematicBuilder</a></dt>
 <dd>
 <div class="block">Flip the existing schematic content</div>
@@ -618,26 +702,32 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html#hasNext()" class="member-name-link">hasNext()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#hasNext()" class="member-name-link">hasNext()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/PasteOperation.html#hasNext()" class="member-name-link">hasNext()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/PasteOperation.html" title="interface in net.apartium.cocoabeans.schematic">PasteOperation</a></dt>
 <dd>
 <div class="block">Check if there are any more blocks to paste</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#HEADER_START_INDEX" class="member-name-link">HEADER_START_INDEX</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Absolute byte offset in the output stream at which the header section begins.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#HOPPER_ENABLED" class="member-name-link">HOPPER_ENABLED</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html#id()" class="member-name-link">id()</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Unique identifier associated with the type of the extension (not its occurrence)</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html#ID" class="member-name-link">ID</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html#ID" class="member-name-link">ID</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html#immutable()" class="member-name-link">immutable()</a> - Method in interface net.apartium.cocoabeans.schematic.block.<a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a></dt>
 <dd>
 <div class="block">Returns an immutable version of this chunk.</div>
@@ -651,11 +741,17 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns an immutable copy of this chunk.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#INDEX_ENCODING" class="member-name-link">INDEX_ENCODING</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Index encoder identifier: unsigned 16-bit encoder ID.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#INDEX_INFO" class="member-name-link">INDEX_INFO</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Compression metadata for the index body section (<a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a> - Interface in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Strategy interface for encoding and decoding the spatial index section of a schematic file.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html#INSTANCE" class="member-name-link">INSTANCE</a> - Static variable in class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ListStringBlockPropFormat</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">IntArrayPropFormat</a> - Record Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
@@ -675,7 +771,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">IntPropFormat</a> - Record Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html#%3Cinit%3E()" class="member-name-link">IntPropFormat()</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>IntPropFormat</code> using the default <a href="net/apartium/cocoabeans/schematic/prop/IntBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop"><code>IntBlockProp</code></a> constructor.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html#%3Cinit%3E(java.util.function.Function)" class="member-name-link">IntPropFormat(Function&lt;Integer, BlockProp&lt;Integer&gt;&gt;)</a> - Constructor for record class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/IntPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntPropFormat</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>IntPropFormat</code> record class.</div>
@@ -718,7 +816,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.prop.format">ListStringBlockPropFormat</a> - Class in <a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html#%3Cinit%3E(java.util.function.Function)" class="member-name-link">ListStringBlockPropFormat(Function&lt;List&lt;String&gt;, BlockProp&lt;List&lt;String&gt;&gt;&gt;)</a> - Constructor for class net.apartium.cocoabeans.schematic.prop.format.<a href="net/apartium/cocoabeans/schematic/prop/format/ListStringBlockPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">ListStringBlockPropFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <code>ListStringBlockPropFormat</code> with the given block prop constructor.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html#LZMA2" class="member-name-link">LZMA2</a> - Enum constant in enum class net.apartium.cocoabeans.schematic.compression.<a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html" title="enum class in net.apartium.cocoabeans.schematic.compression">CompressionType</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -793,9 +893,7 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/format/package-summary.html">net.apartium.cocoabeans.schematic.prop.format</a> - package net.apartium.cocoabeans.schematic.prop.format</dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html#next()" class="member-name-link">next()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#next()" class="member-name-link">next()</a> - Method in class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#NOTE_BLOCK_INSTRUMENT" class="member-name-link">NOTE_BLOCK_INSTRUMENT</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#NOTE_BLOCK_NOTE" class="member-name-link">NOTE_BLOCK_NOTE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
@@ -816,7 +914,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Get the offset of (0,0,0) in this schematic from the player pov</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#OFFSET" class="member-name-link">OFFSET</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Schematic origin offset: three signed 32-bit integers (x, y, z).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html#OPEN_ZL" class="member-name-link">OPEN_ZL</a> - Enum constant in enum class net.apartium.cocoabeans.schematic.compression.<a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html" title="enum class in net.apartium.cocoabeans.schematic.compression">CompressionType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#OPENABLE_OPEN" class="member-name-link">OPENABLE_OPEN</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
@@ -864,7 +964,11 @@ loadScripts(document, 'script');</script>
 <div class="block">Specifies a schematic platform</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#PLATFORM" class="member-name-link">PLATFORM</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Minecraft platform entry: four unsigned 32-bit version fields
+ (major, update, minor, protocol) followed by two length-prefixed UTF-8 strings
+ (platform name, platform version).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#POINTED_DRIPSTONE_THICKNESS" class="member-name-link">POINTED_DRIPSTONE_THICKNESS</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#POINTED_DRIPSTONE_VERTICAL_DIRECTION" class="member-name-link">POINTED_DRIPSTONE_VERTICAL_DIRECTION</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
@@ -896,31 +1000,56 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html#RAW" class="member-name-link">RAW</a> - Enum constant in enum class net.apartium.cocoabeans.schematic.compression.<a href="net/apartium/cocoabeans/schematic/compression/CompressionType.html" title="enum class in net.apartium.cocoabeans.schematic.compression">CompressionType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html#read(java.io.InputStream,long)" class="member-name-link">read(InputStream, long)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Reads a body extension from the input stream.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises a single <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from the current position of <code>stream</code>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises a CBSC schematic from <code>in</code> and returns an instance of <code>T</code>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises a schematic from <code>in</code> and returns an instance of <code>T</code>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises a single <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from <code>stream</code>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.format.BlockDataEncoder,net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream, AxisOrder, BlockDataEncoder, SeekableInputStream)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises a block-chunk index from <code>indexIn</code> and returns an iterator over the
+ block placements it describes.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.format.BlockDataEncoder,net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read(SeekableInputStream, AxisOrder, BlockDataEncoder, SeekableInputStream)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Deserialises the index section and returns an iterator over the block placements it encodes.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#REDSTONE_WIRE_CONNECTIONS" class="member-name-link">REDSTONE_WIRE_CONNECTIONS</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#registerAllBodyExtensionsFormat(java.util.Map)" class="member-name-link">registerAllBodyExtensionsFormat(Map&lt;Long, BodyExtensionFormat&lt;?&gt;&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Registers multiple <a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> entries at once.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#registerBlockEncoder(int,net.apartium.cocoabeans.schematic.format.BlockDataEncoder)" class="member-name-link">registerBlockEncoder(int, BlockDataEncoder)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Registers a <a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> under the given ID.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#registerBodyExtensionFormat(long,net.apartium.cocoabeans.schematic.format.BodyExtensionFormat)" class="member-name-link">registerBodyExtensionFormat(long, BodyExtensionFormat&lt;?&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Registers a <a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> for the given extension ID.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#registerCompressionEngine(byte,net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">registerCompressionEngine(byte, CompressionEngine)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Registers a <a href="net/apartium/cocoabeans/schematic/compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression"><code>CompressionEngine</code></a> under the given type byte.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#registerIndexEncoder(int,net.apartium.cocoabeans.schematic.format.IndexEncoder)" class="member-name-link">registerIndexEncoder(int, IndexEncoder)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Registers an <a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> under the given ID.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/SchematicMetadataBuilder.html#remove(java.lang.String)" class="member-name-link">remove(String)</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/SchematicMetadataBuilder.html" title="interface in net.apartium.cocoabeans.schematic">SchematicMetadataBuilder</a></dt>
 <dd>
 <div class="block">Remove generic metadata</div>
@@ -985,7 +1114,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Platform-specific schematic factory</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="type parameter in SchematicFormat">T</a> extends <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt; - Interface in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Strategy interface for serialising and deserialising <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> objects to and from a
+ binary stream.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/SchematicMetadata.html" class="type-name-link" title="interface in net.apartium.cocoabeans.schematic">SchematicMetadata</a> - Interface in <a href="net/apartium/cocoabeans/schematic/package-summary.html">net.apartium.cocoabeans.schematic</a></dt>
 <dd>
 <div class="block">Represents metadata of a schematic</div>
@@ -1025,15 +1157,25 @@ loadScripts(document, 'script');</script>
 <div class="block">Set a block on the schematic</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#setDefaultCompressionEngineForBlocks(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForBlocks(CompressionEngine)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the compression engine used for the block-data body section when writing.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#setDefaultCompressionEngineForBodyExtensions(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForBodyExtensions(CompressionEngine)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the compression engine used for body-extension sections when writing.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#setDefaultCompressionEngineForIndexes(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForIndexes(CompressionEngine)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the compression engine used for the index body section when writing.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#setPreferBlockEncoder(int,net.apartium.cocoabeans.schematic.format.BlockDataEncoder)" class="member-name-link">setPreferBlockEncoder(int, BlockDataEncoder)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the <a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that will be used when writing new schematic files.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#setPreferIndexEncoder(int,net.apartium.cocoabeans.schematic.format.IndexEncoder)" class="member-name-link">setPreferIndexEncoder(int, IndexEncoder)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the <a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that will be used when writing new schematic files.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/SchematicBuilder.html#shift(net.apartium.cocoabeans.space.axis.Axis,int)" class="member-name-link">shift(Axis, int)</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/SchematicBuilder.html" title="interface in net.apartium.cocoabeans.schematic">SchematicBuilder</a></dt>
 <dd>
 <div class="block">Move all contents of the schematic on a specific axis</div>
@@ -1041,9 +1183,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.Legacy.html#SIGN_LINES" class="member-name-link">SIGN_LINES</a> - Static variable in class net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.Legacy.html" title="class in net.apartium.cocoabeans.schematic.prop">BlockProp.Legacy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a> - Class in <a href="net/apartium/cocoabeans/schematic/format/package-summary.html">net.apartium.cocoabeans.schematic.format</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A straightforward <a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that serialises each <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value as a
+ length-prefixed payload containing the block's namespaced type key followed by its properties.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html#%3Cinit%3E(java.util.Map)" class="member-name-link">SimpleBlockDataEncoder(Map&lt;String, BlockPropFormat&lt;?&gt;&gt;)</a> - Constructor for class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new encoder backed by the given property-format registry.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#size()" class="member-name-link">size()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Get the area size of this schematic</div>
@@ -1057,9 +1204,13 @@ loadScripts(document, 'script');</script>
 <div class="block">Size of the chunk along each axis.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#SIZE" class="member-name-link">SIZE</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Schematic dimensions: three unsigned 32-bit integers (width, height, depth).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html#SIZE" class="member-name-link">SIZE</a> - Static variable in record class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format">CompressionBlockInfo</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Fixed serialised size of this record in bytes (33).</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#SLAB_TYPE" class="member-name-link">SLAB_TYPE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#SNOW_LAYERS" class="member-name-link">SNOW_LAYERS</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
@@ -1069,9 +1220,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a> - Class in <a href="net/apartium/cocoabeans/schematic/iterator/package-summary.html">net.apartium.cocoabeans.schematic.iterator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder)" class="member-name-link">SortedAxisBlockIterator(BlockChunk, AreaSize, AxisOrder)</a> - Constructor for class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new iterator over the given chunk using the specified axis order, with no axes reversed.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Set)" class="member-name-link">SortedAxisBlockIterator(BlockChunk, AreaSize, AxisOrder, Set&lt;Axis&gt;)</a> - Constructor for class net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new iterator over the given chunk using the specified axis order,
+ with the ability to reverse traversal direction on selected axes.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#sortedIterator(net.apartium.cocoabeans.space.axis.AxisOrder)" class="member-name-link">sortedIterator(AxisOrder)</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Iterate over schematic with specified axis order</div>
@@ -1098,7 +1254,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#TECHNICAL_PISTON_TYPE" class="member-name-link">TECHNICAL_PISTON_TYPE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#TIMESTAMP" class="member-name-link">TIMESTAMP</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creation timestamp: unsigned 64-bit epoch milliseconds.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/SchematicMetadata.html#title()" class="member-name-link">title()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/SchematicMetadata.html" title="interface in net.apartium.cocoabeans.schematic">SchematicMetadata</a></dt>
 <dd>
 <div class="block">Gets schematic title</div>
@@ -1108,11 +1266,16 @@ loadScripts(document, 'script');</script>
 <div class="block">Set schematic title</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html#TITLE" class="member-name-link">TITLE</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Optional title string: length-prefixed UTF-8.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#TNT_UNSTABLE" class="member-name-link">TNT_UNSTABLE</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html#toBlockChunk(net.apartium.cocoabeans.space.axis.AxisOrder)" class="member-name-link">toBlockChunk(AxisOrder)</a> - Method in interface net.apartium.cocoabeans.schematic.iterator.<a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Drains the remaining placements from this iterator and returns them as an immutable
+ <a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a>.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/Schematic.html#toBuilder()" class="member-name-link">toBuilder()</a> - Method in interface net.apartium.cocoabeans.schematic.<a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a></dt>
 <dd>
 <div class="block">Creates a builder with the existing values of this schematic</div>
@@ -1219,7 +1382,9 @@ loadScripts(document, 'script');</script>
 the order they are declared.</div>
 </dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#VERSION" class="member-name-link">VERSION</a> - Static variable in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Format version written to and expected from every CBSC file (1).</div>
+</dd>
 </dl>
 <h2 class="title" id="I:W">W</h2>
 <dl class="index">
@@ -1230,19 +1395,33 @@ the order they are declared.</div>
 <dt><a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html#WATERLOGGED" class="member-name-link">WATERLOGGED</a> - Static variable in interface net.apartium.cocoabeans.schematic.prop.<a href="net/apartium/cocoabeans/schematic/prop/BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html#write(net.apartium.cocoabeans.schematic.block.BlockData)" class="member-name-link">write(BlockData)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises a <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into a self-contained byte array.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html#write(net.apartium.cocoabeans.schematic.block.BlockData)" class="member-name-link">write(BlockData)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises a <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into the binary format described in the class Javadoc.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html#write(net.apartium.cocoabeans.schematic.format.BodyExtension)" class="member-name-link">write(BodyExtension&lt;T&gt;)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Writes a body extension to a byte array.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)" class="member-name-link">write(BlockIterator, AxisOrder, Map&lt;BlockData, Long&gt;)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises the given block placements into the binary chunk-index format.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)" class="member-name-link">write(BlockIterator, AxisOrder, Map&lt;BlockData, Long&gt;)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises a sequence of block placements into the binary index format.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write(T, SeekableOutputStream)</a> - Method in class net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises <code>schematic</code> to <code>out</code> in the CBSC format.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write(T, SeekableOutputStream)</a> - Method in interface net.apartium.cocoabeans.schematic.format.<a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Serialises <code>schematic</code> and writes the result to <code>out</code>.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:Z">Z</h2>
 <dl class="index">

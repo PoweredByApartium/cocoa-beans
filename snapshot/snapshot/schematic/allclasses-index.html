@@ -68,9 +68,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Implementation of the <a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a> interface representing a batch of blocks in a schematic.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/format/BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">BlockChunkIndexEncoder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">An <a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that organises block placements in a recursive quadtree-like chunk
+ hierarchy and serialises that hierarchy to a compact binary index.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/iterator/BlockChunkIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">BlockChunkIterator</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A <a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator"><code>BlockIterator</code></a> that performs a depth-first traversal of a <a href="net/apartium/cocoabeans/schematic/block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a> tree.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/block/BlockChunkUtils.html" title="class in net.apartium.cocoabeans.schematic.block">BlockChunkUtils</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a></div>
@@ -78,7 +83,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Represents a block data</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Strategy interface for encoding and decoding individual <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> values in a schematic
+ file's block-data section.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">An iterator for a 3d block-based map</div>
@@ -99,12 +107,16 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/prop/format/BlockPropFormat.html" title="type parameter in BlockPropFormat">T</a>&gt;</div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
-<div class="block">An encoder/decoder class responsible for converting block props to and from binary from</div>
+<div class="block">An encoder/decoder responsible for converting block props to and from binary form</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/BodyExtension.html" title="type parameter in BodyExtension">T</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Custom data that can be stored on the schematic file.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Encodes and decodes a body extension</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/prop/BooleanBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop">BooleanBlockProp</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents a boolean block property</div>
@@ -120,11 +132,18 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/block/ChunkPointer.html" title="class in net.apartium.cocoabeans.schematic.block">ChunkPointer</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">The primary <a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>SchematicFormat</code></a> implementation for the Cocoa Beans Schematic (CBSC) format.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/format/CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Tag constants for the typed header entries in a CBSC file.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="net/apartium/cocoabeans/schematic/format/CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format">CompressionBlockInfo</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="block">Immutable metadata record that describes a single compressed body section within a CBSC
+ schematic file (block-data section, index section, or a body extension).</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents a compression engine.</div>
@@ -140,7 +159,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Represents a flip aware prop</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/format/IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Strategy interface for encoding and decoding the spatial index section of a schematic file.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="net/apartium/cocoabeans/schematic/prop/format/IntArrayPropFormat.html" title="class in net.apartium.cocoabeans.schematic.prop.format">IntArrayPropFormat</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/prop/IntBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop">IntBlockProp</a></div>
@@ -191,7 +212,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Platform-specific schematic factory</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="net/apartium/cocoabeans/schematic/format/SchematicFormat.html" title="type parameter in SchematicFormat">T</a> extends <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Strategy interface for serialising and deserialising <a href="net/apartium/cocoabeans/schematic/Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> objects to and from a
+ binary stream.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="net/apartium/cocoabeans/schematic/SchematicMetadata.html" title="interface in net.apartium.cocoabeans.schematic">SchematicMetadata</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Represents metadata of a schematic</div>
@@ -201,7 +225,10 @@ loadScripts(document, 'script');</script>
 <div class="block">A schematic metadata builder</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/format/SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format">SimpleBlockDataEncoder</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A straightforward <a href="net/apartium/cocoabeans/schematic/format/BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that serialises each <a href="net/apartium/cocoabeans/schematic/block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value as a
+ length-prefixed payload containing the block's namespaced type key followed by its properties.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="net/apartium/cocoabeans/schematic/iterator/SortedAxisBlockIterator.html" title="class in net.apartium.cocoabeans.schematic.iterator">SortedAxisBlockIterator</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="net/apartium/cocoabeans/schematic/prop/StringBlockProp.html" title="class in net.apartium.cocoabeans.schematic.prop">StringBlockProp</a></div>

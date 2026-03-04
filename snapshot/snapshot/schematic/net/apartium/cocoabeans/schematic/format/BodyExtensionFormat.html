@@ -71,8 +71,22 @@ loadScripts(document, 'script');</script>
 <h1 title="Interface BodyExtensionFormat" class="title">Interface BodyExtensionFormat&lt;T&gt;</h1>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - the type of the body extension data</dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">BodyExtensionFormat&lt;T&gt;</span></div>
+<div class="block">Encodes and decodes a body extension</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../Schematic.html#bodyExtensions()"><code>Schematic.bodyExtensions()</code></a></li>
+<li><a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtension</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -90,10 +104,14 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#read(java.io.InputStream,long)" class="member-name-link">read</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  long&nbsp;size)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Reads a body extension from the input stream.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(net.apartium.cocoabeans.schematic.format.BodyExtension)" class="member-name-link">write</a><wbr>(<a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt;&nbsp;extension)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Writes a body extension to a byte array.</div>
+</div>
 </div>
 </div>
 </div>
@@ -114,9 +132,15 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="return-type"><a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt;</span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  long&nbsp;size)</span>
                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block">Reads a body extension from the input stream. The size parameter indicates the number of bytes that should be read for this extension.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>in</code> - the input stream to read from</dd>
+<dd><code>size</code> - the number of bytes to read for this extension</dd>
+<dt>Returns:</dt>
+<dd>the body extension read from the input stream</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if an I/O error occurs while reading the body extension</dd>
 </dl>
 </section>
 </li>
@@ -125,9 +149,14 @@ loadScripts(document, 'script');</script>
 <h3>write</h3>
 <div class="member-signature"><span class="return-type">byte[]</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtension</a>&lt;<a href="BodyExtensionFormat.html" title="type parameter in BodyExtensionFormat">T</a>&gt;&nbsp;extension)</span>
       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block">Writes a body extension to a byte array. The returned byte array should contain the serialized form of the body extension, which can be written to an output stream.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>extension</code> - the body extension to write</dd>
+<dt>Returns:</dt>
+<dd>a byte array containing the serialized form of the body extension</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if an I/O error occurs while writing the body extension</dd>
 </dl>
 </section>
 </li>

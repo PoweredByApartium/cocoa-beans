@@ -77,6 +77,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public static class </span><span class="element-name type-name-label">CocoaSchematicFormat.Headers</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Tag constants for the typed header entries in a CBSC file.
+
+ <p>Each constant is a 2-byte (unsigned 16-bit) tag that identifies a header entry type.
+ The tag is written immediately before the entry's payload in the header section.</p></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -91,40 +95,67 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#AUTHOR" class="member-name-link">AUTHOR</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Optional author string: length-prefixed UTF-8.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#AXIS_ORDER" class="member-name-link">AXIS_ORDER</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Axis-order entry: 1 byte axis-order identifier (see <code>AxisOrder.getId()</code>).</div>
+</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#BLOCK_DATA_ENCODING" class="member-name-link">BLOCK_DATA_ENCODING</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Block-data encoder identifier: unsigned 16-bit encoder ID.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#BLOCK_INFO" class="member-name-link">BLOCK_INFO</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Compression metadata for the block-data body section (<a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
+</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#BODY_EXTENSION" class="member-name-link">BODY_EXTENSION</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Body-extension entry (repeatable): unsigned 64-bit extension ID followed by
+ <a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a> metadata for the extension's body section.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#INDEX_ENCODING" class="member-name-link">INDEX_ENCODING</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Index encoder identifier: unsigned 16-bit encoder ID.</div>
+</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#INDEX_INFO" class="member-name-link">INDEX_INFO</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Compression metadata for the index body section (<a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#OFFSET" class="member-name-link">OFFSET</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Schematic origin offset: three signed 32-bit integers (x, y, z).</div>
+</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#PLATFORM" class="member-name-link">PLATFORM</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Minecraft platform entry: four unsigned 32-bit version fields
+ (major, update, minor, protocol) followed by two length-prefixed UTF-8 strings
+ (platform name, platform version).</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#SIZE" class="member-name-link">SIZE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Schematic dimensions: three unsigned 32-bit integers (width, height, depth).</div>
+</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#TIMESTAMP" class="member-name-link">TIMESTAMP</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creation timestamp: unsigned 64-bit epoch milliseconds.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#TITLE" class="member-name-link">TITLE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Optional title string: length-prefixed UTF-8.</div>
+</div>
 </div>
 </section>
 </li>
@@ -150,6 +181,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="AXIS_ORDER">
 <h3>AXIS_ORDER</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">AXIS_ORDER</span></div>
+<div class="block">Axis-order entry: 1 byte axis-order identifier (see <code>AxisOrder.getId()</code>).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -164,6 +196,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="OFFSET">
 <h3>OFFSET</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">OFFSET</span></div>
+<div class="block">Schematic origin offset: three signed 32-bit integers (x, y, z).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -178,6 +211,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="SIZE">
 <h3>SIZE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">SIZE</span></div>
+<div class="block">Schematic dimensions: three unsigned 32-bit integers (width, height, depth).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -192,6 +226,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="BLOCK_DATA_ENCODING">
 <h3>BLOCK_DATA_ENCODING</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">BLOCK_DATA_ENCODING</span></div>
+<div class="block">Block-data encoder identifier: unsigned 16-bit encoder ID.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -206,6 +241,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="BLOCK_INFO">
 <h3>BLOCK_INFO</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">BLOCK_INFO</span></div>
+<div class="block">Compression metadata for the block-data body section (<a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -220,6 +256,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="INDEX_ENCODING">
 <h3>INDEX_ENCODING</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">INDEX_ENCODING</span></div>
+<div class="block">Index encoder identifier: unsigned 16-bit encoder ID.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -234,6 +271,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="INDEX_INFO">
 <h3>INDEX_INFO</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">INDEX_INFO</span></div>
+<div class="block">Compression metadata for the index body section (<a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a>).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -248,6 +286,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="TIMESTAMP">
 <h3>TIMESTAMP</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">TIMESTAMP</span></div>
+<div class="block">Creation timestamp: unsigned 64-bit epoch milliseconds.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -262,6 +301,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="AUTHOR">
 <h3>AUTHOR</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">AUTHOR</span></div>
+<div class="block">Optional author string: length-prefixed UTF-8.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -276,6 +316,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="TITLE">
 <h3>TITLE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">TITLE</span></div>
+<div class="block">Optional title string: length-prefixed UTF-8.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -290,6 +331,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="PLATFORM">
 <h3>PLATFORM</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">PLATFORM</span></div>
+<div class="block">Minecraft platform entry: four unsigned 32-bit version fields
+ (major, update, minor, protocol) followed by two length-prefixed UTF-8 strings
+ (platform name, platform version).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -304,6 +348,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="BODY_EXTENSION">
 <h3>BODY_EXTENSION</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">BODY_EXTENSION</span></div>
+<div class="block">Body-extension entry (repeatable): unsigned 64-bit extension ID followed by
+ <a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a> metadata for the extension's body section.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>

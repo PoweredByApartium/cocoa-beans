@@ -82,7 +82,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">BlockPropFormat&lt;T&gt;</span></div>
-<div class="block">An encoder/decoder class responsible for converting block props to and from binary from</div>
+<div class="block">An encoder/decoder responsible for converting block props to and from binary form</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -107,10 +107,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;<a href="BlockPropFormat.html" title="type parameter in BlockPropFormat">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#decode(byte%5B%5D)" class="member-name-link">decode</a><wbr>(byte[]&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Decodes a binary representation into a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode</a><wbr>(<a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;?&gt;&nbsp;prop)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Encodes a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</div>
 </div>
 </div>
 </div>
@@ -129,12 +133,26 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="decode(byte[])">
 <h3>decode</h3>
 <div class="member-signature"><span class="return-type"><a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;<a href="BlockPropFormat.html" title="type parameter in BlockPropFormat">T</a>&gt;</span>&nbsp;<span class="element-name">decode</span><wbr><span class="parameters">(byte[]&nbsp;value)</span></div>
+<div class="block">Decodes a binary representation into a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>value</code> - the raw bytes to decode</dd>
+<dt>Returns:</dt>
+<dd>the decoded block prop</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="encode(net.apartium.cocoabeans.schematic.prop.BlockProp)">
 <h3>encode</h3>
 <div class="member-signature"><span class="return-type">byte[]</span>&nbsp;<span class="element-name">encode</span><wbr><span class="parameters">(<a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;?&gt;&nbsp;prop)</span></div>
+<div class="block">Encodes a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>prop</code> - the block prop to encode</dd>
+<dt>Returns:</dt>
+<dd>the encoded bytes</dd>
+</dl>
 </section>
 </li>
 </ul>

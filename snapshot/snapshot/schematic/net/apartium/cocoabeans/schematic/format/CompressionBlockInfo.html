@@ -80,6 +80,21 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
 </span><span class="modifiers">public record </span><span class="element-name type-name-label">CompressionBlockInfo</span>(byte&nbsp;compressionType, long&nbsp;uncompressedSize, long&nbsp;compressedSize, long&nbsp;offset, long&nbsp;checksum)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
+<div class="block">Immutable metadata record that describes a single compressed body section within a CBSC
+ schematic file (block-data section, index section, or a body extension).
+
+ <h2>Binary layout (<a href="#SIZE">33</a> bytes)</h2>
+ <pre>
+   [1 byte]  compressionType   – identifier of the <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression"><code>CompressionEngine</code></a> used
+   [8 bytes] uncompressedSize  – original byte count before compression (unsigned 64-bit)
+   [8 bytes] compressedSize    – byte count as stored in the file (unsigned 64-bit)
+   [8 bytes] offset            – absolute byte offset of the compressed data in the file (unsigned 64-bit)
+   [8 bytes] checksum          – CRC-32 of the uncompressed data, stored as unsigned 64-bit
+ </pre>
+
+ <p>An instance of this record is stored as a placeholder in the header section while the file
+ is being written, and is back-patched with the real values once the body section has been
+ compressed and its final position is known.</p></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -94,7 +109,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#SIZE" class="member-name-link">SIZE</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Fixed serialised size of this record in bytes (33).</div>
+</div>
 </div>
 </section>
 </li>
@@ -189,6 +206,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="SIZE">
 <h3>SIZE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">SIZE</span></div>
+<div class="block">Fixed serialised size of this record in bytes (33).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>

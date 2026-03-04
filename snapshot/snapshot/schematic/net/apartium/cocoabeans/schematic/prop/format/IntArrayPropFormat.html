@@ -121,10 +121,14 @@ implements <a href="BlockPropFormat.html" title="interface in net.apartium.cocoa
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;int[]&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#decode(byte%5B%5D)" class="member-name-link">decode</a><wbr>(byte[]&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Decodes a binary representation into a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)" class="member-name-link">encode</a><wbr>(<a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;?&gt;&nbsp;prop)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Encodes a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -180,9 +184,19 @@ implements <a href="BlockPropFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="decode(byte[])">
 <h3>decode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;int[]&gt;</span>&nbsp;<span class="element-name">decode</span><wbr><span class="parameters">(byte[]&nbsp;value)</span></div>
+<div class="block">Decodes a binary representation into a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a>.
+
+ <p>The binary layout is: a 4-byte big-endian integer for the array length,
+ followed by that many 4-byte big-endian integers for the element values.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BlockPropFormat.html#decode(byte%5B%5D)">decode</a></code>&nbsp;in interface&nbsp;<code><a href="BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;int[]&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>value</code> - the raw bytes to decode</dd>
+<dt>Returns:</dt>
+<dd>the decoded block prop</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>value</code> is fewer than 4 bytes</dd>
 </dl>
 </section>
 </li>
@@ -190,9 +204,19 @@ implements <a href="BlockPropFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="encode(net.apartium.cocoabeans.schematic.prop.BlockProp)">
 <h3>encode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">encode</span><wbr><span class="parameters">(<a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop">BlockProp</a>&lt;?&gt;&nbsp;prop)</span></div>
+<div class="block">Encodes a <a href="../BlockProp.html" title="interface in net.apartium.cocoabeans.schematic.prop"><code>BlockProp</code></a> into its binary representation.
+
+ <p>The binary layout is: a 4-byte big-endian integer for the array length,
+ followed by that many 4-byte big-endian integers for the element values.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)">encode</a></code>&nbsp;in interface&nbsp;<code><a href="BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;int[]&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>prop</code> - the block prop to encode</dd>
+<dt>Returns:</dt>
+<dd>the encoded bytes</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the prop value is not an <code>int[]</code></dd>
 </dl>
 </section>
 </li>

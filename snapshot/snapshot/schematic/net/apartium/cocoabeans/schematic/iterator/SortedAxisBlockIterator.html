@@ -97,12 +97,17 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder)" class="member-name-link">SortedAxisBlockIterator</a><wbr>(<a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a>&nbsp;chunk,
  net.apartium.cocoabeans.space.AreaSize&nbsp;size,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new iterator over the given chunk using the specified axis order, with no axes reversed.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Set)" class="member-name-link">SortedAxisBlockIterator</a><wbr>(<a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a>&nbsp;chunk,
  net.apartium.cocoabeans.space.AreaSize&nbsp;size,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;net.apartium.cocoabeans.space.axis.Axis&gt;&nbsp;reverseAxis)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a new iterator over the given chunk using the specified axis order,
+ with the ability to reverse traversal direction on selected axes.</div>
+</div>
 </div>
 </section>
 </li>
@@ -119,7 +124,9 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>net.apartium.cocoabeans.space.axis.AxisOrder</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#axisOrder()" class="member-name-link">axisOrder</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the axis order used by this iterator.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>net.apartium.cocoabeans.space.Position</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#current()" class="member-name-link">current</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -127,10 +134,10 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasNext()" class="member-name-link">hasNext</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"></div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"></div>
 </div>
 </div>
 </div>
@@ -160,6 +167,13 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SortedAxisBlockIterator</span><wbr><span class="parameters">(<a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a>&nbsp;chunk,
  net.apartium.cocoabeans.space.AreaSize&nbsp;size,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder)</span></div>
+<div class="block">Creates a new iterator over the given chunk using the specified axis order, with no axes reversed.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>chunk</code> - the block chunk to iterate over</dd>
+<dd><code>size</code> - the dimensions of the area to iterate</dd>
+<dd><code>axisOrder</code> - the order in which axes are traversed</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -169,6 +183,15 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
  net.apartium.cocoabeans.space.AreaSize&nbsp;size,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;net.apartium.cocoabeans.space.axis.Axis&gt;&nbsp;reverseAxis)</span></div>
+<div class="block">Creates a new iterator over the given chunk using the specified axis order,
+ with the ability to reverse traversal direction on selected axes.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>chunk</code> - the block chunk to iterate over</dd>
+<dd><code>size</code> - the dimensions of the area to iterate</dd>
+<dd><code>axisOrder</code> - the order in which axes are traversed</dd>
+<dd><code>reverseAxis</code> - the set of axes whose traversal direction should be reversed</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -183,7 +206,6 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <section class="detail" id="current()">
 <h3>current</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">net.apartium.cocoabeans.space.Position</span>&nbsp;<span class="element-name">current</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="BlockIterator.html#current()">BlockIterator</a></code></span></div>
 <div class="block">Returns the current block position of the iterator</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -217,6 +239,11 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <section class="detail" id="axisOrder()">
 <h3>axisOrder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">net.apartium.cocoabeans.space.axis.AxisOrder</span>&nbsp;<span class="element-name">axisOrder</span>()</div>
+<div class="block">Returns the axis order used by this iterator.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the axis order</dd>
+</dl>
 </section>
 </li>
 </ul>

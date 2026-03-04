@@ -72,12 +72,30 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - the concrete <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> type this format produces on read</dd>
+</dl>
+<dl class="notes">
 <dt>All Known Implementing Classes:</dt>
 <dd><code><a href="CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">SchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</span></div>
+<div class="block">Strategy interface for serialising and deserialising <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> objects to and from a
+ binary stream.
+
+ <p>Implementations define a complete binary format, including how block data, spatial indices,
+ metadata, and any optional extensions are encoded. Both streams must be seekable because most
+ formats require back-patching header fields after the body sections have been written.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="CocoaSchematicFormat.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CocoaSchematicFormat</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -94,11 +112,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="SchematicFormat.html" title="type parameter in SchematicFormat">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read</a><wbr>(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Deserialises a schematic from <code>in</code> and returns an instance of <code>T</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write</a><wbr>(<a href="SchematicFormat.html" title="type parameter in SchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Serialises <code>schematic</code> and writes the result to <code>out</code>.</div>
+</div>
 </div>
 </div>
 </div>
@@ -118,12 +140,25 @@ loadScripts(document, 'script');</script>
 <h3 id="write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="SchematicFormat.html" title="type parameter in SchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</span></div>
+<div class="block">Serialises <code>schematic</code> and writes the result to <code>out</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>schematic</code> - the schematic to serialise</dd>
+<dd><code>out</code> - the seekable output stream to write to</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="read(net.apartium.cocoabeans.seekable.SeekableInputStream)">
 <h3>read</h3>
 <div class="member-signature"><span class="return-type"><a href="SchematicFormat.html" title="type parameter in SchematicFormat">T</a></span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</span></div>
+<div class="block">Deserialises a schematic from <code>in</code> and returns an instance of <code>T</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>in</code> - the seekable input stream positioned at the start of the serialised schematic</dd>
+<dt>Returns:</dt>
+<dd>the deserialised schematic</dd>
+</dl>
 </section>
 </li>
 </ul>

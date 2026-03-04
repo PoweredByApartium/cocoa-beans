@@ -83,6 +83,25 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">BlockChunkIterator</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a></span></div>
+<div class="block">A <a href="BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator"><code>BlockIterator</code></a> that performs a depth-first traversal of a <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a> tree.
+
+ <p>The chunk tree is encoded as a bitmask plus a compact list of <a href="../block/Pointer.html" title="class in net.apartium.cocoabeans.schematic.block"><code>Pointer</code></a> objects. Each
+ set bit in the mask corresponds to one pointer in order. The iterator walks the mask from the
+ lowest set bit upward, yielding one <a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockPlacement</code></a> per <a href="../block/BlockPointer.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockPointer</code></a> leaf. When
+ a <a href="../block/ChunkPointer.html" title="class in net.apartium.cocoabeans.schematic.block"><code>ChunkPointer</code></a> is encountered, a child <code>BlockChunkIterator</code> is created and fully
+ drained before the parent resumes.</p>
+
+ <p>The next placement is always pre-fetched into <code>next</code> so that <a href="#hasNext()"><code>hasNext()</code></a> and
+ <a href="#current()"><code>current()</code></a> can answer without advancing the traversal.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator"><code>BlockIterator</code></a></li>
+<li><a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -95,7 +114,9 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.apartium.cocoabeans.schematic.block.BlockChunk)" class="member-name-link">BlockChunkIterator</a><wbr>(<a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a>&nbsp;chunk)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates an iterator over all block placements in <code>chunk</code> and its descendants.</div>
+</div>
 </div>
 </section>
 </li>
@@ -117,10 +138,10 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasNext()" class="member-name-link">hasNext</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"></div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"></div>
 </div>
 </div>
 </div>
@@ -148,6 +169,14 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <section class="detail" id="&lt;init&gt;(net.apartium.cocoabeans.schematic.block.BlockChunk)">
 <h3>BlockChunkIterator</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">BlockChunkIterator</span><wbr><span class="parameters">(<a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a>&nbsp;chunk)</span></div>
+<div class="block">Creates an iterator over all block placements in <code>chunk</code> and its descendants.
+
+ <p>The first placement is pre-fetched immediately so that <a href="#hasNext()"><code>hasNext()</code></a> is correct
+ before any call to <a href="#next()"><code>next()</code></a>.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>chunk</code> - the root chunk to iterate</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -162,13 +191,12 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <section class="detail" id="current()">
 <h3>current</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">net.apartium.cocoabeans.space.Position</span>&nbsp;<span class="element-name">current</span>()</div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="BlockIterator.html#current()">BlockIterator</a></code></span></div>
 <div class="block">Returns the current block position of the iterator</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BlockIterator.html#current()">current</a></code>&nbsp;in interface&nbsp;<code><a href="BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a></code></dd>
 <dt>Returns:</dt>
-<dd>current block position of the iterator, or null if the iteration has no next value</dd>
+<dd>the position of the pre-fetched placement, or <code>null</code> if iteration is exhausted</dd>
 </dl>
 </section>
 </li>
@@ -179,6 +207,8 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html#hasNext()" title="class or interface in java.util" class="external-link">hasNext</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd><code>true</code> if a pre-fetched placement is available</dd>
 </dl>
 </section>
 </li>
@@ -186,9 +216,14 @@ implements <a href="BlockIterator.html" title="interface in net.apartium.cocoabe
 <section class="detail" id="next()">
 <h3>next</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a></span>&nbsp;<span class="element-name">next</span>()</div>
+<div class="block">
+
+ <p>Returns the pre-fetched placement and immediately advances the iterator to the next one.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html#next()" title="class or interface in java.util" class="external-link">next</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block">BlockPlacement</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>the next <a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockPlacement</code></a></dd>
 </dl>
 </section>
 </li>

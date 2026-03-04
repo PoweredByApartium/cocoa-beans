@@ -83,6 +83,36 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">SimpleBlockDataEncoder</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></span></div>
+<div class="block">A straightforward <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that serialises each <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value as a
+ length-prefixed payload containing the block's namespaced type key followed by its properties.
+
+ <h2>Binary format</h2>
+ <pre>
+   [4 bytes] payload length (unsigned 32-bit, big-endian)
+   [payload]
+     [string] namespace   – namespace portion of the block's <code>NamespacedKey</code>
+     [string] key         – key portion of the block's <code>NamespacedKey</code>
+     [prop…]  zero or more property entries (see below)
+ </pre>
+
+ Each <em>property entry</em> in the payload:
+ <pre>
+   [string]  type name    – property identifier, used to look up a <a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format"><code>BlockPropFormat</code></a>
+   [3 bytes] value length – unsigned 24-bit length of the encoded value (max ~16 MB)
+   [bytes]   value        – raw bytes produced by <a href="../prop/format/BlockPropFormat.html#encode(net.apartium.cocoabeans.schematic.prop.BlockProp)"><code>BlockPropFormat.encode(net.apartium.cocoabeans.schematic.prop.BlockProp&lt;?&gt;)</code></a>
+ </pre>
+
+ <p>Strings are encoded in the format expected by <code>BufferUtils.readString</code> /
+ <code>BufferUtils.writeStringAsList</code> (length-prefixed UTF-8).</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a></li>
+<li><a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format"><code>BlockPropFormat</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,7 +127,9 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#ID" class="member-name-link">ID</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
+</div>
 </div>
 </section>
 </li>
@@ -110,7 +142,9 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.Map)" class="member-name-link">SimpleBlockDataEncoder</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;?&gt;&gt;&nbsp;formatMap)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new encoder backed by the given property-format registry.</div>
+</div>
 </div>
 </section>
 </li>
@@ -127,10 +161,14 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read</a><wbr>(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;stream)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Deserialises a single <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from <code>stream</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(net.apartium.cocoabeans.schematic.block.BlockData)" class="member-name-link">write</a><wbr>(<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>&nbsp;blockData)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Serialises a <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into the binary format described in the class Javadoc.</div>
+</div>
 </div>
 </div>
 </div>
@@ -152,6 +190,7 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <section class="detail" id="ID">
 <h3>ID</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">ID</span></div>
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -174,6 +213,13 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <section class="detail" id="&lt;init&gt;(java.util.Map)">
 <h3>SimpleBlockDataEncoder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SimpleBlockDataEncoder</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format">BlockPropFormat</a>&lt;?&gt;&gt;&nbsp;formatMap)</span></div>
+<div class="block">Creates a new encoder backed by the given property-format registry.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>formatMap</code> - map from property type name to its <a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format"><code>BlockPropFormat</code></a>; must contain
+                  an entry for every property type that will be encountered during reads and
+                  writes</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -188,9 +234,22 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <section class="detail" id="read(net.apartium.cocoabeans.seekable.SeekableInputStream)">
 <h3>read</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a></span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;stream)</span></div>
+<div class="block">Deserialises a single <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from <code>stream</code>.
+
+ <p>The method reads the 4-byte payload length, consumes exactly that many bytes into an
+ in-memory buffer, then decodes the namespaced key and each property entry in order.
+ Properties are decoded using the <a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format"><code>BlockPropFormat</code></a> registered for their type name.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BlockDataEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)">read</a></code>&nbsp;in interface&nbsp;<code><a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>stream</code> - the seekable stream positioned at the start of a block-data entry</dd>
+<dt>Returns:</dt>
+<dd>the decoded <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/NoSuchElementException.html" title="class or interface in java.util" class="external-link">NoSuchElementException</a></code> - if a property type name is not present in the format map</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the same property type appears more than once</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/UncheckedIOException.html" title="class or interface in java.io" class="external-link">UncheckedIOException</a></code> - if an I/O error occurs while reading the stream</dd>
 </dl>
 </section>
 </li>
@@ -198,9 +257,21 @@ implements <a href="BlockDataEncoder.html" title="interface in net.apartium.coco
 <section class="detail" id="write(net.apartium.cocoabeans.schematic.block.BlockData)">
 <h3>write</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>&nbsp;blockData)</span></div>
+<div class="block">Serialises a <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into the binary format described in the class Javadoc.
+
+ <p>The block's namespaced type key is written first, followed by one entry per property.
+ Each property value is encoded by its corresponding <a href="../prop/format/BlockPropFormat.html" title="interface in net.apartium.cocoabeans.schematic.prop.format"><code>BlockPropFormat</code></a> and prefixed
+ with a 3-byte (unsigned 24-bit) length field. The entire payload is then prefixed with its
+ 4-byte total length.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BlockDataEncoder.html#write(net.apartium.cocoabeans.schematic.block.BlockData)">write</a></code>&nbsp;in interface&nbsp;<code><a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>blockData</code> - the block data to serialise</dd>
+<dt>Returns:</dt>
+<dd>the serialised bytes, including the 4-byte length prefix</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if a property's type name is not present in the format map</dd>
 </dl>
 </section>
 </li>

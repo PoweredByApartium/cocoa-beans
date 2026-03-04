@@ -114,7 +114,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default @NonNull <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toBlockChunk(net.apartium.cocoabeans.space.axis.AxisOrder)" class="member-name-link">toBlockChunk</a><wbr>(net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Drains the remaining placements from this iterator and returns them as an immutable
+ <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a>.</div>
+</div>
 </div>
 </div>
 </div>
@@ -148,6 +151,17 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <section class="detail" id="toBlockChunk(net.apartium.cocoabeans.space.axis.AxisOrder)">
 <h3>toBlockChunk</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">@NonNull <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockChunk</a></span>&nbsp;<span class="element-name">toBlockChunk</span><wbr><span class="parameters">(net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder)</span></div>
+<div class="block">Drains the remaining placements from this iterator and returns them as an immutable
+ <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a>.
+
+ <p>The chunk is automatically rescaled as placements are inserted so that all positions fit
+ within the resulting chunk's bounds.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>axisOrder</code> - the axis-to-index mapping used when constructing the chunk</dd>
+<dt>Returns:</dt>
+<dd>an immutable <a href="../block/BlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockChunk</code></a> containing all remaining block placements</dd>
+</dl>
 </section>
 </li>
 </ul>

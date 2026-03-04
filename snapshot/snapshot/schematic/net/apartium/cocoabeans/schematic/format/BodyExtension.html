@@ -73,6 +73,16 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">BodyExtension&lt;T&gt;</span></div>
+<div class="block">Custom data that can be stored on the schematic file.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../Schematic.html#bodyExtensions()"><code>Schematic.bodyExtensions()</code></a></li>
+<li><a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -89,10 +99,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BodyExtension.html" title="type parameter in BodyExtension">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#data()" class="member-name-link">data</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Body extension compound data</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>long</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#id()" class="member-name-link">id</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Unique identifier associated with the type of the extension (not its occurrence)</div>
+</div>
 </div>
 </div>
 </div>
@@ -111,12 +125,22 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="id()">
 <h3>id</h3>
 <div class="member-signature"><span class="return-type">long</span>&nbsp;<span class="element-name">id</span>()</div>
+<div class="block">Unique identifier associated with the type of the extension (not its occurrence)</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the unique identifier for this body extension type</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="data()">
 <h3>data</h3>
 <div class="member-signature"><span class="return-type"><a href="BodyExtension.html" title="type parameter in BodyExtension">T</a></span>&nbsp;<span class="element-name">data</span>()</div>
+<div class="block">Body extension compound data</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the data associated with this body extension</dd>
+</dl>
 </section>
 </li>
 </ul>

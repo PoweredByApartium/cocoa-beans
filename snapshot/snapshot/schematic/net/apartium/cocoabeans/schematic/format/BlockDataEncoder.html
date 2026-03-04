@@ -78,6 +78,24 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">BlockDataEncoder</span></div>
+<div class="block">Strategy interface for encoding and decoding individual <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> values in a schematic
+ file's block-data section.
+
+ <p>The block-data section stores one serialised entry per distinct <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value. An
+ <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> references these entries by their byte offset, so each implementation must
+ produce a self-contained, fixed-boundary record that can be seeked to and read independently.</p>
+
+ <p>A byte array produced by <a href="#write(net.apartium.cocoabeans.schematic.block.BlockData)"><code>write(net.apartium.cocoabeans.schematic.block.BlockData)</code></a> must be fully reconstructable by <a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)"><code>read(net.apartium.cocoabeans.seekable.SeekableInputStream)</code></a> when
+ the stream is positioned at the start of that array.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="SimpleBlockDataEncoder.html" title="class in net.apartium.cocoabeans.schematic.format"><code>SimpleBlockDataEncoder</code></a></li>
+<li><a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -94,10 +112,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read</a><wbr>(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;stream)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Deserialises a single <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from the current position of <code>stream</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(net.apartium.cocoabeans.schematic.block.BlockData)" class="member-name-link">write</a><wbr>(<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>&nbsp;blockData)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Serialises a <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into a self-contained byte array.</div>
+</div>
 </div>
 </div>
 </div>
@@ -116,12 +138,32 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="read(net.apartium.cocoabeans.seekable.SeekableInputStream)">
 <h3>read</h3>
 <div class="member-signature"><span class="return-type"><a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a></span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;stream)</span></div>
+<div class="block">Deserialises a single <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value from the current position of <code>stream</code>.
+
+ <p>The stream must be positioned at the beginning of a block-data entry. After this method
+ returns, the stream position should be immediately past the entry that was read.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>stream</code> - the seekable stream to read from</dd>
+<dt>Returns:</dt>
+<dd>the decoded <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="write(net.apartium.cocoabeans.schematic.block.BlockData)">
 <h3>write</h3>
 <div class="member-signature"><span class="return-type">byte[]</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>&nbsp;blockData)</span></div>
+<div class="block">Serialises a <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value into a self-contained byte array.
+
+ <p>The returned array must be a complete, stand-alone record: passing it to <a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)"><code>read(net.apartium.cocoabeans.seekable.SeekableInputStream)</code></a>
+ (via a stream wrapping the array) must reproduce an equivalent <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a>.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blockData</code> - the block data to serialise</dd>
+<dt>Returns:</dt>
+<dd>the serialised bytes</dd>
+</dl>
 </section>
 </li>
 </ul>

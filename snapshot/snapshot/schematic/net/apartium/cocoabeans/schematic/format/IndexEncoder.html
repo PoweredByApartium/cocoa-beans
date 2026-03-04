@@ -78,6 +78,25 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">IndexEncoder</span></div>
+<div class="block">Strategy interface for encoding and decoding the spatial index section of a schematic file.
+
+ <p>A schematic file is split into two sections: a <em>block-data</em> section (managed by a
+ <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a>) that stores the raw block state for each distinct <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a>,
+ and an <em>index</em> section (managed by this interface) that records <em>where</em> each
+ block placement sits in world space and which block-data entry it references.</p>
+
+ <p>Implementations are free to choose any binary layout for the index section. The only
+ contract is that a byte array produced by <a href="#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)"><code>write(net.apartium.cocoabeans.schematic.iterator.BlockIterator, net.apartium.cocoabeans.space.axis.AxisOrder, java.util.Map&lt;net.apartium.cocoabeans.schematic.block.BlockData, java.lang.Long&gt;)</code></a> can be fully reconstructed by
+ <a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.format.BlockDataEncoder,net.apartium.cocoabeans.seekable.SeekableInputStream)"><code>read(net.apartium.cocoabeans.seekable.SeekableInputStream, net.apartium.cocoabeans.space.axis.AxisOrder, net.apartium.cocoabeans.schematic.format.BlockDataEncoder, net.apartium.cocoabeans.seekable.SeekableInputStream)</code></a> given the same <code>AxisOrder</code> and a compatible <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a>.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="BlockChunkIndexEncoder.html" title="class in net.apartium.cocoabeans.schematic.format"><code>BlockChunkIndexEncoder</code></a></li>
+<li><a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,12 +116,16 @@ loadScripts(document, 'script');</script>
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;blockDataEncoder,
  net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;blockIn)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Deserialises the index section and returns an iterator over the block placements it encodes.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)" class="member-name-link">write</a><wbr>(<a href="../iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a>&nbsp;placements,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;blockIndexes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Serialises a sequence of block placements into the binary index format.</div>
+</div>
 </div>
 </div>
 </div>
@@ -125,9 +148,20 @@ loadScripts(document, 'script');</script>
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;blockDataEncoder,
  net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;blockIn)</span>
             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block">Deserialises the index section and returns an iterator over the block placements it encodes.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>indexIn</code> - seekable stream positioned at the start of the index section</dd>
+<dd><code>axisOrder</code> - axis-to-index mapping that was used when the index was written;
+                         must match the value passed to <a href="#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)"><code>write(net.apartium.cocoabeans.schematic.iterator.BlockIterator, net.apartium.cocoabeans.space.axis.AxisOrder, java.util.Map&lt;net.apartium.cocoabeans.schematic.block.BlockData, java.lang.Long&gt;)</code></a></dd>
+<dd><code>blockDataEncoder</code> - encoder used to deserialise individual <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> values
+                         from <code>blockIn</code></dd>
+<dd><code>blockIn</code> - seekable stream containing the raw block-data section</dd>
+<dt>Returns:</dt>
+<dd>an iterator over every <a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockPlacement</code></a>
+         encoded in the index</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if an I/O error occurs while reading either stream</dd>
 </dl>
 </section>
 </li>
@@ -137,6 +171,20 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="return-type">byte[]</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a>&nbsp;placements,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;blockIndexes)</span></div>
+<div class="block">Serialises a sequence of block placements into the binary index format.
+
+ <p>Each placement is mapped to the corresponding entry in <code>blockIndexes</code> so that the
+ index stores byte offsets into the block-data section rather than inline block state.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>placements</code> - iterator over the block placements to encode</dd>
+<dd><code>axisOrder</code> - axis-to-index mapping to apply during encoding</dd>
+<dd><code>blockIndexes</code> - map from each <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> value to its byte offset in the
+                     block-data stream; every <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> referenced by
+                     <code>placements</code> must have an entry</dd>
+<dt>Returns:</dt>
+<dd>the serialised index as a byte array, ready to be embedded in a schematic file</dd>
+</dl>
 </section>
 </li>
 </ul>

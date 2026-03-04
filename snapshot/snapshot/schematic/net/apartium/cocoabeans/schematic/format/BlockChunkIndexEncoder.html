@@ -83,6 +83,39 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">BlockChunkIndexEncoder</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></span></div>
+<div class="block">An <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that organises block placements in a recursive quadtree-like chunk
+ hierarchy and serialises that hierarchy to a compact binary index.
+
+ <h2>Binary format</h2>
+ <pre>
+   [1 byte]  layers   – tree depth; the spatial scale of the root is 4^layers
+   [node…]  BFS-ordered chunk nodes (see below)
+ </pre>
+
+ Each <em>chunk node</em> contains:
+ <pre>
+   [8 bytes] mask     – 64-bit bitmask; bit <code>i</code> is set when child slot <code>i</code> is occupied
+   [8 bytes] × popcount(mask)
+             entries  – for leaf nodes: byte offset into the block-data stream;
+                        for inner nodes: byte offset of the child chunk node
+ </pre>
+
+ <p>Inner-node offsets are back-patched after the child node is written, so the format supports
+ forward references without a separate relocation table.</p>
+
+ <h2>Spatial layout</h2>
+ <p>Each chunk covers a 4×4×4 region of block positions (see <a href="../block/BlockChunkImpl.html#SIZE"><code>BlockChunkImpl.SIZE</code></a>).
+ The three flat indices <code>i0</code>, <code>i1</code>, <code>i2</code> are mapped to world-space axes via
+ the supplied <code>AxisOrder</code>, allowing the encoder to be axis-agnostic.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a></li>
+<li><a href="../block/BlockChunkImpl.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockChunkImpl</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,7 +130,9 @@ implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabea
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
 <div class="col-second even-row-color"><code><a href="#ID" class="member-name-link">ID</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
+</div>
 </div>
 </section>
 </li>
@@ -130,12 +165,17 @@ implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabea
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;blockDataEncoder,
  net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;blockIn)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Deserialises a block-chunk index from <code>indexIn</code> and returns an iterator over the
+ block placements it describes.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>byte[]</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)" class="member-name-link">write</a><wbr>(<a href="../iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a>&nbsp;placements,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;blockIndexes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Serialises the given block placements into the binary chunk-index format.</div>
+</div>
 </div>
 </div>
 </div>
@@ -157,6 +197,7 @@ implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabea
 <section class="detail" id="ID">
 <h3>ID</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">ID</span></div>
+<div class="block">Numeric identifier that distinguishes this encoder in the schematic file header.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -197,11 +238,24 @@ implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabea
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;blockDataEncoder,
  net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;blockIn)</span>
                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block">Deserialises a block-chunk index from <code>indexIn</code> and returns an iterator over the
+ block placements it describes.
+
+ <p>The method reads the tree depth from the first byte, computes the root scaler as
+ <code>4^layers</code>, and then recursively decodes every chunk node, resolving leaf offsets
+ against <code>blockIn</code> via <code>blockDataEncoder</code>.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IndexEncoder.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.format.BlockDataEncoder,net.apartium.cocoabeans.seekable.SeekableInputStream)">read</a></code>&nbsp;in interface&nbsp;<code><a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>indexIn</code> - seekable stream positioned at the start of the index section</dd>
+<dd><code>axisOrder</code> - axis-to-index mapping used during spatial decoding</dd>
+<dd><code>blockDataEncoder</code> - encoder used to deserialise individual <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> values</dd>
+<dd><code>blockIn</code> - seekable stream containing the raw block data</dd>
+<dt>Returns:</dt>
+<dd>an iterator over the decoded <a href="../block/BlockPlacement.html" title="class in net.apartium.cocoabeans.schematic.block"><code>BlockPlacement</code></a> values</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if an I/O error occurs while reading either stream</dd>
 </dl>
 </section>
 </li>
@@ -211,9 +265,23 @@ implements <a href="IndexEncoder.html" title="interface in net.apartium.cocoabea
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../iterator/BlockIterator.html" title="interface in net.apartium.cocoabeans.schematic.iterator">BlockIterator</a>&nbsp;placements,
  net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axisOrder,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block">BlockData</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;blockIndexes)</span></div>
+<div class="block">Serialises the given block placements into the binary chunk-index format.
+
+ <p>All placements are first inserted into a <a href="../block/MutableBlockChunk.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>MutableBlockChunk</code></a> tree, which is then
+ serialised layer by layer using a BFS traversal. The returned byte array can be embedded
+ directly in a schematic file as the index section.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IndexEncoder.html#write(net.apartium.cocoabeans.schematic.iterator.BlockIterator,net.apartium.cocoabeans.space.axis.AxisOrder,java.util.Map)">write</a></code>&nbsp;in interface&nbsp;<code><a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>placements</code> - iterator over the block placements to encode</dd>
+<dd><code>axisOrder</code> - axis-to-index mapping used during tree construction</dd>
+<dd><code>blockIndexes</code> - map from each <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> to its byte offset in the block-data
+                     stream; every block referenced by <code>placements</code> must have an entry</dd>
+<dt>Returns:</dt>
+<dd>the serialised index as a byte array</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/UncheckedIOException.html" title="class or interface in java.io" class="external-link">UncheckedIOException</a></code> - if an I/O error occurs during serialisation</dd>
 </dl>
 </section>
 </li>

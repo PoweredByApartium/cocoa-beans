@@ -75,6 +75,10 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - the concrete <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> type produced by this format's <a href="../SchematicFactory.html" title="interface in net.apartium.cocoabeans.schematic"><code>SchematicFactory</code></a></dd>
+</dl>
+<dl class="notes">
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;T&gt;</code></dd>
 </dl>
@@ -83,6 +87,52 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">CocoaSchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;T&gt;</span></div>
+<div class="block">The primary <a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>SchematicFormat</code></a> implementation for the Cocoa Beans Schematic (CBSC) format.
+
+ <h2>File layout</h2>
+ <pre>
+   [4 bytes]  fingerprint  – ASCII "CBSC" (<a href="#FINGERPRINT"><code>FINGERPRINT</code></a>)
+   [2 bytes]  version      – unsigned 16-bit format version (<a href="#VERSION"><code>VERSION</code></a>)
+   [3 bytes]  header size  – unsigned 24-bit byte count of the header section that follows
+   [header…]              – sequence of typed header entries (see <a href="CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CocoaSchematicFormat.Headers</code></a>)
+   [body…]                – block-data section, index section, and optional body extensions;
+                            each section's absolute offset and compressed size are stored in the
+                            corresponding <code>*_INFO</code> header entry
+ </pre>
+
+ <h2>Header entries</h2>
+ <p>Each entry begins with a 2-byte (unsigned 16-bit) tag from <a href="CocoaSchematicFormat.Headers.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CocoaSchematicFormat.Headers</code></a> followed by a
+ tag-specific payload. The header section ends when all declared bytes have been consumed.
+ Unknown tags are tolerated: their payload is read via a 3-byte length prefix and stored as a
+ raw byte array.</p>
+
+ <h2>Body sections</h2>
+ <ul>
+   <li><b>Block-data section</b> – one serialised <a href="../block/BlockData.html" title="interface in net.apartium.cocoabeans.schematic.block"><code>BlockData</code></a> entry per distinct block
+       type, produced by the active <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a>. Compressed with
+       <code>defaultCompressionEngineForBlocks</code>.</li>
+   <li><b>Index section</b> – spatial index mapping world positions to block-data offsets,
+       produced by the active <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a>. Compressed with
+       <code>defaultCompressionEngineForIndexes</code>.</li>
+   <li><b>Body extensions</b> – optional named blobs attached to the schematic via
+       <a href="BodyExtension.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtension</code></a>. Each extension has its own <code>BODY_EXTENSION</code> header entry
+       and is compressed independently.</li>
+ </ul>
+
+ <h2>Extensibility</h2>
+ <p>Block-data encoders, index encoders, compression engines, and body-extension formats are all
+ registered at construction time or via the <code>register*</code> / <code>setDefault*</code> methods,
+ making the format fully pluggable without subclassing.</p></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a></li>
+<li><a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a></li>
+<li><a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,7 +147,9 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="CocoaSchematicFormat.Headers.html" class="type-name-link" title="class in net.apartium.cocoabeans.schematic.format">CocoaSchematicFormat.Headers</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Tag constants for the typed header entries in a CBSC file.</div>
+</div>
 </div>
 </section>
 </li>
@@ -112,16 +164,24 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><code><a href="#FINGERPRINT" class="member-name-link">FINGERPRINT</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Magic bytes at the start of every CBSC file ("CBSC").</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#FINGERPRINT_SIZE" class="member-name-link">FINGERPRINT_SIZE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Number of bytes occupied by the fingerprint (4).</div>
+</div>
 <div class="col-first even-row-color"><code>static final long</code></div>
 <div class="col-second even-row-color"><code><a href="#HEADER_START_INDEX" class="member-name-link">HEADER_START_INDEX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Absolute byte offset in the output stream at which the header section begins.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
 <div class="col-second odd-row-color"><code><a href="#VERSION" class="member-name-link">VERSION</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Format version written to and expected from every CBSC file (1).</div>
+</div>
 </div>
 </section>
 </li>
@@ -139,7 +199,9 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
  byte&nbsp;defaultCompressionForBlock,
  byte&nbsp;defaultCompressionForIndexes,
  <a href="../SchematicFactory.html" title="interface in net.apartium.cocoabeans.schematic">SchematicFactory</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&nbsp;schematicFactory)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <code>CocoaSchematicFormat</code> with the given encoders and compression settings.</div>
+</div>
 </div>
 </section>
 </li>
@@ -156,47 +218,71 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read</a><wbr>(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Deserialises a CBSC schematic from <code>in</code> and returns an instance of <code>T</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerAllBodyExtensionsFormat(java.util.Map)" class="member-name-link">registerAllBodyExtensionsFormat</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>,<wbr><a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;?&gt;&gt;&nbsp;bodyExtensionFormat)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Registers multiple <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> entries at once.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerBlockEncoder(int,net.apartium.cocoabeans.schematic.format.BlockDataEncoder)" class="member-name-link">registerBlockEncoder</a><wbr>(int&nbsp;id,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;encoder)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Registers a <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> under the given ID.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerBodyExtensionFormat(long,net.apartium.cocoabeans.schematic.format.BodyExtensionFormat)" class="member-name-link">registerBodyExtensionFormat</a><wbr>(long&nbsp;id,
  <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;?&gt;&nbsp;format)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Registers a <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> for the given extension ID.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerCompressionEngine(byte,net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">registerCompressionEngine</a><wbr>(byte&nbsp;id,
  <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Registers a <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression"><code>CompressionEngine</code></a> under the given type byte.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerIndexEncoder(int,net.apartium.cocoabeans.schematic.format.IndexEncoder)" class="member-name-link">registerIndexEncoder</a><wbr>(int&nbsp;id,
  <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a>&nbsp;encoder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Registers an <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> under the given ID.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDefaultCompressionEngineForBlocks(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForBlocks</a><wbr>(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the compression engine used for the block-data body section when writing.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDefaultCompressionEngineForBodyExtensions(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForBodyExtensions</a><wbr>(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the compression engine used for body-extension sections when writing.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDefaultCompressionEngineForIndexes(net.apartium.cocoabeans.schematic.compression.CompressionEngine)" class="member-name-link">setDefaultCompressionEngineForIndexes</a><wbr>(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the compression engine used for the index body section when writing.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPreferBlockEncoder(int,net.apartium.cocoabeans.schematic.format.BlockDataEncoder)" class="member-name-link">setPreferBlockEncoder</a><wbr>(int&nbsp;id,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;encoder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that will be used when writing new schematic files.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPreferIndexEncoder(int,net.apartium.cocoabeans.schematic.format.IndexEncoder)" class="member-name-link">setPreferIndexEncoder</a><wbr>(int&nbsp;id,
  <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a>&nbsp;encoder)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that will be used when writing new schematic files.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write</a><wbr>(<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Serialises <code>schematic</code> to <code>out</code> in the CBSC format.</div>
+</div>
 </div>
 </div>
 </div>
@@ -218,6 +304,7 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="FINGERPRINT">
 <h3>FINGERPRINT</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">FINGERPRINT</span></div>
+<div class="block">Magic bytes at the start of every CBSC file ("CBSC").</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -232,6 +319,7 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="FINGERPRINT_SIZE">
 <h3>FINGERPRINT_SIZE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">FINGERPRINT_SIZE</span></div>
+<div class="block">Number of bytes occupied by the fingerprint (4).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -246,6 +334,7 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="VERSION">
 <h3>VERSION</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">VERSION</span></div>
+<div class="block">Format version written to and expected from every CBSC file (1).</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -260,6 +349,8 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="HEADER_START_INDEX">
 <h3>HEADER_START_INDEX</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">HEADER_START_INDEX</span></div>
+<div class="block">Absolute byte offset in the output stream at which the header section begins.
+ Equals <code>FINGERPRINT_SIZE + 2 (version) + 3 (header length field)</code> = 9L.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -287,6 +378,19 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
  byte&nbsp;defaultCompressionForBlock,
  byte&nbsp;defaultCompressionForIndexes,
  <a href="../SchematicFactory.html" title="interface in net.apartium.cocoabeans.schematic">SchematicFactory</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&nbsp;schematicFactory)</span></div>
+<div class="block">Creates a new <code>CocoaSchematicFormat</code> with the given encoders and compression settings.
+
+ <p>The first entry of each encoder map is used as the preferred encoder for writing unless
+ overridden by <a href="#setPreferBlockEncoder(int,net.apartium.cocoabeans.schematic.format.BlockDataEncoder)"><code>setPreferBlockEncoder(int, net.apartium.cocoabeans.schematic.format.BlockDataEncoder)</code></a> or <a href="#setPreferIndexEncoder(int,net.apartium.cocoabeans.schematic.format.IndexEncoder)"><code>setPreferIndexEncoder(int, net.apartium.cocoabeans.schematic.format.IndexEncoder)</code></a>.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>blockDataEncoderMap</code> - map from encoder ID to <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a></dd>
+<dd><code>indexEncoderMap</code> - map from encoder ID to <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a></dd>
+<dd><code>compressionEngines</code> - set of available <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression"><code>CompressionEngine</code></a> implementations</dd>
+<dd><code>defaultCompressionForBlock</code> - compression-type byte used for the block-data section</dd>
+<dd><code>defaultCompressionForIndexes</code> - compression-type byte used for the index section</dd>
+<dd><code>schematicFactory</code> - factory used to construct <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic"><code>Schematic</code></a> instances on read</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -302,12 +406,23 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>registerBodyExtensionFormat</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerBodyExtensionFormat</span><wbr><span class="parameters">(long&nbsp;id,
  <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;?&gt;&nbsp;format)</span></div>
+<div class="block">Registers a <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> for the given extension ID.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - unique identifier for the body extension</dd>
+<dd><code>format</code> - format used to read and write the extension's payload</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="registerAllBodyExtensionsFormat(java.util.Map)">
 <h3>registerAllBodyExtensionsFormat</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerAllBodyExtensionsFormat</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>,<wbr><a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">BodyExtensionFormat</a>&lt;?&gt;&gt;&nbsp;bodyExtensionFormat)</span></div>
+<div class="block">Registers multiple <a href="BodyExtensionFormat.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BodyExtensionFormat</code></a> entries at once.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>bodyExtensionFormat</code> - map from extension ID to its format</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -315,6 +430,15 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>registerBlockEncoder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerBlockEncoder</span><wbr><span class="parameters">(int&nbsp;id,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;encoder)</span></div>
+<div class="block">Registers a <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> under the given ID.
+
+ <p>The registered encoder can be selected during reading when a file declares this ID in its
+ <a href="CocoaSchematicFormat.Headers.html#BLOCK_DATA_ENCODING"><code>CocoaSchematicFormat.Headers.BLOCK_DATA_ENCODING</code></a> header entry.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - the numeric encoder identifier written to and read from the file header</dd>
+<dd><code>encoder</code> - the encoder implementation to register</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -322,6 +446,15 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>registerIndexEncoder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerIndexEncoder</span><wbr><span class="parameters">(int&nbsp;id,
  <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a>&nbsp;encoder)</span></div>
+<div class="block">Registers an <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> under the given ID.
+
+ <p>The registered encoder can be selected during reading when a file declares this ID in its
+ <a href="CocoaSchematicFormat.Headers.html#INDEX_ENCODING"><code>CocoaSchematicFormat.Headers.INDEX_ENCODING</code></a> header entry.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - the numeric encoder identifier written to and read from the file header</dd>
+<dd><code>encoder</code> - the encoder implementation to register</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -329,6 +462,14 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>setPreferBlockEncoder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPreferBlockEncoder</span><wbr><span class="parameters">(int&nbsp;id,
  <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">BlockDataEncoder</a>&nbsp;encoder)</span></div>
+<div class="block">Sets the <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> that will be used when writing new schematic files.
+
+ <p>Also registers <code>encoder</code> under <code>id</code> so it can be resolved during reads.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - the numeric encoder identifier to write in the file header</dd>
+<dd><code>encoder</code> - the preferred encoder</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -336,6 +477,14 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>setPreferIndexEncoder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPreferIndexEncoder</span><wbr><span class="parameters">(int&nbsp;id,
  <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a>&nbsp;encoder)</span></div>
+<div class="block">Sets the <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> that will be used when writing new schematic files.
+
+ <p>Also registers <code>encoder</code> under <code>id</code> so it can be resolved during reads.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - the numeric encoder identifier to write in the file header</dd>
+<dd><code>encoder</code> - the preferred encoder</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -343,24 +492,45 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3>registerCompressionEngine</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerCompressionEngine</span><wbr><span class="parameters">(byte&nbsp;id,
  <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</span></div>
+<div class="block">Registers a <a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression"><code>CompressionEngine</code></a> under the given type byte.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - the compression-type identifier stored in <a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a></dd>
+<dd><code>engine</code> - the engine implementation to register</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setDefaultCompressionEngineForBlocks(net.apartium.cocoabeans.schematic.compression.CompressionEngine)">
 <h3>setDefaultCompressionEngineForBlocks</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDefaultCompressionEngineForBlocks</span><wbr><span class="parameters">(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</span></div>
+<div class="block">Sets the compression engine used for the block-data body section when writing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>engine</code> - the engine to use</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setDefaultCompressionEngineForIndexes(net.apartium.cocoabeans.schematic.compression.CompressionEngine)">
 <h3>setDefaultCompressionEngineForIndexes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDefaultCompressionEngineForIndexes</span><wbr><span class="parameters">(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</span></div>
+<div class="block">Sets the compression engine used for the index body section when writing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>engine</code> - the engine to use</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setDefaultCompressionEngineForBodyExtensions(net.apartium.cocoabeans.schematic.compression.CompressionEngine)">
 <h3>setDefaultCompressionEngineForBodyExtensions</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDefaultCompressionEngineForBodyExtensions</span><wbr><span class="parameters">(<a href="../compression/CompressionEngine.html" title="interface in net.apartium.cocoabeans.schematic.compression">CompressionEngine</a>&nbsp;engine)</span></div>
+<div class="block">Sets the compression engine used for body-extension sections when writing.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>engine</code> - the engine to use</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -368,9 +538,20 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <h3 id="write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</span></div>
+<div class="block">Serialises <code>schematic</code> to <code>out</code> in the CBSC format.
+
+ <p>The method writes the fingerprint and version, generates the header section (with
+ placeholder entries for block and index compression info), encodes and compresses the
+ block-data and index body sections, back-patches the header placeholders with the actual
+ <a href="CompressionBlockInfo.html" title="class in net.apartium.cocoabeans.schematic.format"><code>CompressionBlockInfo</code></a> values, and finally writes any body extensions.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="SchematicFormat.html#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>schematic</code> - the schematic to serialise</dd>
+<dd><code>out</code> - the output stream to write to; must support seeking for back-patching</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/UncheckedIOException.html" title="class or interface in java.io" class="external-link">UncheckedIOException</a></code> - if an I/O error occurs</dd>
 </dl>
 </section>
 </li>
@@ -378,9 +559,24 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <section class="detail" id="read(net.apartium.cocoabeans.seekable.SeekableInputStream)">
 <h3>read</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a></span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</span></div>
+<div class="block">Deserialises a CBSC schematic from <code>in</code> and returns an instance of <code>T</code>.
+
+ <p>The method validates the fingerprint and version, parses the header section, then reads
+ and decompresses the block-data and index body sections. Each section's integrity is
+ verified against the stored uncompressed size and CRC-32 checksum. The index is decoded via
+ the <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>IndexEncoder</code></a> declared in the header, which in turn uses the
+ <a href="BlockDataEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format"><code>BlockDataEncoder</code></a> to reconstruct individual block states. Body extensions are decoded
+ last. The resulting data is passed to the configured <a href="../SchematicFactory.html" title="interface in net.apartium.cocoabeans.schematic"><code>SchematicFactory</code></a> to produce the
+ final schematic object.</p></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="SchematicFormat.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)">read</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>in</code> - the seekable stream positioned at the start of the CBSC file</dd>
+<dt>Returns:</dt>
+<dd>the deserialised schematic</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/UncheckedIOException.html" title="class or interface in java.io" class="external-link">UncheckedIOException</a></code> - if any I/O, integrity, or version check fails</dd>
 </dl>
 </section>
 </li>
