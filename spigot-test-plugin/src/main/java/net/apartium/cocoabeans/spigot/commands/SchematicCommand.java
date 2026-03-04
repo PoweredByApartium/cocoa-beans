@@ -34,10 +34,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
@@ -56,6 +53,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -361,10 +359,12 @@ public class SchematicCommand implements CommandNode, Listener {
 
         try {
             this.format.write(schematic, SeekableOutputStream.open(file.toPath()));
-        } catch (IOException e) {
+        } catch (UncheckedIOException | IOException e) {
             player.sendMessage("§cError opening schematic file " + file.getName());
+            e.printStackTrace();
             return;
         }
+
         player.sendMessage("§aSchematic has been saved!");
     }
 

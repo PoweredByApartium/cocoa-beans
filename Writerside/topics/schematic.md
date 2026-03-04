@@ -192,27 +192,7 @@ Transform block data before placement via `setMapper`:
 
 Execute code after each block is placed:
 
-```java
-SpigotPasteOperation operation = schematic.paste(origin);
-
-// Spawn particles at every placed block
-operation.addPostPlaceAction((block, blockData) ->
-    block.getWorld().spawnParticle(
-        Particle.CLOUD,
-        block.getLocation().add(0.5, 0.5, 0.5),
-        5
-    )
-);
-
-// Log each placement
-operation.addPostPlaceAction((block, blockData) ->
-    plugin.getLogger().info(
-        "Placed " + blockData.type().key() + " at " + block.getLocation()
-    )
-);
-
-operation.performAll();
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="453-471"/>
 
 Multiple actions are executed in the order they were registered.
 

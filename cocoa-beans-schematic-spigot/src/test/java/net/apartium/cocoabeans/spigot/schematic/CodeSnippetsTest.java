@@ -30,6 +30,7 @@ import net.apartium.cocoabeans.spigot.schematic.prop.format.StairsPropFormat;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -441,6 +442,33 @@ class CodeSnippetsTest extends SpigotTestBase {
 
         operation.performAll();
 
+    }
+
+    void postplacement() {
+        SpigotSchematic schematic = createSchematic();
+        Player player = getPlayer();
+
+        Location origin = player.getLocation();
+
+        SpigotPasteOperation operation = schematic.paste(origin);
+
+        // Spawn particles at every placed block
+        operation.addPostPlaceAction((block, blockData) -> block.getWorld().spawnParticle(
+                Particle.CLOUD,
+                block.getLocation().add(0.5, 0.5, 0.5),
+                5,
+                0.25, 0.25, 0.25,
+                0.0
+        ));
+
+        // Log each placement
+        operation.addPostPlaceAction((block, blockData) ->
+                plugin.getLogger().info(
+                        "Placed " + blockData.type().key() + " at " + block.getLocation()
+                )
+        );
+
+        operation.performAll();
     }
 
     private void delete(File file) {
