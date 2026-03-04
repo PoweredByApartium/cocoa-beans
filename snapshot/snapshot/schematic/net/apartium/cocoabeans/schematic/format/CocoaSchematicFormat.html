@@ -68,7 +68,7 @@ loadScripts(document, 'script');</script>
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">net.apartium.cocoabeans.schematic.format</a></div>
-<h1 title="Class CocoaSchematicFormat" class="title">Class CocoaSchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;T&gt;&gt;</h1>
+<h1 title="Class CocoaSchematicFormat" class="title">Class CocoaSchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat&lt;T&gt;</div>
@@ -80,7 +80,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.46")
-</span><span class="modifiers">public class </span><span class="element-name type-name-label">CocoaSchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;T&gt;&gt;</span>
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">CocoaSchematicFormat&lt;T extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;T&gt;</span></div>
 </section>
@@ -154,7 +154,7 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(net.apartium.cocoabeans.seekable.SeekableInputStream)" class="member-name-link">read</a><wbr>(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
@@ -194,7 +194,7 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
  <a href="IndexEncoder.html" title="interface in net.apartium.cocoabeans.schematic.format">IndexEncoder</a>&nbsp;encoder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write</a><wbr>(<a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&nbsp;schematic,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)" class="member-name-link">write</a><wbr>(<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
@@ -364,23 +364,23 @@ implements <a href="SchematicFormat.html" title="interface in net.apartium.cocoa
 </section>
 </li>
 <li>
-<section class="detail" id="write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&nbsp;schematic,
+<section class="detail" id="write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)">
+<h3 id="write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&nbsp;schematic,
  net.apartium.cocoabeans.seekable.SeekableOutputStream&nbsp;out)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="SchematicFormat.html#write(net.apartium.cocoabeans.schematic.Schematic,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&gt;</code></dd>
+<dd><code><a href="SchematicFormat.html#write(T,net.apartium.cocoabeans.seekable.SeekableOutputStream)">write</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="read(net.apartium.cocoabeans.seekable.SeekableInputStream)">
 <h3>read</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;</span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a></span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(net.apartium.cocoabeans.seekable.SeekableInputStream&nbsp;in)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="SchematicFormat.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)">read</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a>&gt;&gt;</code></dd>
+<dd><code><a href="SchematicFormat.html#read(net.apartium.cocoabeans.seekable.SeekableInputStream)">read</a></code>&nbsp;in interface&nbsp;<code><a href="SchematicFormat.html" title="interface in net.apartium.cocoabeans.schematic.format">SchematicFormat</a>&lt;<a href="CocoaSchematicFormat.html" title="type parameter in CocoaSchematicFormat">T</a> extends <a href="../Schematic.html" title="interface in net.apartium.cocoabeans.schematic">Schematic</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
