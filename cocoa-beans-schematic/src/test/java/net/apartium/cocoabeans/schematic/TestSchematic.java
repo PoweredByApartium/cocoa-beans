@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.schematic.format.BodyExtension;
-import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
@@ -13,7 +12,6 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 @NullMarked
 public class TestSchematic extends AbstractSchematic {

@@ -262,7 +262,7 @@ class CodeSnippetsTest extends SpigotTestBase {
     }
 
     @AfterEach
-    void cleanUp() throws IOException {
+    void cleanUp() {
         if (plugin.getDataFolder().exists())
             delete(plugin.getDataFolder());
     }
