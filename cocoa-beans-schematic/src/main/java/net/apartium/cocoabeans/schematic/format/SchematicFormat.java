@@ -6,10 +6,10 @@ import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("0.0.46")
-public interface SchematicFormat<T extends Schematic<T>> {
+public interface SchematicFormat<T extends Schematic> {
 
-    void write(Schematic<T> schematic, SeekableOutputStream out);
+    void write(T schematic, SeekableOutputStream out);
 
-    Schematic<T> read(SeekableInputStream in);
+    T read(SeekableInputStream in);
 
 }

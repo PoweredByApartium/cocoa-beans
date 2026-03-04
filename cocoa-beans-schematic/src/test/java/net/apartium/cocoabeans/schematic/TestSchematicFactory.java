@@ -18,7 +18,7 @@ import java.util.Map;
 public class TestSchematicFactory implements SchematicFactory<TestSchematic> {
 
     @Override
-    public SchematicBuilder<TestSchematic> createSchematic() {
+    public TestSchematicBuilder createSchematic() {
         return new TestSchematic(
                 new MinecraftPlatform(
                         MinecraftVersion.V1_8_9, "test", "0.0.1"

@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 @NullMarked
-public class TestSchematic extends AbstractSchematic<TestSchematic> {
+public class TestSchematic extends AbstractSchematic {
 
     private final Map<Long, BodyExtension<?>> bodyExtensionMap;
 
@@ -35,22 +35,8 @@ public class TestSchematic extends AbstractSchematic<TestSchematic> {
     }
 
     @Override
-    public SchematicBuilder<TestSchematic> toBuilder() {
-        return builder(this);
-    }
-
-    private static SchematicBuilder<TestSchematic> builder(TestSchematic schematic) {
-        return new AbstractSchematicBuilder<>(schematic) {
-            @Override
-            public SchematicBuilder<TestSchematic> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block) {
-                throw new IllegalStateException("Cannot modify metadata of a test schematic");
-            }
-
-            @Override
-            public TestSchematic build() {
-                return new TestSchematic(platform, created, metadata == null ? SchematicMetadata.of() : metadata, offset, size, axes, new BlockChunkIterator(blockChunk));
-            }
-        };
+    public TestSchematicBuilder toBuilder() {
+        return new TestSchematicBuilder(this);
     }
 
 }

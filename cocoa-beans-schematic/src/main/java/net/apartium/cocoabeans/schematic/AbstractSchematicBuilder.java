@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @ApiStatus.Internal
 @NullMarked
-public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implements SchematicBuilder<T> {
+public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilder<T>> implements SchematicBuilder {
 
     protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
     protected Instant created = Instant.now();
@@ -42,7 +42,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         this.size = new AreaSize(0, 0, 0);
     }
 
-    protected AbstractSchematicBuilder(Schematic<?> schematic) {
+    protected AbstractSchematicBuilder(Schematic schematic) {
         this.platform = schematic.originPlatform();
         this.created = schematic.created();
         this.metadata = schematic.metadata();
@@ -55,27 +55,27 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
     }
 
     @Override
-    public SchematicBuilder<T> platform(MinecraftPlatform platform) {
+    public T platform(MinecraftPlatform platform) {
         this.platform = platform;
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> created(Instant created) {
+    public T created(Instant created) {
         this.created = created;
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> metadata(SchematicMetadata metadata) {
+    public T metadata(SchematicMetadata metadata) {
         this.metadata = metadata;
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> size(AreaSize size) {
+    public T size(AreaSize size) {
         this.size = size;
-        return this;
+        return self();
     }
 
 
@@ -85,7 +85,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
     }
 
     @Override
-    public SchematicBuilder<T> rotate(int degrees) {
+    public T rotate(int degrees) {
         MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
@@ -168,11 +168,11 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         }
 
         this.blockChunk = newChunk;
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> flip(@NonNls Axis axis) {
+    public T flip(@NonNls Axis axis) {
         MutableBlockChunk newChunk = new MutableBlockChunkImpl(
                 blockChunk.getAxisOrder(),
                 blockChunk.getScaler(),
@@ -207,7 +207,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         }
 
         this.blockChunk = newChunk;
-        return this;
+        return self();
     }
 
     private Position flipPosition(@NonNls Axis axis, Position position, Position from) {
@@ -220,13 +220,13 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
     }
 
     @Override
-    public SchematicBuilder<T> translate(Position offset) {
+    public T translate(Position offset) {
         this.offset = offset;
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> translate(AxisOrder axisOrder) {
+    public T translate(AxisOrder axisOrder) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
         this.axes = axisOrder;
         this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
@@ -236,11 +236,11 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
             rescaleChunkIfNeeded(placement.position());
             this.blockChunk.setBlock(placement);
         }
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> shift(Axis axis, int amount) {
+    public T shift(Axis axis, int amount) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
         this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
         while (iterator.hasNext()) {
@@ -263,11 +263,11 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
             this.blockChunk.setBlock(placement);
         }
 
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> setBlock(BlockPlacement placement) {
+    public T setBlock(BlockPlacement placement) {
         Position pos = placement.position();
         this.setBlock(
                 (int) pos.getX(),
@@ -276,11 +276,11 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
                 placement.block()
         );
 
-        return this;
+        return self();
     }
 
     @Override
-    public SchematicBuilder<T> setBlock(int x, int y, int z, BlockData data) {
+    public T setBlock(int x, int y, int z, BlockData data) {
         if (x < 0 || y < 0 || z < 0)
             throw new IllegalArgumentException("coordinate out of range");
 
@@ -293,7 +293,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
                 data
         ));
 
-        return this;
+        return self();
     }
 
     protected void rescaleSize() {
@@ -322,7 +322,7 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
     }
 
     @Override
-    public SchematicBuilder<T> removeBlock(int x, int y, int z) {
+    public T removeBlock(int x, int y, int z) {
         Position pos = new Position(x, y, z);
         blockChunk.removeBlock(pos);
 
@@ -337,7 +337,9 @@ public abstract class AbstractSchematicBuilder<T extends Schematic<T>> implement
         }
 
         this.rescaleSize();
-        return this;
+        return self();
     }
+    
+    protected abstract T self();
 
 }

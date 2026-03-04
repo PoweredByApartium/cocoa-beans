@@ -140,6 +140,10 @@ public class BlockChunkIndexEncoder implements IndexEncoder {
         indexesOut.write((byte) layers);
 
         ChunkPointer rootPointer = new ChunkPointer(blockChunk);
+        if (rootPointer.getChunk().getMask() == 0L) {
+            indexesOut.write(writeU64(0L));
+            return;
+        }
 
         pointToParent.put(rootPointer, new Entry<>(rootPointer, 0));
 

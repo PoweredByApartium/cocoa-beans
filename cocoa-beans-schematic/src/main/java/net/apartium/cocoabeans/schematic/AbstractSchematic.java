@@ -22,7 +22,7 @@ import java.util.Set;
  */
 @ApiStatus.Internal
 @NullMarked
-public abstract class AbstractSchematic<T extends Schematic<T>> implements Schematic<T> {
+public abstract class AbstractSchematic implements Schematic {
 
     protected final MinecraftPlatform platform;
     protected final Instant created;
@@ -54,7 +54,7 @@ public abstract class AbstractSchematic<T extends Schematic<T>> implements Schem
 
     }
 
-    protected AbstractSchematic(Schematic<?> schematic) {
+    protected AbstractSchematic(Schematic schematic) {
         this(
                 schematic.originPlatform(),
                 schematic.created(),

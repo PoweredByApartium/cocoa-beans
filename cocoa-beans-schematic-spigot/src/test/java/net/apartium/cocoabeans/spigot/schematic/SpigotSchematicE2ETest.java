@@ -117,9 +117,9 @@ class SpigotSchematicE2ETest extends SpigotTestBase {
     void loadFromFileAndPasteToWorld() {
         Path path = null;
         try {
-            URL resource = getClass().getClassLoader().getResource("house_v1.cbschm");
+            URL resource = getClass().getClassLoader().getResource("house_v1.cbschem");
             if (resource == null)
-                fail("Could not find resource: house_v1.cbschm");
+                fail("Could not find resource: house_v1.cbschem");
 
             path = Path.of(resource.toURI());
         } catch (URISyntaxException e) {

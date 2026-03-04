@@ -23,18 +23,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractSchematicBuilderTest {
 
-    private static final class TestBuilder extends AbstractSchematicBuilder<DummySchematic> {
+    private static final class TestBuilder extends AbstractSchematicBuilder<TestBuilder> {
 
         TestBuilder() {
             super();
         }
 
-        TestBuilder(Schematic<?> schematic) {
+        TestBuilder(Schematic schematic) {
             super(schematic);
         }
 
         @Override
-        public @NonNull SchematicBuilder<DummySchematic> metadata(@NonNull Function<SchematicMetadataBuilder, SchematicMetadata> block) {
+        protected TestBuilder self() {
+            return this;
+        }
+
+        @Override
+        public @NonNull TestBuilder metadata(@NonNull Function<SchematicMetadataBuilder, SchematicMetadata> block) {
             throw new UnsupportedOperationException("Not needed for unit tests");
         }
 
@@ -62,7 +67,7 @@ class AbstractSchematicBuilderTest {
         }
     }
 
-    private static final class DummySchematic implements Schematic<DummySchematic> {
+    private static final class DummySchematic implements Schematic {
         @Override public @NonNull MinecraftPlatform originPlatform() { throw new UnsupportedOperationException(); }
         @Override public @NonNull Instant created() { throw new UnsupportedOperationException(); }
         @Override public @NonNull SchematicMetadata metadata() { throw new UnsupportedOperationException(); }
@@ -73,7 +78,7 @@ class AbstractSchematicBuilderTest {
         @Override public @NonNull BlockIterator blocksIterator() { throw new UnsupportedOperationException(); }
         @Override public @NonNull BlockIterator sortedIterator(@NonNull AxisOrder axisOrder) { throw new UnsupportedOperationException(); }
         @Override public @NonNull BlockIterator reverseIterator(@NonNull AxisOrder axisOrder, @NonNull Set<Axis> reverseAxis) { throw new UnsupportedOperationException(); }
-        @Override public @NonNull SchematicBuilder<DummySchematic> toBuilder() { throw new UnsupportedOperationException(); }
+        @Override public @NonNull SchematicBuilder toBuilder() { throw new UnsupportedOperationException(); }
 
         @Override
         public @Nullable BlockData getBlockData(int x, int y, int z) {

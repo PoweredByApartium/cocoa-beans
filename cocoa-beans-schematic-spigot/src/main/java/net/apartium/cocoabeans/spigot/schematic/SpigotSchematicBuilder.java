@@ -29,7 +29,7 @@ import java.util.function.Function;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchematic> {
+public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchematicBuilder> {
 
     /**
      * Constructs a new empty SpigotSchematicBuilder.
@@ -43,7 +43,7 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
      *
      * @param schematic the schematic to initialize from
      */
-    public SpigotSchematicBuilder(Schematic<?> schematic) {
+    public SpigotSchematicBuilder(Schematic schematic) {
         super(schematic);
     }
 
@@ -54,7 +54,7 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
      * @return this builder instance
      */
     @Override
-    public SchematicBuilder<SpigotSchematic> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block) {
+    public SpigotSchematicBuilder metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block) {
         return metadata(block.apply(SchematicMetadata.builder()));
     }
 
@@ -75,4 +75,10 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
                 new BlockChunkIterator(blockChunk)
         );
     }
+
+    @Override
+    protected SpigotSchematicBuilder self() {
+        return this;
+    }
+
 }

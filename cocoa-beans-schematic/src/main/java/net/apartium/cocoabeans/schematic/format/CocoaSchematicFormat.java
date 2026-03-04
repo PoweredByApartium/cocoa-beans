@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static net.apartium.cocoabeans.utils.BufferUtils.*;
 
 @ApiStatus.AvailableSince("0.0.46")
-public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFormat<T> {
+public class CocoaSchematicFormat<T extends Schematic> implements SchematicFormat<T> {
 
     public static final String FINGERPRINT = "CBSC";
     public static final int FINGERPRINT_SIZE = 4;
@@ -150,7 +150,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
     }
 
     @Override
-    public void write(Schematic<T> schematic, SeekableOutputStream out) {
+    public void write(T schematic, SeekableOutputStream out) {
         try {
             for (int i = 0; i < FINGERPRINT_SIZE; i++)
                 out.write(FINGERPRINT.charAt(i));
@@ -259,7 +259,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
         out.write(writeString(title));
     }
 
-    private HeaderResult headers(Schematic<T> schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
+    private HeaderResult headers(T schematic, Map.Entry<Integer, BlockDataEncoder> blockEncoder, Map.Entry<Integer, IndexEncoder> indexEncoder) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bOut);
 
@@ -370,7 +370,7 @@ public class CocoaSchematicFormat<T extends Schematic<T>> implements SchematicFo
     }
 
     @Override
-    public Schematic<T> read(SeekableInputStream in) {
+    public T read(SeekableInputStream in) {
         try {
             DataInputStream din = new DataInputStream(in);
 

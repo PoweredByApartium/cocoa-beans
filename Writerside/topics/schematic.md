@@ -50,61 +50,21 @@ dependencies {
 </tabs>
 
 ### Quick Start {id="quick-start"}
-<code-block lang="java" src="schematic-spigot/SchematicSnippetsTest.java" include-symbol="quickStart"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="quickStart"/>
 
 ## Building Schematics
 
 ### Creating from Scratch {id="create-scratch"}
 
 Build schematics programmatically block by block using `SpigotSchematicBuilder`:
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="createSchematicFromScratch"/>
 
-```java
-BlockData stone = new GenericBlockData(new NamespacedKey("minecraft", "stone"), Map.of());
-BlockData planks = new GenericBlockData(new NamespacedKey("minecraft", "oak_planks"), Map.of());
-
-SpigotSchematic schematic = new SpigotSchematicBuilder()
-    .metadata(meta -> meta
-        .title("My Structure")
-        .author("PlayerName")
-        .build())
-    .size(new AreaSize(3, 2, 3))
-    // floor
-    .setBlock(0, 0, 0, stone).setBlock(1, 0, 0, stone).setBlock(2, 0, 0, stone)
-    .setBlock(0, 0, 1, stone).setBlock(1, 0, 1, stone).setBlock(2, 0, 1, stone)
-    .setBlock(0, 0, 2, stone).setBlock(1, 0, 2, stone).setBlock(2, 0, 2, stone)
-    // walls (perimeter of y=1)
-    .setBlock(0, 1, 0, planks).setBlock(1, 1, 0, planks).setBlock(2, 1, 0, planks)
-    .setBlock(0, 1, 1, planks)                           .setBlock(2, 1, 1, planks)
-    .setBlock(0, 1, 2, planks).setBlock(1, 1, 2, planks).setBlock(2, 1, 2, planks)
-    .build();
-```
 
 ### Capturing from the World {id="capture-world"}
 
 Extract a region from a live Bukkit world using `SpigotSchematicHelper`:
 
-```java
-// Positions of two opposite corners of the region
-Position pos0 = Locations.toPosition(player.getLocation().add( 10,  5,  10));
-Position pos1 = Locations.toPosition(player.getLocation().add(-10, -5, -10));
-
-SpigotSchematic schematic = SpigotSchematicHelper.load(
-    "my-house",                             // title
-    player.getName(),                        // author
-    Locations.toPosition(player.getLocation()).floor(), // paste origin offset
-    player.getWorld(),
-    pos0,
-    pos1,
-    SpigotSchematicPlacer.getInstance()
-);
-
-if (schematic == null) {
-    player.sendMessage("Failed to capture schematic!");
-    return;
-}
-
-player.sendMessage("Captured " + schematic.metadata().title() + "!");
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="captureFromWorld"/>
 
 > Blocks that are `AIR` are skipped automatically during capture.
 
@@ -131,77 +91,37 @@ Available transformations:
 
 ### Setting Up the Format {id="format-setup"}
 
-`CocoaSchematicFormat` handles reading and writing `.cbschem` files. Create one instance and reuse it:
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="157-178"/>
 
-```java
-CocoaSchematicFormat<SpigotSchematic> format = new CocoaSchematicFormat<>(
-    Map.of(
-        SimpleBlockDataEncoder.ID, new SimpleBlockDataEncoder(Map.of(
-            // Register prop formats for the block properties you want to persist.
-            // For basic blocks (stone, planks, etc.) this can be left empty:
-            // Map.of()
-            BlockProp.WATERLOGGED, new BooleanPropFormat(WaterloggedProp::new),
-            BlockProp.DIRECTIONAL,  new BlockFacePropFormat(DirectionalFaceProp::new),
-            BlockProp.ORIENTABLE_AXIS, OrientableAxisPropFormat.INSTANCE,
-            BlockProp.OPENABLE_OPEN, new BooleanPropFormat(OpenableOpenProp::new),
-            BlockProp.POWERABLE_POWERED, new BooleanPropFormat(PowerablePoweredProp::new),
-            BlockProp.SLAB_TYPE, SlabTypePropFormat.INSTANCE,
-            BlockProp.STAIRS_SHAPE, StairsShapePropFormat.INSTANCE
-            // Add more as needed...
-        ))
-    ),
-    Map.of(BlockChunkIndexEncoder.ID, new BlockChunkIndexEncoder()),
-    Set.of(CompressionEngine.raw(), CompressionEngine.gzip()),
-    CompressionType.GZIP.getId(),   // compression for block types
-    CompressionType.GZIP.getId(),   // compression for block index
-    new SpigotSchematicFactory()
-);
-```
+`CocoaSchematicFormat` handles reading and writing `.cbschem` files. Create one instance and reuse it:
 
 > For simple structures that use only basic blocks without block states (e.g. stone, dirt, planks),
 > pass `Map.of()` as the prop format map.
 
 ### Saving to a File {id="save-file"}
 
-```java
-Path path = Path.of("plugins/MyPlugin/schematics/house.cbschem");
-Files.createDirectories(path.getParent());
-
-try (SeekableOutputStream out = SeekableOutputStream.open(path)) {
-    format.write(schematic, out);
-}
-```
+<tabs>
+    <tab title="saveToFile()">
+        <code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="saveToFile"/>
+    </tab>
+    <tab title="getSchematicDirectory()">
+        <code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="getSchematicDirectory"/>
+    </tab>
+</tabs>
 
 ### Saving to Bytes (In-Memory) {id="save-bytes"}
 
 Useful for caching, network transfer, or database storage:
 
-```java
-ByteArraySeekableChannel channel = new ByteArraySeekableChannel();
-format.write(schematic, new SeekableOutputStream(channel));
-
-byte[] bytes = channel.toByteArray();  // hand off to wherever you need them
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="saveToBytes"/>
 
 ### Loading from a File {id="load-file"}
 
-```java
-Path path = Path.of("plugins/MyPlugin/schematics/house.cbschem");
-
-try (SeekableInputStream in = SeekableInputStream.open(path)) {
-    SpigotSchematic schematic = (SpigotSchematic) format.read(in);
-    // schematic is ready to use
-}
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="loadFromFile"/>
 
 ### Loading from Bytes {id="load-bytes"}
 
-```java
-byte[] bytes = // ... from database / network / cache
-
-SeekableInputStream in = new SeekableInputStream(ByteArraySeekableChannel.of(bytes));
-SpigotSchematic schematic = (SpigotSchematic) format.read(in);
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="loadFromBytes"/>
 
 ### Full Round-Trip Example {id="round-trip"}
 

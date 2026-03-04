@@ -17,67 +17,66 @@ import java.util.function.Function;
  * Schematic builder
  * @see Schematic
  * @see SchematicFactory#createSchematic()
- * @param <T>
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface SchematicBuilder<T extends Schematic<T>> {
+public interface SchematicBuilder {
 
     /**
      * Specifies a schematic platform
      * @param platform platform
      * @return this builder instance
      */
-    SchematicBuilder<T> platform(MinecraftPlatform platform);
+    SchematicBuilder platform(MinecraftPlatform platform);
 
     /**
      * Specifies schematic creation date
      * @param created creation date
      * @return this builder instance
      */
-    SchematicBuilder<T> created(Instant created);
+    SchematicBuilder created(Instant created);
 
     /**
      * Specifies metadata
      * @param metadata metadata
      * @return this builder instance
      */
-    SchematicBuilder<T> metadata(SchematicMetadata metadata);
+    SchematicBuilder metadata(SchematicMetadata metadata);
 
     /**
      * Specifies metadata
      * @param block metadata construction block
      * @return this builder instance
      */
-    SchematicBuilder<T> metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block);
+    SchematicBuilder metadata(Function<SchematicMetadataBuilder, SchematicMetadata> block);
 
     /**
      * Specifies schematic size
      * @param size schematic size
      * @return this builder instance
      */
-    SchematicBuilder<T> size(AreaSize size);
+    SchematicBuilder size(AreaSize size);
 
     /**
      * Rotate the existing schematic content
      * @param degrees degrees to rotate by
      * @return this builder instance
      */
-    SchematicBuilder<T> rotate(int degrees);
+    SchematicBuilder rotate(int degrees);
 
     /**
      * Flip the existing schematic content
      * @param axis axis to rotate on
      * @return this builder instance
      */
-    SchematicBuilder<T> flip(Axis axis);
+    SchematicBuilder flip(Axis axis);
 
     /**
      * Translate the schematic offset from the pasting point of the schematic
      * @param offset offset
      * @return this builder instance
      */
-    SchematicBuilder<T> translate(Position offset);
+    SchematicBuilder translate(Position offset);
 
     /**
      * Translate the schematic axis order, reordering the schematic blocks in memory and file.
@@ -85,7 +84,7 @@ public interface SchematicBuilder<T extends Schematic<T>> {
      * @param axisOrder axisOrder
      * @return this builder instance
      */
-    SchematicBuilder<T> translate(AxisOrder axisOrder);
+    SchematicBuilder translate(AxisOrder axisOrder);
 
     /**
      * Move all contents of the schematic on a specific axis
@@ -93,14 +92,14 @@ public interface SchematicBuilder<T extends Schematic<T>> {
      * @param amount amount to move by
      * @return this builder instance
      */
-    SchematicBuilder<T> shift(Axis axis, int amount);
+    SchematicBuilder shift(Axis axis, int amount);
 
     /**
      * Set a block on the schematic
      * @param placement block data
      * @return this builder instance
      */
-    SchematicBuilder<T> setBlock(BlockPlacement placement);
+    SchematicBuilder setBlock(BlockPlacement placement);
 
     /**
      * Set a block on the schematic
@@ -110,7 +109,7 @@ public interface SchematicBuilder<T extends Schematic<T>> {
      * @param data block data
      * @return this builder instance
      */
-    SchematicBuilder<T> setBlock(int x, int y, int z, BlockData data);
+    SchematicBuilder setBlock(int x, int y, int z, BlockData data);
 
     /**
      * Remove a block from the schematic
@@ -119,12 +118,12 @@ public interface SchematicBuilder<T extends Schematic<T>> {
      * @param z block z
      * @return this builder instance
      */
-    SchematicBuilder<T> removeBlock(int x, int y, int z);
+    SchematicBuilder removeBlock(int x, int y, int z);
 
     /**
-     * Build a new instance of schematic with this builder's data
+     * Build a new instance of a schematic with this builder's data
      * @return a new schematic instance
      */
-    T build();
+    Schematic build();
 
 }

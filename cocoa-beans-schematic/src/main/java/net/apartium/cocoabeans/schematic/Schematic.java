@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface Schematic<T extends Schematic<T>> {
+public interface Schematic {
 
     /**
      * Platform the schematic was created on
@@ -100,6 +100,6 @@ public interface Schematic<T extends Schematic<T>> {
      * Creates a builder with the existing values of this schematic
      * @return a new builder instance
      */
-    SchematicBuilder<T> toBuilder();
+    SchematicBuilder toBuilder();
 
 }

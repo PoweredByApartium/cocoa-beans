@@ -38,7 +38,7 @@ class SpigotSchematicFactoryTest {
 
     @Test
     void createSchematic_returnsSpigotSchematicBuilder() {
-        SchematicBuilder<SpigotSchematic> builder = new SpigotSchematicFactory().createSchematic();
+        SpigotSchematicBuilder builder = new SpigotSchematicFactory().createSchematic();
         assertInstanceOf(SpigotSchematicBuilder.class, builder);
     }
 

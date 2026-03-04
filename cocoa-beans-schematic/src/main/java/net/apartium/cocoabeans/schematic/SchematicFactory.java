@@ -18,13 +18,13 @@ import java.util.Map;
  */
 @NullMarked
 @ApiStatus.AvailableSince("0.0.46")
-public interface SchematicFactory<S extends Schematic<S>> {
+public interface SchematicFactory<S extends Schematic> {
 
     /**
      * Creates an empty schematic builder
      * @return a new builder instance
      */
-    SchematicBuilder<S> createSchematic();
+    SchematicBuilder createSchematic();
 
     /**
      * Creates a schematic with specified values
