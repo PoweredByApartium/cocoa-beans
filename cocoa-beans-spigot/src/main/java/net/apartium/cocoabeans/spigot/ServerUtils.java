@@ -13,13 +13,11 @@ package net.apartium.cocoabeans.spigot;
 import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

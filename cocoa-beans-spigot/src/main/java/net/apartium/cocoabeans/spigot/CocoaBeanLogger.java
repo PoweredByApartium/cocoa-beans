@@ -25,4 +25,7 @@ public class CocoaBeanLogger {
     public static Logger getLogger() {
         return logger;
     }
+
+    private CocoaBeanLogger() {}
+
 }
