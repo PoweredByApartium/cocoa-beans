@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import net.apartium.cocoabeans.schematic.PasteResult;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
@@ -15,6 +16,7 @@ import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 import net.apartium.cocoabeans.spigot.Locations;
 import net.apartium.cocoabeans.spigot.SpigotTestBase;
 import net.apartium.cocoabeans.spigot.schematic.prop.DirectionalFaceProp;
@@ -29,7 +31,9 @@ import net.apartium.cocoabeans.structs.NamespacedKey;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -93,8 +97,8 @@ class CodeSnippetsTest extends SpigotTestBase {
             world.getBlockAt(x, 65, 0).setType(Material.OAK_PLANKS);
             world.getBlockAt(x, 65, 2).setType(Material.OAK_PLANKS);
         }
-        world.getBlockAt(0, 64, 1).setType(Material.OAK_PLANKS);
-        world.getBlockAt(2, 64, 1).setType(Material.OAK_PLANKS);
+        world.getBlockAt(0, 65, 1).setType(Material.OAK_PLANKS);
+        world.getBlockAt(2, 65, 1).setType(Material.OAK_PLANKS);
     }
 
 
@@ -246,6 +250,197 @@ class CodeSnippetsTest extends SpigotTestBase {
 
         assertNotNull(schematic);
         assertEquals("my-schematic", schematic.metadata().title());
+    }
+
+    private void assertHouseInWorld(Location offset) {
+        World world = offset.getWorld();
+        for (int x = 0; x <= 2; x++) {
+            for (int z = 0; z <= 2; z++) {
+                Block block = world.getBlockAt(
+                        offset.getBlockX() + x,
+                        offset.getBlockY(),
+                        offset.getBlockZ() + z
+                );
+
+                assertEquals(Material.STONE, block.getType());
+            }
+
+            Block block = world.getBlockAt(
+                    offset.getBlockX() + x,
+                    offset.getBlockY() + 1,
+                    offset.getBlockZ()
+            );
+
+            assertEquals(Material.OAK_PLANKS, block.getType());
+
+            block = world.getBlockAt(
+                    offset.getBlockX() + x,
+                    offset.getBlockY() + 1,
+                    offset.getBlockZ() + 2
+            );
+
+            assertEquals(Material.OAK_PLANKS, block.getType());
+        }
+
+
+        Block block = world.getBlockAt(
+                offset.getBlockX(),
+                offset.getBlockY() + 1,
+                offset.getBlockZ() + 1
+        );
+
+        assertEquals(Material.OAK_PLANKS, block.getType());
+
+        block = world.getBlockAt(
+                offset.getBlockX() + 2,
+                offset.getBlockY() + 1,
+                offset.getBlockZ() + 1
+        );
+
+        assertEquals(Material.OAK_PLANKS, block.getType());
+    }
+
+    @Test
+    void roundTrip() throws IOException {
+        // 1. Capture
+        Player player = getPlayer();
+        buildHouseInWorld(player.getWorld());
+
+        Position origin = Locations.toPosition(player.getLocation()).floor();
+        Position pos0 = Locations.toPosition(player.getLocation());
+        Position pos1 = Locations.toPosition(player.getLocation().clone().add(3, 2, 3));
+
+        SpigotSchematic captured = SpigotSchematicHelper.load(
+                "house", player.getName(),
+                origin, player.getWorld(),
+                pos0, pos1,
+                SpigotSchematicPlacer.getInstance()
+        );
+
+        // 2. Save
+        CocoaSchematicFormat<SpigotSchematic> format = setupFormat();
+        Path myFile = getSchematicDirectory().resolve("my-schematic.schem");
+        try (SeekableOutputStream out = SeekableOutputStream.open(myFile)) {
+            format.write(captured, out);
+        }
+
+        // 3. Reload (e.g. on server restart)
+        SpigotSchematic loaded;
+        try (SeekableInputStream in = SeekableInputStream.open(myFile)) {
+            loaded = format.read(in);
+        }
+
+        // 4. Paste
+        player.teleport(new Location(player.getWorld(), 0, 100, 0));
+        PasteResult result = loaded.paste(player.getLocation()).performAll();
+        assertHouseInWorld(player.getLocation());
+        assertEquals(17, result.blockPlaces(), "All blocks should be placed");
+
+    }
+
+    @Test
+    void basicPasting() {
+        Player player = getPlayer();
+        SpigotSchematic schematic = createSchematic();
+
+        Location origin = player.getLocation();
+        PasteResult result = schematic.paste(origin).performAll();
+
+        player.sendMessage("Placed " + result.blockPlaces() + " blocks.");
+    }
+
+    void incrementalPasting() {
+        Player player = getPlayer();
+        SpigotSchematic schematic = createSchematic();
+
+        SpigotPasteOperation operation = schematic.paste(player.getLocation());
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!operation.hasNext()) {
+                    this.cancel();
+                    player.sendMessage("Pasting finished.");
+                    return;
+                }
+
+                // Paste up to 100 blocks per tick
+                operation.advanceAllAxis(100);
+
+            }
+        }.runTaskTimer(plugin, 0, 1);
+    }
+
+    void placementFilter() {
+        SpigotSchematic schematic = createSchematic();
+        Player player = getPlayer();
+
+        Location origin = player.getLocation();
+
+        {
+            SpigotPasteOperation operation = schematic.paste(origin);
+            operation.setShouldPlace((block, placement) -> true);
+            operation.performAll();
+        }
+        {
+            SpigotPasteOperation operation = schematic.paste(origin);
+            operation.setShouldPlace((block, placement) -> block.getType() == Material.AIR);
+            operation.performAll();
+        }
+        {
+            SpigotPasteOperation operation = schematic.paste(origin);
+            operation.setShouldPlace((block, placement) -> {
+                Material type = block.getType();
+                return type == Material.WATER || type == Material.LAVA;
+            });
+            operation.performAll();
+        }
+        {
+            SpigotPasteOperation operation = schematic.paste(origin);
+            operation.setShouldPlace((block, placement) -> block.getY() < 64);
+            operation.performAll();
+        }
+    }
+
+    void axisOrderControl() {
+        SpigotSchematic schematic = createSchematic();
+        Player player = getPlayer();
+
+        SpigotPasteOperation operation = schematic.paste(player.getLocation(), AxisOrder.YXZ);
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (!operation.hasNext()) {
+                    this.cancel();
+                    return;
+                }
+
+                operation.performAllOnDualAxis();
+                // play a sound etc
+            }
+
+        }.runTaskTimer(plugin, 0, 1);
+    }
+
+    void blockMapping() {
+        SpigotSchematic schematic = createSchematic();
+        Player player = getPlayer();
+
+        BlockData diamondBlock = new GenericBlockData(
+                new NamespacedKey("minecraft", "diamond_block"),
+                Map.of()
+        );
+
+        SpigotPasteOperation operation = schematic.paste(player.getLocation());
+        operation.setMapper(placement -> {
+            if (placement.block().type().key().equals("stone"))
+                return diamondBlock;
+
+            return placement.block();
+        });
+
+        operation.performAll();
+
     }
 
     private void delete(File file) {

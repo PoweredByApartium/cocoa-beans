@@ -129,36 +129,7 @@ Useful for caching, network transfer, or database storage:
 
 Capture a region, save to disk, reload later, and paste it:
 
-```java
-// ── 1. Capture ──────────────────────────────────────────────────────────────
-Position origin = Locations.toPosition(player.getLocation()).floor();
-Position pos0   = origin.clone().add( 10,  5,  10);
-Position pos1   = origin.clone().add(-10, -5, -10);
-
-SpigotSchematic captured = SpigotSchematicHelper.load(
-    "house", player.getName(),
-    origin, player.getWorld(),
-    pos0, pos1,
-    SpigotSchematicPlacer.getInstance()
-);
-
-// ── 2. Save ─────────────────────────────────────────────────────────────────
-Path file = Path.of("plugins/MyPlugin/schematics/house.cbschem");
-Files.createDirectories(file.getParent());
-try (SeekableOutputStream out = SeekableOutputStream.open(file)) {
-    format.write(captured, out);
-}
-
-// ── 3. Reload (e.g. on server restart) ──────────────────────────────────────
-SpigotSchematic loaded;
-try (SeekableInputStream in = SeekableInputStream.open(file)) {
-    loaded = (SpigotSchematic) format.read(in);
-}
-
-// ── 4. Paste ─────────────────────────────────────────────────────────────────
-PasteResult result = loaded.paste(player.getLocation()).performAll();
-player.sendMessage("Placed " + result.blockPlaces() + " blocks!");
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="roundTrip"/>
 
 ## Pasting Schematics
 
@@ -166,57 +137,22 @@ player.sendMessage("Placed " + result.blockPlaces() + " blocks!");
 
 The simplest paste operation places all non-air blocks at the given location:
 
-```java
-Location origin = player.getLocation();
-PasteResult result = schematic.paste(origin).performAll();
-
-player.sendMessage("Placed " + result.blockPlaces() + " blocks");
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="344-347"/>
 
 > By default, blocks only replace air.
 
 ### Incremental Pasting {id="paste-incremental"}
 
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="355-369"/>
+
 For large schematics, paste gradually to avoid lag:
 
-```java
-SpigotPasteOperation operation = schematic.paste(origin);
-
-new BukkitRunnable() {
-    @Override
-    public void run() {
-        if (!operation.hasNext()) {
-            this.cancel();
-            player.sendMessage("Paste complete!");
-            return;
-        }
-
-        // Paste up to 100 blocks per tick
-        operation.advanceAllAxis(100);
-    }
-}.runTaskTimer(plugin, 0L, 1L);
-```
 
 ### Axis Order Control {id="paste-axis"}
 
 Control placement direction for visual effect:
 
-```java
-// Bottom-to-top (tall structures look best)
-schematic.paste(origin, AxisOrder.YXZ).performAll();
-
-// One full Y-layer at a time
-SpigotPasteOperation operation = schematic.paste(origin, AxisOrder.YXZ);
-while (operation.hasNext()) {
-    operation.performAllOnDualAxis();   // advances one Y-layer
-    // wait a tick, play a sound, etc.
-}
-
-// One line at a time (finest granularity)
-while (operation.hasNext()) {
-    operation.performAllOnSingleAxis();
-}
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="axisOrderControl"/>
 
 ## Advanced Placement Control
 
@@ -227,42 +163,22 @@ Control which world blocks are overwritten via `setShouldPlace`:
 <tabs>
 <tab title="Replace Everything">
 
-```java
-SpigotPasteOperation op = schematic.paste(origin);
-op.setShouldPlace((block, placement) -> true);
-op.performAll();
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="379-381"/>
 
 </tab>
 <tab title="Only Air">
 
-```java
-SpigotPasteOperation op = schematic.paste(origin);
-op.setShouldPlace((block, placement) -> block.getType() == Material.AIR);
-op.performAll();
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="384-386"/>
 
 </tab>
 <tab title="Replace Liquids">
 
-```java
-SpigotPasteOperation op = schematic.paste(origin);
-op.setShouldPlace((block, placement) -> {
-    Material type = block.getType();
-    return type == Material.WATER || type == Material.LAVA;
-});
-op.performAll();
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="389-394"/>
 
 </tab>
 <tab title="Height Restriction">
 
-```java
-SpigotPasteOperation op = schematic.paste(origin);
-op.setShouldPlace((block, placement) -> block.getY() < 64);
-op.performAll();
-```
-
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="397-399"/>
 </tab>
 </tabs>
 
@@ -270,22 +186,7 @@ op.performAll();
 
 Transform block data before placement via `setMapper`:
 
-```java
-BlockData diamond = new GenericBlockData(
-    new NamespacedKey("minecraft", "diamond_block"), Map.of());
-
-SpigotPasteOperation op = schematic.paste(origin);
-
-// Swap every stone block for diamond
-op.setMapper(placement -> {
-    if (placement.block().type().key().equals("stone")) {
-        return diamond;
-    }
-    return placement.block();
-});
-
-op.performAll();
-```
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="blockMapping"/>
 
 ### Post-Placement Actions {id="post-actions"}
 
