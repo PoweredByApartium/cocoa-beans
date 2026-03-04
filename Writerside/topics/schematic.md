@@ -50,6 +50,7 @@ dependencies {
 </tabs>
 
 ### Quick Start {id="quick-start"}
+
 <code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="quickStart"/>
 
 ## Building Schematics
@@ -57,6 +58,7 @@ dependencies {
 ### Creating from Scratch {id="create-scratch"}
 
 Build schematics programmatically block by block using `SpigotSchematicBuilder`:
+
 <code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-symbol="createSchematicFromScratch"/>
 
 
