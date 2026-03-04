@@ -140,10 +140,10 @@ public class BlockChunkImpl implements BlockChunk {
         );
     }
 
-    protected Position getChunkPos(Position pos) {
+    protected @Nullable Position getChunkPos(Position pos) {
         Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
         if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
-            throw new IllegalStateException("TF: (" + chunkPos + ") (" + pos + ")");
+            return null;
 
         return chunkPos;
     }
@@ -153,6 +153,9 @@ public class BlockChunkImpl implements BlockChunk {
             return OptionalInt.empty();
 
         Position chunkPos = getChunkPos(pos);
+
+        if (chunkPos == null)
+            return OptionalInt.empty();
 
         int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);

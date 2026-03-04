@@ -181,6 +181,8 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
             return false;
 
         Position chunkPos = getChunkPos(pos);
+        if (chunkPos == null)
+            throw new IllegalArgumentException("Position is outside of chunk: " + pos + " and chunk: " + actualPos + " scaler: " + scaler);
 
         int i0 = (int) axisOrder.getFirst().getAlong(chunkPos);
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
