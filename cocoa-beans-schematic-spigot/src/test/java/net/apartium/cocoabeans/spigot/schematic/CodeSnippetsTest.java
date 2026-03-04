@@ -22,7 +22,7 @@ import net.apartium.cocoabeans.spigot.SpigotTestBase;
 import net.apartium.cocoabeans.spigot.schematic.prop.DirectionalFaceProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.OpenableOpenProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.PowerablePoweredProp;
-import net.apartium.cocoabeans.spigot.schematic.prop.WaterloggedProp;
+//import net.apartium.cocoabeans.spigot.schematic.prop.WaterloggedProp;
 import net.apartium.cocoabeans.spigot.schematic.prop.format.BlockFacePropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.format.OrientableAxisPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.format.SlabTypePropFormat;
@@ -165,7 +165,7 @@ class CodeSnippetsTest extends SpigotTestBase {
                                 // Register prop formats for the block properties you want to persist.
                                 // For basic blocks (stone, planks, etc.) this can be left empty:
                                 // Map.of()
-                                BlockProp.WATERLOGGED, new BooleanPropFormat(WaterloggedProp::new),
+                                // Or just use PropFormatRegistry#getFormats
                                 BlockProp.DIRECTIONAL, new BlockFacePropFormat(DirectionalFaceProp::new),
                                 BlockProp.ORIENTABLE_AXIS, OrientableAxisPropFormat.INSTANCE,
                                 BlockProp.OPENABLE_OPEN, new BooleanPropFormat(OpenableOpenProp::new),
