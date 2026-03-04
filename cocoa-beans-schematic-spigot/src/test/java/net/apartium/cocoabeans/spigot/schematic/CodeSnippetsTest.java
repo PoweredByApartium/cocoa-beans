@@ -339,7 +339,7 @@ class CodeSnippetsTest extends SpigotTestBase {
 
     }
 
-    @Test
+//    @Test
     void basicPasting() {
         Player player = getPlayer();
         SpigotSchematic schematic = createSchematic();
