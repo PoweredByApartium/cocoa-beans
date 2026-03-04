@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.schematic.prop.format.BlockPropFormat;
 import net.apartium.cocoabeans.spigot.schematic.prop.MultipleFacingFacesProp;
 import net.apartium.cocoabeans.utils.BufferUtils;
 import org.bukkit.block.BlockFace;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -13,6 +14,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@ApiStatus.AvailableSince("0.0.46")
 public record MultipleFacingFacesPropFormat(
         Function<Map<BlockFace, Boolean>, BlockProp<Map<BlockFace, Boolean>>> constructor
 ) implements BlockPropFormat<Map<BlockFace, Boolean>> {
@@ -23,6 +25,11 @@ public record MultipleFacingFacesPropFormat(
         this(MultipleFacingFacesProp::new);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Decodes a map of {@link BlockFace} to {@link Boolean} values from the binary representation.</p>
+     */
     @Override
     public BlockProp<Map<BlockFace, Boolean>> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
@@ -64,6 +71,14 @@ public record MultipleFacingFacesPropFormat(
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Encodes a map of {@link BlockFace} to {@link Boolean} values into binary form.</p>
+     *
+     * @throws NullPointerException if the prop value is null
+     * @throws IllegalArgumentException if the prop value is not a {@code Map<BlockFace, Boolean>}
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         Map<BlockFace, Boolean> multipleFacingFaces = getMultipleFacingFacesOrElseThrow(prop);
