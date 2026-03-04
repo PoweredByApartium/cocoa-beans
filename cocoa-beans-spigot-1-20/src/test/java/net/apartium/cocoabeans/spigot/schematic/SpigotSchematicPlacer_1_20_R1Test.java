@@ -27,11 +27,11 @@ import static org.mockito.Mockito.withSettings;
 
 class SpigotSchematicPlacer_1_20_R1Test extends SpigotTestBase {
 
-    private final SpigotSchematicPlacer_1_20_R1 placer = new SpigotSchematicPlacer_1_20_R1();
+    private SpigotSchematicPlacer_1_20_R1 placer;
 
     @Override
     public void initialize() {
-        // No-op
+        placer = new SpigotSchematicPlacer_1_20_R1();
     }
 
     @Test
