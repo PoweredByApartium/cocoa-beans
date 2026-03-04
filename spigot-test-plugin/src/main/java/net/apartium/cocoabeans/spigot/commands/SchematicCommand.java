@@ -17,7 +17,6 @@ import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.format.BlockChunkIndexEncoder;
 import net.apartium.cocoabeans.schematic.format.CocoaSchematicFormat;
 import net.apartium.cocoabeans.schematic.format.SimpleBlockDataEncoder;
-import net.apartium.cocoabeans.schematic.prop.BlockProp;
 import net.apartium.cocoabeans.seekable.SeekableInputStream;
 import net.apartium.cocoabeans.seekable.SeekableOutputStream;
 import net.apartium.cocoabeans.space.Position;
