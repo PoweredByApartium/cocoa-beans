@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LocationsTest extends CocoaBeansTestBase {
+class LocationsTest extends SpigotTestBase {
 
     private Location location, copy, diffLocation;
     private WorldMock world;

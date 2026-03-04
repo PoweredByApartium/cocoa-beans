@@ -1,0 +1,345 @@
+package net.apartium.cocoabeans.schematic;
+
+import net.apartium.cocoabeans.Mathf;
+import net.apartium.cocoabeans.schematic.block.*;
+import net.apartium.cocoabeans.schematic.prop.FlippableProp;
+import net.apartium.cocoabeans.space.axis.Axis;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
+import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.RotatableProp;
+import net.apartium.cocoabeans.space.AreaSize;
+import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
+import net.apartium.cocoabeans.structs.MinecraftVersion;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NonNls;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * @hidden
+ */
+@ApiStatus.Internal
+@NullMarked
+public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilder<T>> implements SchematicBuilder {
+
+    protected MinecraftPlatform platform = new MinecraftPlatform(MinecraftVersion.UNKNOWN, "---", "0.0.0");
+    protected Instant created = Instant.now();
+    @Nullable protected SchematicMetadata metadata;
+    protected AreaSize size;
+    protected MutableBlockChunk blockChunk = BlockChunk.empty();
+    protected Position offset = Position.ZERO;
+    protected AxisOrder axes = AxisOrder.XYZ;
+
+    protected AbstractSchematicBuilder() {
+        this.metadata = null;
+        this.size = new AreaSize(0, 0, 0);
+    }
+
+    protected AbstractSchematicBuilder(Schematic schematic) {
+        this.platform = schematic.originPlatform();
+        this.created = schematic.created();
+        this.metadata = schematic.metadata();
+        this.size = schematic.size();
+        this.offset = schematic.offset();
+        this.axes = schematic.axisOrder();
+
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        schematic.blocksIterator().forEachRemaining(this::setBlock);
+    }
+
+    @Override
+    public T platform(MinecraftPlatform platform) {
+        this.platform = platform;
+        return self();
+    }
+
+    @Override
+    public T created(Instant created) {
+        this.created = created;
+        return self();
+    }
+
+    @Override
+    public T metadata(SchematicMetadata metadata) {
+        this.metadata = metadata;
+        return self();
+    }
+
+    @Override
+    public T size(AreaSize size) {
+        this.size = size;
+        return self();
+    }
+
+
+    private void ensureAllowedRotate(boolean use0Degrees, boolean use90Degrees, boolean use180Degrees, boolean use270Degrees) {
+        if (!use0Degrees && !use90Degrees && !use180Degrees && !use270Degrees)
+            throw new IllegalArgumentException("no!");
+    }
+
+    @Override
+    public T rotate(int degrees) {
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+
+        Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
+
+        degrees = Math.abs(degrees + 360) % 360;
+
+        final boolean use0Degrees = degrees == 0;
+        final boolean use90Degrees = degrees == 90;
+        final boolean use180Degrees = degrees == 180;
+        final boolean use270Degrees = degrees == 270;
+
+        final int sizeX = (int) this.size.width();
+        final int sizeZ = (int) this.size.depth();
+
+        ensureAllowedRotate(use0Degrees, use90Degrees, use180Degrees, use270Degrees);
+
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+
+            Position pos = placement.position();
+            int lx = (int) pos.getX();
+            int lz = (int) pos.getZ();
+
+            int nx;
+            int nz;
+
+            if (use0Degrees) {
+                nx = lx;
+                nz = lz;
+            } else if (use90Degrees) {
+                nx = lz;
+                nz = (sizeX - 1) - lx;
+            } else if (use180Degrees) {
+                nx = (sizeX - 1) - lx;
+                nz = (sizeZ - 1) - lz;
+            } else {
+                nx = (sizeZ - 1) - lz;
+                nz = lx;
+            }
+
+            BlockData data = placement.block();
+            Map<String, BlockProp<?>> props = new HashMap<>();
+            for (Map.Entry<String, BlockProp<?>> prop : data.props().entrySet()) {
+                if (!(prop.getValue() instanceof RotatableProp<?> rotatableProp)) {
+                    props.put(prop.getKey(), prop.getValue());
+                    continue;
+                }
+
+                props.put(prop.getKey(), (BlockProp<?>) rotatableProp.rotate(data.type(), degrees));
+            }
+
+            newChunk.setBlock(new BlockPlacement(
+                    new Position(nx, pos.getY(), nz),
+                    new GenericBlockData(data.type(), props))
+            );
+        }
+
+        if (use90Degrees) {
+            this.offset = new Position(
+                    this.offset.getZ(),
+                    this.offset.getY(),
+                    -this.size.width() - this.offset.getX() + 1
+            );
+            this.size = new AreaSize(this.size.depth(), this.size.height(), this.size.width());
+        } else if  (use180Degrees) {
+            this.offset = new Position(
+                    -this.size.width() - this.offset.getX() + 1,
+                    this.offset.getY(),
+                    -this.size.depth() - this.offset.getZ() + 1
+            );
+
+            this.size = new AreaSize(this.size.width(), this.size.height(), this.size.depth());
+        } else if (use270Degrees) {
+            this.size = new AreaSize(this.size.depth(), this.size.height(), this.size.width());
+            this.offset = new Position(
+                    -this.size.depth() - this.offset.getZ() + 2,
+                    this.offset.getY(),
+                    this.offset.getX()
+            );
+        }
+
+        this.blockChunk = newChunk;
+        return self();
+    }
+
+    @Override
+    public T flip(@NonNls Axis axis) {
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(
+                blockChunk.getAxisOrder(),
+                blockChunk.getScaler(),
+                blockChunk.getActualPos(),
+                blockChunk.getChunkPos()
+        );
+
+        Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
+        final Position from = new Position(size.width(), size.height(), size.depth()).immutable();
+
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+
+            Position pos = placement.position();
+            pos = flipPosition(axis, pos, from);
+
+            BlockData data = placement.block();
+            Map<String, BlockProp<?>> props = new HashMap<>();
+            for (Map.Entry<String, BlockProp<?>> prop : data.props().entrySet()) {
+                if (!(prop.getValue() instanceof FlippableProp<?> flippableProp)) {
+                    props.put(prop.getKey(), prop.getValue());
+                    continue;
+                }
+
+                props.put(prop.getKey(), (BlockProp<?>) flippableProp.flip(data.type(), axis));
+            }
+
+            newChunk.setBlock(new BlockPlacement(
+                    pos,
+                    new GenericBlockData(data.type(), props))
+            );
+        }
+
+        this.blockChunk = newChunk;
+        return self();
+    }
+
+    private Position flipPosition(@NonNls Axis axis, Position position, Position from) {
+        position = switch (axis) {
+            case X -> new Position(from.getX()  - 1 - position.getX(), position.getY(), position.getZ());
+            case Y -> new Position(position.getX(), from.getY() - 1 - position.getY(), position.getZ());
+            case Z -> new Position(position.getX(), position.getY(), from.getZ()  - 1 - position.getZ());
+        };
+        return position;
+    }
+
+    @Override
+    public T translate(Position offset) {
+        this.offset = offset;
+        return self();
+    }
+
+    @Override
+    public T translate(AxisOrder axisOrder) {
+        BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
+        this.axes = axisOrder;
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+
+            rescaleChunkIfNeeded(placement.position());
+            this.blockChunk.setBlock(placement);
+        }
+        return self();
+    }
+
+    @Override
+    public T shift(Axis axis, int amount) {
+        BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
+        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+        while (iterator.hasNext()) {
+            BlockPlacement placement = iterator.next();
+            Position position = new Position(placement.position());
+
+            switch (axis) {
+                case X -> position.add(new Position(amount, 0, 0));
+                case Y -> position.add(new Position(0, amount, 0));
+                case Z -> position.add(new Position(0, 0, amount));
+            }
+
+            placement = new BlockPlacement(
+                    position,
+                    placement.block()
+            );
+
+            rescaleSizeIfNeeded((int) position.getX(), (int) position.getY(), (int) position.getZ());
+            rescaleChunkIfNeeded(placement.position());
+            this.blockChunk.setBlock(placement);
+        }
+
+        return self();
+    }
+
+    @Override
+    public T setBlock(BlockPlacement placement) {
+        Position pos = placement.position();
+        this.setBlock(
+                (int) pos.getX(),
+                (int) pos.getY(),
+                (int) pos.getZ(),
+                placement.block()
+        );
+
+        return self();
+    }
+
+    @Override
+    public T setBlock(int x, int y, int z, BlockData data) {
+        if (x < 0 || y < 0 || z < 0)
+            throw new IllegalArgumentException("coordinate out of range");
+
+
+        Position pos = new Position(x, y, z);
+        this.rescaleSizeIfNeeded(x, y, z);
+        this.rescaleChunkIfNeeded(pos);
+        this.blockChunk.setBlock(new BlockPlacement(
+                pos,
+                data
+        ));
+
+        return self();
+    }
+
+    protected void rescaleSize() {
+        this.size = blockChunk.getSizeOfEntireChunk();
+    }
+
+    protected void rescaleSizeIfNeeded(int x, int y, int z) {
+        AreaSize newSize = new AreaSize(size).floor();
+
+        if (x >= size.width())
+            newSize = new AreaSize(x + 1, newSize.height(), newSize.depth());
+
+        if (y >= size.height())
+            newSize = new AreaSize(newSize.width(), y + 1, newSize.depth());
+
+        if (z >= size.depth())
+            newSize = new AreaSize(newSize.width(), newSize.height(), z + 1);
+
+        this.size = newSize;
+    }
+
+    protected void rescaleChunkIfNeeded(Position pos) {
+        int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
+        if (maxAxis >= this.blockChunk.getScaler())
+            this.blockChunk = new MutableBlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4.0, Position.ZERO, Position.ZERO, this.blockChunk);
+    }
+
+    @Override
+    public T removeBlock(int x, int y, int z) {
+        Position pos = new Position(x, y, z);
+        blockChunk.removeBlock(pos);
+
+        while (this.blockChunk.getMask() == 1) {
+            if (!(this.blockChunk.getPointers().get(0) instanceof ChunkPointer chunkPointer))
+                break;
+
+            if (!(chunkPointer.getChunk() instanceof MutableBlockChunk chunk))
+                throw new IllegalArgumentException("Unexpected chunk type: " + chunkPointer.getChunk().getClass().getSimpleName());
+
+            this.blockChunk = chunk;
+        }
+
+        this.rescaleSize();
+        return self();
+    }
+    
+    protected abstract T self();
+
+}
