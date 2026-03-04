@@ -81,8 +81,7 @@ public class ServerUtils {
     }
 
     private static void severe(String message, Throwable e) {
-        Logger logger = JavaPlugin.getProvidingPlugin(ServerUtils.class).getLogger();
-        logger.log(Level.SEVERE, message, e);
+        CocoaBeanLogger.getLogger().log(Level.SEVERE, message, e);
     }
 
     private static String extractVersionNumber(String versionString) {

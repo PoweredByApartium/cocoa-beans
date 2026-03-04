@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.spigot.schematic;
 
+import net.apartium.cocoabeans.spigot.CocoaBeanLogger;
 import net.apartium.cocoabeans.structs.NamespacedKey;
 import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 
 public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
 
-    private final Logger logger = JavaPlugin.getProvidingPlugin(SpigotSchematicPlacer_1_20_R1.class).getLogger();
+    private final Logger logger = CocoaBeanLogger.getLogger();
 
     @Override
     public void place(Block block, BlockPlacement placement) {
