@@ -42,7 +42,7 @@ public class StringBlockPropFormat implements BlockPropFormat<String> {
      * <p>The binary layout is: a 1-byte unsigned length, followed by that many UTF-8 bytes.</p>
      *
      * @throws IllegalArgumentException if the prop value is not a {@link String}, or if the
-     *                                  UTF-8 encoding exceeds {@value #MAX_LENGTH} bytes
+     *                                  UTF-8 encoding exceeds {@link #MAX_LENGTH} bytes
      */
     @Override
     public byte[] encode(BlockProp<?> prop) {

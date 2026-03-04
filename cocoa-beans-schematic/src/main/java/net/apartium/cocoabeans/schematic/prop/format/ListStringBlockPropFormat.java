@@ -84,7 +84,7 @@ public class ListStringBlockPropFormat implements BlockPropFormat<List<String>> 
      * <p>Each string is encoded as a 1-byte unsigned length followed by that many UTF-8 bytes.</p>
      *
      * @throws IllegalArgumentException if the prop value is not a {@code List<String>}, or if any
-     *                                  string's UTF-8 encoding exceeds {@value #MAX_LENGTH} bytes
+     *                                  string's UTF-8 encoding exceeds {@link #MAX_LENGTH} bytes
      * @throws UncheckedIOException if an I/O error occurs while writing
      */
     @Override
