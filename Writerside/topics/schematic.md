@@ -93,7 +93,7 @@ Available transformations:
 
 ### Setting Up the Format {id="format-setup"}
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="157-178"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="162-183"/>
 
 `CocoaSchematicFormat` handles reading and writing `.cbschem` files. Create one instance and reuse it:
 
@@ -137,13 +137,13 @@ Capture a region, save to disk, reload later, and paste it:
 
 The simplest paste operation places all non-air blocks at the given location:
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="344-347"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="348-350"/>
 
 > By default, blocks only replace air.
 
 ### Incremental Pasting {id="paste-incremental"}
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="355-369"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="357-371"/>
 
 For large schematics, paste gradually to avoid lag:
 
@@ -163,22 +163,22 @@ Control which world blocks are overwritten via `setShouldPlace`:
 <tabs>
 <tab title="Replace Everything">
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="379-381"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="381-383"/>
 
 </tab>
 <tab title="Only Air">
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="384-386"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="386-388"/>
 
 </tab>
 <tab title="Replace Liquids">
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="389-394"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="391-396"/>
 
 </tab>
 <tab title="Height Restriction">
 
-<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="397-399"/>
+<code-block lang="java" src="schematic-spigot/CodeSnippetsTest.java" include-lines="399-401"/>
 </tab>
 </tabs>
 
