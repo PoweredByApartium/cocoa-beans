@@ -9,10 +9,18 @@ import java.util.function.Function;
 @ApiStatus.AvailableSince("0.0.46")
 public record BooleanPropFormat(Function<Boolean, BlockProp<Boolean>> constructor) implements BlockPropFormat<Boolean> {
 
+    /**
+     * Creates a new {@code BooleanPropFormat} using the default {@link BooleanBlockProp} constructor.
+     */
     public BooleanPropFormat() {
         this(BooleanBlockProp::new);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if {@code value} is not exactly 1 byte
+     */
     @Override
     public BlockProp<Boolean> decode(byte[] value) {
         if (value.length != 1)
@@ -21,6 +29,11 @@ public record BooleanPropFormat(Function<Boolean, BlockProp<Boolean>> constructo
         return constructor.apply(value[0] == 1);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the prop value is not a {@link Boolean}
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof Boolean value))

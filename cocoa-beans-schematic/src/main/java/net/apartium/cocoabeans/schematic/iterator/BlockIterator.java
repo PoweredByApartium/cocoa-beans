@@ -23,6 +23,16 @@ public interface BlockIterator extends Iterator<BlockPlacement> {
      */
     @Nullable Position current();
 
+    /**
+     * Drains the remaining placements from this iterator and returns them as an immutable
+     * {@link BlockChunk}.
+     *
+     * <p>The chunk is automatically rescaled as placements are inserted so that all positions fit
+     * within the resulting chunk's bounds.</p>
+     *
+     * @param axisOrder the axis-to-index mapping used when constructing the chunk
+     * @return an immutable {@link BlockChunk} containing all remaining block placements
+     */
     default @NonNull BlockChunk toBlockChunk(AxisOrder axisOrder) {
         MutableBlockChunk chunk = BlockChunk.empty();
         while (hasNext()) {

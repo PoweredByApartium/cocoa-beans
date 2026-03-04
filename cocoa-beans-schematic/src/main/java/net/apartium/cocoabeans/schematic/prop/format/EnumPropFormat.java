@@ -16,6 +16,14 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
     private final Supplier<T[]> valuesSupplier;
     private final Function<T, BlockProp<T>> constructor;
 
+    /**
+     * Creates a new {@code EnumPropFormat} for the given enum type.
+     *
+     * @param enumClass      the enum class this format handles
+     * @param valuesSupplier a supplier that returns all enum constants (typically {@code MyEnum::values})
+     * @param constructor    a function that wraps an enum constant in a {@link BlockProp}
+     * @throws IllegalArgumentException if {@code enumClass} is null or not an enum
+     */
     protected EnumPropFormat(Class<T> enumClass, Supplier<T[]> valuesSupplier, Function<T, BlockProp<T>> constructor) {
         this.valuesSupplier = valuesSupplier;
         this.constructor = constructor;
@@ -26,6 +34,11 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
         this.enumClass = enumClass;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the bytes do not represent a valid enum constant or contain unexpected trailing data
+     */
     @Override
     public BlockProp<T> decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
@@ -40,6 +53,12 @@ public abstract class EnumPropFormat<T extends Enum<T>> implements BlockPropForm
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException if the prop value is not an instance of the expected enum class
+     * @throws UncheckedIOException if an I/O error occurs during encoding
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         Object value = prop.value();

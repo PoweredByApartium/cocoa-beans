@@ -9,18 +9,22 @@ import net.apartium.cocoabeans.spigot.schematic.prop.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class SpigotSchematicPlacer_1_20_R1 implements SpigotSchematicPlacer {
+
+    private final Logger logger = JavaPlugin.getProvidingPlugin(SpigotSchematicPlacer_1_20_R1.class).getLogger();
 
     @Override
     public void place(Block block, BlockPlacement placement) {
         org.bukkit.block.data.BlockData blockData = getBukkitBlockData(placement.block());
 
         if (blockData == null) {
-            Bukkit.getLogger().warning("Could not convert block data to org.bukkit.block.data.BlockData! (" + placement.block().type().toString() + ")");
+            logger.warning("Could not convert block data to org.bukkit.block.data.BlockData! (" + placement.block().type().toString() + ")");
             return;
         }
 

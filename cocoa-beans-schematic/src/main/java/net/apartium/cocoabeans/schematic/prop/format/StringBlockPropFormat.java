@@ -17,6 +17,13 @@ public class StringBlockPropFormat implements BlockPropFormat<String> {
 
     public static final int MAX_LENGTH = (int) (Math.pow(2, 8) - 1);
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The binary layout is: a 1-byte unsigned length, followed by that many UTF-8 bytes.</p>
+     *
+     * @throws UncheckedIOException if an I/O error occurs while reading
+     */
     @Override
     public StringBlockProp decode(byte[] value) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(value));
@@ -29,6 +36,14 @@ public class StringBlockPropFormat implements BlockPropFormat<String> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The binary layout is: a 1-byte unsigned length, followed by that many UTF-8 bytes.</p>
+     *
+     * @throws IllegalArgumentException if the prop value is not a {@link String}, or if the
+     *                                  UTF-8 encoding exceeds {@value #MAX_LENGTH} bytes
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof String text))

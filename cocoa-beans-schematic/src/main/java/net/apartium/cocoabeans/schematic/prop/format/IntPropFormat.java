@@ -9,10 +9,20 @@ import java.util.function.Function;
 @ApiStatus.AvailableSince("0.0.46")
 public record IntPropFormat(Function<Integer, BlockProp<Integer>> constructor) implements BlockPropFormat<Integer> {
 
+    /**
+     * Creates a new {@code IntPropFormat} using the default {@link IntBlockProp} constructor.
+     */
     public IntPropFormat() {
         this(IntBlockProp::new);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Reads a single 4-byte big-endian integer from {@code value}.</p>
+     *
+     * @throws IllegalArgumentException if {@code value} is not exactly 4 bytes
+     */
     @Override
     public BlockProp<Integer> decode(byte[] value) {
         if (value.length != 4)
@@ -26,6 +36,13 @@ public record IntPropFormat(Function<Integer, BlockProp<Integer>> constructor) i
         );
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Writes a single 4-byte big-endian integer.</p>
+     *
+     * @throws IllegalArgumentException if the prop value is not an {@link Integer}
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof Integer value))

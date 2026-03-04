@@ -8,6 +8,14 @@ import java.util.function.Function;
 @ApiStatus.AvailableSince("0.0.46")
 public record IntArrayPropFormat(Function<int[], BlockProp<int[]>> constructor) implements BlockPropFormat<int[]> {
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The binary layout is: a 4-byte big-endian integer for the array length,
+     * followed by that many 4-byte big-endian integers for the element values.</p>
+     *
+     * @throws IllegalArgumentException if {@code value} is fewer than 4 bytes
+     */
     @Override
     public BlockProp<int[]> decode(byte[] value) {
         if (value.length < 4)
@@ -22,6 +30,14 @@ public record IntArrayPropFormat(Function<int[], BlockProp<int[]>> constructor) 
         return constructor.apply(array);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The binary layout is: a 4-byte big-endian integer for the array length,
+     * followed by that many 4-byte big-endian integers for the element values.</p>
+     *
+     * @throws IllegalArgumentException if the prop value is not an {@code int[]}
+     */
     @Override
     public byte[] encode(BlockProp<?> prop) {
         if (!(prop.value() instanceof int[] array))

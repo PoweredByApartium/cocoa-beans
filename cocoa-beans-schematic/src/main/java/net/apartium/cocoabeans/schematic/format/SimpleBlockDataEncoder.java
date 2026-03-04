@@ -16,17 +16,65 @@ import java.util.*;
 
 import static net.apartium.cocoabeans.utils.BufferUtils.*;
 
+/**
+ * A straightforward {@link BlockDataEncoder} that serialises each {@link BlockData} value as a
+ * length-prefixed payload containing the block's namespaced type key followed by its properties.
+ *
+ * <h2>Binary format</h2>
+ * <pre>
+ *   [4 bytes] payload length (unsigned 32-bit, big-endian)
+ *   [payload]
+ *     [string] namespace   – namespace portion of the block's {@link NamespacedKey}
+ *     [string] key         – key portion of the block's {@link NamespacedKey}
+ *     [prop…]  zero or more property entries (see below)
+ * </pre>
+ *
+ * Each <em>property entry</em> in the payload:
+ * <pre>
+ *   [string]  type name    – property identifier, used to look up a {@link BlockPropFormat}
+ *   [3 bytes] value length – unsigned 24-bit length of the encoded value (max ~16 MB)
+ *   [bytes]   value        – raw bytes produced by {@link BlockPropFormat#encode}
+ * </pre>
+ *
+ * <p>Strings are encoded in the format expected by {@code BufferUtils.readString} /
+ * {@code BufferUtils.writeStringAsList} (length-prefixed UTF-8).</p>
+ *
+ * @see BlockDataEncoder
+ * @see BlockPropFormat
+ */
 @ApiStatus.AvailableSince("0.0.46")
 public class SimpleBlockDataEncoder implements BlockDataEncoder {
 
+    /** Numeric identifier that distinguishes this encoder in the schematic file header. */
     public static final int ID = 0b1;
 
+    /** Map from property type name to the format responsible for encoding/decoding that property. */
     private final Map<String, BlockPropFormat<?>> propFormatMap;
 
+    /**
+     * Creates a new encoder backed by the given property-format registry.
+     *
+     * @param formatMap map from property type name to its {@link BlockPropFormat}; must contain
+     *                  an entry for every property type that will be encountered during reads and
+     *                  writes
+     */
     public SimpleBlockDataEncoder(Map<String, BlockPropFormat<?>> formatMap) {
         this.propFormatMap = formatMap;
     }
 
+    /**
+     * Deserialises a single {@link BlockData} value from {@code stream}.
+     *
+     * <p>The method reads the 4-byte payload length, consumes exactly that many bytes into an
+     * in-memory buffer, then decodes the namespaced key and each property entry in order.
+     * Properties are decoded using the {@link BlockPropFormat} registered for their type name.</p>
+     *
+     * @param stream the seekable stream positioned at the start of a block-data entry
+     * @return the decoded {@link BlockData}
+     * @throws NoSuchElementException   if a property type name is not present in the format map
+     * @throws IllegalArgumentException if the same property type appears more than once
+     * @throws UncheckedIOException     if an I/O error occurs while reading the stream
+     */
     @Override
     public BlockData read(SeekableInputStream stream) {
         try {
@@ -66,6 +114,18 @@ public class SimpleBlockDataEncoder implements BlockDataEncoder {
         }
     }
 
+    /**
+     * Serialises a {@link BlockData} value into the binary format described in the class Javadoc.
+     *
+     * <p>The block's namespaced type key is written first, followed by one entry per property.
+     * Each property value is encoded by its corresponding {@link BlockPropFormat} and prefixed
+     * with a 3-byte (unsigned 24-bit) length field. The entire payload is then prefixed with its
+     * 4-byte total length.</p>
+     *
+     * @param blockData the block data to serialise
+     * @return the serialised bytes, including the 4-byte length prefix
+     * @throws IllegalArgumentException if a property's type name is not present in the format map
+     */
     @Override
     public byte[] write(BlockData blockData) {
         List<Byte> bytes = new LinkedList<>();

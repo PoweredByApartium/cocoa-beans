@@ -114,7 +114,7 @@ public class SchematicCommand implements CommandNode, Listener {
 
                 schematics.put(schematic.metadata().title(), schematic);
             } catch (IOException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "Error reading schematic file " + file.getAbsolutePath(), e);
+                plugin.getLogger().log(Level.SEVERE, "Error reading schematic file " + file.getAbsolutePath(), e);
             }
         }
 

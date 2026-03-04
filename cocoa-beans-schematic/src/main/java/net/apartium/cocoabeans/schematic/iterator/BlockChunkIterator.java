@@ -9,6 +9,21 @@ import java.util.List;
 
 import static net.apartium.cocoabeans.schematic.block.BlockChunkImpl.SIZE;
 
+/**
+ * A {@link BlockIterator} that performs a depth-first traversal of a {@link BlockChunk} tree.
+ *
+ * <p>The chunk tree is encoded as a bitmask plus a compact list of {@link Pointer} objects. Each
+ * set bit in the mask corresponds to one pointer in order. The iterator walks the mask from the
+ * lowest set bit upward, yielding one {@link BlockPlacement} per {@link BlockPointer} leaf. When
+ * a {@link ChunkPointer} is encountered, a child {@code BlockChunkIterator} is created and fully
+ * drained before the parent resumes.</p>
+ *
+ * <p>The next placement is always pre-fetched into {@code next} so that {@link #hasNext()} and
+ * {@link #current()} can answer without advancing the traversal.</p>
+ *
+ * @see BlockIterator
+ * @see BlockChunk
+ */
 @ApiStatus.AvailableSince("0.0.46")
 public class BlockChunkIterator implements BlockIterator {
 
@@ -22,6 +37,14 @@ public class BlockChunkIterator implements BlockIterator {
     private BlockChunkIterator child = null;
     private BlockPlacement next;
 
+    /**
+     * Creates an iterator over all block placements in {@code chunk} and its descendants.
+     *
+     * <p>The first placement is pre-fetched immediately so that {@link #hasNext()} is correct
+     * before any call to {@link #next()}.</p>
+     *
+     * @param chunk the root chunk to iterate
+     */
     public BlockChunkIterator(BlockChunk chunk) {
         this.mask = chunk.getMask();
         this.remaining = chunk.getMask();
@@ -110,6 +133,11 @@ public class BlockChunkIterator implements BlockIterator {
         next = null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return the position of the pre-fetched placement, or {@code null} if iteration is exhausted
+     */
     @Override
     public Position current() {
         if (next == null)
@@ -118,11 +146,23 @@ public class BlockChunkIterator implements BlockIterator {
         return next.position();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@code true} if a pre-fetched placement is available
+     */
     @Override
     public boolean hasNext() {
         return next != null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Returns the pre-fetched placement and immediately advances the iterator to the next one.</p>
+     *
+     * @return the next {@link BlockPlacement}
+     */
     @Override
     public BlockPlacement next() {
         BlockPlacement placement = next;

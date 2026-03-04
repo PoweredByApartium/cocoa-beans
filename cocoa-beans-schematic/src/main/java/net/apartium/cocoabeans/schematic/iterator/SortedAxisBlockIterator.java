@@ -20,10 +20,26 @@ public class SortedAxisBlockIterator implements BlockIterator {
     private final AxisOrder axisOrder;
     private BlockPlacement next;
 
+    /**
+     * Creates a new iterator over the given chunk using the specified axis order, with no axes reversed.
+     *
+     * @param chunk     the block chunk to iterate over
+     * @param size      the dimensions of the area to iterate
+     * @param axisOrder the order in which axes are traversed
+     */
     public SortedAxisBlockIterator(BlockChunk chunk, AreaSize size, AxisOrder axisOrder) {
         this(chunk, size, axisOrder, Set.of());
     }
 
+    /**
+     * Creates a new iterator over the given chunk using the specified axis order,
+     * with the ability to reverse traversal direction on selected axes.
+     *
+     * @param chunk       the block chunk to iterate over
+     * @param size        the dimensions of the area to iterate
+     * @param axisOrder   the order in which axes are traversed
+     * @param reverseAxis the set of axes whose traversal direction should be reversed
+     */
     public SortedAxisBlockIterator(BlockChunk chunk, AreaSize size, AxisOrder axisOrder, Set<Axis> reverseAxis) {
         this.chunk = chunk;
         this.axisOrder = axisOrder;
@@ -62,6 +78,9 @@ public class SortedAxisBlockIterator implements BlockIterator {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Position current() {
         if (next == null)
@@ -70,11 +89,17 @@ public class SortedAxisBlockIterator implements BlockIterator {
         return next.position();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasNext() {
         return next != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlockPlacement next() {
         BlockPlacement placement = next;
@@ -82,6 +107,11 @@ public class SortedAxisBlockIterator implements BlockIterator {
         return placement;
     }
 
+    /**
+     * Returns the axis order used by this iterator.
+     *
+     * @return the axis order
+     */
     public AxisOrder axisOrder() {
         return axisOrder;
     }
