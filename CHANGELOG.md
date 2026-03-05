@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.47
+- [state] Add `Observable#flatMap` for flattening observables
+
 ## 0.0.46
 - [schematic] Introduce schematic API
 - [state] Add `CollectionObservable#filter(Function<E, Observable<Boolean>>)` for live filtered collection views
