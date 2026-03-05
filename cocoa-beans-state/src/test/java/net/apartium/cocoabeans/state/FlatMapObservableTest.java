@@ -603,7 +603,7 @@ class FlatMapObservableTest {
             Field baseDirty = FlatMapObservable.class.getDeclaredField("baseDirty");
             baseDirty.setAccessible(true);
 
-            Field flatDirty = FlatMapObservable.class.getDeclaredField("flatDirty");
+            Field flatDirty = FlatMapObservable.class.getDeclaredField("innerDirty");
             flatDirty.setAccessible(true);
 
             assertFalse(baseDirty.getBoolean(flat));

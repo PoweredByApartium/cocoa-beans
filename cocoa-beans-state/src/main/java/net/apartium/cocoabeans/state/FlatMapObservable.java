@@ -38,15 +38,15 @@ import java.util.function.Function;
 
         prev = parameter;
 
-        Observable<R> flat = mapper.apply(parameter);
-        if (flat == currentInner)
+        Observable<R> inner = mapper.apply(parameter);
+        if (inner == currentInner)
             return;
 
         innerDirty = true;
         if (currentInner != null)
             currentInner.removeObserver(this);
 
-        currentInner = flat;
+        currentInner = inner;
         currentInner.observe(this);
     }
 
@@ -86,11 +86,11 @@ import java.util.function.Function;
     @Override
     public void flagAsDirty(Observable<?> observable) {
         if (base == observable) {
-            notifyObservers();
             baseDirty = true;
-        } else if (currentInner == observable) {
             notifyObservers();
+        } else if (currentInner == observable) {
             innerDirty = true;
+            notifyObservers();
         }
     }
 
