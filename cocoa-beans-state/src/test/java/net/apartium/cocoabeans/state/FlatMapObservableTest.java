@@ -589,7 +589,6 @@ class FlatMapObservableTest {
         MutableObservable<String> prefixB = Observable.mutable("prefixB");
 
         PlayerRank rankA = new PlayerRank("A", prefixA, Observable.mutable("suffix"));
-        PlayerRank rankB = new PlayerRank("B", prefixB, Observable.mutable("suffix"));
 
         MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
         Observable<String> flat = rank.flatMap(PlayerRank::prefix);
