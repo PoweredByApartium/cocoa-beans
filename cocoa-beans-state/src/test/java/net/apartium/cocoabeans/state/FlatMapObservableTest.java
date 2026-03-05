@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import net.apartium.cocoabeans.structs.Entry;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -386,6 +387,217 @@ class FlatMapObservableTest {
 
         mutableInner.set("changed");
         assertEquals("fixed", flat.get());
+        assertEquals("fixed", flat.get());
+    }
+
+    static class TrackingObservable<T> implements Observable<T> {
+        private final MutableObservable<T> delegate;
+        int subscribeCount = 0;
+        int unsubscribeCount = 0;
+
+        TrackingObservable(T initial) {
+            this.delegate = Observable.mutable(initial);
+        }
+
+        void set(T value) {
+            delegate.set(value);
+        }
+
+        @Override
+        public T get() {
+            return delegate.get();
+        }
+
+        @Override
+        public void observe(Observer observer) {
+            subscribeCount++;
+            delegate.observe(observer);
+        }
+
+        @Override
+        public boolean removeObserver(Observer observer) {
+            boolean removed = delegate.removeObserver(observer);
+            if (removed)
+                unsubscribeCount++;
+            return removed;
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void innerObservableIsUnsubscribedOnSwitch() {
+        int poolSize = 5;
+        TrackingObservable<String>[] pool = new TrackingObservable[poolSize];
+        for (int i = 0; i < poolSize; i++)
+            pool[i] = new TrackingObservable<>("value-" + i);
+
+        MutableObservable<TrackingObservable<String>> outer = Observable.mutable(pool[0]);
+        Observable<String> flat = outer.flatMap(o -> o);
+
+        flat.get(); // prime — subscribes to pool[0]
+
+        int[] expectedSubscribe = new int[poolSize];
+        int[] expectedUnsubscribe = new int[poolSize];
+        expectedSubscribe[0] = 1;
+
+        int currentIdx = 0;
+
+        Random random = new Random(123456789);
+        for (int i = 0; i < 100_000; i++) {
+            int nextIdx = random.nextInt(poolSize);
+
+            if (nextIdx != currentIdx) {
+                expectedUnsubscribe[currentIdx]++;
+                expectedSubscribe[nextIdx]++;
+                currentIdx = nextIdx;
+            }
+
+            outer.set(pool[nextIdx]);
+            flat.get(); // trigger lazy evaluation
+
+            assertEquals("value-" + nextIdx, flat.get(), "wrong value at iteration " + i);
+        }
+
+        // active inner: subscribeCount == unsubscribeCount + 1
+        // inactive inners: subscribeCount == unsubscribeCount
+        for (int i = 0; i < poolSize; i++) {
+            assertEquals(expectedSubscribe[i], pool[i].subscribeCount,
+                    "subscribe count mismatch for pool[" + i + "]");
+            assertEquals(expectedUnsubscribe[i], pool[i].unsubscribeCount,
+                    "unsubscribe count mismatch for pool[" + i + "]");
+        }
+
+        // only the current inner propagates — all others are silent
+        String currentValue = flat.get();
+        for (int i = 0; i < poolSize; i++) {
+            if (i != currentIdx) {
+                pool[i].set("stale-" + i);
+                assertEquals(currentValue, flat.get(),
+                        "stale pool[" + i + "] should not affect flat");
+            }
+        }
+    }
+
+    @Test
+    void lazyWatcherTracksInnerAndOuterSwitches() {
+        MutableObservable<String> innerA = Observable.mutable("alpha");
+        MutableObservable<String> innerB = Observable.mutable("beta");
+        MutableObservable<String> innerC = Observable.mutable("gamma");
+
+        MutableObservable<MutableObservable<String>> outer = Observable.mutable(innerA);
+
+        Observable<String> flat = outer.flatMap(o -> o);
+        LazyWatcher<String> watcher = flat.lazyWatch();
+
+        // initially dirty
+        assertTrue(watcher.isDirty());
+
+        Entry<String, Boolean> result = watcher.getOrUpdate();
+        assertEquals("alpha", result.key());
+        assertTrue(result.value()); // had update
+        assertFalse(watcher.isDirty());
+
+        // no change — no update
+        result = watcher.getOrUpdate();
+        assertEquals("alpha", result.key());
+        assertFalse(result.value());
+
+        // inner A changes
+        innerA.set("alpha-2");
+        assertTrue(watcher.isDirty());
+
+        result = watcher.getOrUpdate();
+        assertEquals("alpha-2", result.key());
+        assertTrue(result.value());
+        assertFalse(watcher.isDirty());
+
+        // switch to inner B
+        outer.set(innerB);
+        assertTrue(watcher.isDirty());
+
+        result = watcher.getOrUpdate();
+        assertEquals("beta", result.key());
+        assertTrue(result.value());
+        assertFalse(watcher.isDirty());
+
+        // old inner A should not dirty watcher
+        innerA.set("alpha-stale");
+        assertFalse(watcher.isDirty());
+
+        result = watcher.getOrUpdate();
+        assertEquals("beta", result.key());
+        assertFalse(result.value()); // no update
+
+        // inner B changes
+        innerB.set("beta-2");
+        assertTrue(watcher.isDirty());
+
+        result = watcher.getOrUpdate();
+        assertEquals("beta-2", result.key());
+        assertTrue(result.value());
+
+        // switch to inner C
+        outer.set(innerC);
+        assertTrue(watcher.isDirty());
+
+        result = watcher.getOrUpdate();
+        assertEquals("gamma", result.key());
+        assertTrue(result.value());
+        assertFalse(watcher.isDirty());
+
+        // inner C changes
+        innerC.set("gamma-2");
+        result = watcher.getOrUpdate();
+        assertEquals("gamma-2", result.key());
+        assertTrue(result.value());
+
+        // neither A nor B affect watcher
+        innerA.set("x");
+        innerB.set("y");
+        assertFalse(watcher.isDirty());
+        result = watcher.getOrUpdate();
+        assertEquals("gamma-2", result.key());
+        assertFalse(result.value());
+    }
+
+    @Test
+    void sameBase() {
+        MutableObservable<String> prefixA = Observable.mutable("prefixA");
+        MutableObservable<String> prefixB = Observable.mutable("prefixB");
+
+        PlayerRank rankA = new PlayerRank("A", prefixA, Observable.mutable("suffix"));
+        PlayerRank rankB = new PlayerRank("B", prefixB, Observable.mutable("suffix"));
+
+        MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
+        Observable<String> flat = rank.flatMap(PlayerRank::prefix);
+
+        assertEquals("prefixA", flat.get());
+        rank.set(rankB);
+        assertEquals("prefixB", flat.get());
+
+        prefixA.set("prefixA-changed");
+        assertEquals("prefixB", flat.get());
+
+        rank.set(rankA);
+        rank.set(rankB);
+        assertEquals("prefixB", flat.get());
+    }
+
+    @Test
+    void noFlag() {
+        MutableObservable<String> prefixA = Observable.mutable("prefixA");
+        MutableObservable<String> prefixB = Observable.mutable("prefixB");
+
+        PlayerRank rankA = new PlayerRank("A", prefixA, Observable.mutable("suffix"));
+        PlayerRank rankB = new PlayerRank("B", prefixB, Observable.mutable("suffix"));
+
+        MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
+        Observable<String> flat = rank.flatMap(PlayerRank::prefix);
+
+        if (flat instanceof Observer observer) {
+            observer.flagAsDirty(null);
+            observer.flagAsDirty(prefixB);
+        }
     }
 
 }

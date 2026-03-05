@@ -27,31 +27,37 @@ import java.util.function.Function;
         this.mapper = mapper;
     }
 
+    private void updateBase() {
+        if (!baseDirty)
+            return;
+
+        baseDirty = false;
+
+        F parameter = base.get();
+        boolean same = Objects.equals(parameter, prev);
+        if (same)
+            return;
+
+        prev = parameter;
+
+        Observable<T> flat = mapper.apply(parameter);
+        if (flat == currentFlat)
+            return;
+
+        flatDirty = true;
+        if (currentFlat != null)
+            currentFlat.removeObserver(this);
+
+        currentFlat = flat;
+        currentFlat.observe(this);
+    }
+
     @Override
     public T get() {
         if (!baseDirty && !flatDirty)
             return currentValue;
 
-        if (baseDirty) {
-            F parameter = base.get();
-            boolean hadChange = !Objects.equals(parameter, prev);
-            if (parameter instanceof Collection<?>  a&& prev instanceof Collection<?> b)
-                hadChange = !CollectionHelpers.equalsCollections(a, b);
-
-            if (hadChange) {
-                prev = parameter;
-
-                Observable<T> flat = mapper.apply(parameter);
-                if (flat != currentFlat) {
-                    flatDirty = true;
-                    if (currentFlat != null)
-                        currentFlat.removeObserver(this);
-
-                    currentFlat = flat;
-                    currentFlat.observe(this);
-                }
-            }
-        }
+        updateBase();
 
         if (flatDirty) {
             currentValue = currentFlat.get();
