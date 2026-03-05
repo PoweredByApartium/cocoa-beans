@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import net.apartium.cocoabeans.structs.Entry;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -584,7 +585,7 @@ class FlatMapObservableTest {
     }
 
     @Test
-    void noFlag() {
+    void noFlag() throws NoSuchFieldException, IllegalAccessException {
         MutableObservable<String> prefixA = Observable.mutable("prefixA");
         MutableObservable<String> prefixB = Observable.mutable("prefixB");
 
@@ -593,9 +594,20 @@ class FlatMapObservableTest {
         MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
         Observable<String> flat = rank.flatMap(PlayerRank::prefix);
 
+        assertEquals("prefixA", flat.get());
+
         if (flat instanceof Observer observer) {
             observer.flagAsDirty(null);
             observer.flagAsDirty(prefixB);
+
+            Field baseDirty = FlatMapObservable.class.getDeclaredField("baseDirty");
+            baseDirty.setAccessible(true);
+
+            Field flatDirty = FlatMapObservable.class.getDeclaredField("flatDirty");
+            flatDirty.setAccessible(true);
+
+            assertFalse(baseDirty.getBoolean(flat));
+            assertFalse(flatDirty.getBoolean(flat));
         }
     }
 
