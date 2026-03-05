@@ -388,4 +388,33 @@ class CodeSnippets {
         assertEquals(Set.of(a, b), alivePlayers.get());
     }
 
+    public record PlayerRank(Observable<String> prefix, Observable<String> suffix) {}
+
+    @Test
+    void flatMap() {
+        MutableObservable<String> prefixA = Observable.mutable("[A]");
+        MutableObservable<String> prefixB = Observable.mutable("[B]");
+
+        PlayerRank rankA = new PlayerRank(prefixA, Observable.empty());
+        PlayerRank rankB = new PlayerRank(prefixB, Observable.empty());
+
+        MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
+
+        Observable<String> prefix = rank.flatMap(PlayerRank::prefix);
+        assertEquals("[A]", prefix.get());
+
+        prefixA.set("[A+]");
+        assertEquals("[A+]", prefix.get());
+
+        rank.set(rankB);
+        assertEquals("[B]", prefix.get());
+
+        prefixB.set("[B+]");
+        assertEquals("[B+]", prefix.get());
+
+        rank.set(rankA);
+        prefixA.set("[A-]");
+        assertEquals("[A-]", prefix.get());
+    }
+
 }

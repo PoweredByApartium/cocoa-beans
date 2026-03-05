@@ -332,6 +332,20 @@ public interface Observable<T> {
     }
 
     /**
+     * Maps this observable's value to another {@link Observable} and observes the latest one.
+     * When the source value changes, the previous inner observable is unsubscribed and the
+     * new one returned by the mapper is observed.
+     *
+     * @param mapper function mapping the current value to an observable
+     * @param <M> the mapped value type
+     * @return an observable
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    default <M> Observable<M> flatMap(Function<T, Observable<M>> mapper) {
+        return new FlatMapObservable<>(this, mapper);
+    }
+
+    /**
      * Create a watcher for the observable that will be attached to the given watcher manager and run the given action
      * @param watcherManager operator to attach to
      * @param consumer action to run
