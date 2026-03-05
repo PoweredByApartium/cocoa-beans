@@ -9,9 +9,9 @@ import java.util.function.Function;
     private T prev;
 
     private boolean baseDirty = true;
-    private boolean flatDirty = true;
+    private boolean innerDirty = true;
 
-    private Observable<R> currentFlat;
+    private Observable<R> currentInner;
     private R currentValue;
 
     private final Function<T, Observable<R>> mapper;
@@ -39,27 +39,27 @@ import java.util.function.Function;
         prev = parameter;
 
         Observable<R> flat = mapper.apply(parameter);
-        if (flat == currentFlat)
+        if (flat == currentInner)
             return;
 
-        flatDirty = true;
-        if (currentFlat != null)
-            currentFlat.removeObserver(this);
+        innerDirty = true;
+        if (currentInner != null)
+            currentInner.removeObserver(this);
 
-        currentFlat = flat;
-        currentFlat.observe(this);
+        currentInner = flat;
+        currentInner.observe(this);
     }
 
     @Override
     public R get() {
-        if (!baseDirty && !flatDirty)
+        if (!baseDirty && !innerDirty)
             return currentValue;
 
         updateBase();
 
-        if (flatDirty) {
-            currentValue = currentFlat.get();
-            flatDirty = false;
+        if (innerDirty) {
+            currentValue = currentInner.get();
+            innerDirty = false;
         }
 
         return currentValue;
@@ -88,9 +88,9 @@ import java.util.function.Function;
         if (base == observable) {
             notifyObservers();
             baseDirty = true;
-        } else if (currentFlat == observable) {
+        } else if (currentInner == observable) {
             notifyObservers();
-            flatDirty = true;
+            innerDirty = true;
         }
     }
 
