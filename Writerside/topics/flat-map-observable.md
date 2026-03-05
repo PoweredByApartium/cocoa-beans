@@ -17,7 +17,7 @@ public interface PlayerRank {
 }
 ```
 
-Then If we have:
+Then if we have:
 ```java
 Observable<PlayerRank> rank;
 ```

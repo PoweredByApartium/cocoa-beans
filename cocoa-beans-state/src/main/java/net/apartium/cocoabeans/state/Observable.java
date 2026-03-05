@@ -337,11 +337,11 @@ public interface Observable<T> {
      * new one returned by the mapper is observed.
      *
      * @param mapper function mapping the current value to an observable
-     * @param <M> the mapped value type
+     * @param <R> the mapped value type
      * @return an observable
      */
     @ApiStatus.AvailableSince("0.0.47")
-    default <M> Observable<M> flatMap(Function<T, Observable<M>> mapper) {
+    default <R> Observable<R> flatMap(Function<T, Observable<R>> mapper) {
         return new FlatMapObservable<>(this, mapper);
     }
 

@@ -1,26 +1,24 @@
 package net.apartium.cocoabeans.state;
 
-import net.apartium.cocoabeans.CollectionHelpers;
-
 import java.util.*;
 import java.util.function.Function;
 
-/* package-private */ class FlatMapObservable<F, T> implements Observable<T>, Observer {
+/* package-private */ class FlatMapObservable<T, R> implements Observable<R>, Observer {
 
-    private final Observable<F> base;
-    private F prev;
+    private final Observable<T> base;
+    private T prev;
 
     private boolean baseDirty = true;
     private boolean flatDirty = true;
 
-    private Observable<T> currentFlat;
-    private T currentValue;
+    private Observable<R> currentFlat;
+    private R currentValue;
 
-    private final Function<F, Observable<T>> mapper;
+    private final Function<T, Observable<R>> mapper;
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public FlatMapObservable(Observable<F> base, Function<F, Observable<T>> mapper) {
+    public FlatMapObservable(Observable<T> base, Function<T, Observable<R>> mapper) {
         this.base = base;
         this.base.observe(this);
 
@@ -33,14 +31,14 @@ import java.util.function.Function;
 
         baseDirty = false;
 
-        F parameter = base.get();
+        T parameter = base.get();
         boolean same = Objects.equals(parameter, prev);
         if (same)
             return;
 
         prev = parameter;
 
-        Observable<T> flat = mapper.apply(parameter);
+        Observable<R> flat = mapper.apply(parameter);
         if (flat == currentFlat)
             return;
 
@@ -53,7 +51,7 @@ import java.util.function.Function;
     }
 
     @Override
-    public T get() {
+    public R get() {
         if (!baseDirty && !flatDirty)
             return currentValue;
 
