@@ -611,4 +611,44 @@ class FlatMapObservableTest {
         }
     }
 
+    @Test
+    void nullInner() {
+        MutableObservable<String> prefixA = Observable.mutable("prefixA");
+        MutableObservable<String> prefixB = Observable.mutable("prefixB");
+
+        PlayerRank rankA = new PlayerRank("A", prefixA, Observable.mutable("suffix"));
+        PlayerRank rankB = new PlayerRank("B", prefixB, Observable.mutable("suffix"));
+
+        MutableObservable<PlayerRank> rank = Observable.mutable(null);
+        Observable<String> flat = rank.flatMap(PlayerRank::prefix);
+
+        assertNull(flat.get());
+
+        rank.set(rankB);
+        assertEquals("prefixB", flat.get());
+
+        rank.set(null);
+        assertNull(flat.get());
+
+        rank.set(rankA);
+        assertEquals("prefixA", flat.get());
+
+        rank.set(rankB);
+        assertEquals("prefixB", flat.get());
+    }
+
+    @Test
+    void nullPointInner() {
+        MutableObservable<Observable<String>> pointer = Observable.mutable(null);
+        MutableObservable<String> prefix = Observable.mutable("prefix");
+        pointer.set(prefix);
+
+        Observable<String> observable = Observable.immutable("test").flatMap(test -> pointer.flatMap(a -> a));
+
+        assertEquals("prefix", observable.get());
+
+        prefix.set(null);
+        assertNull(observable.get());
+    }
+
 }

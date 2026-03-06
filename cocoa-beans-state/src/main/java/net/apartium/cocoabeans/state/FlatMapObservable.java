@@ -38,6 +38,15 @@ import java.util.function.Function;
 
         prev = parameter;
 
+        if (parameter == null) {
+            if (currentInner != null)
+                currentInner.removeObserver(this);
+
+            currentValue = null;
+            currentInner = null;
+            return;
+        }
+
         Observable<R> inner = mapper.apply(parameter);
         if (inner == currentInner)
             return;
@@ -47,7 +56,8 @@ import java.util.function.Function;
             currentInner.removeObserver(this);
 
         currentInner = inner;
-        currentInner.observe(this);
+        if (currentInner != null)
+            currentInner.observe(this);
     }
 
     @Override
@@ -58,6 +68,11 @@ import java.util.function.Function;
         updateBase();
 
         if (innerDirty) {
+            if (currentInner == null) {
+                currentValue = null;
+                innerDirty = false;
+                return null;
+            }
             currentValue = currentInner.get();
             innerDirty = false;
         }
