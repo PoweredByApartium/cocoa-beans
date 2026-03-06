@@ -68,6 +68,11 @@ import java.util.function.Function;
         updateBase();
 
         if (innerDirty) {
+            if (currentInner == null) {
+                currentValue = null;
+                innerDirty = false;
+                return null;
+            }
             currentValue = currentInner.get();
             innerDirty = false;
         }
