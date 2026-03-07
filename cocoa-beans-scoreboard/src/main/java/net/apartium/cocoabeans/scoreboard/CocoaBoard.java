@@ -449,7 +449,8 @@ public abstract class CocoaBoard {
     }
 
     private boolean hasChange(ComponentEntry a, ComponentEntry b) {
-        return !Objects.equals(a, b) || (a != null && a.hasChange());
+        boolean equal = a == b || (a != null && b != null && a.component == b.component);
+        return !equal || (a != null && a.hasChange());
     }
 
     private void lines0(Collection<ComponentEntry> lines, Collection<ComponentEntry> scores, Collection<Style> numberStyles) {

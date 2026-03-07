@@ -13,6 +13,9 @@ if [ ! -d "docs" ]; then
   mkdir -p $docs/scoreboard
   mkdir -p $docs/scoreboard-spigot
   mkdir -p $docs/scoreboard-minestom
+  mkdir -p $docs/schematic
+  mkdir -p $docs/schematic-minestom
+  mkdir -p $docs/schematic-spigot
 
   ls $docs/
   cp -a cocoa-beans-common/build/docs/javadoc/* $docs/common
@@ -25,4 +28,7 @@ if [ ! -d "docs" ]; then
   cp -a cocoa-beans-scoreboard/build/docs/javadoc/* $docs/scoreboard
   cp -a cocoa-beans-scoreboard-spigot/build/docs/javadoc/* $docs/scoreboard-spigot
   cp -a cocoa-beans-scoreboard-minestom/build/docs/javadoc/* $docs/scoreboard-minestom
+  cp -a cocoa-beans-schematic/build/docs/javadoc/* $docs/schematic
+  cp -a cocoa-beans-schematic-minestom/build/docs/javadoc/* $docs/schematic-minestom
+  cp -a cocoa-beans-schematic-spigot/build/docs/javadoc/* $docs/schematic-spigot
 fi

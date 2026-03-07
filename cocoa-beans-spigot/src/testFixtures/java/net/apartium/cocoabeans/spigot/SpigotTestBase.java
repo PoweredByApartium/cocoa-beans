@@ -1,25 +1,34 @@
 package net.apartium.cocoabeans.spigot;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.craftbukkit.SpigotModernServerMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-public class CocoaBeansTestBase {
+public abstract class SpigotTestBase {
 
     protected ServerMock server;
-    protected JavaPlugin plugin;
+
+    protected MockPlugin plugin;
 
     @BeforeEach
     public void setup() {
-        server = MockBukkit.mock();
+        server = MockBukkit.mock(new SpigotModernServerMock());
         plugin = MockBukkit.createMockPlugin();
 
+        initialize();
     }
+
+    public void initialize() {}
 
     @AfterEach
     public void tearDown() {
         MockBukkit.unmock();
+        server = null;
+        plugin = null;
     }
+
+
 }

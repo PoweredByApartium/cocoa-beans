@@ -1,0 +1,31 @@
+package net.apartium.cocoabeans.schematic.block;
+
+import net.apartium.cocoabeans.structs.NamespacedKey;
+import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
+
+import java.util.Map;
+
+/**
+ * Represents a block data
+ */
+@NullMarked
+@ApiStatus.AvailableSince("0.0.46")
+public interface BlockData {
+
+    /**
+     * Type of block
+     * @return the type as a namespace key
+     */
+    NamespacedKey type();
+
+    /**
+     * props are metadata for blocks,
+     * for example, "facing"=Direction.NORTH
+     * @return block props or empty if it has none
+     */
+    Map<String, BlockProp<?>> props();
+
+
+}

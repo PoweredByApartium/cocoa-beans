@@ -1,0 +1,22 @@
+package net.apartium.cocoabeans.spigot.schematic.prop;
+
+import net.apartium.cocoabeans.schematic.prop.IntBlockProp;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Beehive;
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.AvailableSince("0.0.46")
+public class BeeHiveHoneyLevelProp extends IntBlockProp implements SpigotPropHandler {
+
+    public BeeHiveHoneyLevelProp(int value) {
+        super(value);
+    }
+
+    @Override
+    public void update(BlockData blockData) {
+        if (!(blockData instanceof Beehive beehive))
+            return;
+
+        beehive.setHoneyLevel(value);
+    }
+}

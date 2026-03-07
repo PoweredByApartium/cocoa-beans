@@ -42,4 +42,30 @@ class MathfTest {
         assertEquals(100.0, Mathf.lerp(0.0, 100.0, 1));
     }
 
+    @Test
+    void nextPowerOfFourTest() {
+        // Edge cases
+        assertEquals(1L, Mathf.nextPowerOfFour(0));
+        assertEquals(1L, Mathf.nextPowerOfFour(1));
+        // Powers of four
+        assertEquals(4L, Mathf.nextPowerOfFour(2));
+        assertEquals(4L, Mathf.nextPowerOfFour(3));
+        assertEquals(4L, Mathf.nextPowerOfFour(4));
+        assertEquals(16L, Mathf.nextPowerOfFour(5));
+        assertEquals(16L, Mathf.nextPowerOfFour(16));
+        assertEquals(64L, Mathf.nextPowerOfFour(17));
+    }
+
+    @Test
+    void log4Test() {
+        assertEquals(0.0, Mathf.log4(1L), 1e-9);
+        assertEquals(1.0, Mathf.log4(4L), 1e-9);
+        assertEquals(2.0, Mathf.log4(16L), 1e-9);
+        assertEquals(3.0, Mathf.log4(64L), 1e-9);
+        assertEquals(4.0, Mathf.log4(256L), 1e-9);
+        // Non-exact power of four
+        double val = Mathf.log4(10L);
+        assertEquals(Math.log(10L) / Math.log(4), val, 1e-9);
+    }
+
 }

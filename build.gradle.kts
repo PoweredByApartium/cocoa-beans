@@ -116,9 +116,11 @@ allprojects {
 
     dependencies {
         compileOnly(rootProject.libs.jackson.annotations)
-
+        compileOnly(rootProject.libs.jspecify)
         compileOnly(rootProject.libs.jetbrains.annotations)
+
         testCompileOnly(rootProject.libs.jetbrains.annotations)
+        testCompileOnly(rootProject.libs.jspecify)
 
         testImplementation(platform(rootProject.libs.junit.bom))
 
