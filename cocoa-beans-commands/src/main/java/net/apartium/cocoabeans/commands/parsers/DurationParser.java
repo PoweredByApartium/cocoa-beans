@@ -109,17 +109,15 @@ public class DurationParser extends ArgumentParser<Duration> {
 
         for (int i = 0; i < arg.length(); i++) {
             char c = arg.charAt(i);
-            if (Character.isDigit(c)) {
-                num = num * 10 + (c - '0');
-                numByTen = num * 10;
-                if (num > numByTen)
-                    return null;
-
-                continue;
+            if (!Character.isDigit(c)) {
+                splitIndex = i;
+                break;
             }
 
-            splitIndex = i;
-            break;
+            num = num * 10 + (c - '0');
+            numByTen = num * 10;
+            if (num > numByTen)
+                return null;
         }
 
         if (splitIndex == -1 || splitIndex == 0)
