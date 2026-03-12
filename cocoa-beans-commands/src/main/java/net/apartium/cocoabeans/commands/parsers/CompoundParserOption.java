@@ -86,6 +86,7 @@ import java.util.*;
                 Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = parser.tabCompletion(processingContext);
                 if (tabCompletionResult.isPresent()) {
                     result.addAll(tabCompletionResult.get().result());
+                    highestIndex = Math.max(highestIndex, tabCompletionResult.get().newIndex());
                     continue;
                 }
             }
