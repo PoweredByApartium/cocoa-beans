@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id("com.gradleup.shadow") version "9.0.2"
+    id("com.gradleup.shadow")
     id("java-library")
 }
 
@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":cocoa-beans-commands-spigot"))
     implementation(project(":cocoa-beans-state-spigot"))
     implementation(project(":cocoa-beans-scoreboard-spigot"))
+    implementation(project(":cocoa-beans-schematic-spigot"))
 
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.mock.bukkit)

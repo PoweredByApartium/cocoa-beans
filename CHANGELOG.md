@@ -1,6 +1,22 @@
 # CHANGELOG
-## 0.0.44
+## 0.0.47
 - [commands] Add DurationParser
+- [state] Add `Observable#flatMap` for flattening observables
+
+## 0.0.46
+- [schematic] Introduce schematic API
+- [state] Add `CollectionObservable#filter(Function<E, Observable<Boolean>>)` for live filtered collection views
+- [scoreboard] Fixes identity issue with internal stuff
+- [scoreboard-spigot] Add support for minecraft 1.21.6
+- [common] Bump Minecraft versions from 1.21.6 to 1.21.11
+- [common] Make MinecraftVersion comparable
+- [repo] Remove all references to the old nexus instance
+
+## 0.0.45
+- [common] Add DNSLookup
+
+## 0.0.44
+- [commands] Add ArgumentConverter
 
 ## 0.0.43
 - [repo] Add `cocoa-beans-` prefix to bom artifact

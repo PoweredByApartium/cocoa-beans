@@ -22,12 +22,31 @@ class ClassUtilsTest {
 
     @Test
     void getSuperClassAndInterfacesList() {
-        assertEquals(Set.of(List.class, Collection.class, Iterable.class), ClassUtils.getSuperClassAndInterfaces(List.class));
+        assertEquals(Set.of(E.class, A.class, B.class, C.class, D.class), ClassUtils.getSuperClassAndInterfaces(E.class));
     }
 
-    @Test
-    void getSuperClassAndInterfacesArrayList() {
-        assertEquals(Set.of(Serializable.class, Cloneable.class, RandomAccess.class, ArrayList.class, AbstractList.class, AbstractCollection.class, List.class, Collection.class, Iterable.class), ClassUtils.getSuperClassAndInterfaces(ArrayList.class));
+    private interface A {
+
+    }
+
+    private interface B extends A {
+
+    }
+
+    private interface C {
+
+    }
+
+    private interface D extends B, C {
+
+    }
+
+    private class E implements D {
+
+        private E() {
+
+        }
+
     }
 
 }

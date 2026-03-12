@@ -16,8 +16,8 @@ import net.apartium.cocoabeans.commands.spigot.SpigotCommandManager;
 import net.apartium.cocoabeans.spigot.board.BoardManager;
 import net.apartium.cocoabeans.spigot.board.ScoreboardNumericManager;
 import net.apartium.cocoabeans.spigot.commands.CocoaBoardCommand;
+import net.apartium.cocoabeans.spigot.commands.SchematicCommand;
 import net.apartium.cocoabeans.spigot.commands.TabListCommand;
-import net.apartium.cocoabeans.spigot.commands.TestCommand;
 import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
 import net.apartium.cocoabeans.spigot.tab.TabManager;
 import net.apartium.cocoabeans.spigot.team.TeamManager;
@@ -58,6 +58,7 @@ public class TestCocoaBeansSpigotLoader extends JavaPlugin {
         commandManager.addCommand(new CocoaBoardCommand(boardManager, teamManager, scoreboardNumericManager));
         commandManager.addCommand(new TabListCommand(tabManager));
         commandManager.addCommand(new TestCommand());
+        commandManager.addCommand(new SchematicCommand(this));
 
         ListenerAutoRegistration listenerAutoRegistration = new ListenerAutoRegistration(this, false);
         listenerAutoRegistration.addInjectableObject(boardManager);

@@ -183,13 +183,6 @@ AttachedWatcher *-- WatcherOperator::detach
 <tab title="Maven">
 
 ```xml
-<repositories>
-    <repository>
-        <id>apartium-releases</id>
-        <url>https://nexus.voigon.dev/repository/apartium-releases</url>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
@@ -235,9 +228,11 @@ dependencies {
 * [](mutable-observable.md) <sub> Dynamic observable value </sub>
 * [](compound-observable.md) <sub> Compound two or more observables </sub>
 * [](mapped-observable.md) <sub> Map one Observable value to another value </sub>
-* [](collection-observable.md): <sub> List, Set, Map </sub>
+* [](flat-map-observable.md) <sub> Flat map one Observable into value of another Observable </sub>
+* [](collection-observable.md): <sub> List, Set, Map, Filter </sub>
     * [](list-observable.md) <sub> List that could be observer </sub>
     * [](set-observable.md) <sub> Set that could be observer </sub>
+    * [](filtering-collection-observable.md) <sub> Filter collection observable </sub>
 * [](observer.md) <sub><a href="https://refactoring.guru/design-patterns/observer"> Observer pattern </a></sub>
 * [](watcher.md) <sub> Observer any changes and run the function on heartbeat </sub>
 * [Javadocs](https://cocoa-beans.apartium.net/%version%/state/net/apartium/cocoabeans/state/package-summary.html)

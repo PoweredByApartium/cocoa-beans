@@ -11,6 +11,7 @@
 package net.apartium.cocoabeans.structs;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public record MinecraftVersion(
         int minor,
         @ApiStatus.AvailableSince("0.0.36")
         int protocol
-) {
+) implements Comparable<MinecraftVersion> {
 
     public static final MinecraftVersion UNKNOWN = new MinecraftVersion(0, 0, 0, 0);
 
@@ -112,6 +113,12 @@ public record MinecraftVersion(
     public static final MinecraftVersion V1_21_3 = new MinecraftVersion(1, 21, 3, 768);
     public static final MinecraftVersion V1_21_4 = new MinecraftVersion(1, 21, 4, 769);
     public static final MinecraftVersion V1_21_5 = new MinecraftVersion(1, 21, 5, 770);
+    public static final MinecraftVersion V1_21_6 = new MinecraftVersion(1, 21, 6, 771);
+    public static final MinecraftVersion V1_21_7 = new MinecraftVersion(1, 21, 7, 772);
+    public static final MinecraftVersion V1_21_8 = new MinecraftVersion(1, 21, 8, 772);
+    public static final MinecraftVersion V1_21_9 = new MinecraftVersion(1, 21, 9, 773);
+    public static final MinecraftVersion V1_21_10 = new MinecraftVersion(1, 21, 10, 773);
+    public static final MinecraftVersion V1_21_11 = new MinecraftVersion(1, 21, 11, 774);
 
 
     public static final List<MinecraftVersion> KNOWN_VERSIONS = List.of(
@@ -199,13 +206,19 @@ public record MinecraftVersion(
             V1_20_5,
             V1_20_6,
 
-            // 1.21 - 1.21.5
+            // 1.21 - 1.21.11
             V1_21,
             V1_21_1,
             V1_21_2,
             V1_21_3,
             V1_21_4,
-            V1_21_5
+            V1_21_5,
+            V1_21_6,
+            V1_21_7,
+            V1_21_8,
+            V1_21_9,
+            V1_21_10,
+            V1_21_11
     );
 
     /**
@@ -324,6 +337,21 @@ public record MinecraftVersion(
     @ApiStatus.AvailableSince("0.0.36")
     public boolean isProtocolKnown() {
         return protocol > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @ApiStatus.AvailableSince("0.0.46")
+    @Override
+    public int compareTo(@NotNull MinecraftVersion other) {
+        if (major() != other.major())
+            return Integer.compare(major(), other.major());
+
+        if (update() != other.update())
+            return Integer.compare(update(), other.update());
+
+        return Integer.compare(minor(), other.minor());
     }
 
 }

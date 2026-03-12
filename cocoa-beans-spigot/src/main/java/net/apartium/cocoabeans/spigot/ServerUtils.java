@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot;
 
+import net.apartium.cocoabeans.structs.MinecraftPlatform;
 import net.apartium.cocoabeans.structs.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.ApiStatus;
@@ -29,6 +30,8 @@ public class ServerUtils {
 
     private static final MinecraftVersion version = detectVersion();
 
+    private static final MinecraftPlatform platform = new MinecraftPlatform(version, "spigot", Bukkit.getVersion());
+
     /**
      * Get game version of the running server
      * For example GameVersion(1, 8, 0)
@@ -37,6 +40,15 @@ public class ServerUtils {
      */
     public static @NotNull MinecraftVersion getVersion() {
         return version;
+    }
+
+    /**
+     * Get the platform of the running server, including version and implementation details
+     * @return platform details
+     * @see MinecraftPlatform
+     */
+    public static @NotNull MinecraftPlatform getPlatform() {
+        return platform;
     }
 
     @ApiStatus.Internal
@@ -49,7 +61,7 @@ public class ServerUtils {
             try {
                 return MinecraftVersion.getVersion(Integer.parseInt(split[0]), Integer.parseInt(split[1]), split.length == 2 ? 0 : Integer.parseInt(split[2]), ServerUtils::getProtocolVersion);
             } catch (NumberFormatException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "An error occurred while parsing version string: " + version, e);
+                severe("An error occurred while parsing version string: " + version, e);
                 return MinecraftVersion.UNKNOWN;
             }
         }
@@ -61,9 +73,13 @@ public class ServerUtils {
             Class<?> constants = Class.forName("net.minecraft.SharedConstants");
             return (int) constants.getMethod("getProtocolVersion").invoke(null);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "An error occurred while trying to get protocol version (defaulting to -1)", e);
+            severe("An error occurred while trying to get protocol version (defaulting to -1)", e);
             return -1;
         }
+    }
+
+    private static void severe(String message, Throwable e) {
+        CocoaBeanLogger.getLogger().log(Level.SEVERE, message, e);
     }
 
     private static String extractVersionNumber(String versionString) {

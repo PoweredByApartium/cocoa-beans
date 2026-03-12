@@ -23,6 +23,12 @@ public class TestCommandManager extends CommandManager {
 
     }
 
+
+    public TestCommandManager(SimpleArgumentMapper simpleArgumentMapper, SimpleCommandLexer commandLexer) {
+        super(Logger.getLogger(TestCommandManager.class.getName()), simpleArgumentMapper, commandLexer);
+
+    }
+
     @Override
     protected void addCommand(CommandNode commandNode, Command command) {
 

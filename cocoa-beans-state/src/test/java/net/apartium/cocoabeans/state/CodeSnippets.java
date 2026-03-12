@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -306,6 +307,114 @@ class CodeSnippets {
         assertEquals(Set.of("ikfir"), names.get());
 
         assertTrue(names.get().contains("ikfir"));
+    }
+
+    public enum PlayerState {
+        DEAD, ALIVE, SPECTATOR;
+
+        public boolean isAlive() {
+            return this == ALIVE;
+        }
+    }
+
+    public class GamePlayer {
+        private final UUID uuid;
+
+        private final MutableObservable<Boolean> online;
+        private final MutableObservable<PlayerState> state;
+
+        // Derived observable predicate per element
+        private final Observable<Boolean> alive;
+
+        public GamePlayer(UUID uuid) {
+            this.uuid = uuid;
+            this.online = Observable.mutable(false);
+            this.state = Observable.mutable(PlayerState.DEAD);
+
+            this.alive = Observable.compound(online, state)
+                    .map(args -> args.arg0() && args.arg1().isAlive());
+        }
+
+        public UUID getUUID() {
+            return uuid;
+        }
+
+        public Observable<Boolean> getAlive() {
+            return alive;
+        }
+
+        public void setOnline(boolean online) {
+            this.online.set(online);
+        }
+
+        public void setSpectator() {
+            this.state.set(PlayerState.SPECTATOR);
+        }
+
+        public void setDead() {
+            this.state.set(PlayerState.DEAD);
+        }
+
+        public void respawn() {
+            this.state.set(PlayerState.ALIVE);
+        }
+    }
+
+    @Test
+    void filteredCollection() {
+        SetObservable<GamePlayer> players = Observable.set();
+
+        CollectionObservable<GamePlayer, Set<GamePlayer>> alivePlayers =
+                players.filter(GamePlayer::getAlive);
+
+        GamePlayer a = new GamePlayer(UUID.randomUUID());
+        GamePlayer b = new GamePlayer(UUID.randomUUID());
+
+        players.add(a);
+        players.add(b);
+
+        assertEquals(Set.of(), alivePlayers.get());
+
+        a.setOnline(true);
+
+        assertEquals(Set.of(), alivePlayers.get());
+
+        a.respawn();
+        assertEquals(Set.of(a), alivePlayers.get());
+
+        b.setOnline(true);
+        b.respawn();
+
+        assertEquals(Set.of(a, b), alivePlayers.get());
+    }
+
+    public record PlayerRank(Observable<String> prefix, Observable<String> suffix) {}
+
+    @Test
+    void flatMap() {
+        MutableObservable<String> prefixA = Observable.mutable("[A]");
+        MutableObservable<String> prefixB = Observable.mutable("[B]");
+
+        PlayerRank rankA = new PlayerRank(prefixA, Observable.empty());
+        PlayerRank rankB = new PlayerRank(prefixB, Observable.empty());
+
+        MutableObservable<PlayerRank> rank = Observable.mutable(rankA);
+
+        Observable<String> prefix = rank.flatMap(PlayerRank::prefix);
+        assertEquals("[A]", prefix.get());
+
+        prefixA.set("[A+]");
+        assertEquals("[A+]", prefix.get());
+
+        rank.set(rankB);
+        assertEquals("[B]", prefix.get());
+
+        prefixB.set("[B+]");
+        assertEquals("[B+]", prefix.get());
+
+        rank.set(rankA);
+        prefixA.set("[A-]");
+        assertEquals("[A-]", prefix.get());
     }
 
 }
