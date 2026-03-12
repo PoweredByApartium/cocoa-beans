@@ -289,4 +289,9 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
 
     }
 
+    @Override
+    public boolean isSupportMultipleArguments() {
+        return true;
+    }
+
 }

@@ -64,7 +64,11 @@ public class CommandsSpigotTestBase {
     }
 
     public List<String> evaluateTabCompletion(CommandSender sender, String label, String args) {
-        return commandManager.handleTabComplete(new SpigotSender<>(sender), label, args.split("\\s+"));
+        return evaluateTabCompletion(sender, label, args.split("\\s+"));
+    }
+
+    public List<String> evaluateTabCompletion(CommandSender sender, String label, String[] args) {
+        return commandManager.handleTabComplete(new SpigotSender<>(sender), label, args);
     }
 
 }

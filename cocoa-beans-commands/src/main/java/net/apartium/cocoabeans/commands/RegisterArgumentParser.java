@@ -101,6 +101,11 @@ public class RegisterArgumentParser<T> extends ArgumentParser<T> {
     }
 
     @Override
+    public boolean isSupportMultipleArguments() {
+        return parser.isSupportMultipleArguments();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

@@ -52,20 +52,64 @@ import java.util.*;
         return Optional.empty();
     }
 
+    private Optional<ArgumentParser.TabCompletionResult> lastArgTabCompletion(CommandProcessingContext processingContext, int highestIndex, Set<String> result) {
+        for (Entry<RegisterArgumentParser<?>, CompoundParserBranchProcessor<T>> entry : argumentTypeHandlerMap) {
+
+            Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(processingContext);
+            if (tabCompletionResult.isEmpty())
+                continue;
+
+            highestIndex = Math.max(highestIndex, tabCompletionResult.get().newIndex());
+            result.addAll(tabCompletionResult.get().result());
+        }
+
+        if (result.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new ArgumentParser.TabCompletionResult(result, highestIndex));
+    }
 
     public Optional<ArgumentParser.TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        Set<String> result = new HashSet<>();
+        if (processingContext.args().size() <= processingContext.index())
+            return Optional.empty();
 
-        int highestIndex = -1;
+        Set<String> result = new HashSet<>();
+        int highestIndex = processingContext.index();
+
+        if (processingContext.args().size() - 1 == processingContext.index())
+            return lastArgTabCompletion(processingContext, highestIndex, result);
 
         for (Entry<RegisterArgumentParser<?>, CompoundParserBranchProcessor<T>> entry : argumentTypeHandlerMap) {
-            Optional<ArgumentParser.TabCompletionResult> parse = entry.key().tabCompletion(processingContext);
+            RegisterArgumentParser<?> parser = entry.key();
 
+            if (parser.isSupportMultipleArguments()) {
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = parser.tabCompletion(processingContext);
+                if (tabCompletionResult.isPresent()) {
+                    result.addAll(tabCompletionResult.get().result());
+                    highestIndex = Math.max(highestIndex, tabCompletionResult.get().newIndex());
+                    continue;
+                }
+            }
+
+            OptionalInt parse = parser.tryParse(processingContext);
             if (parse.isEmpty())
                 continue;
 
-            highestIndex = Math.max(highestIndex, parse.get().newIndex());
-            result.addAll(parse.get().result());
+            int newIndex = parse.getAsInt();
+            if (newIndex <= processingContext.index())
+                throw new IllegalStateException("There is an exception with " + parser.parser().getClass().getName() + " return new index that isn't bigger then current index");
+
+            Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.value().tabCompletion(new SimpleCommandProcessingContext(
+                    processingContext.sender(),
+                    processingContext.label(),
+                    processingContext.args().toArray(new String[0]), newIndex)
+            );
+
+            if (tabCompletionResult.isEmpty())
+                continue;
+
+            highestIndex = Math.max(highestIndex, tabCompletionResult.get().newIndex());
+            result.addAll(tabCompletionResult.get().result());
         }
 
         if (result.isEmpty())
