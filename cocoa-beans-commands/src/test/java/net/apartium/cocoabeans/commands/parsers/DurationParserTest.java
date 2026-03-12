@@ -123,8 +123,8 @@ class DurationParserTest {
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12a"), null);
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12aasd"), null);
 
-        Map<String, Duration> EMPTY_UNITS = Map.of();
-        assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, EMPTY_UNITS));
+        Map<String, Duration> emptyUnits = Map.of();
+        assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, emptyUnits));
         assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, null));
     }
 
