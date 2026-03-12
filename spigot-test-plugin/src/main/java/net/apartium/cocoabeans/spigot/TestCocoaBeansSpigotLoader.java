@@ -18,6 +18,7 @@ import net.apartium.cocoabeans.spigot.board.ScoreboardNumericManager;
 import net.apartium.cocoabeans.spigot.commands.CocoaBoardCommand;
 import net.apartium.cocoabeans.spigot.commands.SchematicCommand;
 import net.apartium.cocoabeans.spigot.commands.TabListCommand;
+import net.apartium.cocoabeans.spigot.commands.TestCommand;
 import net.apartium.cocoabeans.spigot.lazies.ListenerAutoRegistration;
 import net.apartium.cocoabeans.spigot.tab.TabManager;
 import net.apartium.cocoabeans.spigot.team.TeamManager;

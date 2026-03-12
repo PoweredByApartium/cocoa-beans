@@ -291,6 +291,24 @@ import java.util.*;
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
             ArgumentParser<?> typeParser = entry.key();
+
+            if (typeParser.isSupportMultipleArguments()) {
+                Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = typeParser.tabCompletion(new SimpleCommandProcessingContext(
+                        sender,
+                        commandName,
+                        args,
+                        index
+                ));
+
+                if (tabCompletionResult.isPresent()) {
+                    if (tabCompletionResult.get().newIndex() < args.length)
+                        continue;
+
+                    result.addAll(tabCompletionResult.get().result());
+                    continue;
+                }
+            }
+
             OptionalInt parse = typeParser.tryParse(new SimpleCommandProcessingContext(sender, commandName, args, index));
             if (parse.isEmpty()) {
                 if (!entry.value().haveAnyRequirementsMeet(sender, commandName, args, index))

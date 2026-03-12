@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@ApiStatus.AvailableSince("0.0.44")
+@ApiStatus.AvailableSince("0.0.47")
 public class DurationParser extends ArgumentParser<Duration> {
 
     public static final String DEFAULT_KEYWORD = "duration";
@@ -33,7 +33,7 @@ public class DurationParser extends ArgumentParser<Duration> {
      * @param units units of time
      */
     protected DurationParser(String keyword, int priority, Map<String, Duration> units) {
-        super(keyword, Duration.class, priority);
+        super(keyword, Duration.class, priority, true);
 
         if (units == null || units.isEmpty())
             throw new IllegalArgumentException("units cannot be null or empty");
@@ -148,6 +148,10 @@ public class DurationParser extends ArgumentParser<Duration> {
                     Set.of("1", "2", "3", "4", "5", "6", "7", "8", "9"),
                     index + 1
             ));
+
+        index = tryParse(processingContext).orElse(index);
+        if (index >= args.size())
+            index -= 1;
 
         long asLong = 0;
         String arg = args.get(index);
