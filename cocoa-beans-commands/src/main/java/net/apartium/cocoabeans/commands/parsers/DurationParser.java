@@ -138,6 +138,34 @@ public class DurationParser extends ArgumentParser<Duration> {
                 .orElse(OptionalInt.empty());
     }
 
+    private Optional<TabCompletionResult> numberTabCompletion(String arg, int index, List<String> args, long asLong, int lastArgIndex) {
+        Set<String> result = new HashSet<>();
+        for (int i = asLong == 0 ? 1 : 0; i < 10; i++) {
+            long num = (asLong * 10 + i);
+            if (asLong > num)
+                break;
+
+            result.add(args.get(index) + i);
+        }
+
+        if (arg.length() == lastArgIndex) {
+            final long finalAsLong = asLong;
+            result.addAll(this.units.keySet()
+                    .stream()
+                    .map(unit -> finalAsLong + unit)
+                    .collect(Collectors.toSet())
+            );
+        }
+
+        if (result.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new TabCompletionResult(
+                result,
+                index + 1
+        ));
+    }
+
     @Override
     public Optional<TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
         List<String> args = processingContext.args();
@@ -171,33 +199,8 @@ public class DurationParser extends ArgumentParser<Duration> {
             numberComplete = false;
         }
 
-        if (numberComplete) {
-            Set<String> result = new HashSet<>();
-            for (int i = asLong == 0 ? 1 : 0; i < 10; i++) {
-                long num = (asLong * 10 + i);
-                if (asLong > num)
-                    break;
-
-                result.add(args.get(index) + i);
-            }
-
-            if (arg.length() == lastArgIndex) {
-                final long finalAsLong = asLong;
-                result.addAll(this.units.keySet()
-                        .stream()
-                        .map(unit -> finalAsLong + unit)
-                        .collect(Collectors.toSet())
-                );
-            }
-
-            if (result.isEmpty())
-                return Optional.empty();
-
-            return Optional.of(new TabCompletionResult(
-                    result,
-                    index + 1
-            ));
-        }
+        if (numberComplete)
+            return numberTabCompletion(arg, index, args, asLong, lastArgIndex);
 
         String attemptUnit = arg.substring(lastArgIndex);
         final long finalAsLong = asLong;

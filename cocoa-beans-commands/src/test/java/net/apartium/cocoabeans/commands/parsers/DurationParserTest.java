@@ -13,6 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DurationParserTest {
 
     @Test
+    void parseInMiddle() {
+        DurationParser parser = new DurationParser();
+
+        assertParserResult(parser, null, null, args("ban Tomvival 30m \"Cheating\""), 2, new ArgumentParser.ParseResult<>(Duration.ofMinutes(30), 3));
+        assertParserResult(parser, null, null, args("ban Tomvival 1h 30m \"Cheating\""), 2, new ArgumentParser.ParseResult<>(Duration.ofMinutes(90), 4));
+    }
+
+    @Test
     void simple() {
         DurationParser parser = new DurationParser();
 
@@ -115,7 +123,8 @@ class DurationParserTest {
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12a"), null);
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12aasd"), null);
 
-        assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, Map.of()));
+        Map<String, Duration> EMPTY_UNITS = Map.of();
+        assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, EMPTY_UNITS));
         assertThrows(IllegalArgumentException.class, () -> new DurationParser("a", 0, null));
     }
 
