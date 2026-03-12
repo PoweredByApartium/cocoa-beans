@@ -105,7 +105,7 @@ public class DurationParser extends ArgumentParser<Duration> {
     private ArgResult parseArg(String arg) {
         int splitIndex = -1;
         long num = 0;
-        long numByTen;
+        long prevNum = num;
 
         for (int i = 0; i < arg.length(); i++) {
             char c = arg.charAt(i);
@@ -115,9 +115,10 @@ public class DurationParser extends ArgumentParser<Duration> {
             }
 
             num = num * 10 + (c - '0');
-            numByTen = num * 10;
-            if (num > numByTen)
+            if (prevNum > num)
                 return null;
+
+            prevNum = num;
         }
 
         if (splitIndex == -1 || splitIndex == 0)

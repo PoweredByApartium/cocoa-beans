@@ -112,6 +112,12 @@ class DurationParserTest {
                         .plus(Duration.ofMinutes(10)),
                 6)
         );
+
+        assertParserResult(
+                parser, null, null, args("9223372036854775807s"), new ArgumentParser.ParseResult<>(
+                        Duration.ofSeconds(9223372036854775807L), 1
+                )
+        );
     }
 
     @Test
@@ -120,6 +126,7 @@ class DurationParserTest {
 
         assertNotParserResult(parser, null, null, args("meow"), null);
         assertNotParserResult(parser, null, null, args("18446744073709551613s"), null);
+        assertNotParserResult(parser, null, null, args("9223372036854775808s"), null);
         assertNotParserResult(parser, null, null, new String[0], null);
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12a"), null);
         assertNotParserResult(new DurationParser("meow", 0, Map.of("lo", Duration.ofMinutes(5))), null, null, args("12aasd"), null);
