@@ -64,6 +64,7 @@ public class DurationParser extends ArgumentParser<Duration> {
         this(0);
     }
 
+    private record ArgResult(long value, Duration unit) { }
 
     @Override
     public Optional<ParseResult<Duration>> parse(CommandProcessingContext context) {
@@ -76,8 +77,8 @@ public class DurationParser extends ArgumentParser<Duration> {
 
         Duration total = Duration.ZERO;
         for (int index = startIndex; index < args.size(); index++) {
-            Object[] objects = parseArg(args.get(index));
-            if (objects == null) {
+            ArgResult argResult = parseArg(args.get(index));
+            if (argResult == null) {
                 if (total.isZero()) {
                     return Optional.empty();
                 }
@@ -88,8 +89,8 @@ public class DurationParser extends ArgumentParser<Duration> {
                 ));
             }
 
-            long value = (long) objects[0];
-            Duration base = (Duration) objects[1];
+            long value = argResult.value();
+            Duration base = argResult.unit();
 
             Duration duration = base.multipliedBy(value);
             total = total.plus(duration);
@@ -101,14 +102,19 @@ public class DurationParser extends ArgumentParser<Duration> {
         ));
     }
 
-    private Object[] parseArg(String arg) {
+    private ArgResult parseArg(String arg) {
         int splitIndex = -1;
         long num = 0;
+        long numByTen;
 
         for (int i = 0; i < arg.length(); i++) {
             char c = arg.charAt(i);
             if (Character.isDigit(c)) {
                 num = num * 10 + (c - '0');
+                numByTen = num * 10;
+                if (num > numByTen)
+                    return null;
+
                 continue;
             }
 
@@ -128,7 +134,7 @@ public class DurationParser extends ArgumentParser<Duration> {
         if (duration == null)
             return null;
 
-        return new Object[]{num, duration};
+        return new ArgResult(num, duration);
     }
 
     @Override
