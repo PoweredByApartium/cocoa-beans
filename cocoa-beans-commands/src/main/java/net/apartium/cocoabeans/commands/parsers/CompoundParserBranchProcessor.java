@@ -38,10 +38,16 @@ import java.util.*;
     }
 
     public Optional<ArgumentParser.TabCompletionResult> tabCompletion(CommandProcessingContext processingContext) {
-        RequirementEvaluationContext requirementEvaluationContext = new RequirementEvaluationContext(processingContext.sender(), processingContext.label(), processingContext.args().toArray(new String[0]), processingContext.index());
+        RequirementEvaluationContext requirementEvaluationContext = new RequirementEvaluationContext(
+                processingContext.sender(),
+                processingContext.label(),
+                processingContext.args().toArray(new String[0]),
+                processingContext.index()
+
+        );
 
         Set<String> result = new HashSet<>();
-        int highestIndex = -1;
+        int highestIndex = processingContext.index();
 
         for (Entry<RequirementSet, CompoundParserOption<T>> entry : objectMap) {
             if (!entry.key().meetsRequirements(requirementEvaluationContext).meetRequirement())

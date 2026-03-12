@@ -1,6 +1,7 @@
 # CHANGELOG
 ## 0.0.47
 - [commands] Add DurationParser
+- [commands] Fix `CompoundParser` tab completion multiple arguments
 - [commands] Add ArgumentParser support multiple arguments
 - [state] Add `Observable#flatMap` for flattening observables
 

@@ -98,6 +98,11 @@ public class WrappedArgumentParser<T> extends ArgumentParser<T> {
     }
 
     @Override
+    public boolean isSupportMultipleArguments() {
+        return parser.isSupportMultipleArguments();
+    }
+
+    @Override
     public int hashCode() {
         return parser.hashCode();
     }

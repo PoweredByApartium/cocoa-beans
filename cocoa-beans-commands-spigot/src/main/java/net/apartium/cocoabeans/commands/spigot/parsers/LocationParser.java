@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
+import net.apartium.cocoabeans.commands.EvaluationContext;
 import net.apartium.cocoabeans.commands.lexer.SimpleCommandLexer;
 import net.apartium.cocoabeans.commands.parsers.*;
 import net.apartium.cocoabeans.commands.spigot.SenderType;
@@ -57,7 +58,7 @@ public class LocationParser extends WrappedArgumentParser<Location> {
     private static class LocationParserImpl extends CompoundParser<Location> {
 
         public LocationParserImpl(String keyword, int priority) {
-            super(keyword, Location.class, priority, new SpigotArgumentMapper(), new SimpleCommandLexer());
+            super(keyword, Location.class, priority, new EvaluationContext(new SimpleCommandLexer(), new SpigotArgumentMapper()));
         }
 
         @ParserVariant("<world> <double> <double> <double>")

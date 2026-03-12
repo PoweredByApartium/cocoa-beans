@@ -14,9 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LocationParserTest extends CommandsSpigotTestBase {
+class LocationParserTest extends CommandsSpigotTestBase {
 
     private PlayerMock justNOTRO;
 
@@ -144,6 +147,56 @@ public class LocationParserTest extends CommandsSpigotTestBase {
         assertEquals(justNOTRO.getLocation(), new Location(justNOTRO.getWorld(), 20, 30, 40, 10, 20));
     }
 
+    @Test
+    void tabCompletion() {
+        server.addSimpleWorld("world0");
+        assertEquals(
+                Stream.of("world", "world0", "pre", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", "").stream().sorted().toList()
+        );
+
+        assertEquals(
+                Stream.of("world", "world0").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", "w").stream().sorted().toList()
+        );
+
+        assertEquals(
+                Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", ""}).stream().sorted().toList()
+        );
+
+        assertEquals(
+                Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", "0", ""}).stream().sorted().toList()
+        );
+
+        assertEquals(
+                Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", "0", "0", ""}).stream().sorted().toList()
+        );
+
+
+        assertEquals(
+                Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", "0", "0", "0", ""}).stream().sorted().toList()
+        );
+
+        assertEquals(
+                Stream.of(".", "1", "2", "3", "4", "5", "6", "7", "8", "9").sorted().toList(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", "0", "0", "0", "0", ""}).stream().sorted().toList()
+        );
+
+        assertEquals(
+                List.of(),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"world", "0", "0", "0", "0", "0", ""})
+        );
+
+        assertEquals(
+                List.of("after"),
+                evaluateTabCompletion(justNOTRO, "tp", new String[]{"pre", "world", "0", "0", "0", "0", "0", ""})
+        );
+    }
+
     @Command("tp")
     public class TeleportCommandForTest implements CommandNode {
 
@@ -166,6 +219,12 @@ public class LocationParserTest extends CommandsSpigotTestBase {
         public void teleportWithPreArg(String string, Player sender, Location location) {
             sender.teleport(location);
             sender.sendMessage(string);
+        }
+
+        @SubCommand("pre <location> after")
+        public void teleportAfter(Player sender, Location location) {
+            sender.teleport(location);
+            sender.sendMessage("Teleported to location.");
         }
 
 
