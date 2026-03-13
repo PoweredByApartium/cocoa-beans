@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.47
+- [state] Add numeric observable
 - [commands] Add DurationParser
 - [commands] Fix CompoundParser tab completion with multiple arguments
   [commands] Add multiple arguments tab completion support to ArgumentParser

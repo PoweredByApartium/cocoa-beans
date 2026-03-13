@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.state;
 
+import net.apartium.cocoabeans.state.numberic.*;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -40,6 +41,46 @@ public interface Observable<T> {
     }
 
     /**
+     * Creates an immutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static IntObservable immutableNumeric(int value) {
+        return new IntObservableImpl(value);
+    }
+
+    /**
+     * Creates an immutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static LongObservable immutableNumeric(long value) {
+        return new LongObservableImpl(value);
+    }
+
+    /**
+     * Creates an immutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static DoubleObservable immutableNumeric(double value) {
+        return new DoubleObservableImpl(value);
+    }
+
+    /**
+     * Creates an immutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static FloatObservable immutableNumeric(float value) {
+        return new FloatObservableImpl(value);
+    }
+
+    /**
      * Creates a mutable observable encompassing given value
      * @param value value
      * @return new observable instance
@@ -47,6 +88,46 @@ public interface Observable<T> {
      */
     static <T> MutableObservable<T> mutable(T value) {
         return new MutableObservableImpl<>(value);
+    }
+
+    /**
+     * Creates a mutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static MutableIntObservable mutableNumeric(int value) {
+        return new MutableObservableIntImpl(value);
+    }
+
+    /**
+     * Creates a mutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static MutableLongObservable mutableNumeric(long value) {
+        return new MutableObservableLongImpl(value);
+    }
+
+    /**
+     * Creates a mutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static MutableDoubleObservable mutableNumeric(double value) {
+        return new MutableObservableDoubleImpl(value);
+    }
+
+    /**
+     * Creates a mutable observable encompassing given value
+     * @param value value
+     * @return new observable instance
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    static MutableFloatObservable mutableNumeric(float value) {
+        return new MutableObservableFloatImpl(value);
     }
 
     /**
