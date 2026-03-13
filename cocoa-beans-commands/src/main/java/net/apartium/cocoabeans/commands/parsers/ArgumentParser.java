@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands.parsers;
 
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -49,15 +50,25 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
     private final int priority;
 
     /**
+     * Whether the parser supports multiple arguments for tab completion
+     */
+    private final boolean supportMultipleArguments;
+
+    /**
      * Constructs a new parser
      * @param keyword keyword of the parser
      * @param clazz output class
      * @param priority priority
      */
     protected ArgumentParser(String keyword, Class<T> clazz, int priority) {
+        this(keyword, clazz, priority, false);
+    }
+
+    protected ArgumentParser(String keyword, Class<T> clazz, int priority, boolean supportMultipleArguments) {
         this.keyword = keyword;
         this.clazz = clazz;
         this.priority = priority;
+        this.supportMultipleArguments = supportMultipleArguments;
     }
 
     /**
@@ -131,4 +142,12 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
         return keyword;
     }
 
+    /**
+     * Whether the parser supports multiple arguments for tab completion
+     * @return true if supports, false if not
+     */
+    @ApiStatus.AvailableSince("0.0.47")
+    public boolean isSupportMultipleArguments() {
+        return supportMultipleArguments;
+    }
 }
