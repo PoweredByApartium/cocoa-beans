@@ -1,8 +1,9 @@
 # CHANGELOG
 ## 0.0.47
+- [repo] Require CHANGELOG entry for each PR (can be skipped with a label)
 - [commands] Add DurationParser
 - [commands] Fix CompoundParser tab completion with multiple arguments
-  [commands] Add multiple arguments tab completion support to ArgumentParser
+- [commands] Add multiple arguments tab completion support to ArgumentParser
 - [state] Add `Observable#flatMap` for flattening observables
 
 ## 0.0.46
