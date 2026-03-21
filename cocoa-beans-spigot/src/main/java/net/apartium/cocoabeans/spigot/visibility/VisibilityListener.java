@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /* package-private */ class VisibilityListener implements Listener {
 
@@ -22,7 +23,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerJoinEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         if (removeType != VisibilityPlayerRemoveType.ON_LEAVE)
             return;
 

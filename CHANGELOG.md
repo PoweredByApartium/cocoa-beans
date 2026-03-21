@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.48
+- [spigot] Fixes `VisbilityListener#onPlayerQuit` wrong type of event
+
 ## 0.0.47
 - [repo] Require CHANGELOG entry for each PR (can be skipped with a label)
 - [commands] Add DurationParser
