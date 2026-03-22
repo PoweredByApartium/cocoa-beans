@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -346,4 +347,11 @@ public class VisibilityManager {
         return players.values().stream();
     }
 
+    public void onQuit(@NotNull Player player) {
+        VisibilityPlayer visibilityPlayer = players.get(player.getUniqueId());
+        if (visibilityPlayer == null)
+            return;
+
+        visibilityPlayer.clearPlayerRef();
+    }
 }
