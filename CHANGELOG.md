@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.49
+- [common] Add CubeShellIterator
+
 ## 0.0.48
 - [spigot] Fix player quit handling in `VisibilityListener`
 
