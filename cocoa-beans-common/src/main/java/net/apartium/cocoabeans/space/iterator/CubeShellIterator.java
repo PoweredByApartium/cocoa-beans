@@ -2,10 +2,14 @@ package net.apartium.cocoabeans.space.iterator;
 
 import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.AxisOrder;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class CubeShellIterator implements Iterator<Position> {
+
+    private final AxisOrder axisOrder;
 
     private final int min;
     private final int max;
@@ -22,7 +26,14 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     public CubeShellIterator(int min, int max) {
+        this(AxisOrder.XYZ, min, max);
+    }
+
+    public CubeShellIterator(AxisOrder axisOrder, int min, int max) {
         Ensures.largerThan(max, min, "max must be larger than or equal min");
+        Ensures.notNull(axisOrder, "axisOrder");
+
+        this.axisOrder = axisOrder;
 
         this.min = min;
         this.max = max;
@@ -41,7 +52,7 @@ public class CubeShellIterator implements Iterator<Position> {
 
         if (min == max) {
             face = 6;
-            next = new Position(min, min, min);
+            next = axisOrder.position(min, min, min);
             return;
         }
 
@@ -57,7 +68,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace0() {
-        Position result = new Position(min, i0, i1);
+        Position result = axisOrder.position(min, i0, i1);
         i1++;
 
         if (i1 > max) {
@@ -75,7 +86,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace1() {
-        Position result = new Position(max, i0, i1);
+        Position result = axisOrder.position(max, i0, i1);
         i1++;
 
         if (i1 > max) {
@@ -93,7 +104,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace2() {
-        Position result = new Position(i0, min, i1);
+        Position result = axisOrder.position(i0, min, i1);
         i1++;
 
         if (i1 > max) {
@@ -111,7 +122,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace3() {
-        Position result = new Position(i0, max, i1);
+        Position result = axisOrder.position(i0, max, i1);
         i1++;
 
         if (i1 > max) {
@@ -129,7 +140,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace4() {
-        Position result = new Position(i0, i1, min);
+        Position result = axisOrder.position(i0, i1, min);
         i1++;
 
         if (i1 > max - 1) {
@@ -147,7 +158,7 @@ public class CubeShellIterator implements Iterator<Position> {
     }
 
     private Position advanceFace5() {
-        Position result = new Position(i0, i1, max);
+        Position result = axisOrder.position(i0, i1, max);
         i1++;
 
         if (i1 > max - 1) {
@@ -170,7 +181,7 @@ public class CubeShellIterator implements Iterator<Position> {
     @Override
     public Position next() {
         if (next == null) {
-            throw new IllegalStateException("No more elements");
+            throw new NoSuchElementException("No more elements");
         }
 
         Position result = next;

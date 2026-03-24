@@ -1,7 +1,6 @@
 package net.apartium.cocoabeans.space.iterator;
 
 import net.apartium.cocoabeans.space.Position;
-import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
