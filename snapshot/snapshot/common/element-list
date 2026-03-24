@@ -8,5 +8,6 @@ net.apartium.cocoabeans.security.totp
 net.apartium.cocoabeans.seekable
 net.apartium.cocoabeans.space
 net.apartium.cocoabeans.space.axis
+net.apartium.cocoabeans.space.iterator
 net.apartium.cocoabeans.structs
 net.apartium.cocoabeans.utils
