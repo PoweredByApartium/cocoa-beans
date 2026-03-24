@@ -7,19 +7,20 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class CubeShellIterator implements Iterator<Position> {
+public final class CubeShellIterator implements Iterator<Position> {
+
+    private static final int FACE_COUNT = 6;
 
     private final AxisOrder axisOrder;
-
     private final int min;
     private final int max;
 
-    private int i0;
-    private int i1;
+    private int face;
 
-    private int face = 0;
+    private int a;
+    private int b;
 
-    private Position next = null;
+    private Position next;
 
     public CubeShellIterator(int radius) {
         this(-radius, radius);
@@ -34,143 +35,11 @@ public class CubeShellIterator implements Iterator<Position> {
         Ensures.notNull(axisOrder, "axisOrder");
 
         this.axisOrder = axisOrder;
-
         this.min = min;
         this.max = max;
 
-        this.i0 = min;
-        this.i1 = min;
-
+        resetForFace(0);
         advance();
-    }
-
-    private void advance() {
-        if (face < 0 || face >= 6) {
-            next = null;
-            return;
-        }
-
-        if (min == max) {
-            face = 6;
-            next = axisOrder.position(min, min, min);
-            return;
-        }
-
-        next = switch (face) {
-            case 0 -> advanceFace0();
-            case 1 -> advanceFace1();
-            case 2 -> advanceFace2();
-            case 3 -> advanceFace3();
-            case 4 -> advanceFace4();
-            case 5 -> advanceFace5();
-            default -> throw new IllegalStateException("Unexpected value: " + face);
-        };
-    }
-
-    private Position advanceFace0() {
-        Position result = axisOrder.position(min, i0, i1);
-        i1++;
-
-        if (i1 > max) {
-            i0++;
-            i1 = min;
-        }
-
-        if (i0 > max) {
-            face = 1;
-            i0 = min;
-            i1 = min;
-        }
-
-        return result;
-    }
-
-    private Position advanceFace1() {
-        Position result = axisOrder.position(max, i0, i1);
-        i1++;
-
-        if (i1 > max) {
-            i0++;
-            i1 = min;
-        }
-
-        if (i0 > max) {
-            face = 2;
-            i0 = min + 1;
-            i1 = min;
-        }
-
-        return result;
-    }
-
-    private Position advanceFace2() {
-        Position result = axisOrder.position(i0, min, i1);
-        i1++;
-
-        if (i1 > max) {
-            i0++;
-            i1 = min;
-        }
-
-        if (i0 > max - 1) {
-            face = 3;
-            i0 = min + 1;
-            i1 = min;
-        }
-
-        return result;
-    }
-
-    private Position advanceFace3() {
-        Position result = axisOrder.position(i0, max, i1);
-        i1++;
-
-        if (i1 > max) {
-            i0++;
-            i1 = min;
-        }
-
-        if (i0 > max - 1) {
-            face = 4;
-            i0 = min + 1;
-            i1 = min + 1;
-        }
-
-        return result;
-    }
-
-    private Position advanceFace4() {
-        Position result = axisOrder.position(i0, i1, min);
-        i1++;
-
-        if (i1 > max - 1) {
-            i0++;
-            i1 = min + 1;
-        }
-
-        if (i0 > max - 1) {
-            face = 5;
-            i0 = min + 1;
-            i1 = min + 1;
-        }
-
-        return result;
-    }
-
-    private Position advanceFace5() {
-        Position result = axisOrder.position(i0, i1, max);
-        i1++;
-
-        if (i1 > max - 1) {
-            i0++;
-            i1 = min + 1;
-        }
-
-        if (i0 > max - 1) {
-            face = 6;
-        }
-
-        return result;
     }
 
     @Override
@@ -180,12 +49,92 @@ public class CubeShellIterator implements Iterator<Position> {
 
     @Override
     public Position next() {
-        if (next == null) {
+        if (next == null)
             throw new NoSuchElementException("No more elements");
+
+
+        Position current = next;
+        advance();
+        return current;
+    }
+
+    private void advance() {
+        if (face >= FACE_COUNT) {
+            next = null;
+            return;
         }
 
-        Position result = next;
-        advance();
-        return result;
+        if (min == max) {
+            next = axisOrder.position(min, min, min);
+            face = FACE_COUNT;
+            return;
+        }
+
+        next = currentPosition();
+        step();
+    }
+
+    private Position currentPosition() {
+        return switch (face) {
+            case 0 -> axisOrder.position(min, a, b);
+            case 1 -> axisOrder.position(max, a, b);
+            case 2 -> axisOrder.position(a, min, b);
+            case 3 -> axisOrder.position(a, max, b);
+            case 4 -> axisOrder.position(a, b, min);
+            case 5 -> axisOrder.position(a, b, max);
+            default -> throw new IllegalStateException("Unexpected face: " + face);
+        };
+    }
+
+    private void step() {
+        b++;
+
+        if (b > bMax(face)) {
+            a++;
+            b = bMin(face);
+        }
+
+        if (a > aMax(face)) {
+            face++;
+            if (face < FACE_COUNT)
+                resetForFace(face);
+        }
+    }
+
+    private void resetForFace(int face) {
+        a = aMin(face);
+        b = bMin(face);
+    }
+
+    private int aMin(int face) {
+        return switch (face) {
+            case 0, 1 -> min;
+            case 2, 3, 4, 5 -> min + 1;
+            default -> throw new IllegalStateException("Unexpected face: " + face);
+        };
+    }
+
+    private int aMax(int face) {
+        return switch (face) {
+            case 0, 1 -> max;
+            case 2, 3, 4, 5 -> max - 1;
+            default -> throw new IllegalStateException("Unexpected face: " + face);
+        };
+    }
+
+    private int bMin(int face) {
+        return switch (face) {
+            case 0, 1, 2, 3 -> min;
+            case 4, 5 -> min + 1;
+            default -> throw new IllegalStateException("Unexpected face: " + face);
+        };
+    }
+
+    private int bMax(int face) {
+        return switch (face) {
+            case 0, 1, 2, 3 -> max;
+            case 4, 5 -> max - 1;
+            default -> throw new IllegalStateException("Unexpected face: " + face);
+        };
     }
 }
