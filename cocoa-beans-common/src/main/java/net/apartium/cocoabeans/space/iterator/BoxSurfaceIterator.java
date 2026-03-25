@@ -150,7 +150,7 @@ public final class BoxSurfaceIterator implements Iterator<Position> {
         if (next == null)
             throw new NoSuchElementException("No more elements");
 
-        return next;
+        return new Position(next);
     }
 
     /**
