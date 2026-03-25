@@ -32,7 +32,14 @@ public final class BoxSurfaceIterator implements Iterator<Position> {
 
     private int face;
 
+    /**
+     * Current U coordinate on the face (horizontal texture axis).
+     */
     private int u;
+
+    /**
+     * Current V coordinate on the face (vertical texture axis).
+     */
     private int v;
 
     private Position next;
