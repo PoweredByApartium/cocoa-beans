@@ -178,7 +178,7 @@ public class VisibilityManager {
         if (remove == null)
             return;
 
-        for (VisibilityGroup group : remove.getVisibleGroups()) {
+        for (VisibilityGroup group : new ArrayList<>(remove.getVisibleGroups())) {
             group.removePlayer(remove);
         }
 
