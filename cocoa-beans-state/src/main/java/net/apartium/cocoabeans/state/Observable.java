@@ -1,6 +1,7 @@
 package net.apartium.cocoabeans.state;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Set;
@@ -335,13 +336,14 @@ public interface Observable<T> {
      * Maps this observable's value to another {@link Observable} and observes the latest one.
      * When the source value changes, the previous inner observable is unsubscribed and the
      * new one returned by the mapper is observed.
+     * If the source value of this observable is null, the mapper will not be called and return null as well.
      *
      * @param mapper function mapping the current value to an observable
      * @param <R> the mapped value type
      * @return an observable
      */
     @ApiStatus.AvailableSince("0.0.47")
-    default <R> Observable<R> flatMap(Function<T, Observable<R>> mapper) {
+    default <R> Observable<R> flatMap(Function<@NonNull T, Observable<R>> mapper) {
         return new FlatMapObservable<>(this, mapper);
     }
 
