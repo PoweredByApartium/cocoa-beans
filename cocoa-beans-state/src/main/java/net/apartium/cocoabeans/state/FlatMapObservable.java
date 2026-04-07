@@ -1,5 +1,7 @@
 package net.apartium.cocoabeans.state;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.*;
 import java.util.function.Function;
 
@@ -14,11 +16,11 @@ import java.util.function.Function;
     private Observable<R> currentInner;
     private R currentValue;
 
-    private final Function<T, Observable<R>> mapper;
+    private final Function<@NonNull T, Observable<R>> mapper;
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public FlatMapObservable(Observable<T> base, Function<T, Observable<R>> mapper) {
+    public FlatMapObservable(Observable<T> base, Function<@NonNull T, Observable<R>> mapper) {
         this.base = base;
         this.base.observe(this);
 

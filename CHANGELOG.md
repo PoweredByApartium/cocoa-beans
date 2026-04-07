@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.49
+- [state] Define flatMap behavior for null source values
 - [common] Add BoxSurfaceIterator
 
 ## 0.0.48
