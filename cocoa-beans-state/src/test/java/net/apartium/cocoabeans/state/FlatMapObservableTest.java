@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.structs.Entry;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -649,6 +650,25 @@ class FlatMapObservableTest {
 
         prefix.set(null);
         assertNull(observable.get());
+    }
+
+    @Test
+    void nullTest() {
+        MutableObservable<String> pointer = Observable.mutable(null);
+        Observable<String> mapped = pointer.flatMap(a -> Observable.immutable("test"));
+
+        assertNull(mapped.get());
+    }
+
+    @Test
+    void nullOptionalTest() {
+        MutableObservable<String> pointer = Observable.mutable(null);
+        Observable<String> mapped = pointer.map(Optional::ofNullable).flatMap(a -> Observable.immutable(a.orElse("test")));
+
+        assertEquals("test", mapped.get());
+        pointer.set("test2");
+
+        assertEquals("test2", mapped.get());
     }
 
 }

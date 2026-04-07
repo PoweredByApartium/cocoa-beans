@@ -36,6 +36,7 @@ This pattern quickly becomes repetitive and error-prone.
 
 ## Usage
 The `flatMap` operator maps each value to an observable and **observes the latest one**.
+<tip>If the source value of the observable is null, the mapper will not be called and return null as well.</tip>
 
 ```java
 Observable<PlayerRank> rank = player.rankObservable();
