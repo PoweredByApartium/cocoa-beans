@@ -19,12 +19,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        manager.getPlayer(event.getPlayer()).clearPlayerRef();
         manager.handlePlayerJoin(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (removeType != VisibilityPlayerRemoveType.ON_LEAVE)
+        manager.onQuit(event.getPlayer());
+
+        if (removeType == VisibilityPlayerRemoveType.NEVER)
             return;
 
         manager.removePlayer(event.getPlayer().getUniqueId());

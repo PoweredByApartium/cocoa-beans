@@ -85,6 +85,10 @@ public class VisibilityPlayer {
         visibleGroups.remove(group);
     }
 
+    public void clearPlayerRef() {
+        playerRef.clear();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
