@@ -1,5 +1,7 @@
 # CHANGELOG
 ## 0.0.49
+- [commands-spigot] Make `WorldParser` use `NoSuchWorldResponse` for missing worlds
+- [commands] Allow overriding `ContextualMapBasedParser` no-such-element response
 - [state] Define flatMap behavior for null source values
 - [common] Add BoxSurfaceIterator
 
