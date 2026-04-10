@@ -6,8 +6,6 @@ import net.apartium.cocoabeans.commands.parsers.ParserAssertions;
 import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
 import net.apartium.cocoabeans.commands.spigot.parsers.exception.NoSuchWorldResponse;
 import org.bukkit.WorldCreator;
-import org.bukkit.command.CommandSender;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.OptionalInt;

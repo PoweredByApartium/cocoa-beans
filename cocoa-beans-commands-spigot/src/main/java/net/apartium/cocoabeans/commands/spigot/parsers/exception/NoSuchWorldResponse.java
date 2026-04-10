@@ -24,7 +24,7 @@ public class NoSuchWorldResponse extends NoSuchElementInMapResponse {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public NoSuchWorldException getError() {
