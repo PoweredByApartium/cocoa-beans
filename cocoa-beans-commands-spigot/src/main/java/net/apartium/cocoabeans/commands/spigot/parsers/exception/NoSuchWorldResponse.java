@@ -24,6 +24,14 @@ public class NoSuchWorldResponse extends NoSuchElementInMapResponse {
     }
 
     /**
+     * @inheritDoc
+     */
+    @Override
+    public NoSuchWorldException getError() {
+        return new NoSuchWorldException(this);
+    }
+
+    /**
      * Thrown to indicate that a specific world could not be found during the parsing process.
      * This exception is used internally to wrap a {@link NoSuchWorldResponse} and propagate error information.
      * <p>
