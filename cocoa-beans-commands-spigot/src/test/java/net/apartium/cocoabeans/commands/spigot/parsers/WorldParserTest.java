@@ -1,8 +1,10 @@
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ParserAssertions;
 import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
+import net.apartium.cocoabeans.commands.spigot.parsers.exception.NoSuchWorldResponse;
 import org.bukkit.WorldCreator;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +13,24 @@ import java.util.Set;
 
 class WorldParserTest extends CommandsSpigotTestBase {
 
+
+    @Test
+    void worldCommand() {
+        commandManager.addCommand(new WorldCommand());
+
+        PlayerMock sender = server.addPlayer("ikfir");
+
+        server.createWorld(new WorldCreator("test"));
+
+        execute(sender, "world test");
+        sender.assertSaid("world: test");
+
+        execute(sender, "world no-world");
+        sender.assertSaid("No world by the name of no-world");
+
+    }
+
+
     @Test
     void parse() {
         server.createWorld(new WorldCreator("test"));
@@ -18,6 +38,7 @@ class WorldParserTest extends CommandsSpigotTestBase {
         WorldParser parser = new WorldParser(0);
 
         ParserAssertions.assertParserResult(parser, null, null, args("test"), new ArgumentParser.ParseResult<>(server.getWorld("test"), 1));
+        ParserAssertions.assertParserThrowsReport(parser, null, null, args("what"), NoSuchWorldResponse.class);
     }
 
     @Test
@@ -58,6 +79,8 @@ class WorldParserTest extends CommandsSpigotTestBase {
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("wor"), 0, Set.of("world"), 1);
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("worl"), 0, Set.of("world"), 1);
         ParserAssertions.assertParserTabCompletion(parser, null, null, args("world"), 0, Set.of("world"), 1);
+
+        ParserAssertions.assertParserTabCompletion(parser, null, null, args("worlda"), 0, null, 1);
     }
 
     String[] args(String s) {
