@@ -59,4 +59,6 @@ public class CommandDocs {
 
     }
 
+    private CommandDocs() {}
+
 }
