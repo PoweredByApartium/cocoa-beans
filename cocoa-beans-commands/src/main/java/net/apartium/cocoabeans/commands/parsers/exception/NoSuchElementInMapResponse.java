@@ -51,7 +51,7 @@ public class NoSuchElementInMapResponse extends InvalidParserResponse {
     public class NoSuchElementInMapException extends InvalidParserException {
 
         @ApiStatus.Internal
-        public NoSuchElementInMapException(NoSuchElementInMapResponse response) {
+        protected NoSuchElementInMapException(NoSuchElementInMapResponse response) {
             super(response);
         }
 
