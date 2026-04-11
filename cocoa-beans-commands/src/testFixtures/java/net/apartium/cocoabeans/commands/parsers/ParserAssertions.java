@@ -361,10 +361,9 @@ public class ParserAssertions {
             return;
         }
 
-        List<String> result = tabCompletionResult.get().result().stream().sorted().toList();
-        List<String> sortedExpected = expected.stream().sorted().toList();
+        Set<String> result = tabCompletionResult.get().result();
 
-        assertEquals(sortedExpected, result, message);
+        assertEquals(expected, result, message);
         assertEquals(expectedIndex, tabCompletionResult.get().newIndex(), message);
     }
 
