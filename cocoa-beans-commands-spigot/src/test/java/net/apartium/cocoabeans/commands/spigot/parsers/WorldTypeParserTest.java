@@ -71,7 +71,7 @@ class WorldTypeParserTest extends CommandsSpigotTestBase {
     }
 
     @Test
-    void tabCompleteCaseSensitive() {
+    void tabCompleteIgnoreCase() {
         WorldTypeParser parser = new WorldTypeParser("world-type", 0, true);
 
         assertParserTabCompletion(parser, null, null, new String[0], 0, Set.of("normal", "flat", "amplified", "large-biomes"), 1);
