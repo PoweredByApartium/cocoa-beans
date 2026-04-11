@@ -36,7 +36,7 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
                     Map.entry(worldType.getName().toLowerCase(), worldType),
                     Map.entry(worldType.name().toLowerCase(), worldType)
             ))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (worldType1, worldType2) -> worldType1));
+            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (worldType1, worldType2) -> worldType1));
 
     /**
      * The default keyword used by this parser if none is specified.
