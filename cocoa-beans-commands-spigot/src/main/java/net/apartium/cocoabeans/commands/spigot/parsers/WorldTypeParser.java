@@ -76,7 +76,7 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
      * @param priority the priority of the parser, used for ordering.
      */
     public WorldTypeParser(String keyword, int priority) {
-        this(keyword, priority, false);
+        this(keyword, priority, true);
     }
 
     /**

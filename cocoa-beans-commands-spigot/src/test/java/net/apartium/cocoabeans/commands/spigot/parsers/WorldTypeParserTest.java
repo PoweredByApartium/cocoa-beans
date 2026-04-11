@@ -41,7 +41,11 @@ class WorldTypeParserTest extends CommandsSpigotTestBase {
     void parse() {
         WorldTypeParser parser = new WorldTypeParser(0);
 
-        assertParserResult(parser, null, null, args("normal"), new ArgumentParser.ParseResult<>(WorldType.NORMAL, 1));
+        for (WorldType value : WorldType.values()) {
+            assertParserResult(parser, null, null, args(value.name().toLowerCase()), new ArgumentParser.ParseResult<>(value, 1));
+            assertParserResult(parser, null, null, args(value.getName().toLowerCase()), new ArgumentParser.ParseResult<>(value, 1));
+        }
+
         assertParserThrowsReport(parser, null, null, args("what"), NoSuchWorldTypeResponse.class);
     }
 
