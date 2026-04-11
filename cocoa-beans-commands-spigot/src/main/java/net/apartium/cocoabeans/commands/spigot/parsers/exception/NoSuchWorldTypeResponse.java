@@ -12,6 +12,10 @@ import net.apartium.cocoabeans.commands.parsers.ContextualMapBasedParser;
 import net.apartium.cocoabeans.commands.parsers.exception.NoSuchElementInMapResponse;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Represents a response reported via a parser when a world type is not found
+ */
+@ApiStatus.AvailableSince("0.0.49")
 public class NoSuchWorldTypeResponse extends NoSuchElementInMapResponse {
 
     /**

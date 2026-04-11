@@ -12,9 +12,17 @@ import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
 import net.apartium.cocoabeans.commands.parsers.exception.InvalidParserResponse;
 import net.apartium.cocoabeans.commands.spigot.parsers.exception.NoSuchWorldTypeResponse;
 import org.bukkit.WorldType;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
+/**
+ * A parser for mapping world type names to {@link WorldType} objects.
+ * This parser is based on a map where the keys are world type names,
+ * and the values are corresponding {@link WorldType} instances.
+ * It allows customization of keyword, priority, case sensitivity, and lax mode.
+ */
+@ApiStatus.AvailableSince("0.0.49")
 public class WorldTypeParser extends MapBasedParser<WorldType> {
 
     /**
