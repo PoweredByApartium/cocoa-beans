@@ -19,7 +19,7 @@ import java.util.Set;
 
 import static net.apartium.cocoabeans.commands.parsers.ParserAssertions.*;
 
-public class WorldTypeParserTest extends CommandsSpigotTestBase {
+class WorldTypeParserTest extends CommandsSpigotTestBase {
 
     @Test
     void worldTypeCommand() {
