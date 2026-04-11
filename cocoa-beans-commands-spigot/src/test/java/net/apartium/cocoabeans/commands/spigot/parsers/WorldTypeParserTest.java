@@ -34,6 +34,9 @@ class WorldTypeParserTest extends CommandsSpigotTestBase {
 
         execute(sender, "worldtype no-world");
         sender.assertSaid("No world type by the name of no-world");
+
+        execute(sender, "worldtype default");
+        sender.assertSaid("world type: DEFAULT");
     }
 
 
