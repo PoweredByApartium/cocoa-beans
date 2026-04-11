@@ -20,6 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A parser for mapping world type names to {@link WorldType} objects.
@@ -30,14 +31,17 @@ import java.util.stream.Collectors;
 @ApiStatus.AvailableSince("0.0.49")
 public class WorldTypeParser extends MapBasedParser<WorldType> {
 
-    private static final Map<String, WorldType>
-            WORLD_TYPES = Arrays.stream(WorldType.values())
-            .collect(Collectors.toMap(worldType -> worldType.name().toLowerCase(), worldType -> worldType));
+    private static final Map<String, WorldType> WORLD_TYPES = Arrays.stream(WorldType.values())
+            .flatMap(worldType -> Stream.of(
+                    Map.entry(worldType.getName().toLowerCase(), worldType),
+                    Map.entry(worldType.name().toLowerCase(), worldType)
+            ))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (worldType1, worldType2) -> worldType1));
 
     /**
      * The default keyword used by this parser if none is specified.
      */
-    public static final String DEFAULT_KEYWORD = "world-type";
+    private static final String DEFAULT_KEYWORD = "world-type";
 
     /**
      * Constructs a new {@code WorldTypeParser} with the specified parameters.

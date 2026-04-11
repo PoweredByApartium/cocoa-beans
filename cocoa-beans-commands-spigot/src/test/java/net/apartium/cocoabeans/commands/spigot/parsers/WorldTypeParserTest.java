@@ -56,8 +56,8 @@ class WorldTypeParserTest extends CommandsSpigotTestBase {
     void tabComplete() {
         WorldTypeParser parser = new WorldTypeParser(0);
 
-        assertParserTabCompletion(parser, null, null, new String[0], 0, Set.of("normal", "flat", "amplified", "large_biomes"), 1);
-        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("normal", "flat", "amplified", "large_biomes"), 1);
+        assertParserTabCompletion(parser, null, null, new String[0], 0, Set.of("amplified", "default", "flat", "large_biomes", "largebiomes", "normal"), 1);
+        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("amplified", "default", "flat", "large_biomes", "largebiomes", "normal"), 1);
         assertParserTabCompletion(parser, null, null, args("n"), 0, Set.of("normal"), 1);
         assertParserTabCompletion(parser, null, null, args("no"), 0, Set.of("normal"), 1);
         assertParserTabCompletion(parser, null, null, args("nor"), 0, Set.of("normal"), 1);
@@ -77,8 +77,8 @@ class WorldTypeParserTest extends CommandsSpigotTestBase {
     void tabCompleteIgnoreCase() {
         WorldTypeParser parser = new WorldTypeParser("world-type", 0, true);
 
-        assertParserTabCompletion(parser, null, null, new String[0], 0, Set.of("flat", "normal", "large_biomes", "amplified"), 1);
-        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("flat", "normal", "large_biomes", "amplified"), 1);
+        assertParserTabCompletion(parser, null, null, new String[0], 0, Set.of("amplified", "default", "flat", "large_biomes", "largebiomes", "normal"), 1);
+        assertParserTabCompletion(parser, null, null, args(""), 0, Set.of("amplified", "default", "flat", "large_biomes", "largebiomes", "normal"), 1);
         assertParserTabCompletion(parser, null, null, args("N"), 0, Set.of("normal"), 1);
         assertParserTabCompletion(parser, null, null, args("NO"), 0, Set.of("normal"), 1);
         assertParserTabCompletion(parser, null, null, args("NOR"), 0, Set.of("normal"), 1);
