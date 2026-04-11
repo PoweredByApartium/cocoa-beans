@@ -30,7 +30,9 @@ import java.util.stream.Collectors;
 @ApiStatus.AvailableSince("0.0.49")
 public class WorldTypeParser extends MapBasedParser<WorldType> {
 
-    private Map<String, WorldType> worldTypes;
+    private static final Map<String, WorldType>
+            WORLD_TYPES = Arrays.stream(WorldType.values())
+            .collect(Collectors.toMap(worldType -> worldType.name().toLowerCase(), worldType -> worldType));
 
     /**
      * The default keyword used by this parser if none is specified.
@@ -91,13 +93,7 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
      */
     @Override
     public Map<String, WorldType> getMap() {
-        if (worldTypes != null)
-            return worldTypes;
-
-        worldTypes = Arrays.stream(WorldType.values())
-                .collect(Collectors.toMap(worldType -> worldType.name().toLowerCase(), worldType -> worldType));
-
-        return worldTypes;
+        return WORLD_TYPES;
     }
 
     @Override
