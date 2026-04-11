@@ -21,12 +21,12 @@ import org.bukkit.command.CommandSender;
 public class WorldTypeCommand implements CommandNode {
 
     @SubCommand("<world-type>")
-    public void world(CommandSender sender, WorldType worldType) {
+    public void worldType(CommandSender sender, WorldType worldType) {
         sender.sendMessage("world type: " + worldType.getName());
     }
 
     @ExceptionHandle(NoSuchWorldTypeResponse.NoSuchWorldTypeException.class)
-    public void noSuchWorld(CommandSender sender, NoSuchWorldTypeResponse.NoSuchWorldTypeException exception) {
+    public void noSuchWorldType(CommandSender sender, NoSuchWorldTypeResponse.NoSuchWorldTypeException exception) {
         sender.sendMessage("No world type by the name of " + exception.getAttempted());
     }
 }
