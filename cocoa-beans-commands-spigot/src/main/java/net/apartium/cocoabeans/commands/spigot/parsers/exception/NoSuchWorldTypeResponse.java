@@ -35,7 +35,7 @@ public class NoSuchWorldTypeResponse extends NoSuchElementInMapResponse {
     }
 
     /**
-     * Thrown to indicate that a specific world could not be found during the parsing process.
+     * Thrown to indicate that a specific world type could not be found during the parsing process.
      * This exception is used internally to wrap a {@link NoSuchWorldTypeResponse} and propagate error information.
      * <p>
      * This exception extends {@link NoSuchElementInMapResponse.NoSuchElementInMapException}, which is raised when a key is not found
