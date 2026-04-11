@@ -1,6 +1,6 @@
 # CHANGELOG
 ## 0.0.49
-- [commands] Add `WorldTypeParser`
+- [commands-spigot] Add `WorldTypeParser`
 - [commands] Add CommandDocs annotations
 - [commands-spigot] Make `WorldParser` use `NoSuchWorldResponse` for missing worlds
 - [commands] Allow overriding `ContextualMapBasedParser` no-such-element response
