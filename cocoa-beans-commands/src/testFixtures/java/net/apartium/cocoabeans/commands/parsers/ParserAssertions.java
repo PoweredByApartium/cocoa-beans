@@ -9,7 +9,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.junit.jupiter.api.AssertionFailureBuilder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -362,7 +361,6 @@ public class ParserAssertions {
         }
 
         Set<String> result = tabCompletionResult.get().result();
-
         assertEquals(expected, result, message);
         assertEquals(expectedIndex, tabCompletionResult.get().newIndex(), message);
     }
