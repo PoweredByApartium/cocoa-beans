@@ -85,8 +85,13 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;net.apartium.cocoabeans.commands.parsers.ArgumentParser&lt;?&gt;&gt;</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">WorldTypeParser</span>
+<div class="type-signature"><span class="annotations">@AvailableSince("0.0.49")
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">WorldTypeParser</span>
 <span class="extends-implements">extends net.apartium.cocoabeans.commands.parsers.MapBasedParser&lt;org.bukkit.WorldType&gt;</span></div>
+<div class="block">A parser for mapping world type names to <code>WorldType</code> objects.
+ This parser is based on a map where the keys are world type names,
+ and the values are corresponding <code>WorldType</code> instances.
+ It allows customization of keyword, priority, case sensitivity, and lax mode.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
