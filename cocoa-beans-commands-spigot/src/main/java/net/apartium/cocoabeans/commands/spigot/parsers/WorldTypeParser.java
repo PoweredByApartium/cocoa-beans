@@ -25,11 +25,11 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
     /**
      * Constructs a new {@code WorldTypeParser} with the specified parameters.
      *
-     * @param keyword    the keyword associated with this parser.
-     * @param priority   the priority of the parser, used for ordering.
+     * @param keyword the keyword associated with this parser.
+     * @param priority the priority of the parser, used for ordering.
      * @param ignoreCase whether the parser should ignore case when matching keys.
-     * @param lax        whether the parser should operate in lax mode,
-     *                   allowing more flexible parsing behavior.
+     * @param lax whether the parser should operate in lax mode,
+     * allowing more flexible parsing behavior.
      */
     public WorldTypeParser(String keyword, int priority, boolean ignoreCase, boolean lax) {
         super(keyword, WorldType.class, priority, ignoreCase, lax);
@@ -39,8 +39,8 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
      * Constructs a new {@code WorldTypeParser} with the specified parameters.
      * Assumes lax mode is disabled.
      *
-     * @param keyword    the keyword associated with this parser.
-     * @param priority   the priority of the parser, used for ordering.
+     * @param keyword the keyword associated with this parser.
+     * @param priority the priority of the parser, used for ordering.
      * @param ignoreCase whether the parser should ignore case when matching keys.
      */
     public WorldTypeParser(String keyword, int priority, boolean ignoreCase) {
@@ -51,7 +51,7 @@ public class WorldTypeParser extends MapBasedParser<WorldType> {
      * Constructs a new {@code WorldTypeParser} with the specified keyword and priority.
      * Assumes case sensitivity and lax mode are disabled.
      *
-     * @param keyword  the keyword associated with this parser.
+     * @param keyword the keyword associated with this parser.
      * @param priority the priority of the parser, used for ordering.
      */
     public WorldTypeParser(String keyword, int priority) {
