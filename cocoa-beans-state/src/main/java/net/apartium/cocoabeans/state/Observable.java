@@ -87,7 +87,7 @@ public interface Observable<T> {
      * @return a new observable instance
      * @param <T> the type of the final value
      */
-    static <T> Observable<T> compound(Function<List<?>, T> function, List<Observable<?>> depends) {
+    static <T> Observable<T> compound(Function<List<?>, T> function, List<? extends Observable<?>> depends) {
         return new ObservableCompound<>(function, depends);
     }
 

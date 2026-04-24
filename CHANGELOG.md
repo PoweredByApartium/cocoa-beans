@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.49
+- [state] Improved type flexibility of `Observable.compound` by allowing `List<? extends Observable<?>>`
 - [commands-spigot] Add `WorldTypeParser`
 - [commands] Add CommandDocs annotations
 - [commands-spigot] Make `WorldParser` use `NoSuchWorldResponse` for missing worlds
