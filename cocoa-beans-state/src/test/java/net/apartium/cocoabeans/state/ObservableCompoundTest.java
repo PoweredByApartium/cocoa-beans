@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,10 +44,12 @@ class ObservableCompoundTest {
 
     @Test
     void compoundAcceptsStreamToListOfMutableObservableSubtype() {
-        List<MutableObservable<TeamStatus>> depends = List.of(
-                Observable.mutable(TeamStatus.ALIVE),
-                Observable.mutable(TeamStatus.ALIVE)
-        );
+        List<MutableObservable<TeamStatus>> depends = Stream.of(
+                TeamStatus.ALIVE,
+                TeamStatus.ALIVE
+        )
+                .map(Observable::mutable)
+                .toList();
 
         Observable<Boolean> result = Observable.compound(
                 values -> values.stream()
