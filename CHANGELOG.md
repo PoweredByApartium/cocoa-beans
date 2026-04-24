@@ -1,6 +1,6 @@
 # CHANGELOG
 ## 0.0.49
-- [state] [state] Improve type flexibility of `Observable.compound`
+- [state] Improve type flexibility of `Observable.compound`
 - [commands-spigot] Add `WorldTypeParser`
 - [commands] Add CommandDocs annotations
 - [commands-spigot] Make `WorldParser` use `NoSuchWorldResponse` for missing worlds
