@@ -1,0 +1,70 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2026-05-01T11:50:26.962271277"><title>🔗 LinkedList Observable | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"creating-a-linkedlistobservable","level":0,"title":"Creating a LinkedListObservable","anchor":"#creating-a-linkedlistobservable"},{"id":"basic-usage","level":0,"title":"Basic Usage","anchor":"#basic-usage"},{"id":"sorting-and-index-based-access","level":0,"title":"Sorting and Index-based Access","anchor":"#sorting-and-index-based-access"},{"id":"queue-operations","level":0,"title":"Queue Operations","anchor":"#queue-operations"},{"id":"observing-changes","level":0,"title":"Observing Changes","anchor":"#observing-changes"},{"id":"sort-optimisation","level":0,"title":"Sort Optimisation","anchor":"#sort-optimisation"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🔗 LinkedList Observable | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/linked-list-observable.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🔗 LinkedList Observable | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/linked-list-observable.html#webpage",
+    "url": "writerside-documentation//snapshot/linked-list-observable.html",
+    "name": "🔗 LinkedList Observable | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="linked-list-observable" data-main-title="🔗 LinkedList Observable" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="observable.md|📺 Observable api///collection-observable.md|🧰 Collection Observable///queue-observable.md|🚥 Queue Observable"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="linked-list-observable" id="linked-list-observable.md">🔗 LinkedList Observable</h1><p id="-26f8ki_2"><sup class="superscript" id="-26f8ki_3">Available Since 0.0.50</sup></p><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-26f8ki_4">A <span class="control" id="-26f8ki_5">LinkedListObservable</span> is a <code class="code" id="-26f8ki_6">CollectionObservable</code> backed by a <code class="code" id="-26f8ki_7">java.util.LinkedList</code>. It combines the ordered, index-based operations of <code class="code" id="-26f8ki_8">AbstractListObservable</code> with the head/tail queue operations of <code class="code" id="-26f8ki_9">QueueObservable</code>, making it the right choice when you need both positional access and efficient FIFO/LIFO processing on an observable collection.</p></section><section class="chapter"><h2 id="creating-a-linkedlistobservable" data-toc="creating-a-linkedlistobservable">Creating a LinkedListObservable</h2><div class="code-block" data-lang="java">
+// empty linked list
+LinkedListObservable&lt;String&gt; names = Observable.linkedList();
+
+// wrap an existing LinkedList (must be modifiable)
+LinkedList&lt;Integer&gt; existing = new LinkedList&lt;&gt;(List.of(1, 2, 3));
+LinkedListObservable&lt;Integer&gt; scores = Observable.linkedList(existing);
+</div></section><section class="chapter"><h2 id="basic-usage" data-toc="basic-usage">Basic Usage</h2><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void linkedListExample() {
+        LinkedListObservable&lt;String&gt; queue = Observable.linkedList(); // A LinkedList&lt;String&gt;
+
+        queue.offer(&quot;Alice&quot;);
+        queue.offer(&quot;Bob&quot;);
+        queue.offer(&quot;Charlie&quot;);
+
+        assertEquals(&quot;Alice&quot;, queue.peek()); // look at head, don't remove
+        assertEquals(&quot;Alice&quot;, queue.poll()); // remove head
+        assertEquals(&quot;Bob&quot;, queue.poll());
+
+        assertEquals(List.of(&quot;Charlie&quot;), queue.get());
+    }
+</div></section><section class="chapter"><h2 id="sorting-and-index-based-access" data-toc="sorting-and-index-based-access">Sorting and Index-based Access</h2><p id="-26f8ki_12">Because <code class="code" id="-26f8ki_13">LinkedListObservable</code> implements <code class="code" id="-26f8ki_14">AbstractListObservable</code>, you can insert or remove elements at a specific position and sort the list:</p><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void linkedListSortAndIndex() {
+        LinkedListObservable&lt;Integer&gt; scores = Observable.linkedList();
+
+        scores.add(50);
+        scores.add(90);
+        scores.add(70);
+
+        Observable&lt;Integer&gt; best = scores.map(list -&gt; list.stream().max(Integer::compareTo).orElse(0));
+        assertEquals(90, best.get());
+
+        scores.add(0, 100); // insert at head
+        assertEquals(List.of(100, 50, 90, 70), scores.get());
+        assertEquals(100, best.get());
+
+        scores.sort(Integer::compareTo);
+        assertEquals(List.of(50, 70, 90, 100), scores.get());
+    }
+</div></section><section class="chapter"><h2 id="queue-operations" data-toc="queue-operations">Queue Operations</h2><p id="-26f8ki_16"><code class="code" id="-26f8ki_17">LinkedListObservable</code> also implements <code class="code" id="-26f8ki_18">QueueObservable</code>, giving you the full <code class="code" id="-26f8ki_19">java.util.Queue</code> API. See <a href="queue-observable.html" id="-26f8ki_20" data-tooltip="Available Since 0.0.50">Queue Observable</a> for details on each method.</p><div class="table-wrapper"><table class="wide" id="-26f8ki_21"><thead><tr class="ijRowHead" id="-26f8ki_22"><th id="-26f8ki_23"><p>Method</p></th><th id="-26f8ki_24"><p>Throws on empty?</p></th><th id="-26f8ki_25"><p>Notifies observers?</p></th></tr></thead><tbody><tr id="-26f8ki_26"><td id="-26f8ki_27"><p><code class="code" id="-26f8ki_28">offer(E)</code></p></td><td id="-26f8ki_29"><p>No</p></td><td id="-26f8ki_30"><p>Yes (on success)</p></td></tr><tr id="-26f8ki_31"><td id="-26f8ki_32"><p><code class="code" id="-26f8ki_33">add(E)</code></p></td><td id="-26f8ki_34"><p>No</p></td><td id="-26f8ki_35"><p>Yes (on success)</p></td></tr><tr id="-26f8ki_36"><td id="-26f8ki_37"><p><code class="code" id="-26f8ki_38">poll()</code></p></td><td id="-26f8ki_39"><p>No &mdash; returns <code class="code" id="-26f8ki_40">null</code></p></td><td id="-26f8ki_41"><p>Yes (when non-empty)</p></td></tr><tr id="-26f8ki_42"><td id="-26f8ki_43"><p><code class="code" id="-26f8ki_44">remove()</code></p></td><td id="-26f8ki_45"><p>Yes &mdash; <code class="code" id="-26f8ki_46">NoSuchElementException</code></p></td><td id="-26f8ki_47"><p>Yes (when non-empty)</p></td></tr><tr id="-26f8ki_48"><td id="-26f8ki_49"><p><code class="code" id="-26f8ki_50">peek()</code></p></td><td id="-26f8ki_51"><p>No &mdash; returns <code class="code" id="-26f8ki_52">null</code></p></td><td id="-26f8ki_53"><p><span class="control" id="-26f8ki_54">No</span></p></td></tr><tr id="-26f8ki_55"><td id="-26f8ki_56"><p><code class="code" id="-26f8ki_57">element()</code></p></td><td id="-26f8ki_58"><p>Yes &mdash; <code class="code" id="-26f8ki_59">NoSuchElementException</code></p></td><td id="-26f8ki_60"><p><span class="control" id="-26f8ki_61">No</span></p></td></tr></tbody></table></div><aside class="prompt" data-type="tip" data-title="" id="-26f8ki_62"><p id="-26f8ki_63">Use <code class="code" id="-26f8ki_64">poll()</code> when you want a safe, null-returning removal. Use <code class="code" id="-26f8ki_65">remove()</code> when you expect the queue to be non-empty and want an explicit failure if it is not.</p></aside></section><section class="chapter"><h2 id="observing-changes" data-toc="observing-changes">Observing Changes</h2><p id="-26f8ki_66">All mutating operations (<code class="code" id="-26f8ki_67">add</code>, <code class="code" id="-26f8ki_68">remove</code>, <code class="code" id="-26f8ki_69">offer</code>, <code class="code" id="-26f8ki_70">poll</code>, <code class="code" id="-26f8ki_71">sort</code>, <code class="code" id="-26f8ki_72">clear</code>, &hellip;) flag downstream observables as dirty, which are recomputed lazily on the next <code class="code" id="-26f8ki_73">get()</code> call. Read-only operations (<code class="code" id="-26f8ki_74">peek</code>, <code class="code" id="-26f8ki_75">element</code>, <code class="code" id="-26f8ki_76">get</code>) never notify observers.</p><div class="code-block" data-lang="java">
+LinkedListObservable&lt;Integer&gt; queue = Observable.linkedList();
+Observable&lt;Integer&gt; size = queue.size();
+
+queue.offer(10);
+queue.offer(20);
+System.out.println(size.get()); // 2
+
+queue.poll();
+System.out.println(size.get()); // 1
+</div></section><section class="chapter"><h2 id="sort-optimisation" data-toc="sort-optimisation">Sort Optimisation</h2><p id="-26f8ki_78"><code class="code" id="-26f8ki_79">sort()</code> compares the current order against the target order before sorting. If the list is already sorted by the given comparator, <span class="control" id="-26f8ki_80">no observers are notified</span>.</p><div class="code-block" data-lang="java">
+LinkedListObservable&lt;Integer&gt; list = Observable.linkedList();
+list.addAll(List.of(1, 2, 3));
+
+list.sort(Integer::compareTo); // already sorted – observers are NOT notified
+</div><p id="-26f8ki_82">Calling <code class="code" id="-26f8ki_83">sort(null)</code> always throws <code class="code" id="-26f8ki_84">NullPointerException</code>.</p></section><div class="last-modified">Last modified: 01 May 2026</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="queue-observable.html" class="navigation-links__prev">🚥 Queue Observable</a><a href="filtering-collection-observable.html" class="navigation-links__next">🔎 Filtering Collection Observable</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
