@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -167,6 +168,31 @@ public class VisibilityManager {
      */
     public VisibilityPlayer getPlayer(Player player) {
         return players.computeIfAbsent(player.getUniqueId(), (key) -> new VisibilityPlayer(this, player));
+    }
+
+    /**
+     * Checks if a player with the specified UUID is registered in the in-memory state.
+     *
+     * @param uuid the unique identifier of the player to check
+     * @return true if the player is registered, false otherwise
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    public boolean hasPlayer(UUID uuid) {
+        return players.containsKey(uuid);
+    }
+
+    /**
+     * Checks if a player is registered in the in-memory state.
+     *
+     * @param player the player to check
+     * @return true if the player is registered, false otherwise
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    public boolean hasPlayer(Player player) {
+        if (player == null)
+            return false;
+
+        return hasPlayer(player.getUniqueId());
     }
 
     /**

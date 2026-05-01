@@ -1,10 +1,10 @@
 # CHANGELOG
 ## 0.0.50
-- [spigot] Fix issue related to visibility API
-- [spigot] Fix SpigotViewerGroup leaking players
-- [state] Fix issue with WeakSet Observable
-- [state] Add QueueObservable
-- [state] Add Observable#linkedList
+- [spigot] Fix `VisibilityPlayer` returning stale refs during quit/rejoin by introducing `onQuit()`/`onJoin()` lifecycle methods
+- [spigot] Fix `SpigotViewerGroup` leaking disconnected `Player` references by using a `WeakHashMap`-backed observable set
+- [state] Fix `SetObservable` always using `Set::copyOf`, add `copyOf` and `createInitSet` factory overloads
+- [state] Add `QueueObservable`
+- [state] Add `Observable#linkedList`
 
 ## 0.0.49
 - [state] Improve type flexibility of `Observable.compound`

@@ -52,7 +52,7 @@ import java.util.function.Predicate;
 
     @Override
     public SetObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return new SetFilterObservable<>(this, filter);
+        return new SetFilterObservable<>(this, filter, copyOf, createInitSet);
     }
 
     @Override
