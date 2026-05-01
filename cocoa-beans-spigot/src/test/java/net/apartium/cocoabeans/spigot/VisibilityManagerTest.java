@@ -180,6 +180,106 @@ class VisibilityManagerTest extends SpigotTestBase {
     }
 
     @Test
+    void playerGetReturnsEmptyAfterQuit() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        visibilityManager.getPlayer(ikfir); // register so onQuit can find the entry
+        visibilityManager.onQuit(ikfir);
+
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
+    }
+
+    @Test
+    void playerGetWorksAfterRejoin() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        visibilityManager.getPlayer(ikfir); // register
+        visibilityManager.onQuit(ikfir);
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
+
+        visibilityManager.handlePlayerJoin(ikfir);
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isPresent());
+    }
+
+    @Test
+    void quitDuringHandleJoinDoesNotLeakStaleRef() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        // Simulate: player leaves, then rejoins — onQuit must not be called during join
+        visibilityManager.getPlayer(ikfir); // register
+        visibilityManager.onQuit(ikfir);
+        visibilityManager.handlePlayerJoin(ikfir);
+
+        // After join, the player should be reachable — leaving flag must be cleared
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isPresent());
+    }
+
+    @Test
+    void hasPlayerReturnsFalseForUnregisteredPlayer() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        assertFalse(visibilityManager.hasPlayer(ikfir));
+        assertFalse(visibilityManager.hasPlayer(ikfir.getUniqueId()));
+    }
+
+    @Test
+    void hasPlayerReturnsTrueAfterRegistration() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        visibilityManager.getPlayer(ikfir);
+
+        assertTrue(visibilityManager.hasPlayer(ikfir));
+        assertTrue(visibilityManager.hasPlayer(ikfir.getUniqueId()));
+    }
+
+    @Test
+    void hasPlayerReturnsFalseAfterRemoval() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        visibilityManager.getPlayer(ikfir);
+        assertTrue(visibilityManager.hasPlayer(ikfir));
+
+        visibilityManager.removePlayer(ikfir.getUniqueId());
+        assertFalse(visibilityManager.hasPlayer(ikfir));
+    }
+
+    @Test
+    void groupDoesNotLeakQuitPlayers() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+        visibilityManager.registerListener(VisibilityPlayerRemoveType.NEVER);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+        group.addPlayer(ikfir);
+        group.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        // ikfir quits but is NOT removed from the manager (NEVER mode)
+        ikfir.disconnect();
+
+        // voigon should no longer be able to get ikfir's player reference
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
+    }
+
+    @Test
+    void rejoinRestoresVisibility() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+        visibilityManager.registerListener(VisibilityPlayerRemoveType.NEVER);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+        group.addPlayer(ikfir);
+        group.addPlayer(voigon);
+
+        ikfir.disconnect();
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
+
+        ikfir.reconnect();
+        assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isPresent());
+
+        assertCanSee(ikfir, voigon);
+    }
+
+    @Test
     void gameVisibleTest() {
         visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
 

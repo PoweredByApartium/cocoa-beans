@@ -24,7 +24,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (removeType != VisibilityPlayerRemoveType.ON_LEAVE)
+        manager.onQuit(event.getPlayer());
+
+        if (removeType == VisibilityPlayerRemoveType.NEVER)
             return;
 
         manager.removePlayer(event.getPlayer().getUniqueId());

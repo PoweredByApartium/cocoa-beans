@@ -6,9 +6,7 @@ import net.apartium.cocoabeans.state.SetObservable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @see ViewerGroup
@@ -21,7 +19,15 @@ public class SpigotViewerGroup implements ViewerGroup<Player> {
 
     public SpigotViewerGroup(Set<Player> players) {
         this.players = players;
-        this.playerSetObservable = Observable.set(players);
+        this.playerSetObservable = Observable.set(
+                players,
+                collection -> {
+                    Set<Player> result = Collections.newSetFromMap(new WeakHashMap<>());
+                    result.addAll(collection);
+                    return Collections.unmodifiableSet(result);
+                },
+                size -> Collections.newSetFromMap(new WeakHashMap<>())
+        );
     }
 
     @Override

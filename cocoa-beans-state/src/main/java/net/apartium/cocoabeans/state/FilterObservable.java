@@ -22,8 +22,8 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     private final Observable<C> base;
 
     private final Function<E, Observable<Boolean>> filter;
-    private final Function<Collection<E>, C> collectionMapper;
-    private final Function<Integer, Collection<E>> constructCollection;
+    protected final Function<Collection<E>, C> collectionMapper;
+    protected final Function<Integer, ? extends Collection<E>> constructCollection;
 
     private boolean baseDirty = true;
     private final Set<Observable<Boolean>> flagged = new HashSet<>();
@@ -48,7 +48,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
      * @param constructCollection A function that constructs an empty collection of the desired type based on the
      *                           provided size.
      */
-    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, Function<Integer, Collection<E>> constructCollection) {
+    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
         this.base = base;
         this.base.observe(this);
 

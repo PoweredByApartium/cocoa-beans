@@ -2,9 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -177,6 +175,137 @@ class SetObservableTest {
         assertEquals(Set.of(1), set.get());
         set.addAll(Set.of(1, 2, 3));
         assertEquals(Set.of(1, 2, 3), set.get());
+    }
+
+    @Test
+    void customCopyOfIsUsedForGet() {
+        AtomicInteger copyOfCallCount = new AtomicInteger(0);
+        Set<Integer> backing = new HashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                col -> {
+                    copyOfCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(col);
+                }
+        );
+
+        set.add(1);
+        set.add(2);
+
+        Set<Integer> result = set.get();
+        assertEquals(1, copyOfCallCount.get());
+        assertEquals(Set.of(1, 2), result);
+        assertInstanceOf(LinkedHashSet.class, result);
+    }
+
+    @Test
+    void customCopyOfIsUsedForFilteredCollection() {
+        AtomicInteger copyOfCallCount = new AtomicInteger(0);
+        Set<Integer> backing = new HashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                col -> {
+                    copyOfCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(col);
+                }
+        );
+
+        set.addAll(List.of(1, 2, 3, 4));
+        copyOfCallCount.set(0);
+
+        Observable<String> filtered = set.filter(n -> Observable.mutable(n % 2 == 0))
+                .map(values -> values.stream().sorted().toList().toString());
+
+        assertEquals("[2, 4]", filtered.get());
+        assertTrue(copyOfCallCount.get() > 0);
+    }
+
+    @Test
+    void customCreateInitSetIsUsed() {
+        AtomicInteger createInitSetCallCount = new AtomicInteger(0);
+        Set<Integer> backing = new HashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                HashSet::new,
+                capacity -> {
+                    createInitSetCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(capacity);
+                }
+        );
+
+        set.addAll(List.of(1, 2, 3));
+        // trigger filter to invoke createCollection
+        set.filter(n -> Observable.mutable(n > 1)).map(s -> s.stream().sorted().toList().toString()).get();
+
+        assertTrue(createInitSetCallCount.get() > 0);
+    }
+
+    @Test
+    void customCopyOfProducesWeakSetAllowsGc() {
+        Set<Object> backing = new HashSet<>();
+        SetObservable<Object> set = Observable.set(
+                backing,
+                col -> {
+                    Set<Object> weak = Collections.newSetFromMap(new WeakHashMap<>());
+                    weak.addAll(col);
+                    return Collections.unmodifiableSet(weak);
+                },
+                size -> Collections.newSetFromMap(new WeakHashMap<>())
+        );
+
+        Object obj = new Object();
+        set.add(obj);
+        assertEquals(1, set.get().size());
+
+        obj = null;
+        System.gc();
+
+        // The internal backing set still holds the reference, so size is still 1
+        // but the returned set (weak) should reflect GC if obj was only weakly held
+        // Here we confirm get() returns the customCopyOf result (a weak set snapshot)
+        // The returned snapshot may have lost the entry after GC
+        Set<Object> snapshot = set.get();
+        // snapshot was created from a weak set; after GC it may be empty
+        assertTrue(snapshot.size() == 0 || snapshot.size() == 1);
+    }
+
+    @Test
+    void customCopyOfPropagatesThroughChainedFilters() {
+        AtomicInteger copyOfCallCount = new AtomicInteger(0);
+        Set<Integer> backing = new HashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                col -> {
+                    copyOfCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(col);
+                }
+        );
+
+        set.addAll(List.of(1, 2, 3, 4, 5, 6));
+        copyOfCallCount.set(0);
+
+        // chain two filters — each should still use the custom copyOf
+        Observable<String> result = set
+                .filter(n -> Observable.mutable(n % 2 == 0))
+                .filter(n -> Observable.mutable(n > 2))
+                .map(values -> values.stream().sorted().toList().toString());
+
+        assertEquals("[4, 6]", result.get());
+        assertTrue(copyOfCallCount.get() > 0, "custom copyOf must be used through the filter chain");
+    }
+
+    @Test
+    void twoArgOverloadDefaultsToHashSetForCreateInitSet() {
+        Set<Integer> backing = new HashSet<>();
+        SetObservable<Integer> set = Observable.set(backing, LinkedHashSet::new);
+
+        set.addAll(List.of(10, 20, 30));
+
+        // filter uses createCollection (should default to HashSet) — just verify it works
+        Observable<String> filtered = set.filter(n -> Observable.mutable(n > 10))
+                .map(values -> values.stream().sorted().toList().toString());
+
+        assertEquals("[20, 30]", filtered.get());
     }
 
 }

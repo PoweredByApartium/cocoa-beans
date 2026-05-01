@@ -6,13 +6,13 @@ import java.util.function.Predicate;
 
 /* package-private */ class SetFilterObservable<E> extends FilterObservable<E, Set<E>> implements SetObservable<E> {
 
-    public SetFilterObservable(Observable<Set<E>> base, Function<E, Observable<Boolean>> filter) {
-        super(base, filter, Set::copyOf, HashSet::new);
+    public SetFilterObservable(Observable<Set<E>> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, Set<E>> copyOf, Function<Integer, ? extends Collection<E>> createInitSet) {
+        super(base, filter, copyOf, createInitSet);
     }
 
     @Override
     public SetObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return new SetFilterObservable<>(this, filter);
+        return new SetFilterObservable<>(this, filter, this.collectionMapper, this.constructCollection);
     }
 
     @Override

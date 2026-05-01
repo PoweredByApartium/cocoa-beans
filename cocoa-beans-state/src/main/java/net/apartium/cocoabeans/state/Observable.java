@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -99,6 +100,32 @@ public interface Observable<T> {
      */
     static <E> SetObservable<E> set(Set<E> set) {
         return new SetObservableImpl<>(set);
+    }
+
+    /**
+     * Creates a new observable set from the given set and copy function.
+     *
+     * @param set the original set to be wrapped as an observable set
+     * @param copyOf a function that creates a new set instance as a copy of the provided collection
+     * @return an observable set based on the provided set and copy function
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> SetObservable<E> set(Set<E> set, Function<Collection<E>, Set<E>> copyOf) {
+        return new SetObservableImpl<>(set, copyOf);
+    }
+
+    /**
+     * Creates an observable set based on the provided set, copy function, and initialization set function.
+     *
+     * @param <E> the type of elements in the set
+     * @param set the initial set of elements
+     * @param copyOf a function to create a copy of a given collection as a set
+     * @param createInitSet a function to create a new set with an initial capacity
+     * @return an observable set wrapping the provided set
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> SetObservable<E> set(Set<E> set, Function<Collection<E>, Set<E>> copyOf, Function<Integer, Set<E>> createInitSet) {
+        return new SetObservableImpl<>(set, copyOf, createInitSet);
     }
 
     /**

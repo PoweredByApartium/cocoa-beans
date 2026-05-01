@@ -4,6 +4,8 @@ import net.apartium.cocoabeans.spigot.VersionedImplInstantiator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -88,6 +90,7 @@ public class VisibilityManager {
      */
     public void handlePlayerJoin(Player joinPlayer) {
         VisibilityPlayer visibilityPlayer = getPlayer(joinPlayer);
+        visibilityPlayer.onJoin();
 
         if (visibilityPlayer.getVisibleGroups().isEmpty()) {
             for (Player target : plugin.getServer().getOnlinePlayers()) {
@@ -168,6 +171,31 @@ public class VisibilityManager {
     }
 
     /**
+     * Checks if a player with the specified UUID is registered in the in-memory state.
+     *
+     * @param uuid the unique identifier of the player to check
+     * @return true if the player is registered, false otherwise
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    public boolean hasPlayer(UUID uuid) {
+        return players.containsKey(uuid);
+    }
+
+    /**
+     * Checks if a player is registered in the in-memory state.
+     *
+     * @param player the player to check
+     * @return true if the player is registered, false otherwise
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    public boolean hasPlayer(Player player) {
+        if (player == null)
+            return false;
+
+        return hasPlayer(player.getUniqueId());
+    }
+
+    /**
      * Remove player from the in-memory state, including dis-associating with all its groups
      * @param uuid player uuid
      */
@@ -177,7 +205,7 @@ public class VisibilityManager {
         if (remove == null)
             return;
 
-        for (VisibilityGroup group : remove.getVisibleGroups()) {
+        for (VisibilityGroup group : new ArrayList<>(remove.getVisibleGroups())) {
             group.removePlayer(remove);
         }
 
@@ -346,4 +374,11 @@ public class VisibilityManager {
         return players.values().stream();
     }
 
+    public void onQuit(@NotNull Player player) {
+        VisibilityPlayer visibilityPlayer = players.get(player.getUniqueId());
+        if (visibilityPlayer == null)
+            return;
+
+        visibilityPlayer.onQuit();
+    }
 }
