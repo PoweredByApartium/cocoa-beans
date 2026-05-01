@@ -43,13 +43,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -93,6 +93,24 @@ implements <a href="CollectionObservable.html" title="interface in net.apartium.
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;,<wbr><a href="FilterObservable.html" title="type parameter in FilterObservable">C</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#collectionMapper" class="member-name-link">collectionMapper</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr>? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#constructCollection" class="member-name-link">constructCollection</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -104,7 +122,7 @@ implements <a href="CollectionObservable.html" title="interface in net.apartium.
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.apartium.cocoabeans.state.Observable,java.util.function.Function,java.util.function.Function,java.util.function.Function)" class="member-name-link">FilterObservable</a><wbr>(<a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">C</a>&gt;&nbsp;base,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>,<wbr><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;filter,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;,<wbr><a href="FilterObservable.html" title="type parameter in FilterObservable">C</a>&gt;&nbsp;collectionMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;&nbsp;constructCollection)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr>? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;&nbsp;constructCollection)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a new FilterObservable, which applies a dynamic filtering mechanism on a base observable
  collection.</div>
@@ -211,6 +229,26 @@ implements <a href="CollectionObservable.html" title="interface in net.apartium.
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="collectionMapper">
+<h3>collectionMapper</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;,<wbr><a href="FilterObservable.html" title="type parameter in FilterObservable">C</a> extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;</span>&nbsp;<span class="element-name">collectionMapper</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="constructCollection">
+<h3>constructCollection</h3>
+<div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr>? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;</span>&nbsp;<span class="element-name">constructCollection</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -222,7 +260,7 @@ implements <a href="CollectionObservable.html" title="interface in net.apartium.
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">FilterObservable</span><wbr><span class="parameters">(<a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">C</a>&gt;&nbsp;base,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>,<wbr><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&gt;&nbsp;filter,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;,<wbr><a href="FilterObservable.html" title="type parameter in FilterObservable">C</a>&gt;&nbsp;collectionMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;&nbsp;constructCollection)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr>? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="FilterObservable.html" title="type parameter in FilterObservable">E</a>&gt;&gt;&nbsp;constructCollection)</span></div>
 <div class="block">Constructs a new FilterObservable, which applies a dynamic filtering mechanism on a base observable
  collection. The filtering, collection construction, and mapping of collections are handled by the provided
  functional interfaces.</div>

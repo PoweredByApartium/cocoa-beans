@@ -160,6 +160,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Handle player joining the server</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasPlayer(java.util.UUID)" class="member-name-link">hasPlayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;uuid)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if a player with the specified UUID is registered in the in-memory state.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasPlayer(org.bukkit.entity.Player)" class="member-name-link">hasPlayer</a><wbr>(org.bukkit.entity.Player&nbsp;player)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if a player is registered in the in-memory state.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onQuit(org.bukkit.entity.Player)" class="member-name-link">onQuit</a><wbr>(@NotNull org.bukkit.entity.Player&nbsp;player)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -325,6 +335,34 @@ loadScripts(document, 'script');</script>
 <dd><code>player</code> - player, cannot be null</dd>
 <dt>Returns:</dt>
 <dd>visibility player instance, cannot be null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasPlayer(java.util.UUID)">
+<h3>hasPlayer</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.50")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasPlayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;uuid)</span></div>
+<div class="block">Checks if a player with the specified UUID is registered in the in-memory state.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>uuid</code> - the unique identifier of the player to check</dd>
+<dt>Returns:</dt>
+<dd>true if the player is registered, false otherwise</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasPlayer(org.bukkit.entity.Player)">
+<h3>hasPlayer</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.50")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasPlayer</span><wbr><span class="parameters">(org.bukkit.entity.Player&nbsp;player)</span></div>
+<div class="block">Checks if a player is registered in the in-memory state.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - the player to check</dd>
+<dt>Returns:</dt>
+<dd>true if the player is registered, false otherwise</dd>
 </dl>
 </section>
 </li>
