@@ -17,6 +17,7 @@ public class VisibilityPlayer {
     private final VisibilityManager manager;
     private final UUID uuid;
     private WeakReference<Player> playerRef;
+    private boolean leaving;
     private final Set<VisibilityGroup> visibleGroups;
 
     /* package-private */ VisibilityPlayer(VisibilityManager manager, UUID uuid) {
@@ -60,6 +61,10 @@ public class VisibilityPlayer {
         if (player != null)
             return Optional.of(player);
 
+        if (leaving)
+            return Optional.empty();
+
+
         player = Bukkit.getPlayer(uuid);
         if (player == null)
             return Optional.empty();
@@ -85,8 +90,13 @@ public class VisibilityPlayer {
         visibleGroups.remove(group);
     }
 
-    public void clearPlayerRef() {
+    public void onQuit() {
         playerRef.clear();
+        leaving = true;
+    }
+
+    public void onJoin() {
+        leaving = false;
     }
 
     @Override

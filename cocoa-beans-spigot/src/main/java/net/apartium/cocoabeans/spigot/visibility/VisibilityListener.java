@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        manager.getPlayer(event.getPlayer()).clearPlayerRef();
         manager.handlePlayerJoin(event.getPlayer());
     }
 

@@ -89,6 +89,7 @@ public class VisibilityManager {
      */
     public void handlePlayerJoin(Player joinPlayer) {
         VisibilityPlayer visibilityPlayer = getPlayer(joinPlayer);
+        visibilityPlayer.onJoin();
 
         if (visibilityPlayer.getVisibleGroups().isEmpty()) {
             for (Player target : plugin.getServer().getOnlinePlayers()) {
@@ -352,6 +353,6 @@ public class VisibilityManager {
         if (visibilityPlayer == null)
             return;
 
-        visibilityPlayer.clearPlayerRef();
+        visibilityPlayer.onQuit();
     }
 }

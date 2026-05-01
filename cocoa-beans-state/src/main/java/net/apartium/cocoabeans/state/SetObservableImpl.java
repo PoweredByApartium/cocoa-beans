@@ -12,27 +12,42 @@ import java.util.function.Predicate;
 /* package-private */ class SetObservableImpl<E> extends AbstractCollectionObservable<E, Set<E>> implements SetObservable<E> {
 
 
+    private final Function<Collection<E>, Set<E>> copyOf;
+    private final Function<Integer, Set<E>> createInitSet;
+
     public SetObservableImpl() {
         this(new HashSet<>());
     }
 
     public SetObservableImpl(Set<E> set) {
-        super(set);
+        this(set, Set::copyOf);
     }
+
+    public SetObservableImpl(Set<E> set, Function<Collection<E>, Set<E>> copyOf) {
+        this(set, copyOf, HashSet::new);
+    }
+
+    public SetObservableImpl(Set<E> set, Function<Collection<E>, Set<E>> copyOf, Function<Integer, Set<E>> createInitSet) {
+        super(set);
+
+        this.copyOf = copyOf;
+        this.createInitSet = createInitSet;
+    }
+
 
     @Override
     public Set<E> get() {
-        return Set.copyOf(this.collection);
+        return copyOf.apply(this.collection);
     }
 
     @Override
     protected Set<E> createFilteredCollection(Collection<E> elements) {
-        return Set.copyOf(elements);
+        return copyOf.apply(elements);
     }
 
     @Override
     protected Set<E> createCollection(int initialCapacity) {
-        return new HashSet<>(initialCapacity);
+        return createInitSet.apply(initialCapacity);
     }
 
     @Override

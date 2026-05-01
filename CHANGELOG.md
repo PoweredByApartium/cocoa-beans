@@ -1,5 +1,8 @@
 # CHANGELOG
 ## 0.0.50
+- [spigot] Fix issue related to visibility API
+- [spigot] Fix SpigotViewerGroup leaking players
+- [state] Fix issue with WeakSet Observable
 - [state] Add QueueObservable
 - [state] Add Observable#linkedList
 
