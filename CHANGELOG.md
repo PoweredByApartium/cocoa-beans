@@ -1,5 +1,15 @@
 # CHANGELOG
+## 0.0.50
+- [state] Add QueueObservable
+- [state] Add Observable#linkedList
+
 ## 0.0.49
+- [state] Improve type flexibility of `Observable.compound`
+- [commands-spigot] Add `WorldTypeParser`
+- [commands] Add CommandDocs annotations
+- [commands-spigot] Make `WorldParser` use `NoSuchWorldResponse` for missing worlds
+- [commands] Allow overriding `ContextualMapBasedParser` no-such-element response
+- [state] Define flatMap behavior for null source values
 - [common] Add BoxSurfaceIterator
 
 ## 0.0.48

@@ -1,6 +1,9 @@
 package net.apartium.cocoabeans.commands.spigot.parsers;
 
+import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.MapBasedParser;
+import net.apartium.cocoabeans.commands.parsers.exception.InvalidParserResponse;
+import net.apartium.cocoabeans.commands.spigot.parsers.exception.NoSuchWorldResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.jetbrains.annotations.ApiStatus;
@@ -81,4 +84,8 @@ public class WorldParser extends MapBasedParser<World> {
                 .collect(Collectors.toMap((w) -> w.getName(), world -> world));
     }
 
+    @Override
+    protected InvalidParserResponse createNoSuchElementResponse(CommandProcessingContext context, String message, String attempted) {
+        return new NoSuchWorldResponse(context, this, message, attempted);
+    }
 }

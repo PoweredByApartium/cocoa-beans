@@ -18,7 +18,7 @@ public class ObservableCompound<T> implements Observable<T>, Observer {
 
     private T cachedValue;
 
-    public ObservableCompound(Function<List<?>, T> singularMapper, List<Observable<?>> list) {
+    public ObservableCompound(Function<List<?>, T> singularMapper, List<? extends Observable<?>> list) {
         this.singularMapper = singularMapper;
 
         for (Observable<?> state : list) {

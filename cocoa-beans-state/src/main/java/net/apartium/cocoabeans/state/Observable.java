@@ -1,7 +1,9 @@
 package net.apartium.cocoabeans.state;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -65,6 +67,26 @@ public interface Observable<T> {
     }
 
     /**
+     * Creates a new ListObservable with the given list and the given list implementation
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> LinkedListObservable<E> linkedList() {
+        return new LinkedListObservable<>();
+    }
+
+    /**
+     * Creates a new instance of {@code LinkedListObservable} based on the provided {@code LinkedList}.
+     *
+     * @param <E> the type of elements in the {@code LinkedList}
+     * @param list the {@code LinkedList} to be wrapped in a {@code LinkedListObservable}
+     * @return a new {@code LinkedListObservable} containing the elements of the provided {@code LinkedList}
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> LinkedListObservable<E> linkedList(LinkedList<E> list) {
+        return new LinkedListObservable<>(list);
+    }
+
+    /**
      * Create a new SetObservable with an empty set, using HashSet as is set implementation
      */
     static <E> SetObservable<E> set() {
@@ -86,7 +108,7 @@ public interface Observable<T> {
      * @return a new observable instance
      * @param <T> the type of the final value
      */
-    static <T> Observable<T> compound(Function<List<?>, T> function, List<Observable<?>> depends) {
+    static <T> Observable<T> compound(Function<List<?>, T> function, List<? extends Observable<?>> depends) {
         return new ObservableCompound<>(function, depends);
     }
 
@@ -335,13 +357,14 @@ public interface Observable<T> {
      * Maps this observable's value to another {@link Observable} and observes the latest one.
      * When the source value changes, the previous inner observable is unsubscribed and the
      * new one returned by the mapper is observed.
+     * If the source value of this observable is null, the mapper will not be called and return null as well.
      *
      * @param mapper function mapping the current value to an observable
      * @param <R> the mapped value type
      * @return an observable
      */
     @ApiStatus.AvailableSince("0.0.47")
-    default <R> Observable<R> flatMap(Function<T, Observable<R>> mapper) {
+    default <R> Observable<R> flatMap(Function<@NonNull T, Observable<R>> mapper) {
         return new FlatMapObservable<>(this, mapper);
     }
 

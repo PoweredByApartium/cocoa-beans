@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.parsers;
 
 import net.apartium.cocoabeans.commands.CommandProcessingContext;
 import net.apartium.cocoabeans.commands.parsers.exception.AmbiguousMappedKeyResponse;
+import net.apartium.cocoabeans.commands.parsers.exception.InvalidParserResponse;
 import net.apartium.cocoabeans.commands.parsers.exception.NoSuchElementInMapResponse;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -105,10 +106,22 @@ public abstract class ContextualMapBasedParser<T> extends ArgumentParser<T> {
 
         commandProcessingContext.report(
                 this,
-                new NoSuchElementInMapResponse(commandProcessingContext, this, "No such element in map", sb.toString())
+                createNoSuchElementResponse(commandProcessingContext, "No such element in map", sb.toString())
         );
 
         return Optional.empty();
+    }
+
+    /**
+     * Override this method to create a custom {@link NoSuchElementInMapResponse}
+     * @param context the command context
+     * @param message the error message
+     * @param attempted the attempted key
+     * @return the custom response
+     */
+    @ApiStatus.AvailableSince("0.0.49")
+    protected InvalidParserResponse createNoSuchElementResponse(CommandProcessingContext context, String message, String attempted) {
+        return new NoSuchElementInMapResponse(context, this, message, attempted);
     }
 
     private String convertBaseOnIgnoreCase(String s) {
