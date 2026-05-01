@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -386,6 +387,40 @@ class CodeSnippets {
         b.respawn();
 
         assertEquals(Set.of(a, b), alivePlayers.get());
+    }
+
+    @Test
+    void linkedListExample() {
+        LinkedListObservable<String> queue = Observable.linkedList(); // A LinkedList<String>
+
+        queue.offer("Alice");
+        queue.offer("Bob");
+        queue.offer("Charlie");
+
+        assertEquals("Alice", queue.peek()); // look at head, don't remove
+        assertEquals("Alice", queue.poll()); // remove head
+        assertEquals("Bob", queue.poll());
+
+        assertEquals(List.of("Charlie"), queue.get());
+    }
+
+    @Test
+    void linkedListSortAndIndex() {
+        LinkedListObservable<Integer> scores = Observable.linkedList();
+
+        scores.add(50);
+        scores.add(90);
+        scores.add(70);
+
+        Observable<Integer> best = scores.map(list -> list.stream().max(Integer::compareTo).orElse(0));
+        assertEquals(90, best.get());
+
+        scores.add(0, 100); // insert at head
+        assertEquals(List.of(100, 50, 90, 70), scores.get());
+        assertEquals(100, best.get());
+
+        scores.sort(Integer::compareTo);
+        assertEquals(List.of(50, 70, 90, 100), scores.get());
     }
 
     public record PlayerRank(Observable<String> prefix, Observable<String> suffix) {}

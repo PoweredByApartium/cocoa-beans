@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * A concrete implementation of an observable linked list that allows observing changes
@@ -91,7 +92,7 @@ public class LinkedListObservable<E> extends AbstractCollectionObservable<E, Lin
     @Override
     public E remove() {
         if (collection.isEmpty())
-            return null;
+            throw new NoSuchElementException("No elements in the queue");
 
         E element = collection.remove();
         notifyObservers();
