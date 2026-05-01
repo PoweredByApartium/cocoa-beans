@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
