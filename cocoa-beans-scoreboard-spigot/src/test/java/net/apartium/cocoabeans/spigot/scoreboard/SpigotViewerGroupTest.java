@@ -4,7 +4,6 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.state.Observable;
-import net.apartium.cocoabeans.state.SetObservable;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,7 +129,6 @@ class SpigotViewerGroupTest {
         // Remove from the backing set (simulate player disconnect cleanup)
         group.remove(alpha);
         System.gc();
-        Thread.sleep(100);
 
         // New snapshot must not contain the removed player
         Set<Player> snapshot2 = group.observePlayers().get();
@@ -144,6 +142,7 @@ class SpigotViewerGroupTest {
         SpigotViewerGroup group = new SpigotViewerGroup(backing);
         group.add(alpha);
 
-        assertThrows(UnsupportedOperationException.class, () -> group.players().add(beta));
+        Set<Player> players = group.players();
+        assertThrows(UnsupportedOperationException.class, () -> players.add(beta));
     }
 }

@@ -5,7 +5,6 @@ import net.apartium.cocoabeans.spigot.visibility.TestPlayerVisibilityController;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityGroup;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityManager;
 import net.apartium.cocoabeans.spigot.visibility.VisibilityPlayerRemoveType;
-import net.kyori.adventure.text.Component;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -256,7 +255,7 @@ class VisibilityManagerTest extends SpigotTestBase {
         assertCanSee(ikfir, voigon);
 
         // ikfir quits but is NOT removed from the manager (NEVER mode)
-        server.getPluginManager().callEvent(new org.bukkit.event.player.PlayerQuitEvent(ikfir, (Component) null));
+        ikfir.disconnect();
 
         // voigon should no longer be able to get ikfir's player reference
         assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
@@ -271,10 +270,10 @@ class VisibilityManagerTest extends SpigotTestBase {
         group.addPlayer(ikfir);
         group.addPlayer(voigon);
 
-        server.getPluginManager().callEvent(new org.bukkit.event.player.PlayerQuitEvent(ikfir, (Component) null));
+        ikfir.disconnect();
         assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isEmpty());
 
-        server.getPluginManager().callEvent(new org.bukkit.event.player.PlayerJoinEvent(ikfir, (Component) null));
+        ikfir.reconnect();
         assertTrue(visibilityManager.getPlayer(ikfir).getPlayer().isPresent());
 
         assertCanSee(ikfir, voigon);

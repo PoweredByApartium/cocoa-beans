@@ -259,7 +259,6 @@ class SetObservableTest {
 
         obj = null;
         System.gc();
-        Thread.sleep(100);
 
         // The internal backing set still holds the reference, so size is still 1
         // but the returned set (weak) should reflect GC if obj was only weakly held
@@ -287,8 +286,8 @@ class SetObservableTest {
 
         // chain two filters — each should still use the custom copyOf
         Observable<String> result = set
-                .filter(n -> Observable.mutable(n % 2 == 0))   // {2,4,6}
-                .filter(n -> Observable.mutable(n > 2))         // {4,6}
+                .filter(n -> Observable.mutable(n % 2 == 0))
+                .filter(n -> Observable.mutable(n > 2))
                 .map(values -> values.stream().sorted().toList().toString());
 
         assertEquals("[4, 6]", result.get());
