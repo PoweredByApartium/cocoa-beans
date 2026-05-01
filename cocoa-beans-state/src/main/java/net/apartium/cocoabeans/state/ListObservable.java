@@ -14,30 +14,7 @@ import java.util.function.Predicate;
  * @see Observable
  */
 @ApiStatus.AvailableSince("0.0.39")
-public interface ListObservable<E> extends CollectionObservable<E, List<E>> {
-
-    /**
-     * Add an element at specified index
-     * @param index index
-     * @param element element
-     * @see List#add(int, Object)
-     */
-    void add(int index, E element);
-
-    /**
-     * Remove an element at specified index
-     * @param index index
-     * @return removed element
-     * @see List#remove(int)
-     */
-    E remove(int index);
-
-    /**
-     * Sort list elements by given comparator
-     * @param comparator comparator
-     * @see List#sort(Comparator)
-     */
-    void sort(Comparator<? super E> comparator);
+public interface ListObservable<E> extends CollectionObservable<E, List<E>>, AbstractListObservable<E> {
 
     @Override
     ListObservable<E> filter(Function<E, Observable<Boolean>> filter);

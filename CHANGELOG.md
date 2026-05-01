@@ -1,4 +1,8 @@
 # CHANGELOG
+## 0.0.50
+- [state] Add QueueObservable
+- [state] Add Observable#linkedList
+
 ## 0.0.49
 - [state] Improve type flexibility of `Observable.compound`
 - [commands-spigot] Add `WorldTypeParser`
