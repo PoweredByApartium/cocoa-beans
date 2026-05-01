@@ -6,14 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Represents an observable abstraction for operations on a list.
- * Provides methods for adding, removing, and sorting elements within the observable list.
+ * Represents an observable list-like structure that allows modification operations
+ * such as addition, removal, and sorting while providing change notifications to observers.
  *
- * @param <E> the type of elements in the list
+ * @param <E> the type of elements in the list-like structure
  * @see List
  */
 @ApiStatus.AvailableSince("0.0.50")
-public interface AbstractListObservable<E> {
+public interface ListLikeObservable<E> {
 
     /**
      * Add an element at specified index

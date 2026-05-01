@@ -2,7 +2,6 @@ package net.apartium.cocoabeans.state;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -14,7 +13,7 @@ import java.util.function.Predicate;
  * @see Observable
  */
 @ApiStatus.AvailableSince("0.0.39")
-public interface ListObservable<E> extends CollectionObservable<E, List<E>>, AbstractListObservable<E> {
+public interface ListObservable<E> extends CollectionObservable<E, List<E>>, ListLikeObservable<E> {
 
     @Override
     ListObservable<E> filter(Function<E, Observable<Boolean>> filter);

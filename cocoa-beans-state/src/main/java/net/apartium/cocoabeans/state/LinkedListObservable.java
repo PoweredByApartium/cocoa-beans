@@ -16,11 +16,11 @@ import java.util.NoSuchElementException;
  *
  * @param <E> the type of elements in this collection
  * @see AbstractCollectionObservable
- * @see AbstractListObservable
+ * @see ListLikeObservable
  * @see QueueObservable
  */
 @ApiStatus.AvailableSince("0.0.50")
-public class LinkedListObservable<E> extends AbstractCollectionObservable<E, LinkedList<E>> implements AbstractListObservable<E>, QueueObservable<E, LinkedList<E>> {
+public class LinkedListObservable<E> extends AbstractCollectionObservable<E, LinkedList<E>> implements ListLikeObservable<E>, QueueObservable<E, LinkedList<E>> {
 
     public LinkedListObservable() {
         this(new LinkedList<>());
