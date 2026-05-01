@@ -76,12 +76,12 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;E&gt;</code>, <code><a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;</code>, <code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;</code></dd>
+<dd><code><a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;</code>, <code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;E&gt;</code>, <code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.39")
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">ListObservable&lt;E&gt;</span><span class="extends-implements">
-extends <a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;, <a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;E&gt;</span></div>
+extends <a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;E&gt;&gt;, <a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;E&gt;</span></div>
 <div class="block">Represents an observable containing multiple values</div>
 <dl class="notes">
 <dt>See Also:</dt>
@@ -121,11 +121,11 @@ extends <a href="CollectionObservable.html" title="interface in net.apartium.coc
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-net.apartium.cocoabeans.state.AbstractListObservable">Methods inherited from interface&nbsp;net.apartium.cocoabeans.state.<a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a></h3>
-<code><a href="AbstractListObservable.html#add(int,E)">add</a>, <a href="AbstractListObservable.html#remove(int)">remove</a>, <a href="AbstractListObservable.html#sort(java.util.Comparator)">sort</a></code></div>
-<div class="inherited-list">
 <h3 id="methods-inherited-from-class-net.apartium.cocoabeans.state.CollectionObservable">Methods inherited from interface&nbsp;net.apartium.cocoabeans.state.<a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a></h3>
 <code><a href="CollectionObservable.html#add(E)">add</a>, <a href="CollectionObservable.html#addAll(java.util.Collection)">addAll</a>, <a href="CollectionObservable.html#clear()">clear</a>, <a href="CollectionObservable.html#remove(E)">remove</a>, <a href="CollectionObservable.html#removeAll(java.util.Collection)">removeAll</a>, <a href="CollectionObservable.html#removeIf(java.util.function.Predicate)">removeIf</a>, <a href="CollectionObservable.html#retainAll(java.util.Collection)">retainAll</a>, <a href="CollectionObservable.html#size()">size</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-net.apartium.cocoabeans.state.ListLikeObservable">Methods inherited from interface&nbsp;net.apartium.cocoabeans.state.<a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a></h3>
+<code><a href="ListLikeObservable.html#add(int,E)">add</a>, <a href="ListLikeObservable.html#remove(int)">remove</a>, <a href="ListLikeObservable.html#sort(java.util.Comparator)">sort</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-net.apartium.cocoabeans.state.Observable">Methods inherited from interface&nbsp;net.apartium.cocoabeans.state.<a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a></h3>
 <code><a href="Observable.html#flatMap(java.util.function.Function)">flatMap</a>, <a href="Observable.html#get()">get</a>, <a href="Observable.html#lazyWatch()">lazyWatch</a>, <a href="Observable.html#lazyWatch(net.apartium.cocoabeans.state.WatcherManager,java.util.function.Consumer)">lazyWatch</a>, <a href="Observable.html#map(java.util.function.Function)">map</a>, <a href="Observable.html#observe(net.apartium.cocoabeans.state.Observer)">observe</a>, <a href="Observable.html#removeObserver(net.apartium.cocoabeans.state.Observer)">removeObserver</a></code></div>

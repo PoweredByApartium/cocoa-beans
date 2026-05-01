@@ -79,13 +79,13 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;E&gt;</code>, <code><a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code>, <code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code>, <code><a href="QueueObservable.html" title="interface in net.apartium.cocoabeans.state">QueueObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code></dd>
+<dd><code><a href="CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code>, <code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;E&gt;</code>, <code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code>, <code><a href="QueueObservable.html" title="interface in net.apartium.cocoabeans.state">QueueObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations">@AvailableSince("0.0.50")
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">LinkedListObservable&lt;E&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;E&gt;, <a href="QueueObservable.html" title="interface in net.apartium.cocoabeans.state">QueueObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</span></div>
+implements <a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;E&gt;, <a href="QueueObservable.html" title="interface in net.apartium.cocoabeans.state">QueueObservable</a>&lt;E,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedList.html" title="class or interface in java.util" class="external-link">LinkedList</a>&lt;E&gt;&gt;</span></div>
 <div class="block">A concrete implementation of an observable linked list that allows observing changes
  such as additions, removals, and structural modifications. This class extends
  <code>AbstractCollectionObservable</code> and implements <code>AbstractListObservable</code>
@@ -95,7 +95,7 @@ implements <a href="AbstractListObservable.html" title="interface in net.apartiu
 <dd>
 <ul class="see-list">
 <li><code>AbstractCollectionObservable</code></li>
-<li><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state"><code>AbstractListObservable</code></a></li>
+<li><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state"><code>ListLikeObservable</code></a></li>
 <li><a href="QueueObservable.html" title="interface in net.apartium.cocoabeans.state"><code>QueueObservable</code></a></li>
 </ul>
 </dd>
@@ -332,11 +332,11 @@ implements <a href="AbstractListObservable.html" title="interface in net.apartiu
 <h3 id="add(int,java.lang.Object)">add</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">add</span><wbr><span class="parameters">(int&nbsp;index,
  <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&nbsp;element)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="AbstractListObservable.html#add(int,E)">AbstractListObservable</a></code></span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ListLikeObservable.html#add(int,E)">ListLikeObservable</a></code></span></div>
 <div class="block">Add an element at specified index</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AbstractListObservable.html#add(int,E)">add</a></code>&nbsp;in interface&nbsp;<code><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
+<dd><code><a href="ListLikeObservable.html#add(int,E)">add</a></code>&nbsp;in interface&nbsp;<code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>index</code> - index</dd>
 <dd><code>element</code> - element</dd>
@@ -353,11 +353,11 @@ implements <a href="AbstractListObservable.html" title="interface in net.apartiu
 <section class="detail" id="remove(int)">
 <h3>remove</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a></span>&nbsp;<span class="element-name">remove</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="AbstractListObservable.html#remove(int)">AbstractListObservable</a></code></span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ListLikeObservable.html#remove(int)">ListLikeObservable</a></code></span></div>
 <div class="block">Remove an element at specified index</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AbstractListObservable.html#remove(int)">remove</a></code>&nbsp;in interface&nbsp;<code><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
+<dd><code><a href="ListLikeObservable.html#remove(int)">remove</a></code>&nbsp;in interface&nbsp;<code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>index</code> - index</dd>
 <dt>Returns:</dt>
@@ -375,11 +375,11 @@ implements <a href="AbstractListObservable.html" title="interface in net.apartiu
 <section class="detail" id="sort(java.util.Comparator)">
 <h3>sort</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">sort</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;? super <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;&nbsp;comparator)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="AbstractListObservable.html#sort(java.util.Comparator)">AbstractListObservable</a></code></span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ListLikeObservable.html#sort(java.util.Comparator)">ListLikeObservable</a></code></span></div>
 <div class="block">Sort list elements by given comparator</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="AbstractListObservable.html#sort(java.util.Comparator)">sort</a></code>&nbsp;in interface&nbsp;<code><a href="AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
+<dd><code><a href="ListLikeObservable.html#sort(java.util.Comparator)">sort</a></code>&nbsp;in interface&nbsp;<code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>comparator</code> - comparator</dd>
 <dt>See Also:</dt>

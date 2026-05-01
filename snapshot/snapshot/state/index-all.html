@@ -51,16 +51,12 @@ loadScripts(document, 'script');</script>
 <a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a>
 <h2 class="title" id="I:A">A</h2>
 <dl class="index">
-<dt><a href="net/apartium/cocoabeans/state/AbstractListObservable.html" class="type-name-link" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a>&lt;<a href="net/apartium/cocoabeans/state/AbstractListObservable.html" title="type parameter in AbstractListObservable">E</a>&gt; - Interface in <a href="net/apartium/cocoabeans/state/package-summary.html">net.apartium.cocoabeans.state</a></dt>
-<dd>
-<div class="block">Represents an observable abstraction for operations on a list.</div>
-</dd>
-<dt><a href="net/apartium/cocoabeans/state/AbstractListObservable.html#add(int,E)" class="member-name-link">add(int, E)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a></dt>
+<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#add(int,E)" class="member-name-link">add(int, E)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/state/ListLikeObservable.html#add(int,E)" class="member-name-link">add(int, E)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a></dt>
 <dd>
 <div class="block">Add an element at specified index</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#add(int,E)" class="member-name-link">add(int, E)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#add(E)" class="member-name-link">add(E)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/state/CollectionObservable.html#add(E)" class="member-name-link">add(E)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a></dt>
@@ -681,6 +677,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new ListObservable with the given list</div>
 </dd>
+<dt><a href="net/apartium/cocoabeans/state/ListLikeObservable.html" class="type-name-link" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;<a href="net/apartium/cocoabeans/state/ListLikeObservable.html" title="type parameter in ListLikeObservable">E</a>&gt; - Interface in <a href="net/apartium/cocoabeans/state/package-summary.html">net.apartium.cocoabeans.state</a></dt>
+<dd>
+<div class="block">Represents an observable list-like structure that allows modification operations
+ such as addition, removal, and sorting while providing change notifications to observers.</div>
+</dd>
 <dt><a href="net/apartium/cocoabeans/state/ListObservable.html" class="type-name-link" title="interface in net.apartium.cocoabeans.state">ListObservable</a>&lt;<a href="net/apartium/cocoabeans/state/ListObservable.html" title="type parameter in ListObservable">E</a>&gt; - Interface in <a href="net/apartium/cocoabeans/state/package-summary.html">net.apartium.cocoabeans.state</a></dt>
 <dd>
 <div class="block">Represents an observable containing multiple values</div>
@@ -839,12 +840,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Removes the head of the queue.</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/state/AbstractListObservable.html#remove(int)" class="member-name-link">remove(int)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a></dt>
+<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#remove(int)" class="member-name-link">remove(int)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/state/ListLikeObservable.html#remove(int)" class="member-name-link">remove(int)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a></dt>
 <dd>
 <div class="block">Remove an element at specified index</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#remove(int)" class="member-name-link">remove(int)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#remove(E)" class="member-name-link">remove(E)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="net/apartium/cocoabeans/state/CollectionObservable.html#remove(E)" class="member-name-link">remove(E)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/CollectionObservable.html" title="interface in net.apartium.cocoabeans.state">CollectionObservable</a></dt>
@@ -916,12 +917,12 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="net/apartium/cocoabeans/state/FilterObservable.html#size()" class="member-name-link">size()</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/FilterObservable.html" title="class in net.apartium.cocoabeans.state">FilterObservable</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="net/apartium/cocoabeans/state/AbstractListObservable.html#sort(java.util.Comparator)" class="member-name-link">sort(Comparator&lt;? super E&gt;)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/AbstractListObservable.html" title="interface in net.apartium.cocoabeans.state">AbstractListObservable</a></dt>
+<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#sort(java.util.Comparator)" class="member-name-link">sort(Comparator&lt;? super E&gt;)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="net/apartium/cocoabeans/state/ListLikeObservable.html#sort(java.util.Comparator)" class="member-name-link">sort(Comparator&lt;? super E&gt;)</a> - Method in interface net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a></dt>
 <dd>
 <div class="block">Sort list elements by given comparator</div>
 </dd>
-<dt><a href="net/apartium/cocoabeans/state/LinkedListObservable.html#sort(java.util.Comparator)" class="member-name-link">sort(Comparator&lt;? super E&gt;)</a> - Method in class net.apartium.cocoabeans.state.<a href="net/apartium/cocoabeans/state/LinkedListObservable.html" title="class in net.apartium.cocoabeans.state">LinkedListObservable</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
