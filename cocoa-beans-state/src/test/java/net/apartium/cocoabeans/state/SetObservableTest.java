@@ -241,7 +241,7 @@ class SetObservableTest {
     }
 
     @Test
-    void customCopyOfProducesWeakSetAllowsGc() throws InterruptedException {
+    void customCopyOfProducesWeakSetAllowsGc() {
         Set<Object> backing = new HashSet<>();
         SetObservable<Object> set = Observable.set(
                 backing,

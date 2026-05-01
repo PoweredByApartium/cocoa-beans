@@ -115,7 +115,7 @@ class SpigotViewerGroupTest {
     }
 
     @Test
-    void observableSnapshotUsesWeakCopyAndDoesNotPreventGc() throws InterruptedException {
+    void observableSnapshotUsesWeakCopyAndDoesNotPreventGc() {
         Set<Player> backing = new HashSet<>();
         SpigotViewerGroup group = new SpigotViewerGroup(backing);
 
