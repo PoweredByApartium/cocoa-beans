@@ -39,6 +39,9 @@
         <toc-element topic="collection-observable.md">
             <toc-element topic="list-observable.md"/>
             <toc-element topic="set-observable.md"/>
+            <toc-element topic="queue-observable.md">
+                <toc-element topic="linked-list-observable.md"/>
+            </toc-element>
             <toc-element topic="filtering-collection-observable.md"/>
         </toc-element>
         <toc-element topic="observer.md"/>

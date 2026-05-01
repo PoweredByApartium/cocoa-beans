@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -63,6 +64,26 @@ public interface Observable<T> {
      */
     static <E> ListObservable<E> list(List<E> list) {
         return new ListObservableImpl<>(list);
+    }
+
+    /**
+     * Creates a new ListObservable with the given list and the given list implementation
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> LinkedListObservable<E> linkedList() {
+        return new LinkedListObservable<>();
+    }
+
+    /**
+     * Creates a new instance of {@code LinkedListObservable} based on the provided {@code LinkedList}.
+     *
+     * @param <E> the type of elements in the {@code LinkedList}
+     * @param list the {@code LinkedList} to be wrapped in a {@code LinkedListObservable}
+     * @return a new {@code LinkedListObservable} containing the elements of the provided {@code LinkedList}
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    static <E> LinkedListObservable<E> linkedList(LinkedList<E> list) {
+        return new LinkedListObservable<>(list);
     }
 
     /**
