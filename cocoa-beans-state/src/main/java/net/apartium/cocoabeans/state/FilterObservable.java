@@ -107,18 +107,20 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     private boolean updateElements(Set<E> elements, Collection<E> newCollection, Observable<Boolean> observable) {
         boolean hasChange = false;
 
+        boolean value = observable.get();
         for (E element : elements) {
             boolean contains = newCollection.contains(element);
 
-            boolean value = observable.get();
             if (value) {
-                newCollection.add(element);
-                if (!contains)
+                if (!contains) {
+                    newCollection.add(element);
                     hasChange = true;
+                }
             } else {
-                newCollection.remove(element);
-                if (contains)
+                if (contains) {
+                    newCollection.remove(element);
                     hasChange = true;
+                }
             }
         }
 
@@ -127,8 +129,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
 
     private boolean updateFlagged(Collection<E> newCollection) {
         boolean hasChange = false;
-        if (cachedCollection != null)
-            newCollection.addAll(cachedCollection);
+        newCollection.addAll(cachedCollection);
 
         for (Observable<Boolean> observable : flagged) {
             Set<E> elements = dependsOn.get(observable);
