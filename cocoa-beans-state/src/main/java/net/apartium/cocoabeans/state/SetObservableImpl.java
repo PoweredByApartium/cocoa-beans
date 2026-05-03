@@ -59,4 +59,28 @@ import java.util.function.Predicate;
     public <T> SetObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
         return this.filter(element -> mapper.apply(element).map(filter::test));
     }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public <R> SetMapEachObservable<E, R> mapEach(Function<E, R> mapper) {
+        return new SetMapEachObservable<>(
+                this,
+                mapper,
+                (Function) copyOf,
+                (Function) createInitSet
+        );
+    }
+
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public <R> SetObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
+        return new SetFlatMapEachObservable<>(
+                this,
+                mapper,
+                (Function) copyOf,
+                (Function) createInitSet
+        );
+    }
+
 }

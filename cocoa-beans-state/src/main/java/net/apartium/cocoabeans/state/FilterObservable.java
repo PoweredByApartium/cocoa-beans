@@ -29,7 +29,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     private final Set<Observable<Boolean>> flagged = new HashSet<>();
 
     private final Map<Observable<Boolean>, Boolean> cacheValueMap = new HashMap<>();
-    private final Map<Observable<Boolean>, Set<E>> dependsOn = new IdentityHashMap<>();
+    private final Map<Observable<Boolean>, Set<E>> dependsOn = new LinkedHashMap<>();
 
 
     private final Observable<Integer> size;
@@ -220,4 +220,27 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
         return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
     }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
+        return new MapElementObservable<>(
+                this,
+                mapper,
+                (Function) collectionMapper,
+                (Function) constructCollection
+        );
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
+        return new FlatMapElementObservable<>(
+                this,
+                mapper,
+                (Function) collectionMapper,
+                (Function) constructCollection
+        );
+    }
+
 }

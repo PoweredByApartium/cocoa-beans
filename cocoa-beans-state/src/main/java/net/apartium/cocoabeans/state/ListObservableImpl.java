@@ -83,4 +83,23 @@ import java.util.function.Predicate;
         return this.filter(element -> mapper.apply(element).map(filter::test));
     }
 
+    @Override
+    public <R> ListObservable<R> mapEach(Function<E, R> mapper) {
+        return new ListMapEachObservable<>(
+                this,
+                mapper,
+                List::copyOf,
+                ArrayList::new
+        );
+    }
+
+    @Override
+    public <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
+        return new ListFlatMapEachObservable<>(
+                this,
+                mapper,
+                List::copyOf,
+                ArrayList::new
+        );
+    }
 }

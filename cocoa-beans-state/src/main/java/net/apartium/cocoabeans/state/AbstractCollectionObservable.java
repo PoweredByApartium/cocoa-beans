@@ -135,4 +135,28 @@ import java.util.function.Predicate;
     protected abstract C createFilteredCollection(Collection<E> elements);
 
     protected abstract C createCollection(int initialCapacity);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
+        return new MapElementObservable<>(
+                this,
+                mapper,
+                elements -> (Collection<R>) createFilteredCollection((Collection<E>) elements),
+                size -> (Collection<R>) createCollection(size)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
+        return new FlatMapElementObservable<>(
+                this,
+                mapper,
+                elements -> (Collection<R>) createFilteredCollection((Collection<E>) elements),
+                size -> (Collection<R>) createCollection(size)
+        );
+    }
+
+
 }

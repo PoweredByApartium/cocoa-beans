@@ -1,16 +1,13 @@
 package net.apartium.cocoabeans.state;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/* package-private */ class ListFilterObservable<E> extends FilterObservable<E, List<E>> implements ListObservable<E> {
+/* package-private */ class ListMapEachObservable<F, E> extends MapElementObservable<F, E, List<E>> implements ListObservable<E> {
 
-    public ListFilterObservable(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {
-        super(base, filter, List::copyOf, ArrayList::new);
+    public ListMapEachObservable(Observable<? extends Collection<F>> base, Function<F, E> mapper, Function<Collection<E>, List<E>> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+        super(base, mapper, collectionMapper, constructCollection);
     }
 
     @Override public void add(int index, E element) { throw new UnsupportedOperationException("ListFilterObservable does not support adding elements"); }
