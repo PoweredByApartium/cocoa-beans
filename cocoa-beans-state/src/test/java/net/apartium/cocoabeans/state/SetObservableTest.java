@@ -533,10 +533,13 @@ class SetObservableTest {
 
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(1));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove(1));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(List.of()));
+
+        List<Integer> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> mapped.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, mapped::clear);
     }
 
@@ -821,10 +824,13 @@ class SetObservableTest {
 
         assertThrows(UnsupportedOperationException.class, () -> mapped.add("x"));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove("x"));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(List.of()));
+
+        List<String> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> mapped.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, mapped::clear);
     }
 
@@ -1093,10 +1099,13 @@ class SetObservableTest {
 
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove(1));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(List.of()));
+
+        List<Integer> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> filtered.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, filtered::clear);
     }
 

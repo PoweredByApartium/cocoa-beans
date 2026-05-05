@@ -241,16 +241,22 @@ class ListObservableTest {
         // inherited from MapElementObservable
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(1));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove((Integer) 1));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(List.of()));
+
+        List<Integer> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> mapped.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, mapped::clear);
 
         // list-specific overrides
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove(0));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.sort(Comparator.naturalOrder()));
+
+        Comparator<Integer> comparator = Comparator.naturalOrder();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.sort(comparator));
     }
 
     @Test
@@ -534,16 +540,22 @@ class ListObservableTest {
         // inherited from FlatMapElementObservable
         assertThrows(UnsupportedOperationException.class, () -> mapped.add("x"));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove("x"));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(List.of()));
+
+        List<String> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> mapped.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, mapped::clear);
 
         // list-specific overrides
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(0, "x"));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove(0));
-        assertThrows(UnsupportedOperationException.class, () -> mapped.sort(Comparator.naturalOrder()));
+
+        Comparator<String> comparator = Comparator.naturalOrder();
+
+        assertThrows(UnsupportedOperationException.class, () -> mapped.sort(comparator));
     }
 
     @Test
@@ -799,16 +811,22 @@ class ListObservableTest {
         // inherited from FilterObservable
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove((Integer) 1));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(List.of()));
+
+        List<Integer> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> filtered.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.removeAll(collection));
         assertThrows(UnsupportedOperationException.class, () -> filtered.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.retainAll(collection));
         assertThrows(UnsupportedOperationException.class, filtered::clear);
 
         // list-specific overrides on ListFilterObservable
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove(0));
-        assertThrows(UnsupportedOperationException.class, () -> filtered.sort(Comparator.naturalOrder()));
+
+        Comparator<Integer> comparator = Comparator.naturalOrder();
+
+        assertThrows(UnsupportedOperationException.class, () -> filtered.sort(comparator));
     }
 
     @Test
