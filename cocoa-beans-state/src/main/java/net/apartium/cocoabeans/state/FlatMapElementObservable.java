@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * A specialized observable implementation that flattens elements of a source observable
  * into a single collection, applying a provided mapping function to transform each element
  * from the source into an observable of a target type.
- * </p>
+ * <p>
  * The class also manages the dynamic updating of its internal collection whenever changes
  * occur in the source observable or the nested observables it depends upon.
  *
