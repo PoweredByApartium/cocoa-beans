@@ -2,15 +2,91 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FlatMapElementObservableTest {
+
+    @Test
+    void flatMapEachShouldContainsDupe() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(kfir, apartium)));
+
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        assertEquals(List.of("Kfir", "Apartium"), names.get());
+
+        apartium.name().set("Kfir");
+
+        assertEquals(List.of("Kfir", "Kfir"), names.get());
+
+        kfir.name().set("Apartium");
+
+        assertEquals(List.of("Apartium", "Kfir"), names.get());
+    }
+
+    @Test
+    void flatMapEacMultiDupe() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir, kfir, apartium)));
+
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        assertEquals(List.of("Kfir", "Apartium", "Kfir", "Kfir", "Apartium"), names.get());
+
+        players.remove(4);
+
+        assertEquals(List.of("Kfir", "Apartium", "Kfir", "Kfir"), names.get());
+
+        players.remove(3);
+        kfir.name().set("Kfir2");
+
+        assertEquals(List.of("Kfir2", "Apartium", "Kfir2"), names.get());
+
+        try {
+            Field observers = MutableObservableImpl.class.getDeclaredField("observers");
+            observers.setAccessible(true);
+
+            Set<Observer> kfirObservers = (Set<Observer>) observers.get(kfir.name);
+
+            assertEquals(1, kfirObservers.size());
+
+            players.removeIf(player -> kfir == player);
+
+            assertEquals(List.of("Apartium"), names.get());
+            assertEquals(0, kfirObservers.size());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail(e);
+        }
+
+    }
+
+    @Test
+    void flatMapEachShouldRemoveDupeOnSet() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(kfir, apartium)));
+
+        SetObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        assertEquals(Set.of("Kfir", "Apartium"), names.get());
+
+        apartium.name().set("Kfir");
+
+        assertEquals(Set.of("Kfir"), names.get());
+
+        kfir.name().set("Apartium");
+
+        assertEquals(Set.of("Apartium", "Kfir"), names.get());
+    }
 
     @Test
     void flatMapEachShouldMapExistingElements() {

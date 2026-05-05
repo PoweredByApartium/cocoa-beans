@@ -290,27 +290,28 @@ class ListObservableTest {
     }
 
     @Test
-    void flatMapEachDeduplicatesByElementIdentity() {
+    void flatMapEachPreservesDuplicateOccurrencesInList() {
         Member kfir = new Member("kfir");
         Member apartium = new Member("apartium");
 
-        // FlatMapElementObservable keys innerByElement on the element, so duplicate occurrences
-        // of the same element collapse to a single entry in the mapped output — even on a List.
+        // The same element instance appearing multiple times in the source list must
+        // produce one mapped entry per occurrence. Subscription bookkeeping is still
+        // deduped — the inner observable is observed once per unique element.
         ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir)));
 
         ListObservable<String> names = list.flatMapEach(Member::displayName);
-        assertEquals(List.of("kfir", "apartium"), names.get());
-        assertEquals(2, names.size().get());
+        assertEquals(List.of("kfir", "apartium", "kfir"), names.get());
+        assertEquals(3, names.size().get());
 
+        // a single inner change reflects in every occurrence of the element
         kfir.displayName().set("Kfir Notro");
-        assertEquals(List.of("Kfir Notro", "apartium"), names.get());
+        assertEquals(List.of("Kfir Notro", "apartium", "Kfir Notro"), names.get());
     }
 
     @Test
-    void flatMapEachWithDistinctEqualElementsAlsoDedupes() {
-        // record equality matches when components match — but each Member has its own
-        // observables, so two `new Member("kfir")` calls produce non-equal records.
-        // To exercise equals-based dedup, share the inner observables between two records.
+    void flatMapEachPreservesEqualButDistinctOccurrencesInList() {
+        // Two records that compare equal (same components) still produce one
+        // mapped entry per occurrence in the source list.
         MutableObservable<String> sharedName = Observable.mutable("kfir");
         MutableObservable<Boolean> sharedActive = Observable.mutable(true);
         Member kfir1 = new Member("kfir", sharedName, sharedActive);
@@ -321,8 +322,10 @@ class ListObservableTest {
         ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir1, kfir2)));
         ListObservable<String> names = list.flatMapEach(Member::displayName);
 
-        // equals-equal duplicates collapse on the LinkedHashMap key
-        assertEquals(List.of("kfir"), names.get());
+        assertEquals(List.of("kfir", "kfir"), names.get());
+
+        sharedName.set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "Kfir Notro"), names.get());
     }
 
     @Test

@@ -2,10 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -159,6 +156,41 @@ class MapElementObservableTest {
                 .filter(name -> Observable.immutable(name.startsWith("A")));
 
         assertEquals(List.of("Apartium"), new ArrayList<>(namesStartingWithA.get()));
+    }
+
+    @Test
+    void mapEachDupe() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), "Kfir");
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), "Apartium");
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(
+                kfir,
+                apartium,
+                kfir,
+                kfir,
+                apartium
+        )));
+
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        assertEquals(List.of("Kfir", "Apartium", "Kfir", "Kfir", "Apartium"), names.get());
+    }
+
+    @Test
+    void mapEachSetNoDupe() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), "Kfir");
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), "Apartium");
+
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(List.of(
+                kfir,
+                apartium,
+                kfir,
+                kfir,
+                apartium
+        )));
+
+        SetObservable<String> names = players.mapEach(GamePlayer::name);
+
+        assertEquals(Set.of("Kfir", "Apartium"), names.get());
     }
 
     @Test

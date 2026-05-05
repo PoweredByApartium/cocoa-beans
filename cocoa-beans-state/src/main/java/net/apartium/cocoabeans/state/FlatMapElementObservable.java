@@ -35,6 +35,8 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
     private boolean baseDirty = true;
     private boolean innerDirty = true;
 
+    private Collection<F> lastSource;
+
     private C cachedCollection;
 
     private final Observable<Integer> size;
@@ -60,6 +62,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
             return;
 
         Collection<F> source = base.get();
+        this.lastSource = source;
 
         Set<F> keepElements = Collections.newSetFromMap(new IdentityHashMap<>());
         keepElements.addAll(source);
@@ -120,9 +123,10 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
 
         updateBase();
 
-        Collection<E> mapped = constructCollection.apply(innerByElement.size());
+        Collection<E> mapped = constructCollection.apply(lastSource.size());
 
-        for (Observable<E> observable : innerByElement.values()) {
+        for (F element : lastSource) {
+            Observable<E> observable = innerByElement.get(element);
             if (observable == null)
                 mapped.add(null);
             else
