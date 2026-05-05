@@ -473,7 +473,13 @@ ARG9&gt;<br><a href="Observable.html" title="interface in net.apartium.cocoabean
 <div class="member-signature"><span class="annotations">@AvailableSince("0.0.50")
 </span><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;E&gt;</span>&nbsp;<span class="return-type"><a href="SetObservable.html" title="interface in net.apartium.cocoabeans.state">SetObservable</a>&lt;E&gt;</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;&nbsp;set,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;E&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;&gt;&nbsp;copyOf)</span></div>
-<div class="block">Creates a new observable set from the given set and copy function.</div>
+<div class="block">Creates a new observable set from the given set and copy function.
+ <p>
+ The supplied <code>copyOf</code> is reused for <code>mapEach</code>/<code>flatMapEach</code>-derived
+ views with potentially different element types, so it must be <b>element-type-agnostic</b>
+ (e.g. <code>LinkedHashSet::new</code>, <code>Set::copyOf</code>, or a <code>WeakHashSet</code> factory).
+ Factories that capture element-type-specific state (such as a <code>TreeSet</code> with a
+ <code>Comparator&lt;E&gt;</code>) will throw <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassCastException.html" title="class or interface in java.lang" class="external-link"><code>ClassCastException</code></a> when applied to a mapped view.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>set</code> - the original set to be wrapped as an observable set</dd>
@@ -490,7 +496,13 @@ ARG9&gt;<br><a href="Observable.html" title="interface in net.apartium.cocoabean
 </span><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;E&gt;</span>&nbsp;<span class="return-type"><a href="SetObservable.html" title="interface in net.apartium.cocoabeans.state">SetObservable</a>&lt;E&gt;</span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;&nbsp;set,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;E&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;&gt;&nbsp;copyOf,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;&gt;&nbsp;createInitSet)</span></div>
-<div class="block">Creates an observable set based on the provided set, copy function, and initialization set function.</div>
+<div class="block">Creates an observable set based on the provided set, copy function, and initialization set function.
+ <p>
+ Both <code>copyOf</code> and <code>createInitSet</code> are reused for <code>mapEach</code>/<code>flatMapEach</code>-derived
+ views with potentially different element types, so they must be <b>element-type-agnostic</b>
+ (e.g. <code>LinkedHashSet::new</code>, <code>Set::copyOf</code>, or a <code>WeakHashSet</code> factory).
+ Factories that capture element-type-specific state (such as a <code>TreeSet</code> with a
+ <code>Comparator&lt;E&gt;</code>) will throw <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassCastException.html" title="class or interface in java.lang" class="external-link"><code>ClassCastException</code></a> when applied to a mapped view.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>E</code> - the type of elements in the set</dd>
