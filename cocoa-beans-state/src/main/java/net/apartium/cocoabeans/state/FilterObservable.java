@@ -26,11 +26,13 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     protected final Function<Integer, ? extends Collection<E>> constructCollection;
 
     private boolean baseDirty = true;
-    private final Set<Observable<Boolean>> flagged = new HashSet<>();
+    private final Set<Observable<Boolean>> flagged = Collections.newSetFromMap(new IdentityHashMap<>());
 
-    private final Map<Observable<Boolean>, Boolean> cacheValueMap = new HashMap<>();
-    private final Map<Observable<Boolean>, Set<E>> dependsOn = new LinkedHashMap<>();
+    private final Map<Observable<Boolean>, Boolean> cacheValueMap = new IdentityHashMap<>();
+    private final Map<Observable<Boolean>, Set<E>> dependsOn = new IdentityHashMap<>();
+    private final Map<E, Observable<Boolean>> observableForElement = new IdentityHashMap<>();
 
+    private Collection<E> baseSnapshot;
 
     private final Observable<Integer> size;
     private C cachedCollection;
@@ -60,110 +62,79 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     }
 
     private void checkAndUpdateBase() {
-        C newDepends = base.get();
-        Set<Observable<Boolean>> keep = Collections.newSetFromMap(new IdentityHashMap<>());
+        C newSource = base.get();
+        baseSnapshot = newSource;
 
-        for (E e : newDepends) {
-            Observable<Boolean> observable = filter.apply(e);
-            keep.add(observable);
+        Set<E> seenElements = Collections.newSetFromMap(new IdentityHashMap<>());
+        seenElements.addAll(newSource);
 
-            boolean prev = dependsOn.computeIfAbsent(observable, key -> new LinkedHashSet<>()).add(e);
-            if (prev)
-                observable.observe(this);
+        Iterator<Map.Entry<E, Observable<Boolean>>> elementIterator = observableForElement.entrySet().iterator();
+        while (elementIterator.hasNext()) {
+            Map.Entry<E, Observable<Boolean>> entry = elementIterator.next();
+            if (seenElements.contains(entry.getKey()))
+                continue;
+
+            removeElementDependency(entry.getKey(), entry.getValue());
+            elementIterator.remove();
         }
 
-        Iterator<Map.Entry<Observable<Boolean>, Set<E>>> it = dependsOn.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Observable<Boolean>, Set<E>> entry = it.next();
-            if (!keep.contains(entry.getKey())) {
-                entry.getKey().removeObserver(this);
-                it.remove();
-            } else {
-                entry.getValue().removeIf(e -> !newDepends.contains(e));
-            }
+        for (E element : newSource) {
+            if (observableForElement.containsKey(element))
+                continue;
 
+            Observable<Boolean> observable = filter.apply(element);
+            observableForElement.put(element, observable);
+
+            Set<E> elements = dependsOn.computeIfAbsent(observable, key -> {
+                key.observe(this);
+                return Collections.newSetFromMap(new IdentityHashMap<>());
+            });
+            elements.add(element);
         }
-
-        cacheValueMap.clear();
-        flagged.clear();
 
         baseDirty = false;
     }
 
-    private boolean updateFromScratch(Collection<E> newCollection) {
-        for (Map.Entry<Observable<Boolean>, Set<E>> entry : dependsOn.entrySet()) {
-            Observable<Boolean> observable = entry.getKey();
-            boolean value = observable.get();
-            if (value)
-                newCollection.addAll(entry.getValue());
+    private void removeElementDependency(E element, Observable<Boolean> observable) {
+        Set<E> elements = dependsOn.get(observable);
+        if (elements == null)
+            return;
 
+        elements.remove(element);
+        if (!elements.isEmpty())
+            return;
 
-            cacheValueMap.put(observable, value);
-        }
-
-        return true;
+        observable.removeObserver(this);
+        dependsOn.remove(observable);
+        cacheValueMap.remove(observable);
+        flagged.remove(observable);
     }
 
-    private boolean updateElements(Set<E> elements, Collection<E> newCollection, Observable<Boolean> observable) {
-        boolean hasChange = false;
-
-        boolean value = observable.get();
-        for (E element : elements) {
-            boolean contains = newCollection.contains(element);
-
-            if (value) {
-                if (!contains) {
-                    newCollection.add(element);
-                    hasChange = true;
-                }
-            } else {
-                if (contains) {
-                    newCollection.remove(element);
-                    hasChange = true;
-                }
-            }
-        }
-
-        return hasChange;
-    }
-
-    private boolean updateFlagged(Collection<E> newCollection) {
-        boolean hasChange = false;
-        newCollection.addAll(cachedCollection);
-
-        for (Observable<Boolean> observable : flagged) {
-            Set<E> elements = dependsOn.get(observable);
-            hasChange |= updateElements(elements, newCollection, observable);
-        }
-
-        flagged.clear();
-        return hasChange;
-    }
-    
     public C get() {
-        if (!baseDirty && flagged.isEmpty())
+        if (!baseDirty && flagged.isEmpty() && cachedCollection != null)
             return cachedCollection;
-
 
         if (baseDirty)
             checkAndUpdateBase();
 
-        boolean hasChange = false;
-        Collection<E> newCollection = constructCollection.apply(dependsOn.size());
-        if (cacheValueMap.isEmpty()) {
-            hasChange = updateFromScratch(newCollection);
-        } else if (!flagged.isEmpty()) {
-            hasChange = updateFlagged(newCollection);
+        for (Observable<Boolean> observable : flagged)
+            cacheValueMap.put(observable, observable.get());
+        flagged.clear();
+
+        Collection<E> newCollection = constructCollection.apply(baseSnapshot.size());
+        for (E element : baseSnapshot) {
+            Observable<Boolean> observable = observableForElement.get(element);
+            Boolean value = cacheValueMap.get(observable);
+            if (value == null) {
+                value = observable.get();
+                cacheValueMap.put(observable, value);
+            }
+            if (value)
+                newCollection.add(element);
         }
 
-        if (!hasChange)
-            return cachedCollection;
-
-
-        C result = collectionMapper.apply(newCollection);
-        cachedCollection = result;
-
-        return result;
+        cachedCollection = collectionMapper.apply(newCollection);
+        return cachedCollection;
     }
 
     /**

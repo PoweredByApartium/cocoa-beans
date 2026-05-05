@@ -271,6 +271,64 @@ class SetObservableTest {
     }
 
     @Test
+    void customCopyOfPropagatesThroughMapEach() {
+        // Type-erased custom factories (LinkedHashSet, etc.) propagate to mapEach views.
+        // The cast in SetObservableImpl.mapEach is safe for factories that don't capture
+        // element-type-specific state.
+        AtomicInteger copyOfCallCount = new AtomicInteger();
+        AtomicInteger createInitCallCount = new AtomicInteger();
+
+        Set<Integer> backing = new LinkedHashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                col -> {
+                    copyOfCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(col);
+                },
+                cap -> {
+                    createInitCallCount.incrementAndGet();
+                    return new LinkedHashSet<>(cap);
+                }
+        );
+
+        set.add(3);
+        set.add(1);
+        set.add(2);
+
+        SetObservable<String> mapped = set.mapEach(n -> "n=" + n);
+        Set<String> snapshot = mapped.get();
+
+        assertInstanceOf(LinkedHashSet.class, snapshot,
+                "user-supplied LinkedHashSet copyOf must be reused through mapEach");
+        assertEquals(List.of("n=3", "n=1", "n=2"), new ArrayList<>(snapshot),
+                "insertion order is preserved across mapEach");
+        assertTrue(copyOfCallCount.get() > 0, "user copyOf must have been invoked for the mapped view");
+        assertTrue(createInitCallCount.get() > 0, "user createInitSet must have been invoked for the mapped view");
+    }
+
+    @Test
+    void customCopyOfPropagatesThroughFlatMapEach() {
+        Set<Integer> backing = new LinkedHashSet<>();
+        SetObservable<Integer> set = Observable.set(
+                backing,
+                LinkedHashSet::new,
+                LinkedHashSet::new
+        );
+
+        set.add(10);
+        set.add(20);
+        set.add(30);
+
+        SetObservable<String> mapped = set.flatMapEach(n -> Observable.immutable("v=" + n));
+        Set<String> snapshot = mapped.get();
+
+        assertInstanceOf(LinkedHashSet.class, snapshot,
+                "user-supplied LinkedHashSet factory must propagate through flatMapEach");
+        assertEquals(List.of("v=10", "v=20", "v=30"), new ArrayList<>(snapshot),
+                "insertion order is preserved across flatMapEach");
+    }
+
+    @Test
     void customCopyOfPropagatesThroughChainedFilters() {
         AtomicInteger copyOfCallCount = new AtomicInteger(0);
         Set<Integer> backing = new HashSet<>();

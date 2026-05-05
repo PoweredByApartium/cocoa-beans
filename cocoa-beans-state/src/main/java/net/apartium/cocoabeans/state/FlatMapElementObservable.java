@@ -29,7 +29,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
     protected final Function<Collection<E>, C> collectionMapper;
     protected final Function<Integer, ? extends Collection<E>> constructCollection;
 
-    private final Map<F, Observable<E>> innerByElement = new LinkedHashMap<>();
+    private final Map<F, Observable<E>> innerByElement = new IdentityHashMap<>();
     private final Map<Observable<E>, Set<F>> dependsOn = new IdentityHashMap<>();
 
     private boolean baseDirty = true;
@@ -124,13 +124,23 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
         updateBase();
 
         Collection<E> mapped = constructCollection.apply(lastSource.size());
+        Map<Observable<E>, E> innerValues = new IdentityHashMap<>();
 
         for (F element : lastSource) {
             Observable<E> observable = innerByElement.get(element);
-            if (observable == null)
+            if (observable == null) {
                 mapped.add(null);
-            else
-                mapped.add(observable.get());
+                continue;
+            }
+
+            E value;
+            if (innerValues.containsKey(observable)) {
+                value = innerValues.get(observable);
+            } else {
+                value = observable.get();
+                innerValues.put(observable, value);
+            }
+            mapped.add(value);
         }
 
         cachedCollection = collectionMapper.apply(mapped);

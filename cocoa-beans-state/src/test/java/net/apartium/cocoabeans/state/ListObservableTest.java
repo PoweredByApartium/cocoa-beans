@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -332,6 +334,36 @@ class ListObservableTest {
 
         sharedName.set("Kfir Notro");
         assertEquals(List.of("Kfir Notro", "Kfir Notro"), names.get());
+    }
+
+    @Test
+    void flatMapEachEqualButDistinctElementsEachReceiveOwnMapperInvocation() {
+        // Two value-equal source elements that are distinct references must each
+        // get their own mapper invocation. With identity-keyed bookkeeping, the
+        // mapper can return a different observable per occurrence and both are honored.
+        record Token(String id) {}
+
+        Token first = new Token("kfir");
+        Token second = new Token("kfir");
+
+        assertEquals(first, second, "records compare equal by component values");
+        assertNotSame(first, second);
+
+        Map<Token, MutableObservable<String>> backing = new IdentityHashMap<>();
+        backing.put(first, Observable.mutable("first"));
+        backing.put(second, Observable.mutable("second"));
+
+        ListObservable<Token> list = Observable.list(new ArrayList<>(List.of(first, second)));
+        ListObservable<String> names = (ListObservable<String>) list.flatMapEach(backing::get);
+
+        assertEquals(List.of("first", "second"), names.get());
+
+        backing.get(first).set("first-updated");
+        assertEquals(List.of("first-updated", "second"), names.get(),
+                "updating one element's inner observable must not affect the other");
+
+        backing.get(second).set("second-updated");
+        assertEquals(List.of("first-updated", "second-updated"), names.get());
     }
 
     @Test
@@ -797,11 +829,8 @@ class ListObservableTest {
 
         assertEquals(List.of(apartium), startsWithVowel.get());
 
-        // when an element flips into the filter via incremental update, FilterObservable's
-        // updateFlagged path appends it to the cached list rather than re-running from
-        // base order — so the order here reflects the incremental-update behavior.
         kfir.displayName().set("orion");
-        assertEquals(List.of(apartium, kfir), startsWithVowel.get());
+        assertEquals(List.of(kfir, apartium), startsWithVowel.get());
     }
 
     @Test
@@ -860,11 +889,8 @@ class ListObservableTest {
         kfir.active().set(false);
         assertEquals(List.of(apartium), active.get());
 
-        // re-adding kfir via the incremental updateFlagged path appends to the end of the
-        // cached list rather than restoring source order — a documented quirk of the
-        // current implementation that we lock down here.
         kfir.active().set(true);
-        assertEquals(List.of(apartium, kfir), active.get());
+        assertEquals(List.of(kfir, apartium), active.get());
     }
 
     @Test
@@ -892,6 +918,781 @@ class ListObservableTest {
 
         list.sort(Comparator.naturalOrder());
         assertEquals(List.of(2, 4), evens.get());
+    }
+
+    @Test
+    void filterPreservesBaseOrderWithSharedFilterObservable() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        Member voigon = new Member("voigon");
+
+        Observable<Boolean> alwaysTrue = Observable.immutable(true);
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, voigon)));
+        ListObservable<Member> filtered = list.filter(member -> alwaysTrue);
+
+        assertEquals(List.of(kfir, apartium, voigon), filtered.get());
+    }
+
+    @Test
+    void filterPreservesDuplicateOccurrencesInList() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir)));
+        ListObservable<Member> active = list.filter(Member::active);
+
+        assertEquals(List.of(kfir, kfir), active.get());
+
+        kfir.active().set(false);
+        assertEquals(List.of(), active.get());
+
+        kfir.active().set(true);
+        assertEquals(List.of(kfir, kfir), active.get());
+    }
+
+    @Test
+    void filterPreservesInterleavedDuplicatesUnderSharedObservable() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir)));
+        ListObservable<Member> active = list.filter(Member::active);
+
+        assertEquals(List.of(kfir, apartium, kfir), active.get());
+
+        apartium.active().set(false);
+        assertEquals(List.of(kfir, kfir), active.get());
+
+        apartium.active().set(true);
+        assertEquals(List.of(kfir, apartium, kfir), active.get());
+
+        kfir.active().set(false);
+        assertEquals(List.of(apartium), active.get());
+    }
+
+    // ---------------------------------------------------------------------
+    // duplicate-focused tests (mapEach, flatMapEach, filter)
+    // ---------------------------------------------------------------------
+
+    @Test
+    void mapEachAllSameElementProducesAllSameMapped() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "kfir", "kfir", "kfir", "kfir"
+        )));
+
+        ListObservable<Integer> lengths = list.mapEach(String::length);
+
+        assertEquals(List.of(4, 4, 4, 4), lengths.get());
+        assertEquals(4, lengths.size().get());
+    }
+
+    @Test
+    void mapEachAddingMoreDuplicatesGrows() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of("kfir", "kfir")));
+        ListObservable<Integer> lengths = list.mapEach(String::length);
+
+        assertEquals(List.of(4, 4), lengths.get());
+
+        list.add("kfir");
+        list.add("kfir");
+        assertEquals(List.of(4, 4, 4, 4), lengths.get());
+    }
+
+    @Test
+    void mapEachRemovingOnlyOneOccurrenceOfDuplicateShrinksByOne() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "kfir", "apartium", "kfir", "voigon", "kfir"
+        )));
+        ListObservable<Integer> lengths = list.mapEach(String::length);
+
+        assertEquals(List.of(4, 8, 4, 6, 4), lengths.get());
+
+        list.remove("kfir");
+        assertEquals(List.of(8, 4, 6, 4), lengths.get(), "List.remove(Object) drops only the first occurrence");
+    }
+
+    @Test
+    void mapEachClearOfDuplicatesYieldsEmpty() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "kfir", "kfir", "kfir"
+        )));
+        ListObservable<Integer> lengths = list.mapEach(String::length);
+
+        assertEquals(List.of(4, 4, 4), lengths.get());
+
+        list.clear();
+        assertEquals(List.of(), lengths.get());
+        assertEquals(0, lengths.size().get());
+    }
+
+    @Test
+    void mapEachInvokesMapperPerOccurrenceForDuplicates() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of("kfir", "kfir", "kfir")));
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Integer> lengths = list.mapEach(name -> {
+            mapperCalls.incrementAndGet();
+            return name.length();
+        });
+
+        assertEquals(List.of(4, 4, 4), lengths.get());
+        assertEquals(3, mapperCalls.get(), "mapEach invokes the mapper once per source occurrence");
+    }
+
+    @Test
+    void flatMapEachAllSameRefAllSameValue() {
+        Member kfir = new Member("kfir");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir", "kfir", "kfir"), names.get());
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "Kfir Notro", "Kfir Notro"), names.get(),
+                "a single inner change reflects in every duplicate occurrence");
+    }
+
+    @Test
+    void flatMapEachInnerChangePropagatesToEveryOccurrenceWithMixedNeighbors() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        Member voigon = new Member("voigon");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, apartium, kfir, voigon, kfir
+        )));
+        ListObservable<String> names = list.flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir", "apartium", "kfir", "voigon", "kfir"), names.get());
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "apartium", "Kfir Notro", "voigon", "Kfir Notro"), names.get());
+    }
+
+    @Test
+    void flatMapEachAddingMoreDuplicatesAfterMaterializationKeepsSubscriptionDeduped() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<String> names = list.flatMapEach(member -> {
+            mapperCalls.incrementAndGet();
+            return member.displayName();
+        });
+
+        assertEquals(List.of("kfir"), names.get());
+        assertEquals(1, mapperCalls.get());
+
+        list.add(kfir);
+        list.add(kfir);
+        assertEquals(List.of("kfir", "kfir", "kfir"), names.get());
+        assertEquals(1, mapperCalls.get(), "flatMapEach mapper is invoked once per unique element, not per occurrence");
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "Kfir Notro", "Kfir Notro"), names.get());
+    }
+
+    @Test
+    void flatMapEachRemovingOneOfManyOccurrencesKeepsRest() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, kfir, apartium, kfir
+        )));
+        ListObservable<String> names = list.flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir", "kfir", "apartium", "kfir"), names.get());
+
+        list.remove(kfir);
+        assertEquals(List.of("kfir", "apartium", "kfir"), names.get());
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "apartium", "Kfir Notro"), names.get(),
+                "remaining occurrences must still be tracked after a single occurrence is removed");
+    }
+
+    @Test
+    void flatMapEachRemovingAllOccurrencesAndReAddingResubscribes() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir", "kfir", "kfir"), names.get());
+
+        list.clear();
+        assertEquals(List.of(), names.get());
+
+        // change while not present — must not propagate (no observer)
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of(), names.get());
+
+        list.add(kfir);
+        list.add(kfir);
+        assertEquals(List.of("Kfir Notro", "Kfir Notro"), names.get(),
+                "re-adding picks up the current inner value");
+
+        kfir.displayName().set("Kfir Apartium");
+        assertEquals(List.of("Kfir Apartium", "Kfir Apartium"), names.get());
+    }
+
+    @Test
+    void flatMapEachThenMapEachOverDuplicates() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir)));
+
+        ListObservable<Integer> nameLengths = (ListObservable<Integer>) list
+                .flatMapEach(Member::displayName)
+                .mapEach(String::length);
+
+        assertEquals(List.of(4, 8, 4), nameLengths.get());
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of(10, 8, 10), nameLengths.get());
+    }
+
+    @Test
+    void filterAllDuplicatesPredicateFlipTogglesAllAtOnce() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(Member::active);
+
+        assertEquals(List.of(kfir, kfir, kfir, kfir), active.get());
+        assertEquals(4, active.size().get());
+
+        kfir.active().set(false);
+        assertEquals(List.of(), active.get());
+        assertEquals(0, active.size().get());
+
+        kfir.active().set(true);
+        assertEquals(List.of(kfir, kfir, kfir, kfir), active.get());
+    }
+
+    @Test
+    void filterRemovingOneOccurrenceOfDuplicateShrinksByOne() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir, kfir)));
+        ListObservable<Member> active = list.filter(Member::active);
+
+        assertEquals(List.of(kfir, apartium, kfir, kfir), active.get());
+
+        list.remove(kfir);
+        assertEquals(List.of(apartium, kfir, kfir), active.get());
+
+        kfir.active().set(false);
+        assertEquals(List.of(apartium), active.get(),
+                "predicate flip after removing one occurrence still excludes every remaining occurrence");
+    }
+
+    @Test
+    void filterThenMapEachOverDuplicates() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        apartium.active().set(false);
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, apartium, kfir, apartium, kfir
+        )));
+
+        ListObservable<String> ids = (ListObservable<String>) list
+                .filter(Member::active)
+                .mapEach(Member::id);
+
+        assertEquals(List.of("kfir", "kfir", "kfir"), ids.get());
+
+        apartium.active().set(true);
+        assertEquals(List.of("kfir", "apartium", "kfir", "apartium", "kfir"), ids.get());
+    }
+
+    @Test
+    void filterThenFlatMapEachOverDuplicates() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, apartium, kfir, kfir
+        )));
+
+        ListObservable<String> activeNames = (ListObservable<String>) list
+                .filter(Member::active)
+                .flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir", "apartium", "kfir", "kfir"), activeNames.get());
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "apartium", "Kfir Notro", "Kfir Notro"), activeNames.get());
+
+        kfir.active().set(false);
+        assertEquals(List.of("apartium"), activeNames.get());
+
+        kfir.active().set(true);
+        assertEquals(List.of("Kfir Notro", "apartium", "Kfir Notro", "Kfir Notro"), activeNames.get());
+    }
+
+    @Test
+    void mapEachThenFilterOverDuplicates() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "kfir", "apartium", "kfir", "voigon", "kfir"
+        )));
+
+        // mapEach then filter (filter elements with length == 4)
+        ListObservable<Integer> shortLengths = (ListObservable<Integer>) list
+                .mapEach(String::length)
+                .filter(n -> Observable.immutable(n == 4));
+
+        assertEquals(List.of(4, 4, 4), shortLengths.get());
+    }
+
+    @Test
+    void filterChainedFilterOverDuplicatesPreservesEachOccurrence() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(
+                1, 2, 2, 3, 4, 4, 4, 5, 6, 6
+        )));
+
+        ListObservable<Integer> evenAndLarge = list
+                .filter(n -> Observable.immutable(n % 2 == 0))
+                .filter(n -> Observable.immutable(n >= 4));
+
+        assertEquals(List.of(4, 4, 4, 6, 6), evenAndLarge.get());
+    }
+
+    @Test
+    void filterSharedFilterObservableTogglesAllOccurrences() {
+        MutableObservable<Boolean> shared = Observable.mutable(true);
+
+        Member kfir = new Member("kfir", Observable.mutable("kfir"), shared);
+        Member lior = new Member("lior", Observable.mutable("lior"), shared);
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, lior, kfir, lior, kfir
+        )));
+        ListObservable<Member> active = list.filter(Member::active);
+
+        assertEquals(List.of(kfir, lior, kfir, lior, kfir), active.get());
+
+        shared.set(false);
+        assertEquals(List.of(), active.get(),
+                "single shared predicate flip excludes every occurrence");
+
+        shared.set(true);
+        assertEquals(List.of(kfir, lior, kfir, lior, kfir), active.get());
+    }
+
+    @Test
+    void filterDeduplicatesSubscriptionForRepeatedElement() {
+        Member kfir = new Member("kfir");
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir)));
+
+        ListObservable<Member> active = list.filter(member -> {
+            mapperCalls.incrementAndGet();
+            return member.active();
+        });
+
+        assertEquals(List.of(kfir, kfir, kfir, kfir), active.get());
+        assertEquals(1, mapperCalls.get(),
+                "filter mapper is invoked once per unique element, not per occurrence");
+    }
+
+    // ---------------------------------------------------------------------
+    // counter-driven dup tests — verify no unnecessary work
+    // ---------------------------------------------------------------------
+
+    @Test
+    void flatMapEachRefDupesInvokeMapperOnceAndSubscribeOnceOnInner() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> {
+            mapperCalls.incrementAndGet();
+            return innerName;
+        });
+
+        assertEquals(List.of("kfir", "kfir", "kfir", "kfir", "kfir"), names.get());
+        assertEquals(1, mapperCalls.get(), "mapper invoked once per unique source ref");
+        assertEquals(1, innerName.observes, "inner observable subscribed exactly once for all duplicates");
+    }
+
+    @Test
+    void flatMapEachEqualButDistinctInvokesMapperPerOccurrence() {
+        record Token(String id) {}
+
+        Token a = new Token("kfir");
+        Token b = new Token("kfir");
+        Token c = new Token("kfir");
+
+        assertEquals(a, b);
+        assertEquals(a, c);
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Token> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<String> names = (ListObservable<String>) list.flatMapEach(token -> {
+            mapperCalls.incrementAndGet();
+            return Observable.immutable(token.id());
+        });
+
+        assertEquals(List.of("kfir", "kfir", "kfir"), names.get());
+        assertEquals(3, mapperCalls.get(),
+                "identity-based bookkeeping invokes mapper once per distinct ref even when refs are .equals");
+    }
+
+    @Test
+    void flatMapEachAddingMoreRefDupesDoesNotReSubscribeOrReInvokeMapper() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> {
+            mapperCalls.incrementAndGet();
+            return innerName;
+        });
+
+        names.get();
+        int observesAfterInit = innerName.observes;
+        assertEquals(1, mapperCalls.get());
+        assertEquals(1, observesAfterInit);
+
+        list.add(kfir);
+        list.add(kfir);
+        list.add(kfir);
+        names.get();
+
+        assertEquals(1, mapperCalls.get(), "mapper not re-invoked for additional duplicates of an existing ref");
+        assertEquals(observesAfterInit, innerName.observes, "no new subscribe for additional duplicates");
+    }
+
+    @Test
+    void flatMapEachStableGetReturnsCachedWithoutCallingInnerGet() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> innerName);
+
+        names.get();
+        int innerGetsAfterInit = innerName.gets;
+
+        // multiple stable gets — nothing changed, must hit cached collection
+        List<String> a = names.get();
+        List<String> b = names.get();
+        List<String> c = names.get();
+
+        assertSame(a, b);
+        assertSame(b, c);
+        assertEquals(innerGetsAfterInit, innerName.gets, "stable get() must not re-fetch inner observable");
+    }
+
+    @Test
+    void flatMapEachInnerChangeCallsInnerGetOnceForAllDupes() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> innerName);
+
+        names.get();
+        int innerGetsAfterInit = innerName.gets;
+
+        kfir.displayName().set("Kfir Notro");
+        names.get();
+
+        // exactly one fresh inner.get() despite five duplicate occurrences
+        assertEquals(innerGetsAfterInit + 1, innerName.gets,
+                "inner observable.get() invoked once per change, regardless of how many duplicates reference it");
+    }
+
+    @Test
+    void flatMapEachRemovingOneOfManyDupesDoesNotUnsubscribe() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> innerName);
+
+        names.get();
+        assertEquals(0, innerName.removes);
+
+        list.remove(kfir);
+        names.get();
+
+        assertEquals(0, innerName.removes,
+                "removing one occurrence must not unsubscribe — other occurrences still reference the inner observable");
+    }
+
+    @Test
+    void flatMapEachRemovingAllDupesUnsubscribesOnce() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> innerName);
+
+        names.get();
+        assertEquals(0, innerName.removes);
+
+        list.clear();
+        names.get();
+
+        assertEquals(1, innerName.removes,
+                "after every reference is gone, the inner observable is unsubscribed exactly once");
+    }
+
+    @Test
+    void flatMapEachReAddingAfterFullRemovalReSubscribesOnce() {
+        Member kfir = new Member("kfir");
+        CountingObservable<String> innerName = new CountingObservable<>(kfir.displayName());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir)));
+        ListObservable<String> names = list.flatMapEach(member -> innerName);
+
+        names.get();
+        assertEquals(1, innerName.observes);
+
+        list.clear();
+        names.get();
+        assertEquals(1, innerName.removes);
+
+        list.add(kfir);
+        list.add(kfir);
+        list.add(kfir);
+        names.get();
+
+        assertEquals(2, innerName.observes,
+                "re-adding triggers a single fresh subscribe, not one per occurrence");
+    }
+
+    @Test
+    void mapEachStableGetReturnsCachedWithoutReInvokingMapper() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "kfir", "kfir", "apartium", "kfir"
+        )));
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Integer> lengths = list.mapEach(name -> {
+            mapperCalls.incrementAndGet();
+            return name.length();
+        });
+
+        lengths.get();
+        assertEquals(4, mapperCalls.get(), "first materialization invokes mapper once per occurrence");
+
+        // stable gets — no source change, mapper must not be re-invoked
+        lengths.get();
+        lengths.get();
+        lengths.get();
+        assertEquals(4, mapperCalls.get(), "stable get() must hit cache and not re-invoke the mapper");
+    }
+
+    @Test
+    void mapEachReInvokesMapperPerOccurrenceOnBaseChange() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of("kfir", "kfir")));
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Integer> lengths = list.mapEach(name -> {
+            mapperCalls.incrementAndGet();
+            return name.length();
+        });
+
+        lengths.get();
+        assertEquals(2, mapperCalls.get());
+
+        list.add("kfir");
+        lengths.get();
+
+        // mapEach has no per-element caching: every occurrence is re-mapped after a base change
+        assertEquals(5, mapperCalls.get(),
+                "mapEach re-runs the mapper per occurrence after a base change (no per-element caching)");
+    }
+
+    @Test
+    void filterRefDupesInvokeMapperOnceAndPredicateGetOnce() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(member -> {
+            mapperCalls.incrementAndGet();
+            return activePredicate;
+        });
+
+        active.get();
+
+        assertEquals(1, mapperCalls.get(), "predicate mapper invoked once per unique source ref");
+        assertEquals(1, activePredicate.observes, "predicate observable subscribed exactly once across all duplicates");
+        assertEquals(1, activePredicate.gets,
+                "predicate.get() invoked once during materialization regardless of duplicate count");
+    }
+
+    @Test
+    void filterEqualButDistinctInvokesPredicateMapperPerOccurrence() {
+        record Token(String id) {}
+
+        Token a = new Token("kfir");
+        Token b = new Token("kfir");
+        Token c = new Token("kfir");
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Token> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Token> filtered = list.filter(token -> {
+            mapperCalls.incrementAndGet();
+            return Observable.immutable(true);
+        });
+
+        filtered.get();
+
+        assertEquals(3, mapperCalls.get(),
+                "identity-based bookkeeping invokes the predicate mapper once per distinct ref");
+    }
+
+    @Test
+    void filterStableGetDoesNotReInvokeMapperOrPredicateGet() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(member -> {
+            mapperCalls.incrementAndGet();
+            return activePredicate;
+        });
+
+        active.get();
+        int gets1 = activePredicate.gets;
+        int mapper1 = mapperCalls.get();
+
+        active.get();
+        active.get();
+        active.get();
+
+        assertEquals(mapper1, mapperCalls.get(), "predicate mapper not re-invoked across stable gets");
+        assertEquals(gets1, activePredicate.gets, "predicate.get() not re-invoked across stable gets");
+    }
+
+    @Test
+    void filterPredicateChangeCallsPredicateGetOnceForAllDupes() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(member -> activePredicate);
+
+        active.get();
+        int getsAfterInit = activePredicate.gets;
+
+        kfir.active().set(false);
+        active.get();
+
+        assertEquals(getsAfterInit + 1, activePredicate.gets,
+                "predicate.get() invoked once per change regardless of how many duplicates share it");
+    }
+
+    @Test
+    void filterAddingMoreRefDupesDoesNotReInvokeMapperOrReSubscribe() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+        ListObservable<Member> active = list.filter(member -> {
+            mapperCalls.incrementAndGet();
+            return activePredicate;
+        });
+
+        active.get();
+        int observesAfterInit = activePredicate.observes;
+        assertEquals(1, mapperCalls.get());
+        assertEquals(1, observesAfterInit);
+
+        list.add(kfir);
+        list.add(kfir);
+        active.get();
+
+        assertEquals(1, mapperCalls.get(), "mapper not re-invoked for new duplicates of an existing ref");
+        assertEquals(observesAfterInit, activePredicate.observes, "no extra subscribe for new duplicates");
+    }
+
+    @Test
+    void filterRemovingOneDupeDoesNotUnsubscribe() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(member -> activePredicate);
+
+        active.get();
+        assertEquals(0, activePredicate.removes);
+
+        list.remove(kfir);
+        active.get();
+
+        assertEquals(0, activePredicate.removes,
+                "filter must not unsubscribe while any occurrence still references the predicate observable");
+    }
+
+    @Test
+    void filterRemovingAllDupesUnsubscribesOnce() {
+        Member kfir = new Member("kfir");
+        CountingObservable<Boolean> activePredicate = new CountingObservable<>(kfir.active());
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<Member> active = list.filter(member -> activePredicate);
+
+        active.get();
+        list.clear();
+        active.get();
+
+        assertEquals(1, activePredicate.removes,
+                "filter unsubscribes exactly once when the last occurrence is removed");
+    }
+
+    @Test
+    void flatMapEachDownstreamFiresOnceWhenSharedInnerChangesEvenWithDupes() {
+        MutableObservable<String> shared = Observable.mutable("kfir");
+
+        Member a = new Member("a", shared);
+        Member b = new Member("b", shared);
+        Member c = new Member("c", shared);
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, c, a, b, c)));
+        ListObservable<String> names = list.flatMapEach(Member::displayName);
+        names.get();
+
+        CountingObserver downstream = new CountingObserver();
+        names.observe(downstream);
+
+        shared.set("apartium");
+
+        assertEquals(1, downstream.count,
+                "downstream is flagged dirty exactly once per upstream change, not once per duplicate");
+    }
+
+    @Test
+    void filterDownstreamFiresOnceWhenSharedPredicateChangesEvenWithDupes() {
+        MutableObservable<Boolean> shared = Observable.mutable(true);
+
+        Member a = new Member("a", Observable.mutable("a"), shared);
+        Member b = new Member("b", Observable.mutable("b"), shared);
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, a, b, a, b)));
+        ListObservable<Member> active = list.filter(Member::active);
+        active.get();
+
+        CountingObserver downstream = new CountingObserver();
+        active.observe(downstream);
+
+        shared.set(false);
+
+        assertEquals(1, downstream.count,
+                "filter notifies downstream once per upstream change, regardless of duplicate count");
     }
 
     // ---------------------------------------------------------------------
@@ -923,6 +1724,49 @@ class ListObservableTest {
         public void flagAsDirty(Observable<?> observable) {
             count++;
             last = observable;
+        }
+
+    }
+
+    private static final class CountingObservable<T> implements Observable<T>, Observer {
+
+        final Observable<T> delegate;
+        final java.util.LinkedHashSet<Observer> observers = new java.util.LinkedHashSet<>();
+        int gets;
+        int observes;
+        int removes;
+        boolean bridged;
+
+        CountingObservable(Observable<T> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public T get() {
+            gets++;
+            return delegate.get();
+        }
+
+        @Override
+        public void observe(Observer observer) {
+            observes++;
+            if (!bridged) {
+                delegate.observe(this);
+                bridged = true;
+            }
+            observers.add(observer);
+        }
+
+        @Override
+        public boolean removeObserver(Observer observer) {
+            removes++;
+            return observers.remove(observer);
+        }
+
+        @Override
+        public void flagAsDirty(Observable<?> observable) {
+            for (Observer observer : observers)
+                observer.flagAsDirty(this);
         }
 
     }
