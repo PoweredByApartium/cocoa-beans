@@ -124,7 +124,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
         Collection<E> newCollection = constructCollection.apply(baseSnapshot.size());
         for (E element : baseSnapshot) {
             Observable<Boolean> observable = observableForElement.get(element);
-            Boolean value = cacheValueMap.computeIfAbsent(observable, key -> {
+            boolean value = cacheValueMap.computeIfAbsent(observable, key -> {
                 boolean initialValue = key.get();
                 cacheValueMap.put(key, initialValue);
                 return initialValue;
