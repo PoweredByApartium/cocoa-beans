@@ -34,6 +34,7 @@ ListObservable<String> displayNames = players.flatMapEach(DisplayPlayer::display
 - Cached: `get()` reuses the previous result until the source changes or a tracked inner observable changes.
 
 ## Notes per collection type
+
 | Source                  | Result                  | Element duplication                                                                 |
 |-------------------------|-------------------------|--------------------------------------------------------------------------------------|
 | `ListObservable<E>`     | `ListObservable<R>`     | Order and **multiplicity preserved** — each occurrence resolves to its inner observable's current value |

@@ -34,6 +34,7 @@ This is different from a simple `Predicate<E>` filter, because the membership of
   - `false`: element disappears from filtered view 
 
 ## Notes per collection type
+
 | Source                  | Result                  | Element duplication                                                                           |
 |-------------------------|-------------------------|------------------------------------------------------------------------------------------------|
 | `ListObservable<E>`     | `ListObservable<E>`     | Source order and **multiplicity preserved** — each occurrence is included/excluded independently |
