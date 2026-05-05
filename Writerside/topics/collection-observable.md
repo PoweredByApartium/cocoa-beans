@@ -29,6 +29,8 @@ That's where `CollectionObservable` shines:
 ## Implementations
 - [](list-observable.md)
 - [](set-observable.md)
-- [](filtering-collection-observable.md)
 - [](queue-observable.md)
   - [](linked-list-observable.md)
+- [](filtering-collection-observable.md)
+- [](mapping-collection-observable.md)
+- [](flat-mapping-collection-observable.md)
