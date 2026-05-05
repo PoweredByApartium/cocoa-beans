@@ -33,6 +33,7 @@ If your mapper returns an `Observable<R>` you want to follow live, use [](flat-m
   - `mapEach` does **not** subscribe to anything inside the mapped values — only the source collection.
 
 ## Notes per collection type
+
 | Source                  | Result                  | Effect of duplicates                                  |
 |-------------------------|-------------------------|-------------------------------------------------------|
 | `ListObservable<E>`     | `ListObservable<R>`     | Order and duplicates preserved                        |
