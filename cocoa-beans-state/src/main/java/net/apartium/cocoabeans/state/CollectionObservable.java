@@ -103,4 +103,26 @@ public interface CollectionObservable<E, C extends Collection<E>> extends Observ
         return this.filter(element -> mapper.apply(element).map(filter::test));
     }
 
+    /**
+     * Maps each element of this observable to a new value using the provided mapper function.
+     * @param mapper function to map each element to a new value
+     * @return new observable containing mapped elements
+     * @param <R> new value type
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper);
+
+    /**
+     * Transforms each element of this observable using the provided mapping function into an {@link Observable}
+     * of type {@code R}, then flattens the results into a single {@link CollectionObservable}.
+     *
+     * @param <R> the type of the elements in the resulting observable.
+     * @param mapper a function that takes an element of type {@code E} as input and maps it to an {@link Observable}
+     *               of type {@code R}.
+     * @return a {@link CollectionObservable} containing the flattened results of applying the mapping function
+     *         to each element of the current observable.
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper);
+
 }

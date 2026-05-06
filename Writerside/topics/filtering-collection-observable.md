@@ -33,6 +33,18 @@ This is different from a simple `Predicate<E>` filter, because the membership of
   - `true`: element appears in filtered view
   - `false`: element disappears from filtered view 
 
+## Notes per collection type
+
+| Source                  | Result                  | Element duplication                                                                           |
+|-------------------------|-------------------------|------------------------------------------------------------------------------------------------|
+| `ListObservable<E>`     | `ListObservable<E>`     | Source order and **multiplicity preserved** — each occurrence is included/excluded independently |
+| `SetObservable<E>`      | `SetObservable<E>`      | The source already deduplicates by element                                                     |
+
+> **Subscription bookkeeping is deduped.** When several elements share the same
+> predicate observable (or one element appears multiple times), the predicate is
+> subscribed to **once**. A single change to that predicate updates every
+> matching occurrence in the filtered result.
+
 ## Advantages
 - **✅ Live subset view**: Always up-to-date without manual bookkeeping
 - **🧠 Reactive membership**: Elements can enter/leave the view when their internal state changes

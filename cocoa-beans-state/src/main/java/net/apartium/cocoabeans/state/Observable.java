@@ -104,6 +104,12 @@ public interface Observable<T> {
 
     /**
      * Creates a new observable set from the given set and copy function.
+     * <p>
+     * The supplied {@code copyOf} is reused for {@code mapEach}/{@code flatMapEach}-derived
+     * views with potentially different element types, so it must be <b>element-type-agnostic</b>
+     * (e.g. {@code LinkedHashSet::new}, {@code Set::copyOf}, or a {@code WeakHashSet} factory).
+     * Factories that capture element-type-specific state (such as a {@code TreeSet} with a
+     * {@code Comparator<E>}) will throw {@link ClassCastException} when applied to a mapped view.
      *
      * @param set the original set to be wrapped as an observable set
      * @param copyOf a function that creates a new set instance as a copy of the provided collection
@@ -116,6 +122,12 @@ public interface Observable<T> {
 
     /**
      * Creates an observable set based on the provided set, copy function, and initialization set function.
+     * <p>
+     * Both {@code copyOf} and {@code createInitSet} are reused for {@code mapEach}/{@code flatMapEach}-derived
+     * views with potentially different element types, so they must be <b>element-type-agnostic</b>
+     * (e.g. {@code LinkedHashSet::new}, {@code Set::copyOf}, or a {@code WeakHashSet} factory).
+     * Factories that capture element-type-specific state (such as a {@code TreeSet} with a
+     * {@code Comparator<E>}) will throw {@link ClassCastException} when applied to a mapped view.
      *
      * @param <E> the type of elements in the set
      * @param set the initial set of elements

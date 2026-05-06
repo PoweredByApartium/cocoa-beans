@@ -9,7 +9,6 @@ import java.util.WeakHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-
 @ApiStatus.Internal
 /* package-private */ abstract class AbstractCollectionObservable<E, C extends Collection<E>> implements CollectionObservable<E, C> {
 
@@ -135,4 +134,28 @@ import java.util.function.Predicate;
     protected abstract C createFilteredCollection(Collection<E> elements);
 
     protected abstract C createCollection(int initialCapacity);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
+        return new MapElementObservable<>(
+                this,
+                mapper,
+                elements -> (Collection<R>) createFilteredCollection((Collection<E>) elements),
+                initialCapacity -> (Collection<R>) createCollection(initialCapacity)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
+        return new FlatMapElementObservable<>(
+                this,
+                mapper,
+                elements -> (Collection<R>) createFilteredCollection((Collection<E>) elements),
+                initialCapacity -> (Collection<R>) createCollection(initialCapacity)
+        );
+    }
+
+
 }
