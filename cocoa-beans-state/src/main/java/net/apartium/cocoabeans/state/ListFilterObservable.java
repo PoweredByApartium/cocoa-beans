@@ -3,21 +3,16 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
-/* package-private */ class ListFilterObservable<E> extends FilterObservable<E, List<E>> implements ListObservable<E> {
+/* package-private */ class ListFilterObservable<E> extends FilterObservable<E, List<E>> implements DerivedListObservable<E> {
 
     public ListFilterObservable(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {
         super(base, filter, List::copyOf, ArrayList::new);
     }
-
-    @Override public void add(int index, E element) { throw ListChainHelpers.unsupportedAdd(); }
-    @Override public E remove(int index) { throw ListChainHelpers.unsupportedRemove(); }
-    @Override public void sort(Comparator<? super E> comparator) { throw ListChainHelpers.unsupportedSort(); }
 
     @Override
     public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {

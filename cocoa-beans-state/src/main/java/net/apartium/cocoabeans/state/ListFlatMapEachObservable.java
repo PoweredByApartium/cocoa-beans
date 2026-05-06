@@ -3,21 +3,16 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
-/* package-private */ class ListFlatMapEachObservable<F, E> extends FlatMapElementObservable<F, E, List<E>> implements ListObservable<E> {
+/* package-private */ class ListFlatMapEachObservable<F, E> extends FlatMapElementObservable<F, E, List<E>> implements DerivedListObservable<E> {
 
     public ListFlatMapEachObservable(Observable<? extends Collection<F>> base, Function<F, Observable<E>> mapper, Function<Collection<E>, List<E>> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
         super(base, mapper, collectionMapper, constructCollection);
     }
-
-    @Override public void add(int index, E element) { throw ListChainHelpers.unsupportedAdd(); }
-    @Override public E remove(int index) { throw ListChainHelpers.unsupportedRemove(); }
-    @Override public void sort(Comparator<? super E> comparator) { throw ListChainHelpers.unsupportedSort(); }
 
     @Override
     public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
