@@ -1,5 +1,8 @@
 # CHANGELOG
 ## 0.0.50
+- [state] Ensure `CollectionObservable#filter` returns results in a consistent order
+- [state] Add `CollectionObservable#flatMapEach` for live per-element mapping to inner observables.
+- [state] Add `CollectionObservable#mapEach` for live per-element transformation of observable collections.
 - [spigot] Fix `VisibilityPlayer` returning stale refs during quit/rejoin by introducing `onQuit()`/`onJoin()` lifecycle methods
 - [spigot] Fix `SpigotViewerGroup` leaking disconnected `Player` references by using a `WeakHashMap`-backed observable set
 - [state] Fix `SetObservable` always using `Set::copyOf`, add `copyOf` and `createInitSet` factory overloads

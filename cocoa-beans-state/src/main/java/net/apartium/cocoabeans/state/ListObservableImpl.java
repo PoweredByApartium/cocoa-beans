@@ -13,7 +13,6 @@ import java.util.function.Predicate;
 @ApiStatus.Internal
 /* package-private */ class ListObservableImpl<E> extends AbstractCollectionObservable<E, List<E>> implements ListObservable<E> {
 
-
     public ListObservableImpl() {
         this(new ArrayList<>());
     }
@@ -21,7 +20,6 @@ import java.util.function.Predicate;
     public ListObservableImpl(List<E> list) {
         super(list);
     }
-
 
     @Override
     public void add(int index, E element) {
@@ -75,12 +73,21 @@ import java.util.function.Predicate;
 
     @Override
     public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return new ListFilterObservable<>(this, filter);
+        return ListChainHelpers.filter(this, filter);
     }
 
     @Override
     public <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return this.filter(element -> mapper.apply(element).map(filter::test));
+        return ListChainHelpers.filter(this, mapper, filter);
     }
 
+    @Override
+    public <R> ListObservable<R> mapEach(Function<E, R> mapper) {
+        return ListChainHelpers.mapEach(this, mapper, List::copyOf, ArrayList::new);
+    }
+
+    @Override
+    public <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
+        return ListChainHelpers.flatMapEach(this, mapper, List::copyOf, ArrayList::new);
+    }
 }

@@ -52,11 +52,22 @@ import java.util.function.Predicate;
 
     @Override
     public SetObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return new SetFilterObservable<>(this, filter, copyOf, createInitSet);
+        return SetChainHelpers.filter(this, filter, copyOf, createInitSet);
     }
 
     @Override
     public <T> SetObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return this.filter(element -> mapper.apply(element).map(filter::test));
+        return SetChainHelpers.filter(this, mapper, filter, copyOf, createInitSet);
     }
+
+    @Override
+    public <R> SetObservable<R> mapEach(Function<E, R> mapper) {
+        return SetChainHelpers.mapEach(this, mapper, copyOf, createInitSet);
+    }
+
+    @Override
+    public <R> SetObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
+        return SetChainHelpers.flatMapEach(this, mapper, copyOf, createInitSet);
+    }
+
 }

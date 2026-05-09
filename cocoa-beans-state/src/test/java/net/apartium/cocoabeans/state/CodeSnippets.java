@@ -364,8 +364,7 @@ class CodeSnippets {
     void filteredCollection() {
         SetObservable<GamePlayer> players = Observable.set();
 
-        CollectionObservable<GamePlayer, Set<GamePlayer>> alivePlayers =
-                players.filter(GamePlayer::getAlive);
+        SetObservable<GamePlayer> alivePlayers = players.filter(GamePlayer::getAlive);
 
         GamePlayer a = new GamePlayer(UUID.randomUUID());
         GamePlayer b = new GamePlayer(UUID.randomUUID());
@@ -449,6 +448,57 @@ class CodeSnippets {
         rank.set(rankA);
         prefixA.set("[A-]");
         assertEquals("[A-]", prefix.get());
+    }
+
+    @Test
+    void mapEachSample() {
+        ListObservable<String> names = Observable.list();
+
+        // mapEach derives a ListObservable<Integer> of per-element lengths
+        ListObservable<Integer> lengths = names.mapEach(String::length);
+
+        names.add("kfir");
+        names.add("apartium");
+        assertEquals(List.of(4, 8), lengths.get());
+
+        names.add("voigon");
+        assertEquals(List.of(4, 8, 6), lengths.get());
+
+        names.remove("kfir");
+        assertEquals(List.of(8, 6), lengths.get());
+    }
+
+    public record DisplayPlayer(String id, MutableObservable<String> displayName) {}
+
+    @Test
+    void flatMapEachSample() {
+        DisplayPlayer kfir = new DisplayPlayer("kfir", Observable.mutable("kfir"));
+        DisplayPlayer lior = new DisplayPlayer("lior", Observable.mutable("lior"));
+
+        ListObservable<DisplayPlayer> players = Observable.list();
+        players.add(kfir);
+        players.add(lior);
+
+        // flatMapEach exposes the current value of each element's inner observable
+        ListObservable<String> displayNames = players.flatMapEach(DisplayPlayer::displayName);
+
+        assertEquals(List.of("kfir", "lior"), displayNames.get());
+
+        // updates when any tracked element's inner observable changes
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of("Kfir Notro", "lior"), displayNames.get());
+
+        // updates when the source collection changes
+        DisplayPlayer voigon = new DisplayPlayer("voigon", Observable.mutable("voigon"));
+        players.add(voigon);
+        assertEquals(List.of("Kfir Notro", "lior", "voigon"), displayNames.get());
+
+        players.remove(kfir);
+        assertEquals(List.of("lior", "voigon"), displayNames.get());
+
+        // mutating an element that is no longer tracked does NOT propagate
+        kfir.displayName().set("ghost");
+        assertEquals(List.of("lior", "voigon"), displayNames.get());
     }
 
 }

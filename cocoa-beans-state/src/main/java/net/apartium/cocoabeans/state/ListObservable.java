@@ -20,4 +20,12 @@ public interface ListObservable<E> extends CollectionObservable<E, List<E>>, Lis
 
     @Override
     <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter);
+
+    @ApiStatus.AvailableSince("0.0.50")
+    @Override
+    <R> ListObservable<R> mapEach(Function<E, R> mapper);
+
+    @ApiStatus.AvailableSince("0.0.50")
+    @Override
+    <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper);
 }

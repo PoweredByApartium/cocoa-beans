@@ -8,10 +8,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
-/* package-private */ class SetFilterObservable<E> extends FilterObservable<E, Set<E>> implements SetObservable<E> {
+/* package-private */ class SetFlatMapEachObservable<F, E> extends FlatMapElementObservable<F, E, Set<E>> implements SetObservable<E> {
 
-    public SetFilterObservable(Observable<Set<E>> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, Set<E>> copyOf, Function<Integer, ? extends Collection<E>> createInitSet) {
-        super(base, filter, copyOf, createInitSet);
+    public SetFlatMapEachObservable(Observable<? extends Collection<F>> base, Function<F, Observable<E>> mapper, Function<Collection<E>, Set<E>> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+        super(base, mapper, collectionMapper, constructCollection);
     }
 
     @Override
