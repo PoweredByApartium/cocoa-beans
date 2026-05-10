@@ -45,6 +45,7 @@
             <toc-element topic="filtering-collection-observable.md"/>
             <toc-element topic="mapping-collection-observable.md"/>
             <toc-element topic="flat-mapping-collection-observable.md"/>
+            <toc-element topic="collection-observable-conversion.md"/>
         </toc-element>
         <toc-element topic="observer.md"/>
         <toc-element topic="watcher.md"/>

@@ -34,3 +34,4 @@ That's where `CollectionObservable` shines:
 - [](filtering-collection-observable.md)
 - [](mapping-collection-observable.md)
 - [](flat-mapping-collection-observable.md)
+- [](collection-observable-conversion.md)
