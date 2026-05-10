@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * A factory class for creating {@link CollectorObservable} instances.
@@ -34,7 +35,7 @@ public class CollectorsObservable {
      */
     public static <E> CollectorObservable<E, ? extends Set<E>, SetObservable<E>> toSet(
             Function<Collection<E>, ? extends Set<E>> snapshot,
-            Function<Integer, ? extends Set<E>> collection
+            IntFunction<? extends Set<E>> collection
     ) {
         return new CollectorObservable<>() {
             @Override
@@ -82,7 +83,7 @@ public class CollectorsObservable {
      */
     public static <E> CollectorObservable<E, ? extends List<E>, ListObservable<E>> toList(
             Function<Collection<E>, ? extends List<E>> snapshot,
-            Function<Integer, ? extends List<E>> collection
+            IntFunction<? extends List<E>> collection
     ) {
         return new CollectorObservable<>() {
             @Override
