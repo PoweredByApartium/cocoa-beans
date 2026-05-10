@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
@@ -33,9 +34,9 @@ import java.util.function.Predicate;
             Observable<? extends Collection<F>> base,
             Function<F, R> mapper,
             Function<Collection<E>, List<E>> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
+        return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     @SuppressWarnings({"rawtypes"})
@@ -43,9 +44,9 @@ import java.util.function.Predicate;
             Observable<? extends Collection<F>> base,
             Function<F, Observable<R>> mapper,
             Function<Collection<E>, List<E>> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
+        return new ListFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     static <E> ListObservable<E> filter(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {

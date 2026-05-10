@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
@@ -13,7 +14,7 @@ import java.util.function.Predicate;
 
 
     private final Function<Collection<E>, Set<E>> copyOf;
-    private final Function<Integer, Set<E>> createInitSet;
+    private final IntFunction<Set<E>> createInitSet;
 
     public SetObservableImpl() {
         this(new HashSet<>());
@@ -27,7 +28,7 @@ import java.util.function.Predicate;
         this(set, copyOf, HashSet::new);
     }
 
-    public SetObservableImpl(Set<E> set, Function<Collection<E>, Set<E>> copyOf, Function<Integer, Set<E>> createInitSet) {
+    public SetObservableImpl(Set<E> set, Function<Collection<E>, Set<E>> copyOf, IntFunction<Set<E>> createInitSet) {
         super(set);
 
         this.copyOf = copyOf;

@@ -5,12 +5,13 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
 /* package-private */ class SetMapEachObservable<F, E> extends MapElementObservable<F, E, Set<E>> implements SetObservable<E> {
 
-    public SetMapEachObservable(Observable<? extends Collection<F>> base, Function<F, E> mapper, Function<Collection<E>, Set<E>> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+    public SetMapEachObservable(Observable<? extends Collection<F>> base, Function<F, E> mapper, Function<Collection<E>, Set<E>> collectionMapper, IntFunction<? extends Collection<E>> constructCollection) {
         super(base, mapper, collectionMapper, constructCollection);
     }
 

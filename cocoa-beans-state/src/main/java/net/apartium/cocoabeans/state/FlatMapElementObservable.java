@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -27,7 +28,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
 
     private final Function<F, Observable<E>> mapper;
     protected final Function<Collection<E>, C> collectionMapper;
-    protected final Function<Integer, ? extends Collection<E>> constructCollection;
+    protected final IntFunction<? extends Collection<E>> constructCollection;
 
     private final Map<F, Observable<E>> innerByElement = new IdentityHashMap<>();
     private final Map<Observable<E>, Set<F>> dependsOn = new IdentityHashMap<>();
@@ -45,7 +46,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
             Observable<? extends Collection<F>> base,
             Function<F, Observable<E>> mapper,
             Function<Collection<E>, C> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
         this.base = base;
         this.base.observe(this);
@@ -209,7 +210,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
                 this,
                 mapper,
                 (Function) collectionMapper,
-                (Function) constructCollection
+                (IntFunction) constructCollection
         );
     }
 
@@ -220,7 +221,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
                 this,
                 mapper,
                 (Function) collectionMapper,
-                (Function) constructCollection
+                (IntFunction) constructCollection
         );
     }
 

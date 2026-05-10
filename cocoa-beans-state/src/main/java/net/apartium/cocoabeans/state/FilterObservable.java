@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -23,7 +24,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
 
     private final Function<E, Observable<Boolean>> filter;
     protected final Function<Collection<E>, C> collectionMapper;
-    protected final Function<Integer, ? extends Collection<E>> constructCollection;
+    protected final IntFunction<? extends Collection<E>> constructCollection;
 
     private boolean baseDirty = true;
     private final Set<Observable<Boolean>> flagged = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -50,7 +51,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
      * @param constructCollection A function that constructs an empty collection of the desired type based on the
      *                           provided size.
      */
-    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, IntFunction<? extends Collection<E>> constructCollection) {
         this.base = base;
         this.base.observe(this);
 
@@ -201,7 +202,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
                 this,
                 mapper,
                 (Function) collectionMapper,
-                (Function) constructCollection
+                (IntFunction) constructCollection
         );
     }
 
@@ -212,7 +213,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
                 this,
                 mapper,
                 (Function) collectionMapper,
-                (Function) constructCollection
+                (IntFunction) constructCollection
         );
     }
 

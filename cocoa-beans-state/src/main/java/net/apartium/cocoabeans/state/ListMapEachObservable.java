@@ -4,12 +4,13 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
 /* package-private */ class ListMapEachObservable<F, E> extends MapElementObservable<F, E, List<E>> implements DerivedListObservable<E> {
 
-    public ListMapEachObservable(Observable<? extends Collection<F>> base, Function<F, E> mapper, Function<Collection<E>, List<E>> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+    public ListMapEachObservable(Observable<? extends Collection<F>> base, Function<F, E> mapper, Function<Collection<E>, List<E>> collectionMapper, IntFunction<? extends Collection<E>> constructCollection) {
         super(base, mapper, collectionMapper, constructCollection);
     }
 

@@ -5,12 +5,13 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
 /* package-private */ class SetFilterObservable<E> extends FilterObservable<E, Set<E>> implements SetObservable<E> {
 
-    public SetFilterObservable(Observable<Set<E>> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, Set<E>> copyOf, Function<Integer, ? extends Collection<E>> createInitSet) {
+    public SetFilterObservable(Observable<Set<E>> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, Set<E>> copyOf, IntFunction<? extends Collection<E>> createInitSet) {
         super(base, filter, copyOf, createInitSet);
     }
 
