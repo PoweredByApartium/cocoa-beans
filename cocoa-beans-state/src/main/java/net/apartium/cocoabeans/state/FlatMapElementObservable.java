@@ -202,7 +202,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
         return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
         return new MapElementObservable<>(
@@ -213,7 +213,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
         );
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     @Override
     public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
         return new FlatMapElementObservable<>(

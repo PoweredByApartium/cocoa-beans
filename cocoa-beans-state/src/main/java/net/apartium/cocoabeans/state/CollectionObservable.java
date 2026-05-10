@@ -125,4 +125,16 @@ public interface CollectionObservable<E, C extends Collection<E>> extends Observ
     @ApiStatus.AvailableSince("0.0.50")
     <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper);
 
+    /**
+     * Converts the current observable to a new {@link CollectionObservable} using the provided collector.
+     *
+     * @param <N> the type of the collection used in the resulting observable.
+     * @param <T> the type of the resulting {@link CollectionObservable}.
+     * @param collector the collector used to create the resulting observable.
+     * @return the {@link CollectionObservable} created by applying the collector to the current observable.
+     */
+    default <N extends Collection<E>, T extends CollectionObservable<E, ? super N>> T as(CollectorObservable<E, N, T> collector) {
+        return collector.asCollectionObservable(this);
+    }
+
 }

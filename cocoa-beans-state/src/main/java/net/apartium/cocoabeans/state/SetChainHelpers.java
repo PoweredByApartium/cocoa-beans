@@ -12,22 +12,22 @@ import java.util.function.Predicate;
 
     private SetChainHelpers() {}
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     static <F, R> SetObservable<R> mapEach(
             Observable<? extends Collection<F>> base,
             Function<F, R> mapper,
-            Function<?, ?> collectionMapper,
-            Function<?, ?> constructCollection
+            Function<Collection<F>, ?> collectionMapper,
+            Function<Integer, ?> constructCollection
     ) {
         return new SetMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     static <F, R> SetObservable<R> flatMapEach(
             Observable<? extends Collection<F>> base,
             Function<F, Observable<R>> mapper,
-            Function<?, ?> collectionMapper,
-            Function<?, ?> constructCollection
+            Function<Collection<F>, ?> collectionMapper,
+            Function<Integer, ?> constructCollection
     ) {
         return new SetFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
     }

@@ -28,7 +28,7 @@ import java.util.function.Predicate;
         return new UnsupportedOperationException(NO_SORT);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     static <F, R, E> ListObservable<R> mapEach(
             Observable<? extends Collection<F>> base,
             Function<F, R> mapper,
@@ -38,7 +38,7 @@ import java.util.function.Predicate;
         return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     static <F, R, E> ListObservable<R> flatMapEach(
             Observable<? extends Collection<F>> base,
             Function<F, Observable<R>> mapper,
