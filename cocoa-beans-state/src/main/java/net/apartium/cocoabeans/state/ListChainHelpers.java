@@ -29,7 +29,7 @@ import java.util.function.Predicate;
         return new UnsupportedOperationException(NO_SORT);
     }
 
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static <F, R, E> ListObservable<R> mapEach(
             Observable<? extends Collection<F>> base,
             Function<F, R> mapper,
@@ -39,7 +39,7 @@ import java.util.function.Predicate;
         return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static <F, R, E> ListObservable<R> flatMapEach(
             Observable<? extends Collection<F>> base,
             Function<F, Observable<R>> mapper,
@@ -49,16 +49,23 @@ import java.util.function.Predicate;
         return new ListFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
-    static <E> ListObservable<E> filter(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {
-        return new ListFilterObservable<>(base, filter);
+    static <E> ListObservable<E> filter(
+            Observable<List<E>> base,
+            Function<E, Observable<Boolean>> filter,
+            Function<Collection<E>, List<E>> collectionMapper,
+            IntFunction<? extends Collection<E>> constructCollection
+    ) {
+        return new ListFilterObservable<>(base, filter, collectionMapper, constructCollection);
     }
 
     static <E, T> ListObservable<E> filter(
             Observable<List<E>> base,
             Function<E, Observable<T>> mapper,
-            Predicate<T> filter
+            Predicate<T> filter,
+            Function<Collection<E>, List<E>> collectionMapper,
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return filter(base, element -> mapper.apply(element).map(filter::test));
+        return filter(base, element -> mapper.apply(element).map(filter::test), collectionMapper, constructCollection);
     }
 
 }

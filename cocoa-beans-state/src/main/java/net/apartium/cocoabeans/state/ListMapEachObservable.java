@@ -16,12 +16,12 @@ import java.util.function.Predicate;
 
     @Override
     public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return ListChainHelpers.filter(this, filter);
+        return ListChainHelpers.filter(this, filter, collectionMapper, constructCollection);
     }
 
     @Override
     public <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return ListChainHelpers.filter(this, mapper, filter);
+        return ListChainHelpers.filter(this, mapper, filter, collectionMapper, constructCollection);
     }
 
     @Override

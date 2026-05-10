@@ -3,25 +3,27 @@ package net.apartium.cocoabeans.state;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
 /* package-private */ class ListFilterObservable<E> extends FilterObservable<E, List<E>> implements DerivedListObservable<E> {
 
-    public ListFilterObservable(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {
-        super(base, filter, List::copyOf, ArrayList::new);
+    public ListFilterObservable(Observable<List<E>> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, List<E>> collectionMapper, IntFunction<? extends Collection<E>> constructCollection) {
+        super(base, filter, collectionMapper, constructCollection);
     }
 
     @Override
     public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return ListChainHelpers.filter(this, filter);
+        return ListChainHelpers.filter(this, filter, collectionMapper, constructCollection);
     }
 
     @Override
     public <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return ListChainHelpers.filter(this, mapper, filter);
+        return ListChainHelpers.filter(this, mapper, filter, collectionMapper, constructCollection);
     }
 
     @Override

@@ -49,7 +49,7 @@ import java.util.function.Predicate;
             return;
 
         dirty = true;
-        for (Observer observer : observers)
+        for (Observer observer : Set.copyOf(observers))
             observer.flagAsDirty(this);
     }
 
