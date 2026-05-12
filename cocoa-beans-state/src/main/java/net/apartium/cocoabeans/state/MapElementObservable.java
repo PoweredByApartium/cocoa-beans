@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  * @see Observer
  */
 @ApiStatus.AvailableSince("0.0.50")
-public class MapElementObservable<F, E, C extends Collection<E>> implements CollectionObservable<E, C>, Observer {
+public class MapElementObservable<F, E, C extends Collection<E>> implements DerivedCollectionObservable<E, C>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -119,30 +119,13 @@ public class MapElementObservable<F, E, C extends Collection<E>> implements Coll
     }
 
     @Override
-    public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
+    public Function<Collection<E>, C> collectionMapper() {
+        return collectionMapper;
     }
 
-    @SuppressWarnings({"rawtypes"})
     @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
-        return new MapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (IntFunction) constructCollection
-        );
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
-        return new FlatMapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (IntFunction) constructCollection
-        );
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return constructCollection;
     }
 
 }

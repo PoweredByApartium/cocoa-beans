@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * @param <C> The type of collection being observed and filtered.
  */
 @ApiStatus.AvailableSince("0.0.46")
-public class FilterObservable<E, C extends Collection<E>> implements CollectionObservable<E, C>, Observer {
+public class FilterObservable<E, C extends Collection<E>> implements DerivedCollectionObservable<E, C>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -191,30 +191,13 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     }
 
     @Override
-    public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
+    public Function<Collection<E>, C> collectionMapper() {
+        return collectionMapper;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
-        return new MapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (IntFunction) constructCollection
-        );
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
-        return new FlatMapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (IntFunction) constructCollection
-        );
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return constructCollection;
     }
 
 }

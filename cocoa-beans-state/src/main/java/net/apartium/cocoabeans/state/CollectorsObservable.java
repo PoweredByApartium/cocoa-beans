@@ -37,25 +37,7 @@ public class CollectorsObservable {
             Function<Collection<E>, ? extends Set<E>> snapshot,
             IntFunction<? extends Set<E>> collection
     ) {
-        return new CollectorObservable<>() {
-            @Override
-            public Set<E> snapshot(Collection<E> collection) {
-                return snapshot.apply(collection);
-            }
-
-            @Override
-            public Set<E> collection(int initialCapacity) {
-                return collection.apply(initialCapacity);
-            }
-
-            @Override
-            public SetObservable<E> asCollectionObservable(CollectionObservable<E, ? extends Collection<E>> base) {
-                return new SetObservableCopyOf<>(
-                        base,
-                        this
-                );
-            }
-        };
+        return create(snapshot, collection, SetObservableCopyOf::new);
     }
 
     /**
@@ -85,26 +67,36 @@ public class CollectorsObservable {
             Function<Collection<E>, ? extends List<E>> snapshot,
             IntFunction<? extends List<E>> collection
     ) {
+        return create(snapshot, collection, ListObservableCopyOf::new);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <E, C extends Collection<E>, R extends CollectionObservable<E, ? super C>> CollectorObservable<E, C, R> create(
+            Function<Collection<E>, ? extends C> snapshot,
+            IntFunction<? extends C> collection,
+            CopyOfFactory factory
+    ) {
         return new CollectorObservable<>() {
             @Override
-            public List<E> snapshot(Collection<E> collection) {
-                return snapshot.apply(collection);
+            public C snapshot(Collection<E> col) {
+                return snapshot.apply(col);
             }
 
             @Override
-            public List<E> collection(int initialCapacity) {
+            public C collection(int initialCapacity) {
                 return collection.apply(initialCapacity);
             }
 
             @Override
-            public ListObservable<E> asCollectionObservable(CollectionObservable<E, ? extends Collection<E>> base) {
-                return new ListObservableCopyOf<>(
-                        base,
-                        this
-                );
+            public R asCollectionObservable(CollectionObservable<E, ? extends Collection<E>> base) {
+                return (R) factory.create(base, this);
             }
         };
     }
 
+    @FunctionalInterface
+    private interface CopyOfFactory<E, C extends Collection<E>, R extends CollectionObservable<E, ? super C>> {
+        R create(CollectionObservable<E, ? extends Collection<E>> base, CollectorObservable<E, C, R> collector);
+    }
 
 }

@@ -2,9 +2,10 @@ package net.apartium.cocoabeans.state;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-/* package-private */ class ListObservableCopyOf<E> implements ListObservable<E>, Observer {
+/* package-private */ class ListObservableCopyOf<E> implements DerivedListObservable<E>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -63,33 +64,21 @@ import java.util.function.Predicate;
     @Override public boolean removeIf(Predicate<? super E> filter) {throw new UnsupportedOperationException("ListObservableCopyOf does not support removing elements");}
     @Override public boolean retainAll(Collection<? extends E> collection) {throw new UnsupportedOperationException("ListObservableCopyOf does not support removing elements");}
     @Override public void clear() {throw new UnsupportedOperationException("ListObservableCopyOf does not support removing elements");}
-    @Override public void add(int index, E element) {throw new UnsupportedOperationException("ListObservableCopyOf does not support adding elements");}
-    @Override public E remove(int index) {throw new UnsupportedOperationException("ListObservableCopyOf does not support removing elements");}
-    @Override public void sort(Comparator<? super E> comparator) {throw new UnsupportedOperationException("ListObservableCopyOf does not support sorting");}
 
 
     @Override
     public Observable<Integer> size() {
         return size;
     }
+
     @Override
-    public ListObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return ListChainHelpers.filter(this, filter, collector::snapshot, collector::collection);
+    public Function<Collection<E>, List<E>> collectionMapper() {
+        return collector::snapshot;
     }
 
     @Override
-    public <T> ListObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return ListChainHelpers.filter(this, mapper, filter, collector::snapshot, collector::collection);
-    }
-
-    @Override
-    public <R> ListObservable<R> mapEach(Function<E, R> mapper) {
-        return ListChainHelpers.mapEach(this, mapper, collector::snapshot, collector::collection);
-    }
-
-    @Override
-    public <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
-        return ListChainHelpers.flatMapEach(this, mapper, collector::snapshot, collector::collection);
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return collector::collection;
     }
 
 }

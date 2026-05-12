@@ -7,10 +7,11 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
-/* package-private */ class SetObservableCopyOf<E> implements SetObservable<E>, Observer {
+/* package-private */ class SetObservableCopyOf<E> implements DerivedSetObservable<E>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -77,23 +78,13 @@ import java.util.function.Predicate;
     }
 
     @Override
-    public SetObservable<E> filter(Function<E, Observable<Boolean>> filter) {
-        return SetChainHelpers.filter(this, filter, collector::snapshot, collector::collection);
+    public Function<Collection<E>, Set<E>> collectionMapper() {
+        return collector::snapshot;
     }
 
     @Override
-    public <T> SetObservable<E> filter(Function<E, Observable<T>> mapper, Predicate<T> filter) {
-        return SetChainHelpers.filter(this, mapper, filter, collector::snapshot, collector::collection);
-    }
-
-    @Override
-    public <R> SetObservable<R> mapEach(Function<E, R> mapper) {
-        return SetChainHelpers.mapEach(this, mapper, collector::snapshot, collector::collection);
-    }
-
-    @Override
-    public <R> SetObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
-        return SetChainHelpers.flatMapEach(this, mapper, collector::snapshot, collector::collection);
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return collector::collection;
     }
 
 }
