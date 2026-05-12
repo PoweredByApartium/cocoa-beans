@@ -314,6 +314,216 @@ class FlatMapElementObservableTest {
         assertEquals(List.of(8), nameLengths.get());
     }
 
+    @Test
+    void flatMapEachRemoveObserverReturnsFalseForUnknown() {
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        TestObserver observer = new TestObserver();
+        assertFalse(names.removeObserver(observer));
+
+        names.observe(observer);
+        assertTrue(names.removeObserver(observer));
+        assertFalse(names.removeObserver(observer));
+    }
+
+    @Test
+    void flatMapEachShouldReturnSameResultOnConsecutiveGets() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(kfir)));
+
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        List<String> first = names.get();
+        List<String> second = names.get();
+        assertSame(first, second);
+    }
+
+    @Test
+    void flatMapEachNotifiesOnBaseChange() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(kfir)));
+
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+        names.get();
+
+        TestObserver observer = new TestObserver();
+        names.observe(observer);
+
+        players.add(new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium")));
+        assertTrue(observer.dirty);
+        assertSame(names, observer.observable);
+    }
+
+    @Test
+    void flatMapEachAddAllAndRemoveAll() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+        GamePlayer voigon = new GamePlayer(UUID.randomUUID(), Observable.mutable("Voigon"));
+
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        assertEquals(List.of(), names.get());
+
+        players.addAll(List.of(kfir, apartium, voigon));
+        assertEquals(List.of("Kfir", "Apartium", "Voigon"), names.get());
+
+        players.removeAll(List.of(kfir, voigon));
+        assertEquals(List.of("Apartium"), names.get());
+
+        // inner changes on removed elements should not propagate
+        kfir.name().set("Ghost");
+        assertEquals(List.of("Apartium"), names.get());
+
+        // inner changes on remaining elements should propagate
+        apartium.name().set("Apartium2");
+        assertEquals(List.of("Apartium2"), names.get());
+    }
+
+    @Test
+    void flatMapEachSizeObservable() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        Observable<Integer> size = names.size();
+        assertEquals(0, size.get());
+
+        players.add(kfir);
+        assertEquals(1, size.get());
+
+        players.add(new GamePlayer(UUID.randomUUID(), Observable.mutable("A")));
+        assertEquals(2, size.get());
+
+        players.clear();
+        assertEquals(0, size.get());
+    }
+
+    @Test
+    void flatMapEachSetShouldCacheAndNotify() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(kfir, apartium)));
+
+        SetObservable<String> names = players.flatMapEach(GamePlayer::name);
+        assertEquals(Set.of("Kfir", "Apartium"), names.get());
+
+        Set<String> cached = names.get();
+        assertSame(cached, names.get());
+
+        TestObserver observer = new TestObserver();
+        names.observe(observer);
+
+        kfir.name().set("Kfir2");
+        assertTrue(observer.dirty);
+        assertEquals(Set.of("Kfir2", "Apartium"), names.get());
+    }
+
+    @Test
+    void flatMapEachSetRemoveObserver() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(kfir)));
+
+        SetObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        TestObserver observer = new TestObserver();
+        assertFalse(names.removeObserver(observer));
+
+        names.observe(observer);
+        assertTrue(names.removeObserver(observer));
+    }
+
+    @Test
+    void flatMapEachSetUnsupportedMutationsThrow() {
+        SetObservable<GamePlayer> players = Observable.set();
+        SetObservable<String> names = players.flatMapEach(GamePlayer::name);
+
+        assertThrows(UnsupportedOperationException.class, () -> names.add("x"));
+        assertThrows(UnsupportedOperationException.class, () -> names.remove("x"));
+        assertThrows(UnsupportedOperationException.class, () -> names.addAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> names.removeAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> names.removeIf(n -> true));
+        assertThrows(UnsupportedOperationException.class, () -> names.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, names::clear);
+    }
+
+    @Test
+    void flatMapEachChainMapEachOnSet() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(kfir, apartium)));
+
+        SetObservable<Integer> lengths = players
+                .flatMapEach(GamePlayer::name)
+                .mapEach(String::length);
+
+        assertEquals(Set.of(4, 8), lengths.get());
+
+        kfir.name().set("Kfir Notro");
+        assertEquals(Set.of(10, 8), lengths.get());
+    }
+
+    @Test
+    void flatMapEachChainFilterOnSet() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), Observable.mutable("Apartium"));
+
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(kfir, apartium)));
+
+        SetObservable<String> longNames = players
+                .flatMapEach(GamePlayer::name)
+                .filter(name -> Observable.immutable(name.length() > 4));
+
+        assertEquals(Set.of("Apartium"), longNames.get());
+
+        kfir.name().set("Kfir Notro");
+        assertEquals(Set.of("Kfir Notro", "Apartium"), longNames.get());
+    }
+
+    @Test
+    void flatMapEachChainFlatMapEachOnSet() {
+        MutableObservable<MutableObservable<String>> nested =
+                Observable.mutable(Observable.mutable("kfir"));
+
+        SetObservable<MutableObservable<MutableObservable<String>>> set =
+                Observable.set(new HashSet<>(Set.of(nested)));
+
+        SetObservable<String> values = set
+                .flatMapEach(o -> o)
+                .flatMapEach(o -> o);
+
+        assertEquals(Set.of("kfir"), values.get());
+
+        nested.get().set("apartium");
+        assertEquals(Set.of("apartium"), values.get());
+    }
+
+    @Test
+    void flatMapEachNullMapperResultOnSetWithCustomFactory() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), Observable.mutable("Kfir"));
+
+        SetObservable<GamePlayer> players = Observable.set(
+                new HashSet<>(Set.of(kfir)),
+                col -> {
+                    Set<GamePlayer> copy = new HashSet<>();
+                    copy.addAll(col);
+                    return java.util.Collections.unmodifiableSet(copy);
+                },
+                HashSet::new
+        );
+
+        SetObservable<String> names = players.flatMapEach(p -> null);
+        Set<String> result = names.get();
+        assertEquals(1, result.size());
+        assertTrue(result.contains(null));
+
+        players.remove(kfir);
+        assertEquals(Set.of(), names.get());
+    }
+
     private record GamePlayer(UUID uuid, MutableObservable<String> name, boolean alive) {
 
         private GamePlayer(UUID uuid, MutableObservable<String> name) {
