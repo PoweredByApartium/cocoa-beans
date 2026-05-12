@@ -442,10 +442,13 @@ class FlatMapElementObservableTest {
 
         assertThrows(UnsupportedOperationException.class, () -> names.add("x"));
         assertThrows(UnsupportedOperationException.class, () -> names.remove("x"));
-        assertThrows(UnsupportedOperationException.class, () -> names.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> names.removeAll(List.of()));
+
+        List<String> emptyList = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> names.addAll(emptyList));
+        assertThrows(UnsupportedOperationException.class, () -> names.removeAll(emptyList));
         assertThrows(UnsupportedOperationException.class, () -> names.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> names.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> names.retainAll(emptyList));
         assertThrows(UnsupportedOperationException.class, names::clear);
     }
 

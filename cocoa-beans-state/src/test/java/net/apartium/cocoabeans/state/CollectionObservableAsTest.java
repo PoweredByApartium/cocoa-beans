@@ -116,14 +116,20 @@ class CollectionObservableAsTest {
 
         assertThrows(UnsupportedOperationException.class, () -> copy.add(1));
         assertThrows(UnsupportedOperationException.class, () -> copy.remove((Integer) 1));
-        assertThrows(UnsupportedOperationException.class, () -> copy.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> copy.removeAll(List.of()));
+
+        List<Integer> emptyList = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> copy.addAll(emptyList));
+        assertThrows(UnsupportedOperationException.class, () -> copy.removeAll(emptyList));
         assertThrows(UnsupportedOperationException.class, () -> copy.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> copy.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> copy.retainAll(emptyList));
         assertThrows(UnsupportedOperationException.class, copy::clear);
         assertThrows(UnsupportedOperationException.class, () -> copy.add(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> copy.remove(0));
-        assertThrows(UnsupportedOperationException.class, () -> copy.sort(Comparator.naturalOrder()));
+
+        Comparator<Integer> comparator = Comparator.naturalOrder();
+
+        assertThrows(UnsupportedOperationException.class, () -> copy.sort(comparator));
     }
 
     @Test
@@ -164,10 +170,13 @@ class CollectionObservableAsTest {
 
         assertThrows(UnsupportedOperationException.class, () -> set.add(1));
         assertThrows(UnsupportedOperationException.class, () -> set.remove(1));
-        assertThrows(UnsupportedOperationException.class, () -> set.addAll(List.of()));
-        assertThrows(UnsupportedOperationException.class, () -> set.removeAll(List.of()));
+
+        List<Integer> emptyList = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> set.addAll(emptyList));
+        assertThrows(UnsupportedOperationException.class, () -> set.removeAll(emptyList));
         assertThrows(UnsupportedOperationException.class, () -> set.removeIf(n -> true));
-        assertThrows(UnsupportedOperationException.class, () -> set.retainAll(List.of()));
+        assertThrows(UnsupportedOperationException.class, () -> set.retainAll(emptyList));
         assertThrows(UnsupportedOperationException.class, set::clear);
     }
 
@@ -207,7 +216,10 @@ class CollectionObservableAsTest {
         assertThrows(UnsupportedOperationException.class, () -> list.remove((Integer) 1));
         assertThrows(UnsupportedOperationException.class, () -> list.add(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> list.remove(0));
-        assertThrows(UnsupportedOperationException.class, () -> list.sort(Comparator.naturalOrder()));
+
+        Comparator<Integer> comparator = Comparator.naturalOrder();
+
+        assertThrows(UnsupportedOperationException.class, () -> list.sort(comparator));
         assertThrows(UnsupportedOperationException.class, list::clear);
     }
 
