@@ -17,14 +17,14 @@ import java.util.function.Predicate;
 
     private final CollectionObservable<E, ? extends Collection<E>> base;
     private final Observable<Integer> size;
-    private final CollectorObservable<E, Set<E>, SetObservable<E>> collector;
+    private final ObservableCollectionType<E, Set<E>, SetObservable<E>> collector;
 
     private Set<E> cache;
     private boolean dirty = true;
 
     SetObservableCopyOf(
             CollectionObservable<E, ? extends Collection<E>> base,
-            CollectorObservable<E, Set<E>, SetObservable<E>> collector
+            ObservableCollectionType<E, Set<E>, SetObservable<E>> collector
     ) {
         this.base = base;
         this.collector = collector;

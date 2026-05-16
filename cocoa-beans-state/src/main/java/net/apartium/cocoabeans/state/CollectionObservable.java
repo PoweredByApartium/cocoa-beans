@@ -133,7 +133,7 @@ public interface CollectionObservable<E, C extends Collection<E>> extends Observ
      * @param collector the collector used to create the resulting observable.
      * @return the {@link CollectionObservable} created by applying the collector to the current observable.
      */
-    default <N extends Collection<E>, T extends CollectionObservable<E, ? super N>> T as(CollectorObservable<E, N, T> collector) {
+    default <N extends Collection<E>, T extends CollectionObservable<E, ? super N>> T as(ObservableCollectionType<E, N, T> collector) {
         return collector.asCollectionObservable(this);
     }
 

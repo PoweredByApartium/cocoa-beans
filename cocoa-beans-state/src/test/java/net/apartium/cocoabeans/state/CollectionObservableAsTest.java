@@ -13,7 +13,7 @@ class CollectionObservableAsTest {
     void listToListPreservesOrderAndDuplicates() {
         ListObservable<String> base = Observable.list(new ArrayList<>(List.of("a", "b", "a", "c")));
 
-        ListObservable<String> copy = base.as(CollectorsObservable.toList());
+        ListObservable<String> copy = base.as(ObservableCollectionType.toList());
 
         assertEquals(List.of("a", "b", "a", "c"), copy.get());
     }
@@ -21,7 +21,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListReflectsBaseChanges() {
         ListObservable<Integer> base = Observable.list();
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
 
         assertEquals(List.of(), copy.get());
 
@@ -39,7 +39,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListSnapshotIsImmutable() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
 
         List<Integer> snapshot = copy.get();
         assertThrows(UnsupportedOperationException.class, () -> snapshot.add(4));
@@ -48,7 +48,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListCachesUntilBaseChanges() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2)));
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
 
         List<Integer> first = copy.get();
         List<Integer> second = copy.get();
@@ -63,7 +63,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListSizeTracking() {
         ListObservable<Integer> base = Observable.list();
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
         Observable<Integer> size = copy.size();
 
         assertEquals(0, size.get());
@@ -78,7 +78,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListNotifiesObservers() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1)));
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
         copy.get();
 
         CountingObserver downstream = new CountingObserver();
@@ -96,7 +96,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListIgnoresUnrelatedFlagAsDirty() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1)));
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
         copy.get();
 
         CountingObserver downstream = new CountingObserver();
@@ -112,7 +112,7 @@ class CollectionObservableAsTest {
 
     @Test
     void listToListUnsupportedMutationsThrow() {
-        ListObservable<Integer> copy = Observable.<Integer>list().as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = Observable.<Integer>list().as(ObservableCollectionType.toList());
 
         assertThrows(UnsupportedOperationException.class, () -> copy.add(1));
         assertThrows(UnsupportedOperationException.class, () -> copy.remove((Integer) 1));
@@ -136,7 +136,7 @@ class CollectionObservableAsTest {
     void listToSetDeduplicates() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 2, 3, 3, 3)));
 
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
 
         assertEquals(Set.of(1, 2, 3), set.get());
     }
@@ -144,7 +144,7 @@ class CollectionObservableAsTest {
     @Test
     void listToSetReflectsBaseChanges() {
         ListObservable<Integer> base = Observable.list();
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
 
         assertEquals(Set.of(), set.get());
 
@@ -158,7 +158,7 @@ class CollectionObservableAsTest {
     @Test
     void listToSetSnapshotIsImmutable() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
 
         Set<Integer> snapshot = set.get();
         assertThrows(UnsupportedOperationException.class, () -> snapshot.add(4));
@@ -166,7 +166,7 @@ class CollectionObservableAsTest {
 
     @Test
     void listToSetUnsupportedMutationsThrow() {
-        SetObservable<Integer> set = Observable.<Integer>list().as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = Observable.<Integer>list().as(ObservableCollectionType.toSet());
 
         assertThrows(UnsupportedOperationException.class, () -> set.add(1));
         assertThrows(UnsupportedOperationException.class, () -> set.remove(1));
@@ -183,7 +183,7 @@ class CollectionObservableAsTest {
     @Test
     void setToListConverts() {
         SetObservable<String> base = Observable.set(new HashSet<>(Set.of("a", "b", "c")));
-        ListObservable<String> list = base.as(CollectorsObservable.toList());
+        ListObservable<String> list = base.as(ObservableCollectionType.toList());
 
         List<String> result = list.get();
         assertEquals(3, result.size());
@@ -193,7 +193,7 @@ class CollectionObservableAsTest {
     @Test
     void setToListReflectsBaseChanges() {
         SetObservable<String> base = Observable.set();
-        ListObservable<String> list = base.as(CollectorsObservable.toList());
+        ListObservable<String> list = base.as(ObservableCollectionType.toList());
 
         assertEquals(List.of(), list.get());
 
@@ -210,7 +210,7 @@ class CollectionObservableAsTest {
 
     @Test
     void setToListUnsupportedMutationsThrow() {
-        ListObservable<Integer> list = Observable.<Integer>set().as(CollectorsObservable.toList());
+        ListObservable<Integer> list = Observable.<Integer>set().as(ObservableCollectionType.toList());
 
         assertThrows(UnsupportedOperationException.class, () -> list.add(1));
         assertThrows(UnsupportedOperationException.class, () -> list.remove((Integer) 1));
@@ -226,7 +226,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetConverts() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1, 2, 3)));
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
 
         assertEquals(Set.of(1, 2, 3), copy.get());
     }
@@ -234,7 +234,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetReflectsBaseChanges() {
         SetObservable<Integer> base = Observable.set();
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
 
         assertEquals(Set.of(), copy.get());
 
@@ -251,7 +251,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetCachesUntilBaseChanges() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1, 2)));
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
 
         Set<Integer> first = copy.get();
         Set<Integer> second = copy.get();
@@ -265,7 +265,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetSizeTracking() {
         SetObservable<Integer> base = Observable.set();
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
         Observable<Integer> size = copy.size();
 
         assertEquals(0, size.get());
@@ -280,7 +280,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListMapEachChain() {
         ListObservable<String> base = Observable.list(new ArrayList<>(List.of("kfir", "apartium")));
-        ListObservable<String> copy = base.as(CollectorsObservable.toList());
+        ListObservable<String> copy = base.as(ObservableCollectionType.toList());
 
         ListObservable<Integer> lengths = copy.mapEach(String::length);
         assertEquals(List.of(4, 8), lengths.get());
@@ -296,7 +296,7 @@ class CollectionObservableAsTest {
 
         Player p = new Player(name);
         ListObservable<Player> base = Observable.list(new ArrayList<>(List.of(p)));
-        ListObservable<Player> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Player> copy = base.as(ObservableCollectionType.toList());
 
         ListObservable<String> names = copy.flatMapEach(Player::name);
         assertEquals(List.of("kfir"), names.get());
@@ -308,7 +308,7 @@ class CollectionObservableAsTest {
     @Test
     void listToListFilterChain() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
-        ListObservable<Integer> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> copy = base.as(ObservableCollectionType.toList());
 
         ListObservable<Integer> evens = copy.filter(n -> Observable.immutable(n % 2 == 0));
         assertEquals(List.of(2, 4), evens.get());
@@ -328,7 +328,7 @@ class CollectionObservableAsTest {
         Entry e2 = new Entry("2", name2);
 
         ListObservable<Entry> base = Observable.list(new ArrayList<>(List.of(e1, e2)));
-        ListObservable<Entry> copy = base.as(CollectorsObservable.toList());
+        ListObservable<Entry> copy = base.as(ObservableCollectionType.toList());
 
         ListObservable<Entry> startsWithA = copy.filter(
                 Entry::name,
@@ -344,7 +344,7 @@ class CollectionObservableAsTest {
     @Test
     void listToSetMapEachChain() {
         ListObservable<String> base = Observable.list(new ArrayList<>(List.of("kfir", "apartium", "lior")));
-        SetObservable<String> set = base.as(CollectorsObservable.toSet());
+        SetObservable<String> set = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Integer> lengths = set.mapEach(String::length);
         // "kfir" -> 4, "apartium" -> 8, "lior" -> 4, deduped in set
@@ -357,7 +357,7 @@ class CollectionObservableAsTest {
     @Test
     void listToSetFilterChain() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 2, 3, 4)));
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Integer> evens = set.filter(n -> Observable.immutable(n % 2 == 0));
         assertEquals(Set.of(2, 4), evens.get());
@@ -370,7 +370,7 @@ class CollectionObservableAsTest {
 
         Player p = new Player(name);
         ListObservable<Player> base = Observable.list(new ArrayList<>(List.of(p)));
-        SetObservable<Player> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Player> set = base.as(ObservableCollectionType.toSet());
 
         SetObservable<String> names = set.flatMapEach(Player::name);
         assertEquals(Set.of("kfir"), names.get());
@@ -390,7 +390,7 @@ class CollectionObservableAsTest {
         Entry e2 = new Entry("2", name2);
 
         ListObservable<Entry> base = Observable.list(new ArrayList<>(List.of(e1, e2)));
-        SetObservable<Entry> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Entry> set = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Entry> startsWithA = set.filter(
                 Entry::name,
@@ -406,7 +406,7 @@ class CollectionObservableAsTest {
     @Test
     void setToListMapEachChain() {
         SetObservable<String> base = Observable.set(new HashSet<>(Set.of("kfir", "apartium")));
-        ListObservable<String> list = base.as(CollectorsObservable.toList());
+        ListObservable<String> list = base.as(ObservableCollectionType.toList());
 
         ListObservable<Integer> lengths = list.mapEach(String::length);
         List<Integer> result = lengths.get();
@@ -418,7 +418,7 @@ class CollectionObservableAsTest {
     @Test
     void setToListFilterChain() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1, 2, 3, 4, 5)));
-        ListObservable<Integer> list = base.as(CollectorsObservable.toList());
+        ListObservable<Integer> list = base.as(ObservableCollectionType.toList());
 
         ListObservable<Integer> evens = list.filter(n -> Observable.immutable(n % 2 == 0));
         List<Integer> result = evens.get();
@@ -430,7 +430,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetMapEachChain() {
         SetObservable<String> base = Observable.set(new HashSet<>(Set.of("kfir", "apartium")));
-        SetObservable<String> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<String> copy = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Integer> lengths = copy.mapEach(String::length);
         assertEquals(Set.of(4, 8), lengths.get());
@@ -442,7 +442,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetFilterChain() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1, 2, 3, 4, 5)));
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Integer> evens = copy.filter(n -> Observable.immutable(n % 2 == 0));
         assertEquals(Set.of(2, 4), evens.get());
@@ -458,7 +458,7 @@ class CollectionObservableAsTest {
 
         Player p = new Player(name);
         SetObservable<Player> base = Observable.set(new HashSet<>(Set.of(p)));
-        SetObservable<Player> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Player> copy = base.as(ObservableCollectionType.toSet());
 
         SetObservable<String> names = copy.flatMapEach(Player::name);
         assertEquals(Set.of("kfir"), names.get());
@@ -474,7 +474,7 @@ class CollectionObservableAsTest {
 
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4)));
 
-        ListObservable<Integer> list = base.as(CollectorsObservable.toList(
+        ListObservable<Integer> list = base.as(ObservableCollectionType.toList(
                 col -> {
                     snapshotCalls.incrementAndGet();
                     return new ArrayList<>(col);
@@ -502,7 +502,7 @@ class CollectionObservableAsTest {
         Player p = new Player(name);
         ListObservable<Player> base = Observable.list(new ArrayList<>(List.of(p)));
 
-        SetObservable<Player> set = base.as(CollectorsObservable.toSet(
+        SetObservable<Player> set = base.as(ObservableCollectionType.toSet(
                 col -> {
                     snapshotCalls.incrementAndGet();
                     return new LinkedHashSet<>(col);
@@ -520,12 +520,12 @@ class CollectionObservableAsTest {
     @Test
     void asOnEmptyCollection() {
         ListObservable<String> emptyList = Observable.list();
-        SetObservable<String> set = emptyList.as(CollectorsObservable.toSet());
+        SetObservable<String> set = emptyList.as(ObservableCollectionType.toSet());
         assertEquals(Set.of(), set.get());
         assertEquals(0, set.size().get());
 
         SetObservable<String> emptySet = Observable.set();
-        ListObservable<String> list = emptySet.as(CollectorsObservable.toList());
+        ListObservable<String> list = emptySet.as(ObservableCollectionType.toList());
         assertEquals(List.of(), list.get());
         assertEquals(0, list.size().get());
     }
@@ -533,7 +533,7 @@ class CollectionObservableAsTest {
     @Test
     void asObserverNotificationPropagatesThroughChain() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
         SetObservable<Integer> mapped = set.mapEach(n -> n * 10);
 
         CountingObserver downstream = new CountingObserver();
@@ -547,7 +547,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetNotifiesObservers() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1)));
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
         copy.get();
 
         CountingObserver downstream = new CountingObserver();
@@ -561,7 +561,7 @@ class CollectionObservableAsTest {
     @Test
     void setToSetIgnoresUnrelatedFlagAsDirty() {
         SetObservable<Integer> base = Observable.set(new HashSet<>(Set.of(1)));
-        SetObservable<Integer> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> copy = base.as(ObservableCollectionType.toSet());
         copy.get();
 
         CountingObserver downstream = new CountingObserver();
@@ -585,7 +585,7 @@ class CollectionObservableAsTest {
         Entry e2 = new Entry("2", name2);
 
         SetObservable<Entry> base = Observable.set(new HashSet<>(Set.of(e1, e2)));
-        ListObservable<Entry> list = base.as(CollectorsObservable.toList());
+        ListObservable<Entry> list = base.as(ObservableCollectionType.toList());
 
         ListObservable<Entry> startsWithA = list.filter(
                 Entry::name,
@@ -610,7 +610,7 @@ class CollectionObservableAsTest {
         Entry e2 = new Entry("2", name2);
 
         SetObservable<Entry> base = Observable.set(new HashSet<>(Set.of(e1, e2)));
-        SetObservable<Entry> copy = base.as(CollectorsObservable.toSet());
+        SetObservable<Entry> copy = base.as(ObservableCollectionType.toSet());
 
         SetObservable<Entry> startsWithA = copy.filter(
                 Entry::name,
@@ -630,7 +630,7 @@ class CollectionObservableAsTest {
 
         Player p = new Player(name);
         SetObservable<Player> base = Observable.set(new HashSet<>(Set.of(p)));
-        ListObservable<Player> list = base.as(CollectorsObservable.toList());
+        ListObservable<Player> list = base.as(ObservableCollectionType.toList());
 
         ListObservable<String> names = list.flatMapEach(Player::name);
         assertEquals(List.of("kfir"), names.get());
@@ -643,10 +643,10 @@ class CollectionObservableAsTest {
     void doubleConversionListToSetToList() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 2, 3)));
 
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
         assertEquals(Set.of(1, 2, 3), set.get());
 
-        ListObservable<Integer> backToList = set.as(CollectorsObservable.toList());
+        ListObservable<Integer> backToList = set.as(ObservableCollectionType.toList());
         assertEquals(3, backToList.get().size());
         assertTrue(backToList.get().containsAll(List.of(1, 2, 3)));
 
@@ -658,7 +658,7 @@ class CollectionObservableAsTest {
     @Test
     void chainedMapEachFilterOnConvertedObservable() {
         ListObservable<Integer> base = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
-        SetObservable<Integer> set = base.as(CollectorsObservable.toSet());
+        SetObservable<Integer> set = base.as(ObservableCollectionType.toSet());
 
         SetObservable<String> result = set
                 .filter(n -> Observable.immutable(n % 2 == 0))

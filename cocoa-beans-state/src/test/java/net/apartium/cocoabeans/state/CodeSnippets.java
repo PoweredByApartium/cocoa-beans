@@ -474,7 +474,7 @@ class CodeSnippets {
         numbers.addAll(List.of(1, 2, 2, 3));
 
         // derive a SetObservable — duplicates are collapsed automatically
-        SetObservable<Integer> unique = numbers.as(CollectorsObservable.toSet());
+        SetObservable<Integer> unique = numbers.as(ObservableCollectionType.toSet());
         assertEquals(Set.of(1, 2, 3), unique.get());
 
         // the derived set is read-only
@@ -495,7 +495,7 @@ class CodeSnippets {
         source.addAll(List.of(10, 20, 30));
 
         // derive a read-only ListObservable copy
-        ListObservable<Integer> derived = source.as(CollectorsObservable.toList());
+        ListObservable<Integer> derived = source.as(ObservableCollectionType.toList());
         assertEquals(List.of(10, 20, 30), derived.get());
 
         // previous snapshots are frozen — not affected by later changes

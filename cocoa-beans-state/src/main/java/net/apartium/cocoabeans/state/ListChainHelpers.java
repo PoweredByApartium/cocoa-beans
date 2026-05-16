@@ -36,7 +36,7 @@ import java.util.function.Predicate;
             Function<Collection<E>, List<E>> collectionMapper,
             IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
+        return new MappedListObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -46,7 +46,7 @@ import java.util.function.Predicate;
             Function<Collection<E>, List<E>> collectionMapper,
             IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
+        return new FlatMappedListObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     static <E> ListObservable<E> filter(
@@ -55,7 +55,7 @@ import java.util.function.Predicate;
             Function<Collection<E>, List<E>> collectionMapper,
             IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListFilterObservable<>(base, filter, collectionMapper, constructCollection);
+        return new FilteredListObservable<>(base, filter, collectionMapper, constructCollection);
     }
 
     static <E, T> ListObservable<E> filter(

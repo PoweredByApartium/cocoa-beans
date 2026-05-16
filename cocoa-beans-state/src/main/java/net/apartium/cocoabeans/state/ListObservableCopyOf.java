@@ -11,12 +11,12 @@ import java.util.function.Predicate;
 
     private final CollectionObservable<E, ? extends Collection<E>> base;
     private final Observable<Integer> size;
-    private final CollectorObservable<E, List<E>, ListObservable<E>> collector;
+    private final ObservableCollectionType<E, List<E>, ListObservable<E>> collector;
 
     private List<E> cache;
     private boolean dirty = true;
 
-    ListObservableCopyOf(CollectionObservable<E, ? extends Collection<E>> base, CollectorObservable<E, List<E>, ListObservable<E>> collector) {
+    ListObservableCopyOf(CollectionObservable<E, ? extends Collection<E>> base, ObservableCollectionType<E, List<E>, ListObservable<E>> collector) {
         this.base = base;
         this.collector = collector;
 

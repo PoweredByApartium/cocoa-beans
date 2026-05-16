@@ -20,7 +20,7 @@ import java.util.function.Predicate;
             Function<Collection<F>, ?> collectionMapper,
             IntFunction<?> constructCollection
     ) {
-        return new SetMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
+        return new MappedSetObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -30,7 +30,7 @@ import java.util.function.Predicate;
             Function<Collection<F>, ?> collectionMapper,
             IntFunction<?> constructCollection
     ) {
-        return new SetFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
+        return new FlatMappedSetObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     static <E> SetObservable<E> filter(
@@ -39,7 +39,7 @@ import java.util.function.Predicate;
             Function<Collection<E>, Set<E>> copyOf,
             IntFunction<? extends Collection<E>> createInitSet
     ) {
-        return new SetFilterObservable<>(base, filter, copyOf, createInitSet);
+        return new FilteredSetObservable<>(base, filter, copyOf, createInitSet);
     }
 
     static <E, T> SetObservable<E> filter(

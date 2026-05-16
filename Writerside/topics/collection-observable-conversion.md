@@ -6,7 +6,7 @@ Available Since 0.0.50
 
 ## Introduction
 `as` is a conversion operator on `CollectionObservable` that transforms a collection observable
-into a **different collection type** using a `CollectorObservable`.
+into a **different collection type** using a `ObservableCollectionType`.
 
 For example, you can derive a `SetObservable` from a `ListObservable` — duplicates are
 automatically collapsed, and the result stays in sync with the source:
@@ -15,11 +15,11 @@ automatically collapsed, and the result stays in sync with the source:
 ListObservable<Integer> numbers = Observable.list();
 numbers.addAll(List.of(1, 2, 2, 3));
 
-SetObservable<Integer> uniqueNumbers = numbers.as(CollectorsObservable.toSet());
+SetObservable<Integer> uniqueNumbers = numbers.as(ObservableCollectionType.toSet());
 // Set.of(1, 2, 3)
 ```
 
-The `CollectorsObservable` utility class provides ready-made collectors for common conversions.
+The `ObservableCollectionType` utility class provides ready-made collectors for common conversions.
 
 ## Usage
 <tabs>
@@ -35,15 +35,15 @@ The `CollectorsObservable` utility class provides ready-made collectors for comm
 
 | Method                              | Source                        | Result              | Default snapshot        | Default collection   |
 |-------------------------------------|-------------------------------|---------------------|-------------------------|----------------------|
-| `CollectorsObservable.toSet()`      | any `CollectionObservable<E>` | `SetObservable<E>`  | `Set::copyOf`           | `HashSet::new`       |
-| `CollectorsObservable.toList()`     | any `CollectionObservable<E>` | `ListObservable<E>` | `List::copyOf`          | `ArrayList::new`     |
+| `ObservableCollectionType.toSet()`      | any `CollectionObservable<E>` | `SetObservable<E>`  | `Set::copyOf`           | `HashSet::new`       |
+| `ObservableCollectionType.toList()`     | any `CollectionObservable<E>` | `ListObservable<E>` | `List::copyOf`          | `ArrayList::new`     |
 
 Both methods also accept **custom factory functions** for the snapshot and mutable-collection
 creation, so you can use a `LinkedHashSet`, `CopyOnWriteArrayList`, or any other implementation:
 
 ```java
 SetObservable<Integer> ordered = base.as(
-    CollectorsObservable.toSet(LinkedHashSet::new, LinkedHashSet::new)
+    ObservableCollectionType.toSet(LinkedHashSet::new, LinkedHashSet::new)
 );
 ```
 
@@ -61,5 +61,5 @@ SetObservable<Integer> ordered = base.as(
 - 🔄 **Live conversion**: always reflects the latest state of the source collection
 - 🧊 **Stable snapshots**: each `get()` result is immutable and won't change under you
 - 🧱 **Composable**: the result is a full `CollectionObservable` — chain `filter`, `mapEach`, etc.
-- 🔌 **Extensible**: implement your own `CollectorObservable` for custom collection types
+- 🔌 **Extensible**: implement your own `ObservableCollectionType` for custom collection types
 - 🪶 **Lazy**: conversion only happens when `get()` is called and the source has changed
