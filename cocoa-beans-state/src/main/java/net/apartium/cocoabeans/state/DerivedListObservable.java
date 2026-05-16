@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
@@ -38,4 +39,11 @@ import java.util.function.Predicate;
     default <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
         return ListChainHelpers.flatMapEach(this, mapper, collectionMapper(), constructCollection());
     }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    default <T> ListObservable<E> sorted(Function<E, Observable<T>> mapper, Observable<Comparator<? super T>> comparator) {
+        return ListChainHelpers.sorted(this, mapper, comparator, ObservableCollectionType.toList((Function) collectionMapper(), (IntFunction) constructCollection()));
+    }
+
 }

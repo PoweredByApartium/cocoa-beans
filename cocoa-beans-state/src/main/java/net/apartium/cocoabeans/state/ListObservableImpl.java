@@ -90,4 +90,9 @@ import java.util.function.Predicate;
     public <R> ListObservable<R> flatMapEach(Function<E, Observable<R>> mapper) {
         return ListChainHelpers.flatMapEach(this, mapper, List::copyOf, ArrayList::new);
     }
+
+    @Override
+    public <T> ListObservable<E> sorted(Function<E, Observable<T>> mapper, Observable<Comparator<? super T>> comparator) {
+        return ListChainHelpers.sorted(this, mapper, comparator, ObservableCollectionType.toList());
+    }
 }

@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.50
+- [state] Add `ListObservable#sorted` for live per-element observable-key ordering with stable sort and an already-sorted short-circuit
 - [state] Add `CollectionObservable#as(...)` with collectors for converting observable collections to `SetObservable`&`ListObservable`
 - [state] Ensure `CollectionObservable#filter` returns results in a consistent order
 - [state] Add `CollectionObservable#flatMapEach` for live per-element mapping to inner observables.
