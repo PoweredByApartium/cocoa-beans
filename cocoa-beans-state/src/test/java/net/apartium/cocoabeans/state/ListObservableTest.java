@@ -354,7 +354,7 @@ class ListObservableTest {
         backing.put(second, Observable.mutable("second"));
 
         ListObservable<Token> list = Observable.list(new ArrayList<>(List.of(first, second)));
-        ListObservable<String> names = (ListObservable<String>) list.flatMapEach(backing::get);
+        ListObservable<String> names = list.flatMapEach(backing::get);
 
         assertEquals(List.of("first", "second"), names.get());
 
@@ -1143,7 +1143,7 @@ class ListObservableTest {
 
         ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, kfir)));
 
-        ListObservable<Integer> nameLengths = (ListObservable<Integer>) list
+        ListObservable<Integer> nameLengths = list
                 .flatMapEach(Member::displayName)
                 .mapEach(String::length);
 
@@ -1198,7 +1198,7 @@ class ListObservableTest {
                 kfir, apartium, kfir, apartium, kfir
         )));
 
-        ListObservable<String> ids = (ListObservable<String>) list
+        ListObservable<String> ids = list
                 .filter(Member::active)
                 .mapEach(Member::id);
 
@@ -1217,7 +1217,7 @@ class ListObservableTest {
                 kfir, apartium, kfir, kfir
         )));
 
-        ListObservable<String> activeNames = (ListObservable<String>) list
+        ListObservable<String> activeNames = list
                 .filter(Member::active)
                 .flatMapEach(Member::displayName);
 
@@ -1240,7 +1240,7 @@ class ListObservableTest {
         )));
 
         // mapEach then filter (filter elements with length == 4)
-        ListObservable<Integer> shortLengths = (ListObservable<Integer>) list
+        ListObservable<Integer> shortLengths = list
                 .mapEach(String::length)
                 .filter(n -> Observable.immutable(n == 4));
 
@@ -1333,7 +1333,7 @@ class ListObservableTest {
 
         AtomicInteger mapperCalls = new AtomicInteger();
         ListObservable<Token> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
-        ListObservable<String> names = (ListObservable<String>) list.flatMapEach(token -> {
+        ListObservable<String> names = list.flatMapEach(token -> {
             mapperCalls.incrementAndGet();
             return Observable.immutable(token.id());
         });
@@ -1693,6 +1693,800 @@ class ListObservableTest {
 
         assertEquals(1, downstream.count,
                 "filter notifies downstream once per upstream change, regardless of duplicate count");
+    }
+
+    @Test
+    void sortedOnSameList() {
+        ListObservable<Integer> list = Observable.list();
+        AtomicInteger count = new AtomicInteger();
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, (a,b) -> {
+            count.incrementAndGet();
+            return Integer.compare(a,b);
+        });
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+        int expectedCount = count.get();
+
+        list.remove((Integer) 3);
+        list.add(3);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+        assertEquals(expectedCount, count.get());
+    }
+
+    @Test
+    void sortedEdgeCases() {
+        ListObservable<Observable<Integer>> list = Observable.list();
+        AtomicInteger count = new AtomicInteger();
+        ListObservable<Integer> sorted = list.sorted(Function.identity(), (a,b) -> {
+            count.incrementAndGet();
+            return Integer.compare(a,b);
+        }).flatMapEach(Function.identity());
+
+        MutableObservable<Integer> a = Observable.mutable(1);
+        MutableObservable<Integer> b = Observable.mutable(2);
+        MutableObservable<Integer> c = Observable.mutable(3);
+
+        list.add(a);
+        list.add(b);
+        list.add(c);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+        int expectedCount = count.get();
+
+        c.set(5);
+        c.set(3);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+        assertEquals(expectedCount, count.get());
+
+        list.add(c);
+
+        assertEquals(List.of(1, 2, 3, 3), sorted.get());
+
+        list.remove(2);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+
+        c.set(4);
+
+        assertEquals(List.of(1, 2, 4), sorted.get());
+    }
+
+    @Test
+    void sortedMoreEdgeCases() {
+        record Player(String name, Observable<Integer> score) { }
+
+        Player a = new Player("a", Observable.immutable(10));
+
+        MutableObservable<Integer> sharedNum = Observable.mutable(20);
+        Player b = new Player("b", sharedNum);
+        Player c = new Player("c", sharedNum);
+
+        ListObservable<Player> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Player> sorted = list.sorted(Player::score, Comparator.naturalOrder());
+
+        assertEquals(List.of(a, b, c), sorted.get());
+
+        sharedNum.set(5);
+
+        assertEquals(List.of(b, c, a), sorted.get());
+
+        list.remove(c);
+        assertEquals(List.of(b, a), sorted.get());
+
+        sharedNum.set(15);
+
+        assertEquals(List.of(a, b), sorted.get());
+    }
+
+    @Test
+    void sortedOnEmptyListReturnsEmpty() {
+        ListObservable<Integer> list = Observable.list();
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(), sorted.get());
+        assertEquals(0, sorted.size().get());
+    }
+
+    @Test
+    void sortedOnSingleElementReturnsAsIs() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(42)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(42), sorted.get());
+        assertEquals(1, sorted.size().get());
+    }
+
+    @Test
+    void sortedReordersUnsortedList() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 4, 1, 5, 9, 2, 6)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(1, 1, 2, 3, 4, 5, 6, 9), sorted.get());
+        assertEquals(List.of(3, 1, 4, 1, 5, 9, 2, 6), list.get());
+    }
+
+    @Test
+    void sortedAlreadySortedListIsReturnedInOrder() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(1, 2, 3, 4, 5), sorted.get());
+    }
+
+    @Test
+    void sortedReverseOrderComparator() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 4, 1, 5, 9, 2, 6)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.reverseOrder());
+
+        assertEquals(List.of(9, 6, 5, 4, 3, 2, 1, 1), sorted.get());
+    }
+
+    @Test
+    void sortedByMappedKey() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "apartium", "kfir", "voigon", "lior"
+        )));
+        ListObservable<String> sorted = list.sorted(
+                name -> Observable.immutable(name.length()),
+                Comparator.naturalOrder()
+        );
+
+        // sort by length: kfir(4), lior(4), voigon(6), apartium(8) — stable sort preserves
+        // insertion order for equal keys
+        assertEquals(List.of("kfir", "lior", "voigon", "apartium"), sorted.get());
+    }
+
+    @Test
+    void sortedIsStableForEqualKeys() {
+        record Item(String id, int key) {}
+
+        Item a = new Item("a", 1);
+        Item b = new Item("b", 2);
+        Item c = new Item("c", 1);
+        Item d = new Item("d", 2);
+        Item e = new Item("e", 1);
+
+        ListObservable<Item> list = Observable.list(new ArrayList<>(List.of(a, b, c, d, e)));
+        ListObservable<Item> sorted = list.sorted(item -> Observable.immutable(item.key()), Comparator.naturalOrder());
+
+        assertEquals(List.of(a, c, e, b, d), sorted.get());
+    }
+
+    @Test
+    void sortedReflectsAddingElement() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(2, 4, 6)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(2, 4, 6), sorted.get());
+
+        list.add(3);
+        assertEquals(List.of(2, 3, 4, 6), sorted.get());
+
+        list.add(0, 5);
+        assertEquals(List.of(2, 3, 4, 5, 6), sorted.get());
+    }
+
+    @Test
+    void sortedReflectsRemovingElement() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+
+        list.remove((Integer) 2);
+        assertEquals(List.of(1, 3), sorted.get());
+    }
+
+    @Test
+    void sortedReflectsClear() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+
+        list.clear();
+        assertEquals(List.of(), sorted.get());
+    }
+
+    @Test
+    void sortedReflectsInnerObservableChange() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        Member voigon = new Member("voigon");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, voigon)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+
+        assertEquals(List.of(apartium, kfir, voigon), sorted.get());
+
+        kfir.displayName().set("zzz-kfir");
+        assertEquals(List.of(apartium, voigon, kfir), sorted.get());
+
+        apartium.displayName().set("zzz-apartium");
+        assertEquals(List.of(voigon, apartium, kfir), sorted.get(), "two equal-prefixed keys must respect comparator and stay in deterministic order");
+    }
+
+    @Test
+    void sortedTracksOnlyAliveElementsAfterRemove() {
+        Member kfir = new Member("kfir");
+        Member lior = new Member("lior");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, lior)));
+
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+        assertEquals(List.of(kfir, lior), sorted.get());
+
+        list.remove(kfir);
+        assertEquals(List.of(lior), sorted.get());
+
+        kfir.displayName().set("aaa");
+        assertEquals(List.of(lior), sorted.get(), "inner change for a removed element must not propagate to the sorted view");
+    }
+
+    @Test
+    void sortedWithSharedInnerObservable() {
+        MutableObservable<Integer> shared = Observable.mutable(5);
+
+        Member kfir = new Member("kfir");
+        Member lior = new Member("lior");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, lior)));
+        ListObservable<Member> sorted = list.sorted(member -> shared, Comparator.naturalOrder());
+
+        assertEquals(List.of(kfir, lior), sorted.get());
+
+        shared.set(99);
+        assertEquals(List.of(kfir, lior), sorted.get());
+    }
+
+    @Test
+    void sortedPreservesDuplicateOccurrences() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 3, 2, 1)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(1, 1, 2, 3, 3), sorted.get());
+        assertEquals(5, sorted.size().get());
+    }
+
+    @Test
+    void sortedCachesResultUntilBaseOrInnerChanges() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+
+        AtomicInteger mapperCalls = new AtomicInteger();
+        ListObservable<Member> sorted = list.sorted(member -> {
+            mapperCalls.incrementAndGet();
+            return member.displayName();
+        }, Comparator.naturalOrder());
+
+        assertEquals(List.of(kfir), sorted.get());
+        assertEquals(List.of(kfir), sorted.get());
+        assertEquals(1, mapperCalls.get(), "mapper must not be re-invoked when nothing changed");
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(List.of(kfir), sorted.get());
+        assertEquals(1, mapperCalls.get(), "inner change must not re-invoke the element mapper");
+
+        list.add(new Member("voigon"));
+        assertEquals(2, sorted.get().size());
+        assertEquals(2, mapperCalls.get(), "added element gets one mapper invocation");
+    }
+
+    @Test
+    void sortedNotifiesDownstreamOnBaseChange() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+        sorted.get();
+
+        CountingObserver downstream = new CountingObserver();
+        sorted.observe(downstream);
+
+        list.add(0);
+        assertEquals(1, downstream.count);
+    }
+
+    @Test
+    void sortedNotifiesDownstreamOnInnerChange() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+        sorted.get();
+
+        CountingObserver downstream = new CountingObserver();
+        sorted.observe(downstream);
+
+        kfir.displayName().set("Kfir Notro");
+        assertEquals(1, downstream.count);
+    }
+
+    @Test
+    void sortedIgnoresFlagAsDirtyFromUnrelatedObservable() {
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir)));
+
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+        sorted.get();
+
+        CountingObserver downstream = new CountingObserver();
+        sorted.observe(downstream);
+
+        Observer asObserver = (Observer) sorted;
+        MutableObservable<String> unrelated = Observable.mutable("notro");
+        asObserver.flagAsDirty(unrelated);
+
+        assertEquals(0, downstream.count,
+                "unrelated observable must not trigger downstream notifications");
+    }
+
+    @Test
+    void sortedShortCircuitsWhenInnerChangeKeepsOrder() {
+        // When inner observables change but the resulting order is already sorted, the cache
+        // recompute still produces the correct result (taking the short-circuit path).
+        Member a = new Member("a"); // displayName: "a"
+        Member b = new Member("b"); // displayName: "b"
+        Member c = new Member("c"); // displayName: "c"
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+
+        assertEquals(List.of(a, b, c), sorted.get());
+
+        // Inner change that keeps the list already sorted
+        c.displayName().set("zzz");
+        assertEquals(List.of(a, b, c), sorted.get());
+
+        // Inner change that requires a re-sort
+        a.displayName().set("zzzz");
+        assertEquals(List.of(b, c, a), sorted.get());
+    }
+
+    @Test
+    void sortedSkipsSortWhenInputAlreadySorted() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<Integer> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return Integer.compare(a, b);
+        };
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, counting);
+
+        assertEquals(List.of(1, 2, 3, 4, 5), sorted.get());
+        assertEquals(4, compares.get(),
+                "already-sorted input must only invoke comparator for the isSortedByKey scan (n-1) and skip the sort");
+    }
+
+    @Test
+    void sortedRunsSortOnlyWhenInputIsNotSorted() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<Integer> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return Integer.compare(a, b);
+        };
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(5, 4, 3, 2, 1)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, counting);
+
+        assertEquals(List.of(1, 2, 3, 4, 5), sorted.get());
+        // isSortedByKey aborts at the first compare (5>4 → false), then List.sort runs many more.
+        assertTrue(compares.get() > 4,
+                "unsorted input must trigger a full sort, requiring more than n-1 comparisons (was " + compares.get() + ")");
+    }
+
+    @Test
+    void sortedSkipsSortOnSubsequentGetsWithoutChange() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<Integer> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return Integer.compare(a, b);
+        };
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, counting);
+
+        sorted.get();
+        int afterFirst = compares.get();
+        assertTrue(afterFirst > 0);
+
+        sorted.get();
+        sorted.get();
+        assertEquals(afterFirst, compares.get(),
+                "repeated get() without any change must reuse the cache and not invoke the comparator");
+    }
+
+    @Test
+    void sortedSkipsSortWhenInnerChangePreservesOrder() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<String> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return a.compareTo(b);
+        };
+
+        Member a = new Member("a");
+        Member b = new Member("b");
+        Member c = new Member("c");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, counting);
+
+        assertEquals(List.of(a, b, c), sorted.get());
+        assertEquals(2, compares.get(),
+                "initial sorted input: only isSortedByKey scan runs (n-1 compares)");
+
+        // An inner change that still leaves the list sorted ("c" → "zzz" keeps a < b < zzz).
+        c.displayName().set("zzz");
+        assertEquals(List.of(a, b, c), sorted.get());
+        assertEquals(4, compares.get(),
+                "in-order inner change must re-run isSortedByKey only and skip the sort");
+    }
+
+    @Test
+    void sortedRunsSortAfterInnerChangeBreaksOrder() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<String> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return a.compareTo(b);
+        };
+
+        Member a = new Member("a");
+        Member b = new Member("b");
+        Member c = new Member("c");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, counting);
+
+        sorted.get();
+        int afterFirst = compares.get();
+
+        // An inner change that breaks the order: a → "zzz" leaves order [zzz, b, c] which is not sorted.
+        a.displayName().set("zzz");
+        assertEquals(List.of(b, c, a), sorted.get());
+        assertTrue(compares.get() - afterFirst > 2,
+                "out-of-order inner change must trigger a full sort, not just the isSortedByKey scan (delta was " + (compares.get() - afterFirst) + ")");
+    }
+
+    @Test
+    void sortedHandlesSameElementAddedMultipleTimes() {
+        // The same reference appears N times. Verify: tracking is per-identity (one entry),
+        // inner changes propagate while ANY occurrence remains, and observer is only
+        // detached once ALL occurrences are removed.
+        Member kfir = new Member("kfir");
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, kfir, kfir)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+
+        assertEquals(List.of(kfir, kfir, kfir), sorted.get());
+        assertEquals(3, sorted.size().get());
+
+        // Inner change must propagate (all three occurrences share the same key observable)
+        kfir.displayName().set("zzz-kfir");
+        assertEquals(List.of(kfir, kfir, kfir), sorted.get());
+
+        // Remove one occurrence — the element is still in the source list, so removeInnerDependency
+        // must NOT detach the observer.
+        list.remove(kfir);
+        assertEquals(List.of(kfir, kfir), sorted.get());
+
+        // Inner change must still propagate while the element remains in the source.
+        kfir.displayName().set("aaa-kfir");
+        assertEquals(List.of(kfir, kfir), sorted.get());
+
+        // Remove another occurrence — still one left.
+        list.remove(kfir);
+        assertEquals(List.of(kfir), sorted.get());
+
+        kfir.displayName().set("mmm-kfir");
+        assertEquals(List.of(kfir), sorted.get());
+
+        // Remove the last occurrence — now observer should be detached.
+        list.remove(kfir);
+        assertEquals(List.of(), sorted.get());
+
+        // Inner change after the element is fully gone must NOT affect the sorted view
+        // (and must not throw — i.e. dependsOn cleanup is consistent).
+        kfir.displayName().set("ghost");
+        assertEquals(List.of(), sorted.get());
+    }
+
+    @Test
+    void sortedHandlesPartialRemovalOfDuplicatesAmongDistinctElements() {
+        Member kfir = new Member("kfir");
+        Member lior = new Member("lior");
+        Member voigon = new Member("voigon");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(
+                kfir, voigon, kfir, lior, kfir
+        )));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, Comparator.naturalOrder());
+
+        // alphabetical: kfir x3, lior, voigon
+        assertEquals(List.of(kfir, kfir, kfir, lior, voigon), sorted.get());
+
+        // Remove one kfir; two left.
+        list.remove(kfir);
+        assertEquals(List.of(kfir, kfir, lior, voigon), sorted.get());
+
+        // Inner change still propagates because kfir still has occurrences.
+        kfir.displayName().set("zzz-kfir");
+        assertEquals(List.of(lior, voigon, kfir, kfir), sorted.get());
+
+        // Remove the remaining kfirs.
+        list.removeIf(m -> m == kfir);
+        assertEquals(List.of(lior, voigon), sorted.get());
+
+        // After full removal, kfir's inner change must not affect the view.
+        kfir.displayName().set("ghost");
+        assertEquals(List.of(lior, voigon), sorted.get());
+    }
+
+    @Test
+    void sortedObservableComparatorReSortsWhenComparatorChanges() {
+        MutableObservable<Comparator<? super Integer>> comparator =
+                Observable.mutable(Comparator.naturalOrder());
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 4, 1, 5, 9, 2, 6)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+
+        assertEquals(List.of(1, 1, 2, 3, 4, 5, 6, 9), sorted.get());
+
+        comparator.set(Comparator.reverseOrder());
+        assertEquals(List.of(9, 6, 5, 4, 3, 2, 1, 1), sorted.get(),
+                "changing the comparator observable must re-sort the derived list");
+
+        comparator.set(Comparator.naturalOrder());
+        assertEquals(List.of(1, 1, 2, 3, 4, 5, 6, 9), sorted.get());
+    }
+
+    @Test
+    void sortedObservableComparatorNotifiesDownstream() {
+        MutableObservable<Comparator<? super Integer>> comparator =
+                Observable.mutable(Comparator.naturalOrder());
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+        sorted.get();
+
+        CountingObserver downstream = new CountingObserver();
+        sorted.observe(downstream);
+
+        comparator.set(Comparator.reverseOrder());
+        assertEquals(1, downstream.count,
+                "comparator observable change must propagate as a downstream notification");
+    }
+
+    @Test
+    void sortedObservableComparatorSameReferenceSkipsResort() {
+        AtomicInteger compares = new AtomicInteger();
+        Comparator<Integer> counting = (a, b) -> {
+            compares.incrementAndGet();
+            return Integer.compare(a, b);
+        };
+        MutableObservable<Comparator<? super Integer>> comparator = Observable.mutable(counting);
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4, 5)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+
+        sorted.get();
+        int afterFirst = compares.get();
+        assertTrue(afterFirst > 0);
+
+        // Re-set the SAME comparator reference. SortedListObservable caches by identity,
+        // so it should not re-run the sort or the isSortedByKey scan.
+        comparator.set(counting);
+        sorted.get();
+        assertEquals(afterFirst, compares.get(),
+                "setting the same comparator reference must not invoke the comparator again");
+    }
+
+    @Test
+    void sortedObservableComparatorIsCachedUntilChange() {
+        AtomicInteger compares = new AtomicInteger();
+        MutableObservable<Comparator<? super Integer>> comparator = Observable.mutable((a, b) -> {
+            compares.incrementAndGet();
+            return Integer.compare(a, b);
+        });
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+
+        sorted.get();
+        int afterFirst = compares.get();
+        assertTrue(afterFirst > 0);
+
+        sorted.get();
+        sorted.get();
+        assertEquals(afterFirst, compares.get(),
+                "repeated get() without change must reuse the cached sorted list");
+    }
+
+    @Test
+    void sortedObservableComparatorChainedAfterSourceChange() {
+        // Verify base + comparator changes interleave correctly: each get() must observe
+        // the current source AND the current comparator.
+        MutableObservable<Comparator<? super Integer>> comparator =
+                Observable.mutable(Comparator.naturalOrder());
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+
+        assertEquals(List.of(1, 2, 3), sorted.get());
+
+        list.add(0);
+        comparator.set(Comparator.reverseOrder());
+        assertEquals(List.of(3, 2, 1, 0), sorted.get(),
+                "concurrent source and comparator changes must both be reflected");
+
+        comparator.set(Comparator.naturalOrder());
+        list.add(5);
+        assertEquals(List.of(0, 1, 2, 3, 5), sorted.get());
+    }
+
+    @Test
+    void sortedObservableComparatorWithInnerKeyChange() {
+        // Comparator observable + inner key observable both feed into the order.
+        MutableObservable<Comparator<? super String>> comparator =
+                Observable.mutable(Comparator.naturalOrder());
+
+        Member a = new Member("a");
+        Member b = new Member("b");
+        Member c = new Member("c");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(a, b, c)));
+        ListObservable<Member> sorted = list.sorted(Member::displayName, comparator);
+
+        assertEquals(List.of(a, b, c), sorted.get());
+
+        comparator.set(Comparator.reverseOrder());
+        assertEquals(List.of(c, b, a), sorted.get());
+
+        // Inner key change while reverse comparator is active
+        a.displayName().set("zzz");
+        assertEquals(List.of(a, c, b), sorted.get());
+    }
+
+    @Test
+    void sortedObservableComparatorIgnoresUnrelatedFlagAsDirty() {
+        MutableObservable<Comparator<? super Integer>> comparator =
+                Observable.mutable(Comparator.naturalOrder());
+
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, comparator);
+        sorted.get();
+
+        CountingObserver downstream = new CountingObserver();
+        sorted.observe(downstream);
+
+        Observer asObserver = (Observer) sorted;
+        MutableObservable<String> unrelated = Observable.mutable("notro");
+        asObserver.flagAsDirty(unrelated);
+
+        assertEquals(0, downstream.count,
+                "unrelated observable must not trigger downstream notifications");
+    }
+
+    @Test
+    void sortedStaticComparatorOverloadIsImmutable() {
+        // The static overload wraps the comparator in Observable.immutable internally —
+        // verify reading still works and remains stable across multiple gets.
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.reverseOrder());
+
+        assertEquals(List.of(3, 2, 1), sorted.get());
+        assertEquals(List.of(3, 2, 1), sorted.get());
+
+        list.add(5);
+        assertEquals(List.of(5, 3, 2, 1), sorted.get());
+    }
+
+    // ---------------------------------------------------------------------
+    // sorted with null mapper result
+    // ---------------------------------------------------------------------
+
+    @Test
+    void sortedHandlesNullMapperResult() {
+        // When mapper returns a null Observable for some element, that element has no key.
+        // With a null-safe comparator, the sort still works; the element is tracked in
+        // innerByElement (so duplicate-mapper invocations are avoided) but is NOT registered
+        // in dependsOn, and cleanup on removal must short-circuit instead of NPE-ing.
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        Member voigon = new Member("voigon");
+
+        ListObservable<Member> list = Observable.list(new ArrayList<>(List.of(kfir, apartium, voigon)));
+        ListObservable<Member> sorted = list.sorted(
+                member -> member == apartium ? null : member.displayName(),
+                Comparator.nullsFirst(Comparator.naturalOrder())
+        );
+
+        // apartium (null key) goes first via nullsFirst; others alphabetical
+        assertEquals(List.of(apartium, kfir, voigon), sorted.get());
+
+        // Inner changes on non-null-mapped elements still propagate
+        voigon.displayName().set("aaa-voigon");
+        assertEquals(List.of(apartium, voigon, kfir), sorted.get());
+
+        // Removing the null-mapping element exercises removeInnerDependency with inner == null
+        list.remove(apartium);
+        assertEquals(List.of(voigon, kfir), sorted.get());
+    }
+
+    @Test
+    void sortedUnsupportedMutationsThrow() {
+        ListObservable<Integer> sorted = Observable.<Integer>list()
+                .sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertThrows(UnsupportedOperationException.class, () -> sorted.add(1));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.remove((Integer) 1));
+
+        List<Integer> collection = List.of();
+
+        assertThrows(UnsupportedOperationException.class, () -> sorted.addAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.removeAll(collection));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.removeIf(n -> true));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.retainAll(collection));
+        assertThrows(UnsupportedOperationException.class, sorted::clear);
+
+        assertThrows(UnsupportedOperationException.class, () -> sorted.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.remove(0));
+
+        Comparator<Integer> comparator = Comparator.naturalOrder();
+        assertThrows(UnsupportedOperationException.class, () -> sorted.sort(comparator));
+    }
+
+    @Test
+    void sortedChainsAfterMapEach() {
+        ListObservable<String> list = Observable.list(new ArrayList<>(List.of(
+                "apartium", "kfir", "voigon", "lior"
+        )));
+
+        ListObservable<Integer> sortedLengths = list
+                .mapEach(String::length)
+                .sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(List.of(4, 4, 6, 8), sortedLengths.get());
+    }
+
+    @Test
+    void sortedChainsBeforeFilter() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(5, 1, 4, 2, 3)));
+
+        ListObservable<Integer> result = list
+                .sorted(Observable::immutable, Comparator.naturalOrder())
+                .filter(n -> Observable.immutable(n % 2 == 1));
+
+        assertEquals(List.of(1, 3, 5), result.get());
+    }
+
+    @Test
+    void sortedSizeObservableReflectsBaseSize() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        assertEquals(3, sorted.size().get());
+
+        list.add(4);
+        assertEquals(4, sorted.size().get());
+
+        list.remove((Integer) 1);
+        assertEquals(3, sorted.size().get());
+
+        list.clear();
+        assertEquals(0, sorted.size().get());
+    }
+
+    @Test
+    void sortedRemoveObserver() {
+        ListObservable<Integer> list = Observable.list(new ArrayList<>(List.of(3, 1, 2)));
+        ListObservable<Integer> sorted = list.sorted(Observable::immutable, Comparator.naturalOrder());
+
+        Observer observer = n -> {};
+        sorted.observe(observer);
+        assertTrue(sorted.removeObserver(observer));
+        assertFalse(sorted.removeObserver(observer));
     }
 
     // ---------------------------------------------------------------------

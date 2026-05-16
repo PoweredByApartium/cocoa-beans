@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -540,6 +541,57 @@ class CodeSnippets {
         // mutating an element that is no longer tracked does NOT propagate
         kfir.displayName().set("ghost");
         assertEquals(List.of("lior", "voigon"), displayNames.get());
+    }
+
+    @Test
+    void sortedSample() {
+        DisplayPlayer kfir = new DisplayPlayer("kfir", Observable.mutable("kfir"));
+        DisplayPlayer lior = new DisplayPlayer("lior", Observable.mutable("lior"));
+        DisplayPlayer apartium = new DisplayPlayer("apartium", Observable.mutable("apartium"));
+
+        ListObservable<DisplayPlayer> players = Observable.list();
+        players.add(kfir);
+        players.add(lior);
+        players.add(apartium);
+
+        // sorted derives a ListObservable ordered by each element's inner observable
+        ListObservable<DisplayPlayer> alphabetical = players.sorted(
+                DisplayPlayer::displayName,
+                Comparator.naturalOrder()
+        );
+
+        assertEquals(List.of(apartium, kfir, lior), alphabetical.get());
+
+        // re-sorts when an inner key changes
+        kfir.displayName().set("zzz-kfir");
+        assertEquals(List.of(apartium, lior, kfir), alphabetical.get());
+
+        // re-sorts when the source collection changes
+        DisplayPlayer voigon = new DisplayPlayer("voigon", Observable.mutable("voigon"));
+        players.add(voigon);
+        assertEquals(List.of(apartium, lior, voigon, kfir), alphabetical.get());
+    }
+
+    @Test
+    void sortedObservableComparatorSample() {
+        ListObservable<Integer> scores = Observable.list();
+        scores.addAll(List.of(3, 1, 4, 1, 5, 9));
+
+        // The comparator itself is an Observable — swap it at runtime to flip the order
+        MutableObservable<Comparator<? super Integer>> comparator =
+                Observable.mutable(Comparator.<Integer>naturalOrder());
+
+        ListObservable<Integer> ranked = scores.sorted(Observable::immutable, comparator);
+
+        assertEquals(List.of(1, 1, 3, 4, 5, 9), ranked.get());
+
+        // flipping the comparator re-sorts without touching the source list
+        comparator.set(Comparator.<Integer>reverseOrder());
+        assertEquals(List.of(9, 5, 4, 3, 1, 1), ranked.get());
+
+        // both signals compose: source changes AND comparator changes are both observed
+        scores.add(7);
+        assertEquals(List.of(9, 7, 5, 4, 3, 1, 1), ranked.get());
     }
 
 }
