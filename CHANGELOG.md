@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.50
+- [state] Add `CollectionObservable#as(...)` with collectors for converting observable collections to `SetObservable`&`ListObservable`
 - [state] Ensure `CollectionObservable#filter` returns results in a consistent order
 - [state] Add `CollectionObservable#flatMapEach` for live per-element mapping to inner observables.
 - [state] Add `CollectionObservable#mapEach` for live per-element transformation of observable collections.

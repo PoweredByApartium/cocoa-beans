@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
@@ -33,9 +34,9 @@ import java.util.function.Predicate;
             Observable<? extends Collection<F>> base,
             Function<F, R> mapper,
             Function<Collection<E>, List<E>> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
+        return new MappedListObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -43,21 +44,28 @@ import java.util.function.Predicate;
             Observable<? extends Collection<F>> base,
             Function<F, Observable<R>> mapper,
             Function<Collection<E>, List<E>> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return new ListFlatMapEachObservable<>(base, mapper, (Function) collectionMapper, (Function) constructCollection);
+        return new FlatMappedListObservable<>(base, mapper, (Function) collectionMapper, (IntFunction) constructCollection);
     }
 
-    static <E> ListObservable<E> filter(Observable<List<E>> base, Function<E, Observable<Boolean>> filter) {
-        return new ListFilterObservable<>(base, filter);
+    static <E> ListObservable<E> filter(
+            Observable<List<E>> base,
+            Function<E, Observable<Boolean>> filter,
+            Function<Collection<E>, List<E>> collectionMapper,
+            IntFunction<? extends Collection<E>> constructCollection
+    ) {
+        return new FilteredListObservable<>(base, filter, collectionMapper, constructCollection);
     }
 
     static <E, T> ListObservable<E> filter(
             Observable<List<E>> base,
             Function<E, Observable<T>> mapper,
-            Predicate<T> filter
+            Predicate<T> filter,
+            Function<Collection<E>, List<E>> collectionMapper,
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
-        return filter(base, element -> mapper.apply(element).map(filter::test));
+        return filter(base, element -> mapper.apply(element).map(filter::test), collectionMapper, constructCollection);
     }
 
 }

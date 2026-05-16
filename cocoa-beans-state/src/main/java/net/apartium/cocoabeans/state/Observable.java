@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import static net.apartium.cocoabeans.state.ImmutableObservable.EMPTY_OBSERVABLE;
 
@@ -136,7 +137,7 @@ public interface Observable<T> {
      * @return an observable set wrapping the provided set
      */
     @ApiStatus.AvailableSince("0.0.50")
-    static <E> SetObservable<E> set(Set<E> set, Function<Collection<E>, Set<E>> copyOf, Function<Integer, Set<E>> createInitSet) {
+    static <E> SetObservable<E> set(Set<E> set, Function<Collection<E>, Set<E>> copyOf, IntFunction<Set<E>> createInitSet) {
         return new SetObservableImpl<>(set, copyOf, createInitSet);
     }
 

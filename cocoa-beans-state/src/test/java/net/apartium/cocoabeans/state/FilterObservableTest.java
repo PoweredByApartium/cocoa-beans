@@ -532,6 +532,118 @@ class FilterObservableTest {
     }
 
     @Test
+    void listFilter() {
+        Player ikfir = new Player("ikfir", true);
+        Player ikfir2 = new Player("ikfir2");
+        Player ikfir3 = new Player("ikfir3", true);
+
+        ListObservable<Player> players = Observable.list(new ArrayList<>(List.of(ikfir, ikfir2, ikfir3)));
+
+        ListObservable<Player> onlinePlayers = players.filter(Player::getOnline);
+
+        assertEquals(List.of(ikfir, ikfir3), onlinePlayers.get());
+
+        ikfir2.setOnline(true);
+        assertEquals(List.of(ikfir, ikfir2, ikfir3), onlinePlayers.get());
+
+        ikfir.setOnline(false);
+        assertEquals(List.of(ikfir2, ikfir3), onlinePlayers.get());
+
+        players.remove(ikfir3);
+        assertEquals(List.of(ikfir2), onlinePlayers.get());
+    }
+
+    @Test
+    void listFilterSize() {
+        Player a = new Player("a", true);
+        Player b = new Player("b");
+
+        ListObservable<Player> players = Observable.list(new ArrayList<>(List.of(a, b)));
+        ListObservable<Player> online = players.filter(Player::getOnline);
+
+        assertEquals(1, online.size().get());
+
+        b.setOnline(true);
+        assertEquals(2, online.size().get());
+
+        players.clear();
+        assertEquals(0, online.size().get());
+    }
+
+    @Test
+    void listFilterMapEachChain() {
+        Player a = new Player("a", true);
+        Player b = new Player("b");
+
+        ListObservable<Player> players = Observable.list(new ArrayList<>(List.of(a, b)));
+
+        ListObservable<String> onlineNames = players
+                .filter(Player::getOnline)
+                .mapEach(p -> p.name);
+
+        assertEquals(List.of("a"), onlineNames.get());
+
+        b.setOnline(true);
+        assertEquals(List.of("a", "b"), onlineNames.get());
+    }
+
+    @Test
+    void listFilterFlatMapEachChain() {
+        Player a = new Player("a", true);
+        Player b = new Player("b");
+
+        MutableObservable<String> aDisplay = Observable.mutable("Alice");
+
+        ListObservable<Player> players = Observable.list(new ArrayList<>(List.of(a, b)));
+
+        ListObservable<String> onlineDisplayNames = players
+                .filter(Player::getOnline)
+                .flatMapEach(p -> {
+                    if (p.name.equals("a")) return aDisplay;
+                    return Observable.mutable(p.name);
+                });
+
+        assertEquals(List.of("Alice"), onlineDisplayNames.get());
+
+        aDisplay.set("Alice2");
+        assertEquals(List.of("Alice2"), onlineDisplayNames.get());
+    }
+
+    @Test
+    void filterRemoveObserver() {
+        SetObservable<Player> players = Observable.set(new HashSet<>(Set.of(new Player("a", true))));
+        SetObservable<Player> online = players.filter(Player::getOnline);
+
+        Observer observer = n -> {};
+        assertFalse(online.removeObserver(observer));
+
+        online.observe(observer);
+        assertTrue(online.removeObserver(observer));
+        assertFalse(online.removeObserver(observer));
+    }
+
+    @Test
+    void filterTwoArgOverloadOnList() {
+        Player ikfir = new Player("ikfir", true);
+        Player ikfir2 = new Player("ikfir2", true);
+
+        ListObservable<Player> players = Observable.list(new ArrayList<>(List.of(ikfir, ikfir2)));
+
+        ListObservable<Player> spectatorPlayers = players.filter(Player::getSpectatorSince, Objects::nonNull);
+
+        assertEquals(List.of(), spectatorPlayers.get());
+
+        ikfir.setSpectatorSince(Instant.now());
+        assertEquals(List.of(ikfir), spectatorPlayers.get());
+
+        ikfir2.setSpectatorSince(Instant.now());
+        assertEquals(List.of(ikfir, ikfir2), spectatorPlayers.get());
+
+        ikfir.respawn();
+        assertEquals(List.of(ikfir2), spectatorPlayers.get());
+    }
+
+    @Test
     void spectatorPlayers() {
         Player ikfir = new Player("ikfir", true);
         Player ikfir2 = new Player("ikfir2");

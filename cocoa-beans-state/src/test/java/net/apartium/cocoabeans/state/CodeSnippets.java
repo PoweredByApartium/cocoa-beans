@@ -468,6 +468,47 @@ class CodeSnippets {
         assertEquals(List.of(8, 6), lengths.get());
     }
 
+    @Test
+    void listToSetConversion() {
+        ListObservable<Integer> numbers = Observable.list();
+        numbers.addAll(List.of(1, 2, 2, 3));
+
+        // derive a SetObservable — duplicates are collapsed automatically
+        SetObservable<Integer> unique = numbers.as(ObservableCollectionType.toSet());
+        assertEquals(Set.of(1, 2, 3), unique.get());
+
+        // the derived set is read-only
+        assertThrows(UnsupportedOperationException.class, () -> unique.add(4));
+
+        // changes to the source are reflected
+        numbers.add(4);
+        assertEquals(Set.of(1, 2, 3, 4), unique.get());
+
+        // adding a duplicate in the source doesn't affect the set
+        numbers.add(2);
+        assertEquals(Set.of(1, 2, 3, 4), unique.get());
+    }
+
+    @Test
+    void listToListConversion() {
+        ListObservable<Integer> source = Observable.list();
+        source.addAll(List.of(10, 20, 30));
+
+        // derive a read-only ListObservable copy
+        ListObservable<Integer> derived = source.as(ObservableCollectionType.toList());
+        assertEquals(List.of(10, 20, 30), derived.get());
+
+        // previous snapshots are frozen — not affected by later changes
+        List<Integer> snapshot = derived.get();
+        source.add(40);
+        assertEquals(List.of(10, 20, 30), snapshot);
+        assertEquals(List.of(10, 20, 30, 40), derived.get());
+
+        // chain with other operators
+        ListObservable<String> labels = derived.mapEach(n -> "#" + n);
+        assertEquals(List.of("#10", "#20", "#30", "#40"), labels.get());
+    }
+
     public record DisplayPlayer(String id, MutableObservable<String> displayName) {}
 
     @Test

@@ -207,6 +207,151 @@ class MapElementObservableTest {
         assertEquals(List.of(4, 8), nameLengths.get());
     }
 
+    @Test
+    void mapEachShouldReturnSameResultOnConsecutiveGets() {
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(
+                new GamePlayer(UUID.randomUUID(), "Kfir")
+        )));
+
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        List<String> first = names.get();
+        List<String> second = names.get();
+        assertSame(first, second);
+    }
+
+    @Test
+    void mapEachRemoveObserverReturnsFalseForUnknown() {
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        TestObserver observer = new TestObserver();
+        assertFalse(names.removeObserver(observer));
+
+        names.observe(observer);
+        assertTrue(names.removeObserver(observer));
+        assertFalse(names.removeObserver(observer));
+    }
+
+    @Test
+    void mapEachIgnoresUnrelatedFlagAsDirty() {
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(
+                new GamePlayer(UUID.randomUUID(), "Kfir")
+        )));
+
+        AtomicInteger calls = new AtomicInteger();
+        ListObservable<String> names = players.mapEach(p -> {
+            calls.incrementAndGet();
+            return p.name();
+        });
+
+        assertEquals(List.of("Kfir"), names.get());
+        assertEquals(1, calls.get());
+
+        Observer asObserver = (Observer) names;
+        MutableObservable<String> unrelated = Observable.mutable("x");
+        asObserver.flagAsDirty(unrelated);
+
+        assertEquals(List.of("Kfir"), names.get());
+        assertEquals(1, calls.get());
+    }
+
+    @Test
+    void mapEachOnSetShouldCacheAndNotify() {
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(
+                new GamePlayer(UUID.randomUUID(), "Kfir"),
+                new GamePlayer(UUID.randomUUID(), "Apartium")
+        )));
+
+        SetObservable<String> names = players.mapEach(GamePlayer::name);
+        assertEquals(Set.of("Kfir", "Apartium"), names.get());
+
+        Set<String> cached = names.get();
+        assertSame(cached, names.get());
+
+        TestObserver observer = new TestObserver();
+        names.observe(observer);
+
+        players.add(new GamePlayer(UUID.randomUUID(), "Voigon"));
+        assertTrue(observer.dirty);
+        assertEquals(Set.of("Kfir", "Apartium", "Voigon"), names.get());
+    }
+
+    @Test
+    void mapEachSetFilterChain() {
+        SetObservable<GamePlayer> players = Observable.set(new HashSet<>(Set.of(
+                new GamePlayer(UUID.randomUUID(), "Kfir", true),
+                new GamePlayer(UUID.randomUUID(), "Apartium", false)
+        )));
+
+        SetObservable<String> aliveNames = players
+                .filter(p -> Observable.immutable(p.alive()))
+                .mapEach(GamePlayer::name);
+
+        assertEquals(Set.of("Kfir"), aliveNames.get());
+    }
+
+    @Test
+    void mapEachSetFlatMapEachChain() {
+        SetObservable<String> base = Observable.set(new HashSet<>(Set.of("a", "b")));
+
+        SetObservable<String> mapped = base
+                .mapEach(s -> Observable.mutable(s.toUpperCase()))
+                .flatMapEach(o -> o);
+
+        assertEquals(Set.of("A", "B"), mapped.get());
+    }
+
+    @Test
+    void mapEachShouldHandleAddAll() {
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        players.addAll(List.of(
+                new GamePlayer(UUID.randomUUID(), "Kfir"),
+                new GamePlayer(UUID.randomUUID(), "Apartium"),
+                new GamePlayer(UUID.randomUUID(), "Voigon")
+        ));
+
+        assertEquals(List.of("Kfir", "Apartium", "Voigon"), names.get());
+    }
+
+    @Test
+    void mapEachShouldHandleRemoveAll() {
+        GamePlayer kfir = new GamePlayer(UUID.randomUUID(), "Kfir");
+        GamePlayer apartium = new GamePlayer(UUID.randomUUID(), "Apartium");
+        GamePlayer voigon = new GamePlayer(UUID.randomUUID(), "Voigon");
+
+        ListObservable<GamePlayer> players = Observable.list(new ArrayList<>(List.of(kfir, apartium, voigon)));
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        assertEquals(List.of("Kfir", "Apartium", "Voigon"), names.get());
+
+        players.removeAll(List.of(kfir, voigon));
+        assertEquals(List.of("Apartium"), names.get());
+    }
+
+    @Test
+    void mapEachSizeObservableUpdatesProperly() {
+        ListObservable<GamePlayer> players = Observable.list();
+        ListObservable<String> names = players.mapEach(GamePlayer::name);
+
+        Observable<Integer> size = names.size();
+        assertEquals(0, size.get());
+
+        players.add(new GamePlayer(UUID.randomUUID(), "Kfir"));
+        assertEquals(1, size.get());
+
+        players.addAll(List.of(
+                new GamePlayer(UUID.randomUUID(), "A"),
+                new GamePlayer(UUID.randomUUID(), "B")
+        ));
+        assertEquals(3, size.get());
+
+        players.clear();
+        assertEquals(0, size.get());
+    }
+
     private record GamePlayer(UUID uuid, String name, boolean alive) {
 
         private GamePlayer(UUID uuid, String name) {

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -19,7 +20,7 @@ import java.util.function.Predicate;
  * @param <C> The specific type of collection used to hold the flattened elements.
  */
 @ApiStatus.AvailableSince("0.0.50")
-public class FlatMapElementObservable<F, E, C extends Collection<E>> implements CollectionObservable<E, C>, Observer {
+public class FlatMapElementObservable<F, E, C extends Collection<E>> implements DerivedCollectionObservable<E, C>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -27,7 +28,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
 
     private final Function<F, Observable<E>> mapper;
     protected final Function<Collection<E>, C> collectionMapper;
-    protected final Function<Integer, ? extends Collection<E>> constructCollection;
+    protected final IntFunction<? extends Collection<E>> constructCollection;
 
     private final Map<F, Observable<E>> innerByElement = new IdentityHashMap<>();
     private final Map<Observable<E>, Set<F>> dependsOn = new IdentityHashMap<>();
@@ -45,7 +46,7 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
             Observable<? extends Collection<F>> base,
             Function<F, Observable<E>> mapper,
             Function<Collection<E>, C> collectionMapper,
-            Function<Integer, ? extends Collection<E>> constructCollection
+            IntFunction<? extends Collection<E>> constructCollection
     ) {
         this.base = base;
         this.base.observe(this);
@@ -198,30 +199,13 @@ public class FlatMapElementObservable<F, E, C extends Collection<E>> implements 
     }
 
     @Override
-    public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
+    public Function<Collection<E>, C> collectionMapper() {
+        return collectionMapper;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
-        return new MapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (Function) constructCollection
-        );
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
-        return new FlatMapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (Function) constructCollection
-        );
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return constructCollection;
     }
 
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -15,7 +16,7 @@ import java.util.function.Predicate;
  * @param <C> The type of collection being observed and filtered.
  */
 @ApiStatus.AvailableSince("0.0.46")
-public class FilterObservable<E, C extends Collection<E>> implements CollectionObservable<E, C>, Observer {
+public class FilterObservable<E, C extends Collection<E>> implements DerivedCollectionObservable<E, C>, Observer {
 
     private final Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -23,7 +24,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
 
     private final Function<E, Observable<Boolean>> filter;
     protected final Function<Collection<E>, C> collectionMapper;
-    protected final Function<Integer, ? extends Collection<E>> constructCollection;
+    protected final IntFunction<? extends Collection<E>> constructCollection;
 
     private boolean baseDirty = true;
     private final Set<Observable<Boolean>> flagged = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -50,7 +51,7 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
      * @param constructCollection A function that constructs an empty collection of the desired type based on the
      *                           provided size.
      */
-    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, Function<Integer, ? extends Collection<E>> constructCollection) {
+    public FilterObservable(Observable<C> base, Function<E, Observable<Boolean>> filter, Function<Collection<E>, C> collectionMapper, IntFunction<? extends Collection<E>> constructCollection) {
         this.base = base;
         this.base.observe(this);
 
@@ -190,30 +191,13 @@ public class FilterObservable<E, C extends Collection<E>> implements CollectionO
     }
 
     @Override
-    public CollectionObservable<E, C> filter(Function<E, Observable<Boolean>> filter) {
-        return new FilterObservable<>(this, filter, collectionMapper, constructCollection);
+    public Function<Collection<E>, C> collectionMapper() {
+        return collectionMapper;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> mapEach(Function<E, R> mapper) {
-        return new MapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (Function) constructCollection
-        );
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public <R> CollectionObservable<R, ? extends Collection<R>> flatMapEach(Function<E, Observable<R>> mapper) {
-        return new FlatMapElementObservable<>(
-                this,
-                mapper,
-                (Function) collectionMapper,
-                (Function) constructCollection
-        );
+    public IntFunction<? extends Collection<E>> constructCollection() {
+        return constructCollection;
     }
 
 }
