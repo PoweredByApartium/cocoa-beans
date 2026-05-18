@@ -76,15 +76,15 @@ jobs:
           version: ${{ inputs.VERSION }}
         run: |
           git fetch origin gh-pages
-          mkdir gh-pages
           git worktree add gh-pages gh-pages
-          
+
+          rm -rf gh-pages/$version
           cp -r $version gh-pages/$version
-          
+
           cd gh-pages
           git add $version
-          git commit -m "Add version $version"
-          git push origin gh-pages || true
+          git diff --cached --quiet || git commit -m "Update version $version"
+          git push origin gh-pages
 
       - name: Update html
         if: github.event_name == 'workflow_dispatch'

@@ -47,6 +47,7 @@ jobs:
     uses: ./.github/workflows/callable.writerside.yml
 
   publish_writerside:
+    if: github.event_name != 'pull_request'
     needs: test_writerside
     uses: ./.github/workflows/callable.writerside-publish.yml
     with:
