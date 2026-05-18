@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"net.apartium.cocoabeans.state.spigot.listeners","l":"PlayerJoinListener"},{"p":"net.apartium.cocoabeans.state.spigot.listeners","l":"PlayerQuitListener"},{"p":"net.apartium.cocoabeans.state.spigot","l":"SpigotProvidedState"}];updateSearchResults();
