@@ -56,8 +56,15 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Generate javadoc
-        run: ./gradlew javadoc
+      - name: Checkout gh-pages worktree
+        run: |
+          git fetch origin gh-pages
+          git worktree add gh-pages gh-pages
+
+      - name: Generate javadoc and writerside versions
+        run: ./gradlew javadoc generateWritersideVersions
+        env:
+          VERSION: ${{ inputs.VERSION }}
 
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
@@ -75,14 +82,12 @@ jobs:
         env:
           version: ${{ inputs.VERSION }}
         run: |
-          git fetch origin gh-pages
-          git worktree add gh-pages gh-pages
-
           rm -rf gh-pages/$version
           cp -r $version gh-pages/$version
+          cp gh-pages/help-versions.json gh-pages/$version/help-versions.json
 
           cd gh-pages
-          git add $version
+          git add $version help-versions.json
           git diff --cached --quiet || git commit -m "Update version $version"
           git push origin gh-pages
 
@@ -92,28 +97,13 @@ jobs:
           version: ${{ inputs.VERSION }}
         run: |
           cd gh-pages
-          
+
           if [ -f "index.html" ]; then
             sed -i 's|url=https://cocoa-beans.apartium.net/[^/]*/">|url=https://cocoa-beans.apartium.net/'"$version"'/">|' "index.html"
             git add index.html
             git commit -m "Update index.html"
-            git push origin gh-pages || true
+            git push origin gh-pages
           else
             echo "index.html not found"
             exit 1
           fi
-
-      - name: Update help-versions.json
-        if: github.event_name == 'workflow_dispatch'
-        run: ./gradlew generateWritersideVersions
-        env:
-          VERSION: ${{ inputs.VERSION }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push help-versions.json
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          cd gh-pages
-          git add help-versions.json
-          git commit -m "Update help-versions.json"
-          git push origin gh-pages || true

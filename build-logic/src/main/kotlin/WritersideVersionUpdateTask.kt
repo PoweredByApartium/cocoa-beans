@@ -1,15 +1,11 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.transport.URIish
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-import java.util.Locale
 
 open class WritersideVersionUpdateTask : DefaultTask() {
 
@@ -30,40 +26,29 @@ open class WritersideVersionUpdateTask : DefaultTask() {
         val parent = File("gh-pages")
         val target = File(parent, "help-versions.json")
         val content = objectMapper.createArrayNode()
-        content.add(createEntry(objectMapper, "snapshot"))
+        content.add(createEntry(objectMapper, "snapshot", isCurrent = true))
 
-        Git.open(project.rootDir).use { git ->
-            var write = false
-            git.tagList().call().forEach { tag ->
-                val tagName = tag.name.replace("refs/tags/", "")
-                if (!write) {
-                    if (tagName.lowercase(Locale.getDefault()).contains("snapshot") ||
-                        tagName.lowercase(Locale.getDefault()).contains("dev"))
-                        write = true
-                    else
-                        return@forEach
-                }
-                content.add(createEntry(objectMapper, tagName))
-            }
+        val releasePattern = Regex("""^\d+\.\d+\.\d+$""")
+        val tagNames = Git.open(project.rootDir).use { git ->
+            git.tagList().call()
+                .map { it.name.removePrefix("refs/tags/") }
+                .filter { releasePattern.matches(it) }
+                .reversed()
         }
+        tagNames.forEach { content.add(createEntry(objectMapper, it)) }
 
-        if (currentVersion != "unknown") {
-            val hasCurrent = content.any { it is ObjectNode && it["version"].asText() == currentVersion }
-            if (!hasCurrent) {
-                content.add(createEntry(objectMapper, currentVersion))
-            }
+        if (currentVersion != "unknown" &&
+            content.none { it is ObjectNode && it["version"].asText() == currentVersion }) {
+            content.add(createEntry(objectMapper, currentVersion))
         }
-
-        val last = content.last() as ObjectNode
-        last.put("isCurrent", true)
 
         objectMapper.writeValue(target, content)
    }
 
-    fun createEntry(objectMapper: ObjectMapper, version: String): ObjectNode {
+    fun createEntry(objectMapper: ObjectMapper, version: String, isCurrent: Boolean = false): ObjectNode {
         return objectMapper.createObjectNode().apply {
             put("version", version)
-            put("isCurrent", false)
+            put("isCurrent", isCurrent)
             put("url", "/$version/")
         }
     }
