@@ -104,13 +104,14 @@ public class VisibilityGroup {
             return false;
 
         player.removeVisibleGroup(this);
-        if (player.getPlayer().isEmpty())
+        Optional<Player> optPlayer = player.getPlayer();
+        if (optPlayer.isEmpty())
             return true;
 
         Set<VisibilityPlayer> visited = new HashSet<>();
 
         visited.add(player);
-        manager.updateVisibilityForPlayer(player.getPlayer().get());
+        manager.updateVisibilityForPlayer(optPlayer.get());
 
         for (VisibilityPlayer visibilityPlayer : getPlayers()) {
             if (!visited.add(visibilityPlayer))

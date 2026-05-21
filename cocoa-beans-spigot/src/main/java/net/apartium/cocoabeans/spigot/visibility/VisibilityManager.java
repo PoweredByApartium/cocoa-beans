@@ -227,15 +227,18 @@ public class VisibilityManager {
                 playerVisibilityController.hidePlayer(plugin, player, target);
             }
 
-            // Also update the reverse direction for ungrouped targets
-            if (getPlayer(target).getVisibleGroups().isEmpty()) {
-                boolean targetCanSee = playerVisibilityController.seePlayer(target, player);
+            updateReverseDirection(player, target, shouldSee);
+        }
+    }
 
-                if (shouldSee && !targetCanSee) {
-                    playerVisibilityController.showPlayer(plugin, target, player);
-                } else if (!shouldSee && targetCanSee) {
-                    playerVisibilityController.hidePlayer(plugin, target, player);
-                }
+    private void updateReverseDirection(Player player, Player target, boolean shouldSee) {
+        if (getPlayer(target).getVisibleGroups().isEmpty()) {
+            boolean targetCanSee = playerVisibilityController.seePlayer(target, player);
+
+            if (shouldSee && !targetCanSee) {
+                playerVisibilityController.showPlayer(plugin, target, player);
+            } else if (!shouldSee && targetCanSee) {
+                playerVisibilityController.hidePlayer(plugin, target, player);
             }
         }
     }
