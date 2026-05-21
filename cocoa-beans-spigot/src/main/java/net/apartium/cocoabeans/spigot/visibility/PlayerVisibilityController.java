@@ -29,4 +29,16 @@ public interface PlayerVisibilityController {
      */
     void hidePlayer(JavaPlugin plugin, Player source, Player target);
 
+    /**
+     * Checks whether the source player can currently see the target player.
+     *
+     * @param source The player whose visibility is being checked.
+     * @param target The player whose visibility to the source is being checked.
+     * @return true if the source player can see the target player, false otherwise.
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    default boolean seePlayer(Player source, Player target) {
+        return source.canSee(target);
+    }
+
 }

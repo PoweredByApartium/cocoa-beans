@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.50
+- [spigot] Optimized Visibility API internals to reduce unnecessary hide/show player calls
 - [state] Add `ListObservable#sorted` for live per-element observable-key ordering with stable sort and an already-sorted short-circuit
 - [state] Add `CollectionObservable#as(...)` with collectors for converting observable collections to `SetObservable`&`ListObservable`
 - [state] Ensure `CollectionObservable#filter` returns results in a consistent order

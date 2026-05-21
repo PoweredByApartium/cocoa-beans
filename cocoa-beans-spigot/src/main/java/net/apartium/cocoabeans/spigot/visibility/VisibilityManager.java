@@ -80,7 +80,7 @@ public class VisibilityManager {
      */
     public void reloadVisibility() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            updateVisiblityForPlayer(player);
+            updateVisibilityForPlayer(player);
         }
     }
 
@@ -92,22 +92,7 @@ public class VisibilityManager {
         VisibilityPlayer visibilityPlayer = getPlayer(joinPlayer);
         visibilityPlayer.onJoin();
 
-        if (visibilityPlayer.getVisibleGroups().isEmpty()) {
-            for (Player target : plugin.getServer().getOnlinePlayers()) {
-                if (target == joinPlayer)
-                    continue;
-
-                if (getPlayer(target).getVisibleGroups().isEmpty()) {
-                    playerVisibilityController.showPlayer(plugin, target, joinPlayer);
-                    continue;
-                }
-
-                playerVisibilityController.hidePlayer(plugin, joinPlayer, target);
-                playerVisibilityController.hidePlayer(plugin, target, joinPlayer);
-            }
-
-            return;
-        }
+        updateVisibilityForPlayer(joinPlayer);
 
         for (Player target : plugin.getServer().getOnlinePlayers()) {
             if (target == joinPlayer)
@@ -116,40 +101,14 @@ public class VisibilityManager {
             if (getPlayer(target).getVisibleGroups().isEmpty())
                 continue;
 
-            playerVisibilityController.hidePlayer(plugin, target, joinPlayer);
+            boolean shouldSee = canSee(target, joinPlayer);
+            boolean currentlySees = playerVisibilityController.seePlayer(target, joinPlayer);
+
+            if (shouldSee && !currentlySees)
+                playerVisibilityController.showPlayer(plugin, target, joinPlayer);
+            else if (!shouldSee && currentlySees)
+                playerVisibilityController.hidePlayer(plugin, target, joinPlayer);
         }
-
-        updateVisiblityForPlayer(joinPlayer);
-
-        Set<Player> playerToShow = new HashSet<>();
-
-        for (VisibilityGroup visibilityGroup : groups.values()) {
-            boolean playerInGroup = visibilityGroup.hasPlayer(joinPlayer);
-            boolean playerInVisibleGroup = visibilityGroup.getVisibleGroups().stream().anyMatch(group -> group.hasPlayer(joinPlayer));
-            if (!playerInGroup && !playerInVisibleGroup)
-                continue;
-
-            boolean playerInHiddenGroup = visibilityGroup.getHiddenGroups().stream().anyMatch(group -> group.hasPlayer(joinPlayer));
-            if (playerInHiddenGroup)
-                continue;
-
-
-            for (VisibilityPlayer player : visibilityGroup.getPlayers()) {
-                Player targetPlayer = player.getPlayer().orElse(null);
-                if (targetPlayer == null)
-                    continue;
-
-                if (targetPlayer == joinPlayer)
-                    continue;
-
-                playerToShow.add(targetPlayer);
-            }
-        }
-
-        for (Player target : playerToShow) {
-            playerVisibilityController.showPlayer(plugin, target, joinPlayer);
-        }
-
     }
 
     /**
@@ -211,90 +170,78 @@ public class VisibilityManager {
 
     }
 
-    /* package-private */ void updateVisiblityForPlayer(Player player) {
+    /* package-private */ Set<Player> computeVisiblePlayers(Player player) {
         VisibilityPlayer visibilityPlayer = getPlayer(player);
+        Set<Player> result = new HashSet<>();
 
         if (visibilityPlayer.getVisibleGroups().isEmpty()) {
             for (Player target : plugin.getServer().getOnlinePlayers()) {
                 if (target == player)
                     continue;
-
-                if (!getPlayer(target).getVisibleGroups().isEmpty()) {
-                    playerVisibilityController.hidePlayer(plugin, player, target);
-                    playerVisibilityController.hidePlayer(plugin, target, player);
-                    continue;
-                }
-
-                playerVisibilityController.showPlayer(plugin, player, target);
-                playerVisibilityController.showPlayer(plugin, target, player);
+                if (getPlayer(target).getVisibleGroups().isEmpty())
+                    result.add(target);
             }
-
-            return;
+            return result;
         }
-
-        for (Player target : plugin.getServer().getOnlinePlayers()) {
-            if (target == player)
-                continue;
-
-            if (getPlayer(target).getVisibleGroups().isEmpty()) {
-                playerVisibilityController.hidePlayer(plugin, player, target);
-                playerVisibilityController.hidePlayer(plugin, target, player);
-                continue;
-            }
-
-            playerVisibilityController.hidePlayer(plugin, player, target);
-        }
-
-        Set<Player> playersToShow = new HashSet<>();
 
         for (VisibilityGroup group : visibilityPlayer.getVisibleGroups()) {
             if (!group.hasPlayer(player))
                 continue;
 
             for (VisibilityGroup targetGroup : group.getVisibleGroups()) {
-                for (VisibilityPlayer target : targetGroup.getPlayers()) {
-                    Player targetPlayer = target.getPlayer().orElse(null);
-                    if (targetPlayer == null)
-                        continue;
-
-                    if (player == targetPlayer)
-                        continue;
-
-                    if (playersToShow.contains(targetPlayer))
-                        continue;
-
-                    if (group.getHiddenGroups().stream().anyMatch(tg -> tg.hasPlayer(targetPlayer)))
-                        continue;
-
-                    playersToShow.add(targetPlayer);
-                }
+                addVisibleGroupPlayers(player, group, targetGroup, result);
             }
 
-            for (VisibilityPlayer target : group.getPlayers()) {
-                Player targetPlayer = target.getPlayer().orElse(null);
-                if (targetPlayer == null)
-                    continue;
-
-                if (player == targetPlayer)
-                    continue;
-
-                if (playersToShow.contains(targetPlayer))
-                    continue;
-
-                if (group.getHiddenGroups().stream().anyMatch(targetGroup -> targetGroup.hasPlayer(targetPlayer)))
-                    continue;
-
-                playersToShow.add(targetPlayer);
-            }
+            addVisibleGroupPlayers(player, group, group, result);
         }
 
-        for (Player target : playersToShow)
-            playerVisibilityController.showPlayer(plugin, player, target);
+        return result;
+    }
 
+    private void addVisibleGroupPlayers(Player player, VisibilityGroup sourceGroup, VisibilityGroup targetGroup, Set<Player> result) {
+        for (VisibilityPlayer target : targetGroup.getPlayers()) {
+            Player targetPlayer = target.getPlayer().orElse(null);
+            if (targetPlayer == null || player == targetPlayer)
+                continue;
+
+            if (sourceGroup.getHiddenGroups().stream().anyMatch(tg -> tg.hasPlayer(targetPlayer)))
+                continue;
+
+            result.add(targetPlayer);
+        }
+    }
+
+    /* package-private */ void updateVisibilityForPlayer(Player player) {
+        Set<Player> shouldBeVisible = computeVisiblePlayers(player);
+
+        for (Player target : plugin.getServer().getOnlinePlayers()) {
+            if (target == player)
+                continue;
+
+            boolean shouldSee = shouldBeVisible.contains(target);
+            boolean currentlySees = playerVisibilityController.seePlayer(player, target);
+
+            if (shouldSee && !currentlySees) {
+                playerVisibilityController.showPlayer(plugin, player, target);
+            } else if (!shouldSee && currentlySees) {
+                playerVisibilityController.hidePlayer(plugin, player, target);
+            }
+
+            // Also update the reverse direction for ungrouped targets
+            if (getPlayer(target).getVisibleGroups().isEmpty()) {
+                boolean targetCanSee = playerVisibilityController.seePlayer(target, player);
+
+                if (shouldSee && !targetCanSee) {
+                    playerVisibilityController.showPlayer(plugin, target, player);
+                } else if (!shouldSee && targetCanSee) {
+                    playerVisibilityController.hidePlayer(plugin, target, player);
+                }
+            }
+        }
     }
 
     /**
-     * Get or create a visiblity group by name.
+     * Get or create a visibility group by name.
      * @param name unique group name
      * @return a group associated with given name, cannot be null
      */
@@ -322,7 +269,7 @@ public class VisibilityManager {
             if (player == null)
                 continue;
 
-            updateVisiblityForPlayer(player);
+            updateVisibilityForPlayer(player);
         }
 
         return true;
