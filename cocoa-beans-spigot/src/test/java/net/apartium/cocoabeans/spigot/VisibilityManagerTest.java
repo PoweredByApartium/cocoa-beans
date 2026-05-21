@@ -411,6 +411,69 @@ class VisibilityManagerTest extends SpigotTestBase {
         assertTrue(controller.seePlayer(ikfir, voigon), "seePlayer should return true after showPlayer");
     }
 
+    @Test
+    void addingPlayerToHiddenGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+    }
+
+    @Test
+    void removingPlayerFromHiddenGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        spectator.removePlayer(ikfir);
+
+        assertCanSee(ikfir, voigon);
+    }
+
+    @Test
+    void addingPlayerToVisibleGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup staff = visibilityManager.getOrCreateGroup("staff");
+        VisibilityGroup viewers = visibilityManager.getOrCreateGroup("viewers");
+
+        viewers.addVisibleGroup(staff);
+
+        viewers.addPlayer(ikfir);
+        staff.addPlayer(voigon);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        staff.addPlayer(thebotgame);
+
+        assertCanSeeOneSide(ikfir, thebotgame);
+        assertCantSeeOneSide(thebotgame, ikfir);
+    }
+
     void assertCanSeeOneSide(PlayerMock player, PlayerMock target) {
         assertTrue(player.canSee(target));
         assertTrue(visibilityManager.canSee(player, target));
