@@ -8,8 +8,7 @@ import net.apartium.cocoabeans.spigot.visibility.VisibilityPlayerRemoveType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class VisibilityManagerTest extends SpigotTestBase {
 
@@ -310,6 +309,169 @@ class VisibilityManagerTest extends SpigotTestBase {
         spectator.removePlayer(voigon);
 
         assertCanSee(ikfir, voigon);
+    }
+
+    @Test
+    void showPlayerOnlyCalledWhenNotAlreadyVisible() {
+        TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
+        visibilityManager = new VisibilityManager(plugin, controller);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+
+        group.addPlayer(ikfir);
+        group.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        controller.resetCounts();
+
+        VisibilityGroup group2 = visibilityManager.getOrCreateGroup("test2");
+        group2.addPlayer(ikfir);
+        group2.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+        assertEquals(0, controller.getShowPlayerCalls(), "showPlayer should not be called when players are already visible to each other");
+    }
+
+    @Test
+    void hidePlayerOnlyCalledWhenCurrentlyVisible() {
+        TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
+        visibilityManager = new VisibilityManager(plugin, controller);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+        VisibilityGroup group2 = visibilityManager.getOrCreateGroup("test2");
+
+        group.addPlayer(ikfir);
+        group2.addPlayer(voigon);
+
+        assertCantSee(ikfir, voigon);
+
+        controller.resetCounts();
+
+        // Adding thebotgame to group - ikfir and voigon are already hidden from each other
+        group.addPlayer(thebotgame);
+
+        assertCantSee(ikfir, voigon);
+
+        assertEquals(0, controller.getHidePlayerCalls(ikfir, voigon), "hidePlayer(ikfir, voigon) should not be called when already hidden");
+        assertEquals(0, controller.getHidePlayerCalls(voigon, ikfir), "hidePlayer(voigon, ikfir) should not be called when already hidden");
+    }
+
+    @Test
+    void noRedundantCallsOnReloadVisibility() {
+        TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
+        visibilityManager = new VisibilityManager(plugin, controller);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+        group.addPlayer(ikfir);
+        group.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        controller.resetCounts();
+
+        visibilityManager.reloadVisibility();
+
+        assertCanSee(ikfir, voigon);
+        assertEquals(0, controller.getShowPlayerCalls(), "reloadVisibility should not call showPlayer when visibility hasn't changed");
+        assertEquals(0, controller.getHidePlayerCalls(), "reloadVisibility should not call hidePlayer when visibility hasn't changed");
+    }
+
+    @Test
+    void noRedundantCallsWhenRemovingFromGroup() {
+        TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
+        visibilityManager = new VisibilityManager(plugin, controller);
+
+        VisibilityGroup group = visibilityManager.getOrCreateGroup("test");
+        VisibilityGroup group2 = visibilityManager.getOrCreateGroup("test2");
+
+        group.addPlayer(ikfir);
+        group.addPlayer(voigon);
+        group2.addPlayer(ikfir);
+        group2.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        controller.resetCounts();
+        group.removePlayer(ikfir);
+
+        assertCanSee(ikfir, voigon);
+        assertEquals(0, controller.getHidePlayerCalls(), "hidePlayer should not be called when players still share another group");
+    }
+
+    @Test
+    void seePlayerDelegatesToCanSee() {
+        TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
+        assertTrue(controller.canSeePlayer(ikfir, voigon), "seePlayer should return true when players can see each other by default");
+
+        ikfir.hidePlayer(plugin, voigon);
+        assertFalse(controller.canSeePlayer(ikfir, voigon), "seePlayer should return false after hidePlayer");
+
+        ikfir.showPlayer(plugin, voigon);
+        assertTrue(controller.canSeePlayer(ikfir, voigon), "seePlayer should return true after showPlayer");
+    }
+
+    @Test
+    void addingPlayerToHiddenGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        assertCanSee(ikfir, voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+    }
+
+    @Test
+    void removingPlayerFromHiddenGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup game = visibilityManager.getOrCreateGroup("game");
+        VisibilityGroup spectator = visibilityManager.getOrCreateGroup("spectator");
+
+        game.addHiddenGroup(spectator);
+
+        game.addPlayer(ikfir);
+        game.addPlayer(voigon);
+
+        spectator.addPlayer(ikfir);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        spectator.removePlayer(ikfir);
+
+        assertCanSee(ikfir, voigon);
+    }
+
+    @Test
+    void addingPlayerToVisibleGroupUpdatesPlayersInGroupsThatDependOnIt() {
+        visibilityManager = new VisibilityManager(plugin, new TestPlayerVisibilityController());
+
+        VisibilityGroup staff = visibilityManager.getOrCreateGroup("staff");
+        VisibilityGroup viewers = visibilityManager.getOrCreateGroup("viewers");
+
+        viewers.addVisibleGroup(staff);
+
+        viewers.addPlayer(ikfir);
+        staff.addPlayer(voigon);
+
+        assertCanSeeOneSide(ikfir, voigon);
+        assertCantSeeOneSide(voigon, ikfir);
+
+        staff.addPlayer(thebotgame);
+
+        assertCanSeeOneSide(ikfir, thebotgame);
+        assertCantSeeOneSide(thebotgame, ikfir);
     }
 
     void assertCanSeeOneSide(PlayerMock player, PlayerMock target) {
