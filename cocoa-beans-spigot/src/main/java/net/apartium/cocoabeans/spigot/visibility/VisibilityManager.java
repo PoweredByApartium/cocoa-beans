@@ -102,7 +102,7 @@ public class VisibilityManager {
                 continue;
 
             boolean shouldSee = canSee(target, joinPlayer);
-            boolean currentlySees = playerVisibilityController.seePlayer(target, joinPlayer);
+            boolean currentlySees = playerVisibilityController.canSeePlayer(target, joinPlayer);
 
             if (shouldSee && !currentlySees)
                 playerVisibilityController.showPlayer(plugin, target, joinPlayer);
@@ -219,7 +219,7 @@ public class VisibilityManager {
                 continue;
 
             boolean shouldSee = shouldBeVisible.contains(target);
-            boolean currentlySees = playerVisibilityController.seePlayer(player, target);
+            boolean currentlySees = playerVisibilityController.canSeePlayer(player, target);
 
             if (shouldSee && !currentlySees) {
                 playerVisibilityController.showPlayer(plugin, player, target);
@@ -233,7 +233,7 @@ public class VisibilityManager {
 
     private void updateReverseDirection(Player player, Player target, boolean shouldSee) {
         if (getPlayer(target).getVisibleGroups().isEmpty()) {
-            boolean targetCanSee = playerVisibilityController.seePlayer(target, player);
+            boolean targetCanSee = playerVisibilityController.canSeePlayer(target, player);
 
             if (shouldSee && !targetCanSee) {
                 playerVisibilityController.showPlayer(plugin, target, player);

@@ -37,7 +37,7 @@ public interface PlayerVisibilityController {
      * @return true if the source player can see the target player, false otherwise.
      */
     @ApiStatus.AvailableSince("0.0.50")
-    default boolean seePlayer(Player source, Player target) {
+    default boolean canSeePlayer(Player source, Player target) {
         return source.canSee(target);
     }
 

@@ -402,13 +402,13 @@ class VisibilityManagerTest extends SpigotTestBase {
     @Test
     void seePlayerDelegatesToCanSee() {
         TestPlayerVisibilityController controller = new TestPlayerVisibilityController();
-        assertTrue(controller.seePlayer(ikfir, voigon), "seePlayer should return true when players can see each other by default");
+        assertTrue(controller.canSeePlayer(ikfir, voigon), "seePlayer should return true when players can see each other by default");
 
         ikfir.hidePlayer(plugin, voigon);
-        assertFalse(controller.seePlayer(ikfir, voigon), "seePlayer should return false after hidePlayer");
+        assertFalse(controller.canSeePlayer(ikfir, voigon), "seePlayer should return false after hidePlayer");
 
         ikfir.showPlayer(plugin, voigon);
-        assertTrue(controller.seePlayer(ikfir, voigon), "seePlayer should return true after showPlayer");
+        assertTrue(controller.canSeePlayer(ikfir, voigon), "seePlayer should return true after showPlayer");
     }
 
     @Test
