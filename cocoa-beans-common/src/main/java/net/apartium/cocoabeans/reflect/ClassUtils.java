@@ -30,6 +30,7 @@ public class ClassUtils {
      * @return a collection of all super classes and super interfaces of given class
      * @param <T> type arg for convenience
      */
+    @SuppressWarnings("unchecked")
     @ApiStatus.AvailableSince("0.0.29")
     public static <T> Collection<Class<? super T>> getSuperClassAndInterfaces(Class<T> clazz) {
         if (clazz == null || clazz == Object.class)
@@ -42,15 +43,10 @@ public class ClassUtils {
             set.addAll(getSuperClassAndInterfaces(clazz.getSuperclass()));
         }
 
-        for (Class<?> anInterface : clazz.getInterfaces())
-            set.addAll(cast(getSuperClassAndInterfaces(anInterface)));
+        for (Class<? super T> anInterface : (Class<? super T>[]) clazz.getInterfaces())
+            set.addAll(getSuperClassAndInterfaces(anInterface));
 
         return set;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <IKFIR> IKFIR cast(Object object) {
-        return (IKFIR) object;
     }
 
 }
