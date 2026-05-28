@@ -20,7 +20,9 @@ public record CommandInfo(
     ) {
         this.descriptions = List.copyOf(descriptions);
         this.usages = List.copyOf(usages);
-        this.longDescriptions = List.copyOf(longDescriptions);
+        this.longDescriptions = longDescriptions.stream()
+                .map(List::copyOf)
+                .toList();
     }
 
     /**

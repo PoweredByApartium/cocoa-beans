@@ -388,14 +388,14 @@ import java.util.*;
             RegisterArgumentParser<?> typeParser = entry.key();
             CommandBranchProcessor commandBranchProcessor = entry.value();
 
-            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, "<" + typeParser.getKeyword() + ">"), requirementContext));
+            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, String.format("<%s>", typeParser.getKeyword())), requirementContext));
         }
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeOptionalHandlerMap) {
             RegisterArgumentParser<?> typeParser = entry.key();
             CommandBranchProcessor commandBranchProcessor = entry.value();
 
-            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, "<?" + typeParser.getKeyword() + ">"), requirementContext));
+            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, String.format("<?%s>", typeParser.getKeyword())), requirementContext));
         }
 
         return result;
