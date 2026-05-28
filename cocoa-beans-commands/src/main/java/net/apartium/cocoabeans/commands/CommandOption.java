@@ -372,7 +372,7 @@ import java.util.*;
 
         if (!registeredVariants.isEmpty() && registeredVariants.stream().noneMatch(RegisteredVariant::hidden)) {
             RegisteredVariant variant = registeredVariants.get(0);
-            result.add(new HelpMenuEntry(Set.of(currentLabel), commandInfo, currentRequirement, variant.section(), variant.since(), variant.id()));
+            result.add(new HelpMenuEntry(currentLabel, commandInfo, currentRequirement, variant.section(), variant.since(), variant.id()));
         }
 
         keywordMap.forEach((keyword, commandBranchProcessor) ->

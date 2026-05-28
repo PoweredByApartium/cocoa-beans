@@ -31,7 +31,7 @@ class RichHelpMenuTest extends CommandTestBase {
 
     private HelpMenuEntry findEntry(HelpMenu menu, String label) {
         return menu.entries().stream()
-                .filter(entry -> entry.labels().contains(label))
+                .filter(entry -> entry.label().equals(label))
                 .findFirst()
                 .orElse(null);
     }
@@ -99,8 +99,8 @@ class RichHelpMenuTest extends CommandTestBase {
     @Test
     void hiddenSubCommandExcluded() {
         HelpMenu menu = getHelpMenu(sender, "richhelp");
-        assertTrue(menu.entries().stream().noneMatch(entry -> entry.labels().contains("secret")));
-        assertTrue(menu.entries().stream().noneMatch(entry -> entry.labels().contains("help")));
+        assertTrue(menu.entries().stream().noneMatch(entry -> entry.label().equals("secret")));
+        assertTrue(menu.entries().stream().noneMatch(entry -> entry.label().equals("help")));
     }
 
     @Test

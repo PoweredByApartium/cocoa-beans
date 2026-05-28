@@ -19,7 +19,7 @@ class HelpMenuRecordTest {
     @Test
     void helpMenuAccessors() {
         CommandInfo info = info("desc");
-        HelpMenuEntry entry = new HelpMenuEntry(Set.of("a"), info, Set.of(), "section", "1.0", "id");
+        HelpMenuEntry entry = new HelpMenuEntry("a", info, Set.of(), "section", "1.0", "id");
         HelpMenu menu = new HelpMenu("label", List.of("alias"), info, Set.of(), List.of(entry));
 
         assertEquals("label", menu.label());
@@ -33,7 +33,7 @@ class HelpMenuRecordTest {
     void helpMenuEntryAccessors() {
         CommandInfo info = info("entry desc");
         HelpMenuEntry entry = new HelpMenuEntry(
-                Set.of("first", "second"),
+                "first",
                 info,
                 Set.of(),
                 "sectionA",
@@ -41,7 +41,7 @@ class HelpMenuRecordTest {
                 "myId"
         );
 
-        assertEquals(Set.of("first", "second"), entry.labels());
+        assertEquals("first", entry.label());
         assertEquals(info, entry.info());
         assertTrue(entry.requirements().isEmpty());
         assertEquals("sectionA", entry.section());
@@ -52,7 +52,7 @@ class HelpMenuRecordTest {
     @Test
     void helpMenuEquality() {
         CommandInfo info = info("d");
-        HelpMenuEntry entry = new HelpMenuEntry(Set.of("x"), info, Set.of(), null, null, null);
+        HelpMenuEntry entry = new HelpMenuEntry("x", info, Set.of(), null, null, null);
 
         HelpMenu a = new HelpMenu("label", List.of(), info, Set.of(), List.of(entry));
         HelpMenu b = new HelpMenu("label", List.of(), info, Set.of(), List.of(entry));
@@ -67,9 +67,9 @@ class HelpMenuRecordTest {
     void helpMenuEntryEquality() {
         CommandInfo info = info("d");
 
-        HelpMenuEntry a = new HelpMenuEntry(Set.of("x"), info, Set.of(), null, null, null);
-        HelpMenuEntry b = new HelpMenuEntry(Set.of("x"), info, Set.of(), null, null, null);
-        HelpMenuEntry c = new HelpMenuEntry(Set.of("y"), info, Set.of(), null, null, null);
+        HelpMenuEntry a = new HelpMenuEntry("x", info, Set.of(), null, null, null);
+        HelpMenuEntry b = new HelpMenuEntry("x", info, Set.of(), null, null, null);
+        HelpMenuEntry c = new HelpMenuEntry("y", info, Set.of(), null, null, null);
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
@@ -80,7 +80,7 @@ class HelpMenuRecordTest {
     void helpMenuTolerateNullableMetadata() {
         CommandInfo info = info("d");
 
-        HelpMenuEntry entry = new HelpMenuEntry(Set.of("x"), info, Set.of(), null, null, null);
+        HelpMenuEntry entry = new HelpMenuEntry("x", info, Set.of(), null, null, null);
         assertNull(entry.section());
         assertNull(entry.since());
         assertNull(entry.id());

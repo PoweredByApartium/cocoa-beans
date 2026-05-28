@@ -36,7 +36,7 @@ class HelpMenuTest extends CommandTestBase {
         assertTrue(helpMenu.requirements().isEmpty());
         assertEquals(3, helpMenu.entries().size());
 
-        HelpMenuEntry testEntry = helpMenu.entries().stream().filter(entry -> entry.labels().contains("test")).findFirst().orElse(null);
+        HelpMenuEntry testEntry = helpMenu.entries().stream().filter(entry -> entry.label().equals("test")).findFirst().orElse(null);
         assertNotNull(testEntry);
 
         assertEquals("this command don't take argument after test", testEntry.info().getDescription().orElse(null));

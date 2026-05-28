@@ -11,7 +11,7 @@ import java.util.Set;
  * This class holds metadata about a specific command, including its labels, detailed
  * information, requirements for execution, organizational section grouping, and versioning details.
  *
- * @param labels        the labels associated with the command, used as its identifiers or aliases
+ * @param label         the label of the command
  * @param info          detailed information about the command, including descriptions and usage examples
  * @param requirements  the set of requirements that must be met to execute the command
  * @param section       the section or category to which this command belongs in the help menu
@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @ApiStatus.AvailableSince("0.0.50")
 public record HelpMenuEntry(
-        Set<String> labels,
+        String label,
         CommandInfo info,
         Set<Requirement> requirements,
         String section,

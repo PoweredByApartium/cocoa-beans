@@ -32,8 +32,7 @@ class PermissionHelpMenuTest extends CommandTestBase {
 
     private Set<String> entryLabels(HelpMenu menu) {
         return menu.entries().stream()
-                .map(HelpMenuEntry::labels)
-                .flatMap(Set::stream)
+                .map(HelpMenuEntry::label)
                 .collect(Collectors.toSet());
     }
 
@@ -78,7 +77,7 @@ class PermissionHelpMenuTest extends CommandTestBase {
 
         HelpMenu menu = getHelpMenu(sender);
         HelpMenuEntry adminEntry = menu.entries().stream()
-                .filter(entry -> entry.labels().contains("admin"))
+                .filter(entry -> entry.label().equals("admin"))
                 .findFirst()
                 .orElse(null);
 
@@ -90,7 +89,7 @@ class PermissionHelpMenuTest extends CommandTestBase {
     void publicEntryHasNoRequirements() {
         HelpMenu menu = getHelpMenu(sender);
         HelpMenuEntry publicEntry = menu.entries().stream()
-                .filter(entry -> entry.labels().contains("public"))
+                .filter(entry -> entry.label().equals("public"))
                 .findFirst()
                 .orElse(null);
 
