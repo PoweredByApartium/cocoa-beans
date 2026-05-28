@@ -303,7 +303,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                                                     .map(Map.Entry::getValue)
                                                     .filter(list -> !list.isEmpty())
                                                     .findFirst()
-                                                    .map(List::getFirst)
+                                                    .map(list -> list.get(0))
                                                     .orElse(null)
                                     )
                             )
