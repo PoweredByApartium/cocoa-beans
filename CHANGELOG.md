@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.0.50
+- [common] Add ClassLoaderUtils
 - [common] Add MapClassLoader
 - [spigot] Optimized Visibility API internals to reduce unnecessary hide/show player calls
 - [state] Add `ListObservable#sorted` for live per-element observable-key ordering with stable sort and an already-sorted short-circuit
