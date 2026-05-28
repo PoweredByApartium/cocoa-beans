@@ -13,6 +13,7 @@ package net.apartium.cocoabeans.commands;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Maps the command arguments into the parameters required by the sub command
@@ -25,9 +26,9 @@ public interface ArgumentMapper {
      * @param parameters parameters
      * @param argumentParsers argumentParsers (should be in order)
      * @param requirements requirements
-     * @param additionalTypes additional types are use for providing additional arguments to the command they are inserted at the end
+     * @param providedArgumentIndexesByType provided argument indexes by type
      * @return list of argument indexes
      */
-    List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, List<Class<?>> additionalTypes);
+    List<ArgumentIndex<?>> mapIndices(RegisteredVariant.Parameter[] parameters, List<RegisterArgumentParser<?>> argumentParsers, List<Requirement> requirements, Map<Class<?>, List<ArgumentIndex<?>>> providedArgumentIndexesByType);
 
 }

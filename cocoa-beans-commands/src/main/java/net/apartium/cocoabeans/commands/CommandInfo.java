@@ -7,11 +7,21 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 @ApiStatus.AvailableSince("0.0.30")
-public class CommandInfo {
+public record CommandInfo(
+        List<String> descriptions,
+        List<String> usages,
+        List<List<String>> longDescriptions
+) {
 
-    private final List<String> descriptions = new ArrayList<>();
-    private final List<String> usages = new ArrayList<>();
-    private final List<String[]> longDescriptions = new ArrayList<>();
+    public CommandInfo(
+            List<String> descriptions,
+            List<String> usages,
+            List<List<String>> longDescriptions
+    ) {
+        this.descriptions = List.copyOf(descriptions);
+        this.usages = List.copyOf(usages);
+        this.longDescriptions = List.copyOf(longDescriptions);
+    }
 
     /**
      * Get the first description
@@ -42,7 +52,7 @@ public class CommandInfo {
      * @return the first long description
      */
     @JsonIgnore
-    public Optional<String[]> getLongDescription() {
+    public Optional<List<String>> getLongDescription() {
         if (longDescriptions.isEmpty())
             return Optional.empty();
 
@@ -54,7 +64,7 @@ public class CommandInfo {
      * @return all descriptions
      */
     public List<String> getDescriptions() {
-        return Collections.unmodifiableList(descriptions);
+        return descriptions;
     }
 
     /**
@@ -62,67 +72,15 @@ public class CommandInfo {
      * @return all usages
      */
     public List<String> getUsages() {
-        return Collections.unmodifiableList(usages);
+        return usages;
     }
 
     /**
      * Get all long descriptions
      * @return all long descriptions
      */
-    public List<String[]> getLongDescriptions() {
-        return Collections.unmodifiableList(longDescriptions);
-    }
-
-    /* package-private */ void addDescription(final Description description, boolean first) {
-        if (first) {
-            descriptions.add(0, description.value());
-            return;
-        }
-
-        descriptions.add(description.value());
-    }
-
-    /* package-private */ void addUsage(final Usage usage, boolean first) {
-        if (first) {
-            usages.add(0, usage.value());
-            return;
-        }
-
-        usages.add(usage.value());
-    }
-
-    /* package-private */ void addLongDescription(final LongDescription longDescription, boolean first) {
-        if (first) {
-            longDescriptions.add(0, longDescription.value());
-            return;
-        }
-
-        longDescriptions.add(longDescription.value());
-    }
-
-    /* package-private */ void fromAnnotations(Annotation[] annotations, boolean first) {
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Description description) {
-                addDescription(description, first);
-                continue;
-            }
-
-            if (annotation instanceof Usage usage) {
-                addUsage(usage, first);
-                continue;
-            }
-
-            if (annotation instanceof LongDescription longDescription) {
-                addLongDescription(longDescription, first);
-                continue;
-            }
-        }
-    }
-
-    /* package-private */ void fromCommandInfo(CommandInfo other) {
-        descriptions.addAll(other.descriptions);
-        usages.addAll(other.usages);
-        longDescriptions.addAll(other.longDescriptions);
+    public List<List<String>> getLongDescriptions() {
+        return longDescriptions;
     }
 
     @Override
@@ -139,10 +97,41 @@ public class CommandInfo {
 
     @JsonIgnore
     public static CommandInfo createFromAnnotations(Collection<Annotation[]> collection) {
-        CommandInfo info = new CommandInfo();
-        for (Annotation[] annotations : collection)
-            info.fromAnnotations(annotations, false);
+        List<String> descriptions = new ArrayList<>();
+        List<String> usages = new ArrayList<>();
+        List<List<String>> longDescriptions = new ArrayList<>();
 
-        return info;
+        for (Annotation[] annotations : collection) {
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof Description description) {
+                    descriptions.add(description.value());
+                    continue;
+                }
+
+                if (annotation instanceof Usage usage) {
+                    usages.add(usage.value());
+                    continue;
+                }
+
+                if (annotation instanceof LongDescription longDescription)
+                    longDescriptions.add(Arrays.asList(longDescription.value()));
+            }
+        }
+
+        return new CommandInfo(descriptions, usages, longDescriptions);
+    }
+
+    private static <T> List<T> combine(List<T> a, List<T> b) {
+        List<T> result = new ArrayList<>(a);
+        result.addAll(b);
+        return result;
+    }
+
+    public CommandInfo merge(CommandInfo other) {
+        return new CommandInfo(
+                combine(descriptions, other.descriptions),
+                combine(usages, other.usages),
+                combine(longDescriptions, other.longDescriptions)
+        );
     }
 }

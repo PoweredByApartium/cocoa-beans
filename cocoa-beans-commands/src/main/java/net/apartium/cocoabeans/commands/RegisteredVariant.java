@@ -32,8 +32,16 @@ public record RegisteredVariant(
         Parameter[] parameters,
         GenericNode node,
         List<ArgumentIndex<?>> argumentIndexList,
-        int priority
+        int priority,
+        String section,
+        boolean hidden,
+        String since,
+        String id
 ) {
+
+    public RegisteredVariant(MethodHandle method, Parameter[] parameters, GenericNode node, List<ArgumentIndex<?>> argumentIndexList, int priority) {
+        this(method, parameters, node, argumentIndexList, priority, null, false, null, null);
+    }
 
     /**
      * Comparator for registered variants

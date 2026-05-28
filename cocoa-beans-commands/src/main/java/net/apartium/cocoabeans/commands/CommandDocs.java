@@ -9,10 +9,7 @@ package net.apartium.cocoabeans.commands;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Contains annotation used to generate various means of docs and help menus for commands.
@@ -60,5 +57,22 @@ public class CommandDocs {
     }
 
     private CommandDocs() {}
+
+    /**
+     * Indicates the id of the command.
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Id {
+
+        /**
+         * The id of the command
+         * @return the id
+         */
+        String value();
+
+    }
+
 
 }

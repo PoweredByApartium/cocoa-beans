@@ -21,6 +21,7 @@ import net.apartium.cocoabeans.commands.lexer.KeywordToken;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementFactory;
 import net.apartium.cocoabeans.commands.requirements.RequirementSet;
 import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
@@ -29,7 +30,9 @@ import net.apartium.cocoabeans.reflect.ClassUtils;
 import net.apartium.cocoabeans.reflect.MethodUtils;
 import net.apartium.cocoabeans.structs.Entry;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -53,18 +56,33 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
     private final List<HandleExceptionVariant> handleExceptionVariants = new ArrayList<>();
     private final CommandBranchProcessor commandBranchProcessor;
-    private final CommandInfo commandInfo = new CommandInfo();
+    private CommandInfo commandInfo = new CommandInfo(List.of(), List.of(), List.of());
 
-    RegisteredCommand(CommandManager commandManager) {
+    private final String label;
+    private final List<String> aliases = new ArrayList<>();
+
+    RegisteredCommand(CommandManager commandManager, String label) {
         this.commandManager = commandManager;
 
         commandBranchProcessor = new CommandBranchProcessor(commandManager);
+        this.label = label;
+    }
+
+    private void addAliases(Class<?> clazz) {
+        Command command = clazz.getAnnotation(Command.class);
+        if (command == null)
+            return;
+
+        aliases.addAll(Arrays.asList(command.aliases()));
+        aliases.remove(label);
     }
 
     public void addNode(CommandNode node) {
         Class<?> clazz = node.getClass();
 
-        commandInfo.fromAnnotations(clazz.getAnnotations(), false);
+        addAliases(clazz);
+
+        commandInfo = commandInfo.merge(CommandInfo.createFromAnnotations(List.<Annotation[]>of(clazz.getAnnotations())));
 
         RequirementSet requirementSet = new RequirementSet(findAllRequirements(node, clazz));
 
@@ -100,12 +118,29 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         List<Requirement> classRequirementsResult = new ArrayList<>();
         CommandOption commandOption = createCommandOption(requirementSet, commandBranchProcessor, classRequirementsResult);
 
+        Map<CommandOption, Set<AnnotatedElement>> dirtyCommands = new IdentityHashMap<>();
+
         for (Method method : MethodUtils.getAllMethods(clazz)) {
             SubCommand[] subCommands = method.getAnnotationsByType(SubCommand.class);
 
             for (SubCommand subCommand : subCommands) {
+                dirtyCommands.computeIfAbsent(commandOption, key -> new HashSet<>()).add(method);
                 try {
-                    parseSubCommand(new ParserSubCommandContext(method , subCommand, clazz, node, commandOption, argumentTypeHandlerMap, requirementSet), publicLookup, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+                    parseSubCommand(
+                            new ParserSubCommandContext(
+                                    method,
+                                    subCommand,
+                                    clazz,
+                                    node,
+                                    commandOption,
+                                    argumentTypeHandlerMap,
+                                    requirementSet
+                            ),
+                            publicLookup,
+                            new ArrayList<>(),
+                            new ArrayList<>(classRequirementsResult),
+                            dirtyCommands
+                    );
                 } catch (IllegalAccessException e) {
                     Dispensers.dispense(e);
                     return;
@@ -119,18 +154,24 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 return;
             }
 
-
-            for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method)) {
+            Set<Method> methods = MethodUtils.getMethodsFromSuperClassAndInterface(method);
+            for (Method targetMethod : methods) {
                 try {
-                    handleSubCommand(new ParserSubCommandContext(
-                            method,
-                            null,
-                            clazz,
-                            node,
-                            commandOption,
-                            argumentTypeHandlerMap,
-                            requirementSet
-                    ), publicLookup, targetMethod, classRequirementsResult);
+                    handleSubCommand(
+                            new ParserSubCommandContext(
+                                    method,
+                                    null,
+                                    clazz,
+                                    node,
+                                    commandOption,
+                                    argumentTypeHandlerMap,
+                                    requirementSet
+                            ),
+                            publicLookup,
+                            targetMethod,
+                            classRequirementsResult,
+                            dirtyCommands
+                    );
                 } catch (IllegalAccessException e) {
                     Dispensers.dispense(e);
                     return;
@@ -139,6 +180,18 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         }
 
+        commandInfo = commandManager.mappingCommandInfo(
+                commandInfo,
+                commands.stream()
+                        .map(RegisteredCommandNode::listener)
+                        .map(Object::getClass)
+                        .map(AnnotatedElement.class::cast)
+                        .toList()
+        );
+
+        dirtyCommands.forEach((option, annotations) ->
+                option.setCommandInfo(commandManager.mappingCommandInfo(option.getCommandInfo(), annotations))
+        );
     }
 
     private RequirementSet getVirtualRequirement(Map<String, Object> metadata) {
@@ -154,7 +207,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     }
 
     public void addVirtualCommand(VirtualCommandDefinition virtualCommandDefinition, Function<CommandContext, Boolean> callback, ArgumentParser<?> fallbackParser) {
-        commandInfo.fromCommandInfo(virtualCommandDefinition.info());
+        commandInfo = commandInfo.merge(virtualCommandDefinition.info());
 
         this.virtualNodes.add(new VirtualCommandNode(virtualCommandDefinition, callback));
 
@@ -238,7 +291,23 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                     publicLookup.unreflect(method),
                     Arrays.stream(method.getParameters()).map(Parameter::getType).toArray(Class[]::new),
                     node,
-                    commandManager.getArgumentMapper().mapIndices(parameters, List.of(), List.of(), additionalTypes),
+                    commandManager.getArgumentMapper().mapIndices(
+                            parameters,
+                            List.of(),
+                            List.of(),
+                            Map.of(
+                                    exceptionHandle.value(), List.of(
+                                            context -> context.parsedArgs().entrySet()
+                                                    .stream()
+                                                    .filter(entry -> exceptionHandle.value().isAssignableFrom(entry.getKey()))
+                                                    .map(Map.Entry::getValue)
+                                                    .filter(list -> !list.isEmpty())
+                                                    .findFirst()
+                                                    .map(List::getFirst)
+                                                    .orElse(null)
+                                    )
+                            )
+                    ),
                     exceptionHandle.priority()
             );
         } catch (IllegalAccessException e) {
@@ -246,7 +315,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         }
     }
 
-    private void handleSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, Method targetMethod, List<Requirement> classRequirementsResult) throws IllegalAccessException {
+    private void handleSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, Method targetMethod, List<Requirement> classRequirementsResult, Map<CommandOption, Set<AnnotatedElement>> dirtyCommands) throws IllegalAccessException {
         ExceptionHandle exceptionHandle;
         if (targetMethod == null)
             return;
@@ -254,7 +323,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         SubCommand[] superSubCommands = targetMethod.getAnnotationsByType(SubCommand.class);
 
         for (SubCommand subCommand : superSubCommands) {
-            parseSubCommand(new ParserSubCommandContext(context.method, subCommand, context.clazz, context.commandNode, context.commandOption, context.argumentTypeHandlerMap, context.requirementSet), publicLookup, new ArrayList<>(), new ArrayList<>(classRequirementsResult));
+            parseSubCommand(new ParserSubCommandContext(context.method, subCommand, context.clazz, context.commandNode, context.commandOption, context.argumentTypeHandlerMap, context.requirementSet), publicLookup, new ArrayList<>(), new ArrayList<>(classRequirementsResult), dirtyCommands);
         }
 
         exceptionHandle = targetMethod.getAnnotation(ExceptionHandle.class);
@@ -267,7 +336,37 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         }
     }
 
-    private void parseSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) throws IllegalAccessException {
+    private HelpMenu generateHelpMenu(ArgumentContext context) {
+        RequirementEvaluationContext requirementContext = new RequirementEvaluationContext(
+                context.sender(),
+                context.commandName(),
+                context.args(),
+                0
+        );
+
+        List<Entry<RequirementSet, CommandOption>> entryList = commandBranchProcessor.objectMap.stream()
+                .filter(entry -> entry.key().meetsRequirements(requirementContext).meetRequirement())
+                .toList();
+
+        if (entryList.isEmpty())
+            return null;
+
+        return new HelpMenu(
+                label,
+                aliases,
+                commandInfo,
+                entryList.get(0).key(),
+                entryList.stream()
+                        .flatMap(entry -> this.generateHelpMenuEntries(requirementContext, entry.value()).stream())
+                        .toList()
+        );
+    }
+
+    private List<HelpMenuEntry> generateHelpMenuEntries(RequirementEvaluationContext requirementContext, CommandOption commandOption) {
+        return commandOption.generateHelpMenuEntries(Set.of(), "", requirementContext);
+    }
+
+    private void parseSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, Map<CommandOption, Set<AnnotatedElement>> dirtyCommands) throws IllegalAccessException {
         if (context.subCommand == null)
             return;
 
@@ -303,22 +402,13 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         String[] split = context.subCommand.value().split("\\s+");
         if (isEmptyArgs(split)) {
             CommandOption cmdOption = createCommandOption(methodRequirements, commandBranchProcessor, requirementsResult);
+            dirtyCommands.computeIfAbsent(cmdOption, key -> new HashSet<>()).add(context.method);
 
-            cmdOption.getCommandInfo().fromCommandInfo(methodInfo);
+            cmdOption.setCommandInfo(cmdOption.getCommandInfo().merge(methodInfo));
             RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(context.commandNode, context.method.getParameters(), commandManager.argumentRequirementFactories);
 
             try {
-                CollectionHelpers.addElementSorted(
-                        cmdOption.getRegisteredCommandVariants(),
-                        new RegisteredVariant(
-                            publicLookup.unreflect(context.method),
-                            parameters,
-                            context.commandNode,
-                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult, List.of()),
-                            context.subCommand.priority()
-                        ),
-                        REGISTERED_VARIANT_COMPARATOR
-                );
+                addSubCommand(context, publicLookup, parsersResult, requirementsResult, cmdOption, parameters);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error accessing method", e);
             } catch (NoSuchElementException e) {
@@ -329,6 +419,8 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         }
 
         CommandOption currentCommandOption = context.commandOption;
+        dirtyCommands.computeIfAbsent(currentCommandOption, key -> new HashSet<>()).add(context.method);
+
         List<CommandToken> tokens = commandManager.getCommandLexer().tokenize(context.subCommand.value());
 
         for (int i = 0; i < tokens.size(); i++) {
@@ -337,11 +429,13 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
             if (token instanceof KeywordToken keywordToken) {
                 currentCommandOption = createKeywordOption(currentCommandOption, context.subCommand.ignoreCase(), keywordToken, requirements, requirementsResult);
+                dirtyCommands.computeIfAbsent(currentCommandOption, key -> new HashSet<>()).add(context.method);
                 continue;
             }
 
             if (token instanceof ArgumentParserToken argumentParserToken) {
                 currentCommandOption = createArgumentOption(currentCommandOption, argumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult, null);
+                dirtyCommands.computeIfAbsent(currentCommandOption, key -> new HashSet<>()).add(context.method);
                 continue;
             }
 
@@ -349,25 +443,38 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         }
 
 
-        currentCommandOption.getCommandInfo().fromCommandInfo(methodInfo);
+        currentCommandOption.setCommandInfo(currentCommandOption.getCommandInfo().merge(methodInfo));
 
         RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(context.commandNode, context.method.getParameters(), commandManager.argumentRequirementFactories);
 
         try {
-            CollectionHelpers.addElementSorted(
-                    currentCommandOption.getRegisteredCommandVariants(),
-                    new RegisteredVariant(
-                            publicLookup.unreflect(context.method),
-                            parameters,
-                            context.commandNode,
-                            commandManager.getArgumentMapper().mapIndices(parameters, parsersResult, requirementsResult, List.of()),
-                            context.subCommand.priority()
-                    ),
-                    REGISTERED_VARIANT_COMPARATOR
-            );
+            addSubCommand(context, publicLookup, parsersResult, requirementsResult, currentCommandOption, parameters);
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("There is an misused parameter for the following method " + context.clazz.getName() + "#" + context.method.getName() + "\nSub command value: " + context.subCommand.value(), e);
         }
+    }
+
+    private void addSubCommand(ParserSubCommandContext context, MethodHandles.Lookup publicLookup, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, CommandOption currentCommandOption, RegisteredVariant.Parameter[] parameters) throws IllegalAccessException {
+        CollectionHelpers.addElementSorted(
+                currentCommandOption.getRegisteredCommandVariants(),
+                new RegisteredVariant(
+                        publicLookup.unreflect(context.method),
+                        parameters,
+                        context.commandNode,
+                        commandManager.getArgumentMapper().mapIndices(
+                                parameters,
+                                parsersResult,
+                                requirementsResult,
+                                Map.of(HelpMenu.class, List.of(this::generateHelpMenu))
+                        ),
+                        context.subCommand.priority(),
+                        Optional.ofNullable(context.method.getAnnotation(CommandDocs.Section.class)).map(CommandDocs.Section::value).orElse(null),
+                        Optional.ofNullable(context.method.getAnnotation(CommandDocs.Hidden.class)).isPresent(),
+                        Optional.ofNullable(context.method.getAnnotation(CommandDocs.Since.class)).map(CommandDocs.Since::value).orElse(null),
+                        Optional.ofNullable(context.method.getAnnotation(CommandDocs.Id.class)).map(CommandDocs.Id::value).orElse(null)
+                ),
+                REGISTERED_VARIANT_COMPARATOR
+        );
     }
 
     //  TODO may need to split requirements so it will be faster and joined stuff
@@ -382,13 +489,13 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     }
 
     private CommandInfo generateCommandInfo(Method method) {
-        CommandInfo info = new CommandInfo();
+        List<Annotation[]> annotations = new ArrayList<>();
 
-        info.fromAnnotations(method.getAnnotations(), true);
+        annotations.add(method.getAnnotations());
         for (Method targetMethod : MethodUtils.getMethodsFromSuperClassAndInterface(method))
-            info.fromAnnotations(targetMethod.getAnnotations(), false);
+            annotations.add(targetMethod.getAnnotations());
 
-        return info;
+        return CommandInfo.createFromAnnotations(annotations);
     }
 
     private CommandOption createKeywordOption(CommandOption currentCommandOption, boolean ignoreCase, KeywordToken keywordToken, RequirementSet requirements, List<Requirement> requirementsResult) {
