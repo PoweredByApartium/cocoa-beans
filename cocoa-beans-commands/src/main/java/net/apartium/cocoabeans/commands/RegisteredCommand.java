@@ -281,10 +281,6 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
     private HandleExceptionVariant getHandleExceptionVariant(GenericNode node, Method method, ExceptionHandle exceptionHandle, MethodHandles.Lookup publicLookup) {
         RegisteredVariant.Parameter[] parameters = RegisteredVariant.Parameter.of(node, method.getParameters(), commandManager.argumentRequirementFactories);
 
-        List<Class<?>> additionalTypes = new ArrayList<>(List.of(
-                exceptionHandle.value()
-        ));
-
         try {
             return new HandleExceptionVariant(
                     exceptionHandle.value(),

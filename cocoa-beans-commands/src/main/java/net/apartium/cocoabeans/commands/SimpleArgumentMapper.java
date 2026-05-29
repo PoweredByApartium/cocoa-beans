@@ -10,7 +10,6 @@
 
 package net.apartium.cocoabeans.commands;
 
-import net.apartium.cocoabeans.commands.exception.CommandException;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.structs.Entry;
 import net.apartium.cocoabeans.utils.OptionalFloat;
