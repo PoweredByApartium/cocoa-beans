@@ -102,10 +102,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#mapIndices(net.apartium.cocoabeans.commands.RegisteredVariant.Parameter%5B%5D,java.util.List,java.util.List,java.util.List)" class="member-name-link">mapIndices</a><wbr>(<a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#mapIndices(net.apartium.cocoabeans.commands.RegisteredVariant.Parameter%5B%5D,java.util.List,java.util.List,java.util.Map)" class="member-name-link">mapIndices</a><wbr>(<a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="RegisterArgumentParser.html" title="class in net.apartium.cocoabeans.commands">RegisterArgumentParser</a>&lt;?&gt;&gt;&nbsp;argumentParsers,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="requirements/Requirement.html" title="interface in net.apartium.cocoabeans.commands.requirements">Requirement</a>&gt;&nbsp;requirements,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;&nbsp;additionalTypes)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&gt;&nbsp;providedArgumentIndexesByType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Maps the command arguments into the argument indexes required by the sub command to be call with the right arguments</div>
 </div>
@@ -124,19 +124,19 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="mapIndices(net.apartium.cocoabeans.commands.RegisteredVariant.Parameter[],java.util.List,java.util.List,java.util.List)">
+<section class="detail" id="mapIndices(net.apartium.cocoabeans.commands.RegisteredVariant.Parameter[],java.util.List,java.util.List,java.util.Map)">
 <h3>mapIndices</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">mapIndices</span><wbr><span class="parameters">(<a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="RegisterArgumentParser.html" title="class in net.apartium.cocoabeans.commands">RegisterArgumentParser</a>&lt;?&gt;&gt;&nbsp;argumentParsers,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="requirements/Requirement.html" title="interface in net.apartium.cocoabeans.commands.requirements">Requirement</a>&gt;&nbsp;requirements,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;&nbsp;additionalTypes)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&gt;&nbsp;providedArgumentIndexesByType)</span></div>
 <div class="block">Maps the command arguments into the argument indexes required by the sub command to be call with the right arguments</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>parameters</code> - parameters</dd>
 <dd><code>argumentParsers</code> - argumentParsers (should be in order)</dd>
 <dd><code>requirements</code> - requirements</dd>
-<dd><code>additionalTypes</code> - additional types are use for providing additional arguments to the command they are inserted at the end</dd>
+<dd><code>providedArgumentIndexesByType</code> - provided argument indexes by type</dd>
 <dt>Returns:</dt>
 <dd>list of argument indexes</dd>
 </dl>

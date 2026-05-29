@@ -86,7 +86,7 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-priority">priority</span></code> - the priority of the variant</dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">RegisteredVariant</span>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html" title="class or interface in java.lang.invoke" class="external-link">MethodHandle</a>&nbsp;method, <a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters, <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList, int&nbsp;priority)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">RegisteredVariant</span>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html" title="class or interface in java.lang.invoke" class="external-link">MethodHandle</a>&nbsp;method, <a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters, <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList, int&nbsp;priority, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;section, boolean&nbsp;hidden, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;since, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Registered variant for a command</div>
 </section>
@@ -139,7 +139,17 @@ loadScripts(document, 'script');</script>
  <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList,
  int&nbsp;priority)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.invoke.MethodHandle,net.apartium.cocoabeans.commands.RegisteredVariant.Parameter%5B%5D,net.apartium.cocoabeans.commands.GenericNode,java.util.List,int,java.lang.String,boolean,java.lang.String,java.lang.String)" class="member-name-link">RegisteredVariant</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html" title="class or interface in java.lang.invoke" class="external-link">MethodHandle</a>&nbsp;method,
+ <a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters,
+ <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList,
+ int&nbsp;priority,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;section,
+ boolean&nbsp;hidden,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;since,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Creates an instance of a <code>RegisteredVariant</code> record class.</div>
 </div>
 </div>
@@ -171,6 +181,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hidden()" class="member-name-link">hidden</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <code>hidden</code> record component.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#id()" class="member-name-link">id</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <code>id</code> record component.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html" title="class or interface in java.lang.invoke" class="external-link">MethodHandle</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#method()" class="member-name-link">method</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -190,6 +210,16 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#priority()" class="member-name-link">priority</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-priority"><code>priority</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#section()" class="member-name-link">section</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <code>section</code> record component.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#since()" class="member-name-link">since</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <code>since</code> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -236,6 +266,20 @@ loadScripts(document, 'script');</script>
  <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList,
  int&nbsp;priority)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(java.lang.invoke.MethodHandle,net.apartium.cocoabeans.commands.RegisteredVariant.Parameter[],net.apartium.cocoabeans.commands.GenericNode,java.util.List,int,java.lang.String,boolean,java.lang.String,java.lang.String)">
+<h3>RegisteredVariant</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RegisteredVariant</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html" title="class or interface in java.lang.invoke" class="external-link">MethodHandle</a>&nbsp;method,
+ <a href="RegisteredVariant.Parameter.html" title="class in net.apartium.cocoabeans.commands">RegisteredVariant.Parameter</a>[]&nbsp;parameters,
+ <a href="GenericNode.html" title="interface in net.apartium.cocoabeans.commands">GenericNode</a>&nbsp;node,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentIndex.html" title="interface in net.apartium.cocoabeans.commands">ArgumentIndex</a>&lt;?&gt;&gt;&nbsp;argumentIndexList,
+ int&nbsp;priority,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;section,
+ boolean&nbsp;hidden,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;since,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</span></div>
 <div class="block">Creates an instance of a <code>RegisteredVariant</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -244,6 +288,10 @@ loadScripts(document, 'script');</script>
 <dd><code>node</code> - the value for the <a href="#param-node"><code>node</code></a> record component</dd>
 <dd><code>argumentIndexList</code> - the value for the <a href="#param-argumentIndexList"><code>argumentIndexList</code></a> record component</dd>
 <dd><code>priority</code> - the value for the <a href="#param-priority"><code>priority</code></a> record component</dd>
+<dd><code>section</code> - the value for the <code>section</code> record component</dd>
+<dd><code>hidden</code> - the value for the <code>hidden</code> record component</dd>
+<dd><code>since</code> - the value for the <code>since</code> record component</dd>
+<dd><code>id</code> - the value for the <code>id</code> record component</dd>
 </dl>
 </section>
 </li>
@@ -348,6 +396,50 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the value of the <a href="#param-priority"><code>priority</code></a> record component</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="section()">
+<h3>section</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">section</span>()</div>
+<div class="block">Returns the value of the <code>section</code> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <code>section</code> record component</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hidden()">
+<h3>hidden</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hidden</span>()</div>
+<div class="block">Returns the value of the <code>hidden</code> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <code>hidden</code> record component</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="since()">
+<h3>since</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">since</span>()</div>
+<div class="block">Returns the value of the <code>since</code> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <code>since</code> record component</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="id()">
+<h3>id</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">id</span>()</div>
+<div class="block">Returns the value of the <code>id</code> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <code>id</code> record component</dd>
 </dl>
 </section>
 </li>
