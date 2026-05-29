@@ -12,6 +12,8 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.requirements.Requirement;
+import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.structs.Entry;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +24,7 @@ import java.util.*;
     private final CommandManager commandManager;
 
     private final List<RegisteredVariant> registeredVariants = new ArrayList<>();
-    private final CommandInfo commandInfo = new CommandInfo();
+    private CommandInfo commandInfo = new CommandInfo(List.of(), List.of(), List.of());
 
     private final Map<String, CommandBranchProcessor> keywordIgnoreCaseMap = new HashMap<>();
     private final Map<String, CommandBranchProcessor> keywordMap = new HashMap<>();
@@ -360,12 +362,56 @@ import java.util.*;
         return result;
     }
 
+    private static String combineLabel(String currentLabel, String additionLabel) {
+        boolean needSpace = !currentLabel.isEmpty();
+        return currentLabel + (needSpace ? " " : "") + additionLabel;
+    }
+
+    public List<HelpMenuEntry> generateHelpMenuEntries(Set<Requirement> currentRequirement, String currentLabel, RequirementEvaluationContext requirementContext) {
+        List<HelpMenuEntry> result = new ArrayList<>();
+
+        if (!registeredVariants.isEmpty() && registeredVariants.stream().noneMatch(RegisteredVariant::hidden)) {
+            RegisteredVariant variant = registeredVariants.get(0);
+            result.add(new HelpMenuEntry(currentLabel, commandInfo, currentRequirement, variant.section(), variant.since(), variant.id()));
+        }
+
+        keywordMap.forEach((keyword, commandBranchProcessor) ->
+                result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, keyword), requirementContext))
+        );
+
+        keywordIgnoreCaseMap.forEach((keyword, commandBranchProcessor) ->
+                result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, keyword), requirementContext))
+        );
+
+
+        for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
+            RegisterArgumentParser<?> typeParser = entry.key();
+            CommandBranchProcessor commandBranchProcessor = entry.value();
+
+            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, String.format("<%s>", typeParser.getKeyword())), requirementContext));
+        }
+
+        for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeOptionalHandlerMap) {
+            RegisterArgumentParser<?> typeParser = entry.key();
+            CommandBranchProcessor commandBranchProcessor = entry.value();
+
+            result.addAll(commandBranchProcessor.generateHelpMenuEntries(combineLabel(currentLabel, String.format("<?%s>", typeParser.getKeyword())), requirementContext));
+        }
+
+        return result;
+    }
+
+
     public List<RegisteredVariant> getRegisteredCommandVariants() {
         return registeredVariants;
     }
 
     public CommandInfo getCommandInfo() {
         return commandInfo;
+    }
+
+    public void setCommandInfo(CommandInfo commandInfo) {
+        this.commandInfo = commandInfo;
     }
 
     public List<Entry<RegisterArgumentParser<?>, CommandBranchProcessor>> getArgumentTypeHandlerMap() {

@@ -163,4 +163,11 @@ import java.util.*;
         return false;
     }
 
+    public Collection<HelpMenuEntry> generateHelpMenuEntries(String currentLabel, RequirementEvaluationContext requirementContext) {
+        return objectMap.stream()
+                .filter(entry -> entry.key().meetsRequirements(requirementContext).meetRequirement())
+                .map(entry -> entry.value().generateHelpMenuEntries(entry.key(), currentLabel, requirementContext))
+                .flatMap(Collection::stream)
+                .toList();
+    }
 }

@@ -22,6 +22,7 @@ import net.apartium.cocoabeans.commands.virtual.VirtualCommandDefinition;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -267,16 +268,28 @@ public abstract class CommandManager {
             return;
 
 
-        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), cmd -> new RegisteredCommand(this));
+        RegisteredCommand registeredCommand = commandMap.computeIfAbsent(handler.value().toLowerCase(), cmd -> new RegisteredCommand(this, cmd));
         registeredCommand.addNode(commandNode);
 
         for (String alias : handler.aliases()) {
-            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this, cmd))
                     .addNode(commandNode);
 
         }
 
         addCommand(commandNode, handler);
+    }
+
+    /**
+     * Maps and processes a {@link CommandInfo} object based on the provided collection of {@code GenericNode} elements.
+     *
+     * @param info the original {@link CommandInfo} instance to be mapped or processed
+     * @param nodes a collection of {@code GenericNode} elements that provide additional context or modifications
+     * @return the resulting {@link CommandInfo} instance after applying the mapping or processing logic
+     */
+    @ApiStatus.AvailableSince("0.0.50")
+    protected CommandInfo mappingCommandInfo(CommandInfo info, Collection<AnnotatedElement> nodes) {
+        return info;
     }
 
     @ApiStatus.AvailableSince("0.0.39")
@@ -305,11 +318,11 @@ public abstract class CommandManager {
         if (virtualCommandDefinition == null || callback == null)
             return;
 
-        commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this))
+        commandMap.computeIfAbsent(virtualCommandDefinition.name(), cmd -> new RegisteredCommand(this, cmd))
                 .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
 
         for (String alias : virtualCommandDefinition.aliases())
-            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this))
+            commandMap.computeIfAbsent(alias.toLowerCase(), cmd -> new RegisteredCommand(this, cmd))
                     .addVirtualCommand(virtualCommandDefinition, callback, fallbackParser);
     }
 

@@ -149,7 +149,7 @@ public class CompoundParser<T> extends ArgumentParser<T> implements GenericNode 
                         method,
                         parameters,
                         this,
-                        argumentMapper.mapIndices(parameters, parsersResult, requirementsResult, List.of()),
+                        argumentMapper.mapIndices(parameters, parsersResult, requirementsResult, Map.of()),
                         parserVariant.priority()
                 ),
                 REGISTERED_VARIANT_COMPARATOR

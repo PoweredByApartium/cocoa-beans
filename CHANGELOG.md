@@ -1,5 +1,7 @@
 # CHANGELOG
 ## 0.0.50
+- [commands] Improve ArgumentMapper injection
+- [commands] Add HelpMenu
 - [common] Add ClassLoaderUtils
 - [common] Add MapClassLoader
 - [spigot] Optimized Visibility API internals to reduce unnecessary hide/show player calls
