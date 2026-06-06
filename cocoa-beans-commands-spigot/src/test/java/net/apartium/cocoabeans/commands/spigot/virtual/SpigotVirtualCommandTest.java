@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.commands.spigot.virtual;
 
+
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.spigot.CommandsSpigotTestBase;
