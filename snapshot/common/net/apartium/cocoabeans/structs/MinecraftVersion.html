@@ -78,7 +78,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Record Components:</dt>
-<dd><code><span id="param-major">major</span></code> - major version, currently only 1</dd>
+<dd><code><span id="param-major">major</span></code> - major version</dd>
 <dd><code><span id="param-update">update</span></code> - , update version</dd>
 <dd><code><span id="param-minor">minor</span></code> - minor version, if not explicitly specified defaults to 0</dd>
 <dd><code><span id="param-protocol">protocol</span></code> - protocol version</dd>
@@ -329,6 +329,15 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-first odd-row-color"><code>static final <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#V1_9_4" class="member-name-link">V1_9_4</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
+<div class="col-second even-row-color"><code><a href="#V26_1" class="member-name-link">V26_1</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#V26_1_1" class="member-name-link">V26_1_1</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
+<div class="col-second even-row-color"><code><a href="#V26_1_2" class="member-name-link">V26_1_2</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -369,77 +378,82 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Check if two versions are equal</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVersion(int,int,int)" class="member-name-link">getVersion</a><wbr>(int&nbsp;major,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getByProtocolVersion(int)" class="member-name-link">getByProtocolVersion</a><wbr>(int&nbsp;protocol)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Returns all minecraft versions corresponding to given protocol version</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVersion(int,int,int)" class="member-name-link">getVersion</a><wbr>(int&nbsp;major,
  int&nbsp;update,
  int&nbsp;minor)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVersion(int,int,int,java.util.function.Supplier)" class="member-name-link">getVersion</a><wbr>(int&nbsp;major,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVersion(int,int,int,java.util.function.Supplier)" class="member-name-link">getVersion</a><wbr>(int&nbsp;major,
  int&nbsp;update,
  int&nbsp;minor,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;protocol)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Get Minecraft Version by lookup table or create new one</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHigherThan(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isHigherThan</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHigherThan(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isHigherThan</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Helper method to check if current instance is higher than given version</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHigherThanOrEqual(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isHigherThanOrEqual</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isHigherThanOrEqual(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isHigherThanOrEqual</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Helper method to check if current instance is higher than or equal to given version</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLowerThan(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isLowerThan</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLowerThan(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isLowerThan</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Helper method to check if current instance is lower than given version</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLowerThanOrEqual(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isLowerThanOrEqual</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isLowerThanOrEqual(net.apartium.cocoabeans.structs.MinecraftVersion)" class="member-name-link">isLowerThanOrEqual</a><wbr>(<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Helper method to check if current instance is lower than or equal to given version</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isProtocolKnown()" class="member-name-link">isProtocolKnown</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isProtocolKnown()" class="member-name-link">isProtocolKnown</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Detects whether current instance represents a known version</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnknown()" class="member-name-link">isUnknown</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isUnknown()" class="member-name-link">isUnknown</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Detects whether current instance represents an unknown version</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#major()" class="member-name-link">major</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#major()" class="member-name-link">major</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-major"><code>major</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#minor()" class="member-name-link">minor</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#minor()" class="member-name-link">minor</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-minor"><code>minor</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#protocol()" class="member-name-link">protocol</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#protocol()" class="member-name-link">protocol</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-protocol"><code>protocol</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-update"><code>update</code></a> record component.</div>
 </div>
 </div>
@@ -886,6 +900,24 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 </section>
 </li>
 <li>
+<section class="detail" id="V26_1">
+<h3>V26_1</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></span>&nbsp;<span class="element-name">V26_1</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="V26_1_1">
+<h3>V26_1_1</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></span>&nbsp;<span class="element-name">V26_1_1</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="V26_1_2">
+<h3>V26_1_2</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a></span>&nbsp;<span class="element-name">V26_1_2</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="KNOWN_VERSIONS">
 <h3>KNOWN_VERSIONS</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&gt;</span>&nbsp;<span class="element-name">KNOWN_VERSIONS</span></div>
@@ -957,6 +989,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <dd><code>minor</code> - minor version</dd>
 <dt>Returns:</dt>
 <dd>cached minecraft version or create a new one with desired protocol version</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getByProtocolVersion(int)">
+<h3>getByProtocolVersion</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.51")
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="MinecraftVersion.html" title="class in net.apartium.cocoabeans.structs">MinecraftVersion</a>&gt;</span>&nbsp;<span class="element-name">getByProtocolVersion</span><wbr><span class="parameters">(int&nbsp;protocol)</span></div>
+<div class="block">Returns all minecraft versions corresponding to given protocol version</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>protocol</code> - protocol version</dd>
+<dt>Returns:</dt>
+<dd>an immutable list of minecraft versions, or empty if none are found</dd>
 </dl>
 </section>
 </li>
@@ -1082,7 +1128,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base
 <li>
 <section class="detail" id="toString()">
 <h3>toString</h3>
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
 <div class="block">Returns a string representation of this record class. The representation contains the name of the class, followed by the name and value of each of the record components.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
