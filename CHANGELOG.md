@@ -1,6 +1,10 @@
 # CHANGELOG
+
 ## 0.0.51
 - [commands] Add Tab completion suggestion priority
+- [common] Override MinecraftVersion#toString
+- [common] Add MinecraftVersion#getByProtocolVersion
+- [common] Add 26.1.x to MinecraftVersion
 
 ## 0.0.50
 - [commands] Improve ArgumentMapper injection

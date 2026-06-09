@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 /**
  * Represents version in the game.
  * Format: major.update.minor, ex 1.8.3
- * @param major major version, currently only 1
+ * @param major major version
  * @param update, update version
  * @param minor minor version, if not explicitly specified defaults to 0
  * @param protocol protocol version
@@ -120,6 +120,9 @@ public record MinecraftVersion(
     public static final MinecraftVersion V1_21_10 = new MinecraftVersion(1, 21, 10, 773);
     public static final MinecraftVersion V1_21_11 = new MinecraftVersion(1, 21, 11, 774);
 
+    public static final MinecraftVersion V26_1 = new MinecraftVersion(26, 1, 0, 775);
+    public static final MinecraftVersion V26_1_1 = new MinecraftVersion(26, 1, 1, 775);
+    public static final MinecraftVersion V26_1_2 = new MinecraftVersion(26, 1, 2, 775);
 
     public static final List<MinecraftVersion> KNOWN_VERSIONS = List.of(
             // 1.8 - 1.8.9
@@ -218,7 +221,12 @@ public record MinecraftVersion(
             V1_21_8,
             V1_21_9,
             V1_21_10,
-            V1_21_11
+            V1_21_11,
+
+            // 26.1 - 26.1.2
+            V26_1,
+            V26_1_1,
+            V26_1_2
     );
 
     /**
@@ -248,6 +256,20 @@ public record MinecraftVersion(
             }
         }
         return new MinecraftVersion(major, update, minor, protocol.get());
+    }
+
+    /**
+     * Returns all minecraft versions corresponding to given protocol version
+     * @param protocol protocol version
+     * @return an immutable list of minecraft versions, or empty if none are found
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    public static List<MinecraftVersion> getByProtocolVersion(int protocol) {
+        if (MinecraftVersionHolder.VERSIONS_BY_PROTOCOL.length <= protocol)
+            return List.of();
+
+        List<MinecraftVersion> minecraftVersions = MinecraftVersionHolder.VERSIONS_BY_PROTOCOL[protocol];
+        return minecraftVersions == null ? List.of() : minecraftVersions;
     }
 
     /**
@@ -352,6 +374,14 @@ public record MinecraftVersion(
             return Integer.compare(update(), other.update());
 
         return Integer.compare(minor(), other.minor());
+    }
+
+    @Override
+    public String toString() {
+        if (minor() == 0)
+            return String.format("%s.%s", major(), update());
+        else
+            return String.format("%s.%s.%s", major(), update(), minor());
     }
 
 }
