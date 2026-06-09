@@ -63,6 +63,8 @@ class MinecraftVersionTest {
 
         assertTrue(mySeverVersion.isHigherThan(MinecraftVersion.V1_21));
         assertFalse(MinecraftVersion.V1_21.isHigherThan(mySeverVersion));
+
+        assertTrue(MinecraftVersion.V26_1_1.isHigherThan(mySeverVersion));
     }
 
     @Test
@@ -100,6 +102,7 @@ class MinecraftVersionTest {
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13));
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13_1));
         assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V1_13_2));
+        assertTrue(mySeverVersion.isLowerThan(MinecraftVersion.V26_1));
 
         mySeverVersion = MinecraftVersion.V1_20_2;
 
@@ -128,6 +131,7 @@ class MinecraftVersionTest {
         assertFalse(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V1_12));
         assertFalse(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V1_9_4));
 
+        assertTrue(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V26_1));
         assertTrue(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V1_13));
         assertTrue(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V1_13_1));
         assertTrue(mySeverVersion.isLowerThanOrEqual(MinecraftVersion.V1_13_2));
@@ -166,6 +170,15 @@ class MinecraftVersionTest {
         assertEquals(0, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_18_1));
         assertEquals(1, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_9));
         assertEquals(-1, MinecraftVersion.V1_18_1.compareTo(MinecraftVersion.V1_20));
+        assertEquals(1, MinecraftVersion.V26_1.compareTo(MinecraftVersion.V1_9));
+
     }
 
+    @Test
+    void testToString() {
+        assertEquals("1.8", MinecraftVersion.V1_8.toString());
+        assertEquals("1.10.1", MinecraftVersion.V1_10_1.toString());
+        assertEquals("26.1", MinecraftVersion.V26_1.toString());
+        assertEquals("26.1.2", MinecraftVersion.V26_1_2.toString());
+    }
 }
