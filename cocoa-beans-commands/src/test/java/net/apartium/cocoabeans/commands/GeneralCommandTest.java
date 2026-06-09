@@ -95,16 +95,16 @@ public class  GeneralCommandTest extends CommandTestBase {
         assertEquals(List.of("null"), sender.getMessages());
 
         assertTrue(CollectionHelpers.equalsList(List.of("second", "0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{""})));
-        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "t"));
+        assertEquals(List.of("three", "two"), evaluateTabCompletion("test-source", "t"));
         assertEquals(List.of(), evaluateTabCompletion("test-source", "ta"));
 
         assertEquals(List.of("wow"), evaluateTabCompletion("test-source", "two w"));
 
-        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test2 t"));
-        assertEquals(List.of("0", "zero", "1", "2", "3", "one", "two", "three"), evaluateTabCompletion("test-source", new String[]{"second", "test2", ""}));
-        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
+        assertEquals(List.of("three", "two"), evaluateTabCompletion("test-source", "second test2 t"));
+        assertEquals(List.of("0", "1", "2", "3", "one", "three", "two", "zero"), evaluateTabCompletion("test-source", new String[]{"second", "test2", ""}));
+        assertEquals(List.of("three", "two"), evaluateTabCompletion("test-source", "second test t"));
         Thread.sleep(20);
-        assertEquals(List.of("two", "three"), evaluateTabCompletion("test-source", "second test t"));
+        assertEquals(List.of("three", "two"), evaluateTabCompletion("test-source", "second test t"));
     }
 
     @Test

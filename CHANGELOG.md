@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## 0.0.51
+- [commands] Add prioritization for tab completions
+- [commands] Keywords will now be prioritized in tab completion
 - [common] Override MinecraftVersion#toString
 - [common] Add MinecraftVersion#getByProtocolVersion
 - [common] Add 26.1.x to MinecraftVersion

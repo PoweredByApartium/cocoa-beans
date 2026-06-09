@@ -26,6 +26,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @ApiStatus.NonExtendable
 public abstract class CommandManager {
@@ -40,11 +41,13 @@ public abstract class CommandManager {
             new StringsParser(0)
     );
 
+    public static final int DEFAULT_KEYWORD_PRIORITY = 1000;
 
     protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
     private final CommandLexer commandLexer;
     private final Logger logger;
+    private int keywordPriority = DEFAULT_KEYWORD_PRIORITY;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
@@ -86,12 +89,30 @@ public abstract class CommandManager {
         externalRequirementFactories.put(annotation, factory);
     }
 
+    @ApiStatus.Internal
+    private record SuggestionWithPriority(String suggestion, int priority) { }
 
     public List<String> handleTabComplete(Sender sender, String commandName, String[] args) {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null) return List.of();
         if (args.length == 0) args = new String[0];
-        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream().toList();
+        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream()
+                .flatMap(result -> result.suggestions().stream()
+                        .map(suggestion -> new SuggestionWithPriority(suggestion, result.priority()))
+                )
+                .collect(Collectors.toMap(
+                        SuggestionWithPriority::suggestion,
+                        SuggestionWithPriority::priority,
+                        Math::max
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue()
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByKey())
+                )
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
 
@@ -342,6 +363,24 @@ public abstract class CommandManager {
 
     public CommandLexer getCommandLexer() {
         return commandLexer;
+    }
+
+    /**
+     * Get the priority of the keyword.
+     * @return priority of the keyword
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    public int getKeywordPriority() {
+        return keywordPriority;
+    }
+
+    /**
+     * Set the priority of the keyword.
+     * @param keywordPriority priority of the keyword
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    public void setKeywordPriority(int keywordPriority) {
+        this.keywordPriority = keywordPriority;
     }
 
     /* package-private */ List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
