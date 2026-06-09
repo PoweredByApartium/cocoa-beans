@@ -1,0 +1,78 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2026-06-09T21:11:52.690319001"><title>🔢 Sorted Collection Observable | Cocoa Beans</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"overloads","level":0,"title":"Overloads","anchor":"#overloads"},{"id":"usage","level":0,"title":"Usage","anchor":"#usage"},{"id":"behavior","level":0,"title":"Behavior","anchor":"#behavior"},{"id":"notes","level":0,"title":"Notes","anchor":"#notes"},{"id":"advantages","level":0,"title":"Advantages","anchor":"#advantages"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.css" rel="stylesheet"><link rel="manifest" href="site.webmanifest"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="🔢 Sorted Collection Observable | Cocoa Beans"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Cocoa Beans Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation//snapshot/sorted-collection-observable.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="🔢 Sorted Collection Observable | Cocoa Beans"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation//snapshot/sorted-collection-observable.html#webpage",
+    "url": "writerside-documentation//snapshot/sorted-collection-observable.html",
+    "name": "🔢 Sorted Collection Observable | Cocoa Beans",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Cocoa Beans Help"
+}</script><!-- End Schema.org --></head><body data-id="sorted-collection-observable" data-main-title="🔢 Sorted Collection Observable" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="observable.md|📺 Observable api///collection-observable.md|🧰 Collection Observable"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Cocoa Beans snapshot Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="sorted-collection-observable" id="sorted-collection-observable.md">🔢 Sorted Collection Observable</h1><p id="-dane69_2"><sup class="superscript" id="-dane69_3">Available Since 0.0.50</sup></p><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-dane69_4"><code class="code" id="-dane69_5">sorted</code> is a <span class="control" id="-dane69_6">per-element, live</span> ordering operator on <code class="code" id="-dane69_7">ListObservable</code>. Each element of the source is mapped to an <code class="code" id="-dane69_8">Observable&lt;T&gt;</code> <span class="control" id="-dane69_9">sort key</span>, and the derived list is kept sorted by those keys using a <code class="code" id="-dane69_10">Comparator</code>.</p><p id="-dane69_11">Use this when the items in your list expose an <span class="control" id="-dane69_12">observable property</span> you want to order by &mdash; e.g. a player's score, an entity's distance from spawn, or a task's priority &mdash; and you want the order to update automatically when those properties change.</p><div class="code-block" data-lang="java">
+ListObservable&lt;DisplayPlayer&gt; players = Observable.list();
+
+ListObservable&lt;DisplayPlayer&gt; alphabetical = players.sorted(
+        DisplayPlayer::displayName,
+        Comparator.naturalOrder()
+);
+// re-orders when:
+//   - players are added/removed
+//   - any tracked player's displayName changes
+</div></section><section class="chapter"><h2 id="overloads" data-toc="overloads">Overloads</h2><p id="-dane69_14"><code class="code" id="-dane69_15">ListObservable&lt;E&gt;</code> exposes two overloads:</p><div class="code-block" data-lang="java">
+&lt;T&gt; ListObservable&lt;E&gt; sorted(Function&lt;E, Observable&lt;T&gt;&gt; mapper, Comparator&lt;? super T&gt; comparator);
+&lt;T&gt; ListObservable&lt;E&gt; sorted(Function&lt;E, Observable&lt;T&gt;&gt; mapper, Observable&lt;Comparator&lt;? super T&gt;&gt; comparator);
+</div><div class="table-wrapper"><table class="wide" id="-dane69_17"><thead><tr class="ijRowHead" id="-dane69_18"><th id="-dane69_19"><p>Overload</p></th><th id="-dane69_20"><p>Use when</p></th></tr></thead><tbody><tr id="-dane69_21"><td id="-dane69_22"><p><code class="code" id="-dane69_23">Comparator&lt;? super T&gt;</code></p></td><td id="-dane69_24"><p>The ordering rule is fixed for the lifetime of the view</p></td></tr><tr id="-dane69_25"><td id="-dane69_26"><p><code class="code" id="-dane69_27">Observable&lt;Comparator&lt;? super T&gt;&gt;</code></p></td><td id="-dane69_28"><p>You want to <span class="control" id="-dane69_29">swap the ordering rule at runtime</span> (e.g. asc &harr; desc)</p></td></tr></tbody></table></div><p id="-dane69_30">The static-comparator overload is a thin default that wraps your comparator in <code class="code" id="-dane69_31">Observable.immutable(...)</code> and delegates to the observable form &mdash; both share the same underlying implementation.</p></section><section class="chapter"><h2 id="usage" data-toc="usage">Usage</h2><section class="chapter"><h3 id="static-comparator" data-toc="static-comparator">Static comparator</h3><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void sortedSample() {
+        DisplayPlayer kfir = new DisplayPlayer(&quot;kfir&quot;, Observable.mutable(&quot;kfir&quot;));
+        DisplayPlayer lior = new DisplayPlayer(&quot;lior&quot;, Observable.mutable(&quot;lior&quot;));
+        DisplayPlayer apartium = new DisplayPlayer(&quot;apartium&quot;, Observable.mutable(&quot;apartium&quot;));
+
+        ListObservable&lt;DisplayPlayer&gt; players = Observable.list();
+        players.add(kfir);
+        players.add(lior);
+        players.add(apartium);
+
+        // sorted derives a ListObservable ordered by each element's inner observable
+        ListObservable&lt;DisplayPlayer&gt; alphabetical = players.sorted(
+                DisplayPlayer::displayName,
+                Comparator.naturalOrder()
+        );
+
+        assertEquals(List.of(apartium, kfir, lior), alphabetical.get());
+
+        // re-sorts when an inner key changes
+        kfir.displayName().set(&quot;zzz-kfir&quot;);
+        assertEquals(List.of(apartium, lior, kfir), alphabetical.get());
+
+        // re-sorts when the source collection changes
+        DisplayPlayer voigon = new DisplayPlayer(&quot;voigon&quot;, Observable.mutable(&quot;voigon&quot;));
+        players.add(voigon);
+        assertEquals(List.of(apartium, lior, voigon, kfir), alphabetical.get());
+    }
+</div></section><section class="chapter"><h3 id="observable-comparator" data-toc="observable-comparator">Observable comparator</h3><div class="code-block" data-lang="java" data-disable-link-processing="true">    @Test
+    void sortedObservableComparatorSample() {
+        ListObservable&lt;Integer&gt; scores = Observable.list();
+        scores.addAll(List.of(3, 1, 4, 1, 5, 9));
+
+        // The comparator itself is an Observable — swap it at runtime to flip the order
+        MutableObservable&lt;Comparator&lt;? super Integer&gt;&gt; comparator =
+                Observable.mutable(Comparator.&lt;Integer&gt;naturalOrder());
+
+        ListObservable&lt;Integer&gt; ranked = scores.sorted(Observable::immutable, comparator);
+
+        assertEquals(List.of(1, 1, 3, 4, 5, 9), ranked.get());
+
+        // flipping the comparator re-sorts without touching the source list
+        comparator.set(Comparator.&lt;Integer&gt;reverseOrder());
+        assertEquals(List.of(9, 5, 4, 3, 1, 1), ranked.get());
+
+        // both signals compose: source changes AND comparator changes are both observed
+        scores.add(7);
+        assertEquals(List.of(9, 7, 5, 4, 3, 1, 1), ranked.get());
+    }
+</div></section></section><section class="chapter"><h2 id="behavior" data-toc="behavior">Behavior</h2><ul class="list _bullet" id="-dane69_34"><li class="list__item" id="-dane69_35"><p>Subscribes to <span class="control" id="-dane69_36">each element's key observable</span> while the element is present in the source.</p></li><li class="list__item" id="-dane69_37"><p>When an element leaves the source, its inner subscription is released.</p></li><li class="list__item" id="-dane69_38"><p>Multiple elements may share the same key observable &mdash; it is observed <span class="control" id="-dane69_39">once</span> and stays observed as long as <span class="control" id="-dane69_40">any</span> referencing element is still in the source.</p></li><li class="list__item" id="-dane69_41"><p>The mapper is invoked at most once per element per source change, <span class="control" id="-dane69_42">not</span> on every key update.</p></li><li class="list__item" id="-dane69_43"><p><span class="control" id="-dane69_44">Comparator observable</span> is observed too: changes propagate just like source and key changes. Re-setting the <span class="control" id="-dane69_45">same</span> comparator reference is a no-op (identity check).</p></li><li class="list__item" id="-dane69_46"><p>Cached: <code class="code" id="-dane69_47">get()</code> reuses the previous result until the source, a tracked key, or the comparator changes.</p></li><li class="list__item" id="-dane69_48"><p><span class="control" id="-dane69_49">Short-circuit</span>: before re-sorting, the implementation checks whether the current source order is already sorted by the current keys. If so, <code class="code" id="-dane69_50">List.sort</code> is skipped entirely &mdash; only an O(n) scan runs.</p></li><li class="list__item" id="-dane69_51"><p>Sort is <span class="control" id="-dane69_52">stable</span>: equal keys preserve the source's relative order.</p></li></ul></section><section class="chapter"><h2 id="notes" data-toc="notes">Notes</h2><ul class="list _bullet" id="-dane69_53"><li class="list__item" id="-dane69_54"><p>The derived list is <span class="control" id="-dane69_55">read-only</span>. <code class="code" id="-dane69_56">add</code>, <code class="code" id="-dane69_57">remove</code>, <code class="code" id="-dane69_58">addAll</code>, <code class="code" id="-dane69_59">removeAll</code>, <code class="code" id="-dane69_60">removeIf</code>, <code class="code" id="-dane69_61">retainAll</code>, <code class="code" id="-dane69_62">clear</code> &mdash; and the list-specific <code class="code" id="-dane69_63">add(int, E)</code>, <code class="code" id="-dane69_64">remove(int)</code>, <code class="code" id="-dane69_65">sort</code> &mdash; all throw <code class="code" id="-dane69_66">UnsupportedOperationException</code>.</p></li><li class="list__item" id="-dane69_67"><p>A <code class="code" id="-dane69_68">null</code> mapper result is allowed and means &quot;this element has no key&quot;. Pair it with a null-tolerant comparator (e.g. <code class="code" id="-dane69_69">Comparator.nullsFirst(...)</code>) if you need to handle that case.</p></li><li class="list__item" id="-dane69_70"><p>Duplicates in the source list are preserved &mdash; each occurrence appears in the sorted result, with stability across equal keys.</p></li></ul></section><section class="chapter"><h2 id="advantages" data-toc="advantages">Advantages</h2><ul class="list _bullet" id="-dane69_71"><li class="list__item" id="-dane69_72"><p>🔢 <span class="control" id="-dane69_73">Live ordering</span>: order tracks collection changes, per-element key changes, <span class="control" id="-dane69_74">and</span> comparator changes</p></li><li class="list__item" id="-dane69_75"><p>🔄 <span class="control" id="-dane69_76">Swappable ordering</span>: with the observable-comparator overload, flip asc/desc (or any rule) without touching the source</p></li><li class="list__item" id="-dane69_77"><p>⚡ <span class="control" id="-dane69_78">Cheap when stable</span>: already-sorted inputs short-circuit and skip <code class="code" id="-dane69_79">List.sort</code></p></li><li class="list__item" id="-dane69_80"><p>🔒 <span class="control" id="-dane69_81">No observer leaks</span>: subscriptions are released when elements leave</p></li><li class="list__item" id="-dane69_82"><p>🤝 <span class="control" id="-dane69_83">Sharing-friendly</span>: elements sharing a key observable share the subscription</p></li><li class="list__item" id="-dane69_84"><p>⛓ <span class="control" id="-dane69_85">Composable</span>: chains naturally with <code class="code" id="-dane69_86">filter</code>, <code class="code" id="-dane69_87">mapEach</code>, and <code class="code" id="-dane69_88">flatMapEach</code></p></li></ul></section><div class="last-modified">Last modified: 16 May 2026</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="flat-mapping-collection-observable.html" class="navigation-links__prev">🪐 Flat Mapping Collection Observable</a><a href="collection-observable-conversion.html" class="navigation-links__next">🔄 Collection Observable Conversion</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.6.6-b224/app.js"></script></body></html>
