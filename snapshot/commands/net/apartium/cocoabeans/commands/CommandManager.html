@@ -97,6 +97,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#COMMON_PARSERS" class="member-name-link">COMMON_PARSERS</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#DEFAULT_KEYWORD_PRIORITY" class="member-name-link">DEFAULT_KEYWORD_PRIORITY</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -160,38 +163,48 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="lexer/CommandLexer.html" title="interface in net.apartium.cocoabeans.commands.lexer">CommandLexer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCommandLexer()" class="member-name-link">getCommandLexer</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.logging/java/util/logging/Logger.html" title="class or interface in java.util.logging" class="external-link">Logger</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLogger()" class="member-name-link">getLogger</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getKeywordPriority()" class="member-name-link">getKeywordPriority</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the priority of the keyword.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.logging/java/util/logging/Logger.html" title="class or interface in java.util.logging" class="external-link">Logger</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLogger()" class="member-name-link">getLogger</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get logger for command manager</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handle(net.apartium.cocoabeans.commands.Sender,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">handle</a><wbr>(<a href="Sender.html" title="interface in net.apartium.cocoabeans.commands">Sender</a>&nbsp;sender,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandName,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleTabComplete(net.apartium.cocoabeans.commands.Sender,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">handleTabComplete</a><wbr>(<a href="Sender.html" title="interface in net.apartium.cocoabeans.commands">Sender</a>&nbsp;sender,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handle(net.apartium.cocoabeans.commands.Sender,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">handle</a><wbr>(<a href="Sender.html" title="interface in net.apartium.cocoabeans.commands">Sender</a>&nbsp;sender,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="CommandInfo.html" title="class in net.apartium.cocoabeans.commands">CommandInfo</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mappingCommandInfo(net.apartium.cocoabeans.commands.CommandInfo,java.util.Collection)" class="member-name-link">mappingCommandInfo</a><wbr>(<a href="CommandInfo.html" title="class in net.apartium.cocoabeans.commands">CommandInfo</a>&nbsp;info,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleTabComplete(net.apartium.cocoabeans.commands.Sender,java.lang.String,java.lang.String%5B%5D)" class="member-name-link">handleTabComplete</a><wbr>(<a href="Sender.html" title="interface in net.apartium.cocoabeans.commands">Sender</a>&nbsp;sender,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;commandName,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="CommandInfo.html" title="class in net.apartium.cocoabeans.commands">CommandInfo</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mappingCommandInfo(net.apartium.cocoabeans.commands.CommandInfo,java.util.Collection)" class="member-name-link">mappingCommandInfo</a><wbr>(<a href="CommandInfo.html" title="class in net.apartium.cocoabeans.commands">CommandInfo</a>&nbsp;info,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/AnnotatedElement.html" title="class or interface in java.lang.reflect" class="external-link">AnnotatedElement</a>&gt;&nbsp;nodes)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Maps and processes a <a href="CommandInfo.html" title="class in net.apartium.cocoabeans.commands"><code>CommandInfo</code></a> object based on the provided collection of <code>GenericNode</code> elements.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerArgumentTypeHandler(java.util.Set)" class="member-name-link">registerArgumentTypeHandler</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&gt;&nbsp;argumentTypeHandlers)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerArgumentTypeHandler(net.apartium.cocoabeans.commands.parsers.ArgumentParser)" class="member-name-link">registerArgumentTypeHandler</a><wbr>(<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&nbsp;argumentTypeHandler)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerArgumentTypeHandler(java.util.Set)" class="member-name-link">registerArgumentTypeHandler</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&gt;&nbsp;argumentTypeHandlers)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerRequirementFactory(java.lang.Class,net.apartium.cocoabeans.commands.requirements.RequirementFactory)" class="member-name-link">registerRequirementFactory</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotation,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerArgumentTypeHandler(net.apartium.cocoabeans.commands.parsers.ArgumentParser)" class="member-name-link">registerArgumentTypeHandler</a><wbr>(<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&nbsp;argumentTypeHandler)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerRequirementFactory(java.lang.Class,net.apartium.cocoabeans.commands.requirements.RequirementFactory)" class="member-name-link">registerRequirementFactory</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Annotation.html" title="class or interface in java.lang.annotation" class="external-link">Annotation</a>&gt;&nbsp;annotation,
  <a href="requirements/RequirementFactory.html" title="interface in net.apartium.cocoabeans.commands.requirements">RequirementFactory</a>&nbsp;factory)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Registers an external requirement factory for a specific annotation.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setKeywordPriority(int)" class="member-name-link">setKeywordPriority</a><wbr>(int&nbsp;keywordPriority)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the priority of the keyword.</div>
 </div>
 </div>
 </div>
@@ -214,6 +227,20 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="COMMON_PARSERS">
 <h3>COMMON_PARSERS</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="parsers/ArgumentParser.html" title="class in net.apartium.cocoabeans.commands.parsers">ArgumentParser</a>&lt;?&gt;&gt;</span>&nbsp;<span class="element-name">COMMON_PARSERS</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="DEFAULT_KEYWORD_PRIORITY">
+<h3>DEFAULT_KEYWORD_PRIORITY</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">DEFAULT_KEYWORD_PRIORITY</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../../../../constant-values.html#net.apartium.cocoabeans.commands.CommandManager.DEFAULT_KEYWORD_PRIORITY">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -380,6 +407,30 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getCommandLexer()">
 <h3>getCommandLexer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="lexer/CommandLexer.html" title="interface in net.apartium.cocoabeans.commands.lexer">CommandLexer</a></span>&nbsp;<span class="element-name">getCommandLexer</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getKeywordPriority()">
+<h3>getKeywordPriority</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.51")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getKeywordPriority</span>()</div>
+<div class="block">Get the priority of the keyword.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>priority of the keyword</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setKeywordPriority(int)">
+<h3>setKeywordPriority</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.51")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setKeywordPriority</span><wbr><span class="parameters">(int&nbsp;keywordPriority)</span></div>
+<div class="block">Set the priority of the keyword.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>keywordPriority</code> - priority of the keyword</dd>
+</dl>
 </section>
 </li>
 <li>
