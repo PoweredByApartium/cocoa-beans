@@ -10,7 +10,7 @@ import java.util.Set;
  * @param priority the priority of the suggestions
  */
 @ApiStatus.AvailableSince("0.0.51")
-public record TabCompletionResult(
+public record TabCompletionEvaluationResult(
         Set<String> suggestions,
         int priority
 ) {

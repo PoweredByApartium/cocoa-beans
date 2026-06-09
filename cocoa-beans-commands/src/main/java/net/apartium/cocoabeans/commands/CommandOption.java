@@ -214,12 +214,12 @@ import java.util.*;
         return null;
     }
 
-    public Set<TabCompletionResult> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+    public Set<TabCompletionEvaluationResult> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index)
             return Set.of();
 
         if (args.length - 1 == index) {
-            Set<TabCompletionResult> result = new HashSet<>();
+            Set<TabCompletionEvaluationResult> result = new HashSet<>();
 
             for (var entry : keywordMap.entrySet()) {
                 if (!entry.getKey().startsWith(args[index]))
@@ -228,7 +228,7 @@ import java.util.*;
                 if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                result.add(new TabCompletionResult(
+                result.add(new TabCompletionEvaluationResult(
                         Set.of(entry.getKey()),
                         commandManager.getKeywordPriority()
                 ));
@@ -241,7 +241,7 @@ import java.util.*;
                 if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                result.add(new TabCompletionResult(
+                result.add(new TabCompletionEvaluationResult(
                         Set.of(entry.getKey()),
                         commandManager.getKeywordPriority()
                 ));
@@ -264,7 +264,7 @@ import java.util.*;
                 }
 
                 ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
-                result.add(new TabCompletionResult(
+                result.add(new TabCompletionEvaluationResult(
                         completionResult.result(),
                         completionResult.priority()
                 ));
@@ -273,10 +273,10 @@ import java.util.*;
             return result;
         }
 
-        Set<TabCompletionResult> result = new HashSet<>();
+        Set<TabCompletionEvaluationResult> result = new HashSet<>();
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor != null) {
-            Set<TabCompletionResult> completions = commandBranchProcessor.handleTabCompletion(
+            Set<TabCompletionEvaluationResult> completions = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
@@ -289,7 +289,7 @@ import java.util.*;
 
         commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
         if (commandBranchProcessor != null) {
-            Set<TabCompletionResult> completions = commandBranchProcessor.handleTabCompletion(
+            Set<TabCompletionEvaluationResult> completions = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
@@ -317,7 +317,7 @@ import java.util.*;
                         continue;
 
                     ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
-                    result.add(new TabCompletionResult(
+                    result.add(new TabCompletionEvaluationResult(
                             completionResult.result(),
                             completionResult.priority()
                     ));
@@ -346,7 +346,7 @@ import java.util.*;
                     continue;
 
                 ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
-                result.add(new TabCompletionResult(
+                result.add(new TabCompletionEvaluationResult(
                         completionResult.result(),
                         completionResult.priority()
                 ));
@@ -359,7 +359,7 @@ import java.util.*;
                     if (tabCompletionResult.isPresent()) {
                         ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
                         if (completionResult.newIndex() >= args.length) {
-                            result.add(new TabCompletionResult(
+                            result.add(new TabCompletionEvaluationResult(
                                     completionResult.result(),
                                     completionResult.priority()
                             ));
@@ -374,7 +374,7 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
 
-            Set<TabCompletionResult> completionResults = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
+            Set<TabCompletionEvaluationResult> completionResults = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
             if (completionResults.isEmpty())
                 continue;
 

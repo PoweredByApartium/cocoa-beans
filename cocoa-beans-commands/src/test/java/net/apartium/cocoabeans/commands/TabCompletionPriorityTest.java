@@ -14,41 +14,41 @@ import static org.junit.jupiter.api.Assertions.*;
 class TabCompletionPriorityTest {
 
     @Nested
-    class TabCompletionResultRecordTest {
+    class TabCompletionEvaluationResultRecordTest {
 
         @Test
         void constructWithSuggestionsAndPriority() {
-            TabCompletionResult result = new TabCompletionResult(Set.of("a", "b"), 5);
+            TabCompletionEvaluationResult result = new TabCompletionEvaluationResult(Set.of("a", "b"), 5);
             assertEquals(Set.of("a", "b"), result.suggestions());
             assertEquals(5, result.priority());
         }
 
         @Test
         void constructWithEmptySuggestions() {
-            TabCompletionResult result = new TabCompletionResult(Set.of(), 0);
+            TabCompletionEvaluationResult result = new TabCompletionEvaluationResult(Set.of(), 0);
             assertTrue(result.suggestions().isEmpty());
             assertEquals(0, result.priority());
         }
 
         @Test
         void constructWithNegativePriority() {
-            TabCompletionResult result = new TabCompletionResult(Set.of("x"), -10);
+            TabCompletionEvaluationResult result = new TabCompletionEvaluationResult(Set.of("x"), -10);
             assertEquals(Set.of("x"), result.suggestions());
             assertEquals(-10, result.priority());
         }
 
         @Test
         void constructWithHighPriority() {
-            TabCompletionResult result = new TabCompletionResult(Set.of("high"), Integer.MAX_VALUE);
+            TabCompletionEvaluationResult result = new TabCompletionEvaluationResult(Set.of("high"), Integer.MAX_VALUE);
             assertEquals(Integer.MAX_VALUE, result.priority());
         }
 
         @Test
         void equalityAndHashCode() {
-            TabCompletionResult a = new TabCompletionResult(Set.of("foo"), 10);
-            TabCompletionResult b = new TabCompletionResult(Set.of("foo"), 10);
-            TabCompletionResult c = new TabCompletionResult(Set.of("foo"), 20);
-            TabCompletionResult d = new TabCompletionResult(Set.of("bar"), 10);
+            TabCompletionEvaluationResult a = new TabCompletionEvaluationResult(Set.of("foo"), 10);
+            TabCompletionEvaluationResult b = new TabCompletionEvaluationResult(Set.of("foo"), 10);
+            TabCompletionEvaluationResult c = new TabCompletionEvaluationResult(Set.of("foo"), 20);
+            TabCompletionEvaluationResult d = new TabCompletionEvaluationResult(Set.of("bar"), 10);
 
             assertEquals(a, b);
             assertEquals(a.hashCode(), b.hashCode());
@@ -58,7 +58,7 @@ class TabCompletionPriorityTest {
 
         @Test
         void toStringContainsFields() {
-            TabCompletionResult result = new TabCompletionResult(Set.of("test"), 42);
+            TabCompletionEvaluationResult result = new TabCompletionEvaluationResult(Set.of("test"), 42);
             String str = result.toString();
             assertTrue(str.contains("test"));
             assertTrue(str.contains("42"));
