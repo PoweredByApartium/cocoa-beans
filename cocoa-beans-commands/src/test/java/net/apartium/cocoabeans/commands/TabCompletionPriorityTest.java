@@ -627,9 +627,10 @@ class TabCompletionPriorityTest {
             super(
                     java.util.logging.Logger.getLogger(TestCommandManagerWithPriority.class.getName()),
                     new SimpleArgumentMapper(),
-                    new SimpleCommandLexer(),
-                    keywordPriority
+                    new SimpleCommandLexer()
             );
+
+            setKeywordPriority(keywordPriority);
         }
 
         @Override

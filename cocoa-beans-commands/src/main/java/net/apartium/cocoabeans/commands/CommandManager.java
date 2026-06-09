@@ -47,7 +47,7 @@ public abstract class CommandManager {
     private final ArgumentMapper argumentMapper;
     private final CommandLexer commandLexer;
     private final Logger logger;
-    private final int keywordPriority;
+    private int keywordPriority = DEFAULT_KEYWORD_PRIORITY;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
@@ -59,24 +59,9 @@ public abstract class CommandManager {
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     protected CommandManager(Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
-        this(logger, argumentMapper, commandLexer, DEFAULT_KEYWORD_PRIORITY);
-    }
-
-    /**
-     * Initializes a new instance of the CommandManager class with the specified logger,
-     * argument mapper, command lexer, and keyword priority.
-     *
-     * @param logger the logger used for logging within the command manager
-     * @param argumentMapper the argument mapper responsible for mapping command arguments
-     * @param commandLexer the command lexer responsible for tokenizing command input
-     * @param keywordPriority the priority level for keywords in the command hierarchy
-     */
-    @ApiStatus.AvailableSince("0.0.51")
-    protected CommandManager(Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer, int keywordPriority) {
         this.logger = logger;
         this.argumentMapper = argumentMapper;
         this.commandLexer = commandLexer;
-        this.keywordPriority = keywordPriority;
     }
 
     public void registerArgumentTypeHandler(ArgumentParser<?> argumentTypeHandler) {
@@ -380,8 +365,22 @@ public abstract class CommandManager {
         return commandLexer;
     }
 
+    /**
+     * Get the priority of the keyword.
+     * @return priority of the keyword
+     */
+    @ApiStatus.AvailableSince("0.0.51")
     public int getKeywordPriority() {
         return keywordPriority;
+    }
+
+    /**
+     * Set the priority of the keyword.
+     * @param keywordPriority priority of the keyword
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    public void setKeywordPriority(int keywordPriority) {
+        this.keywordPriority = keywordPriority;
     }
 
     /* package-private */ List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
