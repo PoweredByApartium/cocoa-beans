@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.structs;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -180,5 +181,20 @@ class MinecraftVersionTest {
         assertEquals("1.10.1", MinecraftVersion.V1_10_1.toString());
         assertEquals("26.1", MinecraftVersion.V26_1.toString());
         assertEquals("26.1.2", MinecraftVersion.V26_1_2.toString());
+    }
+
+    @Test
+    void getByProtocolVersion() {
+        assertEquals(List.of(MinecraftVersion.V1_8, MinecraftVersion.V1_8_1, MinecraftVersion.V1_8_2, MinecraftVersion.V1_8_3,
+                MinecraftVersion.V1_8_4, MinecraftVersion.V1_8_5, MinecraftVersion.V1_8_6, MinecraftVersion.V1_8_7,MinecraftVersion.V1_8_8,
+                MinecraftVersion.V1_8_9), MinecraftVersion.getByProtocolVersion(MinecraftVersion.V1_8.protocol()));
+
+        assertEquals(List.of(MinecraftVersion.V26_1, MinecraftVersion.V26_1_1, MinecraftVersion.V26_1_2), MinecraftVersion.getByProtocolVersion(MinecraftVersion.V26_1.protocol()));
+
+        assertEquals(List.of(), MinecraftVersion.getByProtocolVersion(4));
+        assertEquals(List.of(), MinecraftVersion.getByProtocolVersion(0));
+        assertEquals(List.of(), MinecraftVersion.getByProtocolVersion(500));
+        assertEquals(List.of(), MinecraftVersion.getByProtocolVersion(MinecraftVersionHolder.VERSIONS_BY_PROTOCOL.length));
+
     }
 }

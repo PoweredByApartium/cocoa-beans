@@ -259,6 +259,20 @@ public record MinecraftVersion(
     }
 
     /**
+     * Returns all minecraft versions corresponding to given protocol version
+     * @param protocol protocol version
+     * @return an immutable list of minecraft versions, or empty if none are found
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    public static List<MinecraftVersion> getByProtocolVersion(int protocol) {
+        if (MinecraftVersionHolder.VERSIONS_BY_PROTOCOL.length <= protocol)
+            return List.of();
+
+        List<MinecraftVersion> minecraftVersions = MinecraftVersionHolder.VERSIONS_BY_PROTOCOL[protocol];
+        return minecraftVersions == null ? List.of() : minecraftVersions;
+    }
+
+    /**
      * Helper method to check if current instance is higher than or equal to given version
      * @param other other minecraft version
      * @return true if higher than or equal, otherwise false
