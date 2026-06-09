@@ -120,14 +120,27 @@ public abstract class ArgumentParser<T> implements Comparable<ArgumentParser<?>>
     ) { }
 
     /**
-     * Tsb completion result is the content of the tab completion
+     * Tab completion result is the content of the tab completion
      * @param result the result of the tab completion
      * @param newIndex new index to change to
+     * @param priority priority of the completion in case of multiple results
      */
     public record TabCompletionResult(
             Set<String> result,
-            int newIndex
-    ) { }
+            int newIndex,
+            int priority
+    ) {
+
+        /**
+         * Constructor with only a result and newIndex
+         * @param result the result of the tab completion
+         * @param newIndex new index to change to
+         */
+        public TabCompletionResult(Set<String> result, int newIndex) {
+            this(result, newIndex, 0);
+        }
+
+    }
 
     @Override
     public int compareTo(@NotNull ArgumentParser<?> other) {

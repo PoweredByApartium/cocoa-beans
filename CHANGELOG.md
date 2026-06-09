@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.0.51
+- [commands] Add Tab completion suggestion priority
+
 ## 0.0.50
 - [commands] Improve ArgumentMapper injection
 - [commands] Add HelpMenu

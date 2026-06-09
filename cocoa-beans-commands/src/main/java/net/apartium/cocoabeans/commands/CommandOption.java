@@ -214,12 +214,12 @@ import java.util.*;
         return null;
     }
 
-    public Set<String> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+    public Set<TabCompletionResult> handleTabCompletion(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length <= index)
             return Set.of();
 
         if (args.length - 1 == index) {
-            Set<String> result = new HashSet<>();
+            Set<TabCompletionResult> result = new HashSet<>();
 
             for (var entry : keywordMap.entrySet()) {
                 if (!entry.getKey().startsWith(args[index]))
@@ -228,7 +228,10 @@ import java.util.*;
                 if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                result.add(entry.getKey());
+                result.add(new TabCompletionResult(
+                        Set.of(entry.getKey()),
+                        commandManager.getKeywordPriority()
+                ));
             }
 
             for (var entry : keywordIgnoreCaseMap.entrySet()) {
@@ -238,7 +241,10 @@ import java.util.*;
                 if (!entry.getValue().haveAnyRequirementsMeet(sender, commandName, args, index))
                     continue;
 
-                result.add(entry.getKey());
+                result.add(new TabCompletionResult(
+                        Set.of(entry.getKey()),
+                        commandManager.getKeywordPriority()
+                ));
             }
 
             for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
@@ -257,29 +263,33 @@ import java.util.*;
                     continue;
                 }
 
-                result.addAll(tabCompletionResult.get().result());
+                ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
+                result.add(new TabCompletionResult(
+                        completionResult.result(),
+                        completionResult.priority()
+                ));
             }
 
             return result;
         }
 
-        Set<String> result = new HashSet<>();
+        Set<TabCompletionResult> result = new HashSet<>();
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor != null) {
-            Set<String> strings = commandBranchProcessor.handleTabCompletion(
+            Set<TabCompletionResult> completions = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
                     sender,
                     index + 1
             );
-            if (!strings.isEmpty())
-                result.addAll(strings);
+            if (!completions.isEmpty())
+                result.addAll(completions);
         }
 
         commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
         if (commandBranchProcessor != null) {
-            Set<String> strings = commandBranchProcessor.handleTabCompletion(
+            Set<TabCompletionResult> completions = commandBranchProcessor.handleTabCompletion(
                     registeredCommand,
                     commandName,
                     args,
@@ -287,8 +297,8 @@ import java.util.*;
                     index + 1
             );
 
-            if (!strings.isEmpty())
-                result.addAll(strings);
+            if (!completions.isEmpty())
+                result.addAll(completions);
         }
 
         for (Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entry : argumentTypeHandlerMap) {
@@ -306,7 +316,11 @@ import java.util.*;
                     if (tabCompletionResult.get().newIndex() < args.length)
                         continue;
 
-                    result.addAll(tabCompletionResult.get().result());
+                    ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
+                    result.add(new TabCompletionResult(
+                            completionResult.result(),
+                            completionResult.priority()
+                    ));
                     continue;
                 }
             }
@@ -331,7 +345,11 @@ import java.util.*;
                 if (tabCompletionResult.get().newIndex() < args.length)
                     continue;
 
-                result.addAll(tabCompletionResult.get().result());
+                ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
+                result.add(new TabCompletionResult(
+                        completionResult.result(),
+                        completionResult.priority()
+                ));
                 continue;
             }
 
@@ -339,8 +357,12 @@ import java.util.*;
                 if (entry.value().haveAnyRequirementsMeet(sender, commandName, args, index)) {
                     Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.key().tabCompletion(new SimpleCommandProcessingContext(sender, commandName, args, index));
                     if (tabCompletionResult.isPresent()) {
-                        if (tabCompletionResult.get().newIndex() >= args.length) {
-                            result.addAll(tabCompletionResult.get().result().stream().toList());
+                        ArgumentParser.TabCompletionResult completionResult = tabCompletionResult.get();
+                        if (completionResult.newIndex() >= args.length) {
+                            result.add(new TabCompletionResult(
+                                    completionResult.result(),
+                                    completionResult.priority()
+                            ));
                             continue;
                         }
                     }
@@ -352,11 +374,11 @@ import java.util.*;
             if (newIndex <= index)
                 throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger then current index");
 
-            Set<String> strings = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
-            if (strings.isEmpty())
+            Set<TabCompletionResult> completionResults = entry.value().handleTabCompletion(registeredCommand, commandName, args, sender, newIndex);
+            if (completionResults.isEmpty())
                 continue;
 
-            result.addAll(strings);
+            result.addAll(completionResults);
         }
 
         return result;

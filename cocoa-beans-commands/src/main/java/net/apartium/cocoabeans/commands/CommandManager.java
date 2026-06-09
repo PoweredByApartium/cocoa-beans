@@ -26,6 +26,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @ApiStatus.NonExtendable
 public abstract class CommandManager {
@@ -40,11 +41,13 @@ public abstract class CommandManager {
             new StringsParser(0)
     );
 
+    public static final int DEFAULT_KEYWORD_PRIORITY = 1000;
 
     protected final Map<String, RegisteredCommand> commandMap = new HashMap<>();
     private final ArgumentMapper argumentMapper;
     private final CommandLexer commandLexer;
     private final Logger logger;
+    private final int keywordPriority;
 
     /* package-private */ final Map<Class<? extends ParserFactory>, ParserFactory> parserFactories = new HashMap<>();
     /* package-private */ final Map<Class<? extends ArgumentRequirementFactory>, ArgumentRequirementFactory> argumentRequirementFactories = new HashMap<>();
@@ -56,9 +59,24 @@ public abstract class CommandManager {
     /* package-private */ final Map<String, ArgumentParser<?>> argumentTypeHandlerMap = new HashMap<>();
 
     protected CommandManager(Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer) {
+        this(logger, argumentMapper, commandLexer, DEFAULT_KEYWORD_PRIORITY);
+    }
+
+    /**
+     * Initializes a new instance of the CommandManager class with the specified logger,
+     * argument mapper, command lexer, and keyword priority.
+     *
+     * @param logger the logger used for logging within the command manager
+     * @param argumentMapper the argument mapper responsible for mapping command arguments
+     * @param commandLexer the command lexer responsible for tokenizing command input
+     * @param keywordPriority the priority level for keywords in the command hierarchy
+     */
+    @ApiStatus.AvailableSince("0.0.51")
+    protected CommandManager(Logger logger, ArgumentMapper argumentMapper, CommandLexer commandLexer, int keywordPriority) {
         this.logger = logger;
         this.argumentMapper = argumentMapper;
         this.commandLexer = commandLexer;
+        this.keywordPriority = keywordPriority;
     }
 
     public void registerArgumentTypeHandler(ArgumentParser<?> argumentTypeHandler) {
@@ -86,12 +104,30 @@ public abstract class CommandManager {
         externalRequirementFactories.put(annotation, factory);
     }
 
+    @ApiStatus.Internal
+    private record SuggestionWithPriority(String suggestion, int priority) { }
 
     public List<String> handleTabComplete(Sender sender, String commandName, String[] args) {
         RegisteredCommand registeredCommand = commandMap.get(commandName.toLowerCase());
         if (registeredCommand == null) return List.of();
         if (args.length == 0) args = new String[0];
-        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream().toList();
+        return registeredCommand.getCommandBranchProcessor().handleTabCompletion(registeredCommand, commandName, args, sender, 0).stream()
+                .flatMap(result -> result.suggestions().stream()
+                        .map(suggestion -> new SuggestionWithPriority(suggestion, result.priority()))
+                )
+                .collect(Collectors.toMap(
+                        SuggestionWithPriority::suggestion,
+                        SuggestionWithPriority::priority,
+                        Math::max
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue()
+                        .reversed()
+                        .thenComparing(Map.Entry.comparingByKey())
+                )
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
 
@@ -342,6 +378,10 @@ public abstract class CommandManager {
 
     public CommandLexer getCommandLexer() {
         return commandLexer;
+    }
+
+    public int getKeywordPriority() {
+        return keywordPriority;
     }
 
     /* package-private */ List<Function<Map<String, Object>, Set<Requirement>>> getMetadataHandlers() {
