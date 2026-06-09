@@ -125,7 +125,7 @@ class TabCompletionPriorityTest {
 
         @Test
         void defaultKeywordPriorityIs1000() {
-            assertEquals(CommandManager.DEFAULT_KEYWORD_PRIORITY, 1000);
+            assertEquals(1000, CommandManager.DEFAULT_KEYWORD_PRIORITY);
             assertEquals(1000, testCommandManager.getKeywordPriority());
         }
     }
@@ -635,6 +635,7 @@ class TabCompletionPriorityTest {
 
         @Override
         protected void addCommand(CommandNode commandNode, Command command) {
+            // ignored
         }
 
         @Override
