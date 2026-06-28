@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,12 +22,12 @@ class AttachedWatcherTest {
         WatcherOperator operator = new WatcherOperator() {
             @Override
             public void attach(AttachedWatcher<?> watcher) {
-
+                /* ignore */
             }
 
             @Override
             public void detach(AttachedWatcher<?> watcher) {
-
+                /* ignore */
             }
         };
 
@@ -53,12 +54,12 @@ class AttachedWatcherTest {
         WatcherOperator operator = new WatcherOperator() {
             @Override
             public void attach(AttachedWatcher<?> watcher) {
-
+                /* ignore */
             }
 
             @Override
             public void detach(AttachedWatcher<?> watcher) {
-
+                /* ignore */
             }
         };
 
@@ -80,6 +81,161 @@ class AttachedWatcherTest {
             }
         };
         assertThrowsExactly(IllegalArgumentException.class, watcher::detach);
+    }
+
+    @Test
+    void attachWithNullManager() {
+        Observable<Integer> num = Observable.mutable(5);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+            }
+        };
+
+        assertThrowsExactly(NullPointerException.class, () -> watcher.attach(null));
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+    }
+
+    @Test
+    void attachRollsBackWhenOperatorAttachThrows() {
+        Observable<Integer> num = Observable.mutable(5);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+            }
+        };
+
+        WatcherOperator failingOperator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                throw new RuntimeException("operator rejected");
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+        };
+
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(failingOperator));
+        assertEquals("operator rejected", ex.getMessage());
+
+        // watcher should be rolled back to unattached state
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+
+        // should still be attachable after the failed attempt
+        WatcherManager manager = new WatcherManager();
+        watcher.attach(manager);
+        assertTrue(watcher.isAttached());
+        assertEquals(manager, watcher.getManager());
+        watcher.detach();
+    }
+
+    @Test
+    void attachRollsBackWhenObserveThrows() {
+        AtomicBoolean shouldThrow = new AtomicBoolean(false);
+        AtomicBoolean detachCalled = new AtomicBoolean(false);
+
+        Observable<Integer> throwingObservable = new Observable<>() {
+            @Override
+            public Integer get() {
+                return 0;
+            }
+
+            @Override
+            public void observe(Observer observer) {
+                if (shouldThrow.get())
+                    throw new RuntimeException("observe failed");
+            }
+
+            @Override
+            public boolean removeObserver(Observer observer) {
+                return true;
+            }
+        };
+
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
+            @Override
+            public void onChange(Integer newValue) {
+            }
+        };
+
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* accept */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                detachCalled.set(true);
+            }
+        };
+
+        // observe throws after operator.attach succeeds → should rollback by calling operator.detach
+        shouldThrow.set(true);
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(operator));
+        assertEquals("observe failed", ex.getMessage());
+
+        // operator.detach was called to rollback
+        assertTrue(detachCalled.get());
+
+        // watcher is not attached
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+    }
+
+    @Test
+    void attachRollbackDetachThrowsSuppressed() {
+        AtomicBoolean shouldThrow = new AtomicBoolean(false);
+
+        Observable<Integer> throwingObservable = new Observable<>() {
+            @Override
+            public Integer get() {
+                return 0;
+            }
+
+            @Override
+            public void observe(Observer observer) {
+                if (shouldThrow.get())
+                    throw new RuntimeException("observe failed");
+            }
+
+            @Override
+            public boolean removeObserver(Observer observer) {
+                return true;
+            }
+        };
+
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
+            @Override
+            public void onChange(Integer newValue) {
+            }
+        };
+
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* accept */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                throw new RuntimeException("detach also failed");
+            }
+        };
+
+        // observe throws, then rollback detach also throws → detach exception is suppressed
+        shouldThrow.set(true);
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(operator));
+        assertEquals("observe failed", ex.getMessage());
+        assertEquals(1, ex.getSuppressed().length);
+        assertEquals("detach also failed", ex.getSuppressed()[0].getMessage());
+
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
     }
 
     @Test

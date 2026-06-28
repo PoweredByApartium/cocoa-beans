@@ -35,8 +35,23 @@ public abstract class AttachedWatcher<T> extends Watcher<T> {
         Ensures.notNull(manager, "manager +-");
 
         this.manager = manager;
-        this.manager.attach(this);
-        depends.observe(this);
+        boolean registered = false;
+        try {
+            this.manager.attach(this);
+            registered = true;
+            depends.observe(this);
+        } catch (RuntimeException e) {
+            if (registered) {
+                try {
+                    this.manager.detach(this);
+                } catch (RuntimeException suppressed) {
+                    e.addSuppressed(suppressed);
+                }
+            }
+
+            this.manager = null;
+            throw e;
+        }
     }
 
     /**
