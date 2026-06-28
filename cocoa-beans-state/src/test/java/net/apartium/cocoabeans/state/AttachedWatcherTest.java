@@ -89,6 +89,7 @@ class AttachedWatcherTest {
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
             @Override
             public void onChange(Integer newValue) {
+                /* ignore */
             }
         };
 
@@ -103,6 +104,7 @@ class AttachedWatcherTest {
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
             @Override
             public void onChange(Integer newValue) {
+                /* ignore */
             }
         };
 
@@ -159,6 +161,7 @@ class AttachedWatcherTest {
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
             @Override
             public void onChange(Integer newValue) {
+                /* ignore */
             }
         };
 
@@ -212,6 +215,7 @@ class AttachedWatcherTest {
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
             @Override
             public void onChange(Integer newValue) {
+                /* ignore */
             }
         };
 
