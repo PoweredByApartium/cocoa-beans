@@ -121,19 +121,24 @@ implements <a href="WatcherOperator.html" title="interface in net.apartium.cocoa
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#detach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">detach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#attach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">attach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Detach a watcher attached with the current instance</div>
+<div class="block">Attaches a watcher to the current instance</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#heartbeat()" class="member-name-link">heartbeat</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#detach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">detach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Detach a watcher attached with the current instance</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#heartbeat()" class="member-name-link">heartbeat</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Triggers heartbeat on all the attached watchers</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#watch(net.apartium.cocoabeans.state.Observable,java.util.function.Consumer)" class="member-name-link">watch</a><wbr>(<a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;T&gt;&nbsp;depends,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#watch(net.apartium.cocoabeans.state.Observable,java.util.function.Consumer)" class="member-name-link">watch</a><wbr>(<a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;T&gt;&nbsp;depends,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;T&gt;&nbsp;consumer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates a watcher instance attached to the current instance</div>
 </div>
 </div>
@@ -200,6 +205,26 @@ implements <a href="WatcherOperator.html" title="interface in net.apartium.cocoa
 <dd>
 <ul class="see-list">
 <li><a href="Watcher.html" title="class in net.apartium.cocoabeans.state"><code>Watcher</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="attach(net.apartium.cocoabeans.state.AttachedWatcher)">
+<h3>attach</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.52")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">attach</span><wbr><span class="parameters">(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</span></div>
+<div class="block">Attaches a watcher to the current instance</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="WatcherOperator.html#attach(net.apartium.cocoabeans.state.AttachedWatcher)">attach</a></code>&nbsp;in interface&nbsp;<code><a href="WatcherOperator.html" title="interface in net.apartium.cocoabeans.state">WatcherOperator</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>watcher</code> - watcher to attach</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="AttachedWatcher.html#attach(net.apartium.cocoabeans.state.WatcherOperator)"><code>AttachedWatcher.attach(WatcherOperator)</code></a></li>
 </ul>
 </dd>
 </dl>

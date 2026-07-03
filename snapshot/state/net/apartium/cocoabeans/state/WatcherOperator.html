@@ -102,8 +102,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#detach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">detach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#attach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">attach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Attach a watcher to the current operator.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#detach(net.apartium.cocoabeans.state.AttachedWatcher)" class="member-name-link">detach</a><wbr>(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Detach a watcher attached with the current instance</div>
 </div>
 </div>
@@ -120,6 +125,28 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="attach(net.apartium.cocoabeans.state.AttachedWatcher)">
+<h3>attach</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("0.0.52")
+</span><span class="return-type">void</span>&nbsp;<span class="element-name">attach</span><wbr><span class="parameters">(<a href="AttachedWatcher.html" title="class in net.apartium.cocoabeans.state">AttachedWatcher</a>&lt;?&gt;&nbsp;watcher)</span></div>
+<div class="block">Attach a watcher to the current operator.
+ This method is called by <a href="AttachedWatcher.html#attach(net.apartium.cocoabeans.state.WatcherOperator)"><code>AttachedWatcher.attach(WatcherOperator)</code></a> to register
+ the watcher with the operator so it will be included in future heartbeat cycles.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>watcher</code> - the watcher to attach</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the watcher is not associated with this operator</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="AttachedWatcher.html#attach(net.apartium.cocoabeans.state.WatcherOperator)"><code>AttachedWatcher.attach(WatcherOperator)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="detach(net.apartium.cocoabeans.state.AttachedWatcher)">
 <h3>detach</h3>
