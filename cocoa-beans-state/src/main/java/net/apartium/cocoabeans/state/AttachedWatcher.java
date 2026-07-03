@@ -52,6 +52,8 @@ public abstract class AttachedWatcher<T> extends Watcher<T> {
             this.manager = null;
             throw e;
         }
+
+        this.isDirty = true;
     }
 
     /**

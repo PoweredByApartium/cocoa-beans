@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttachedWatcherTest {
@@ -39,6 +42,142 @@ class AttachedWatcherTest {
         watcher.detach();
 
         assertFalse(watcher.isAttached());
+    }
+
+    @Test
+    void watcherIsAttachedAfterCreation() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        assertTrue(watcher.isAttached());
+        assertEquals(operator, watcher.getManager());
+        assertTrue(changes.isEmpty());
+    }
+
+    @Test
+    void firstHeartbeatPublishesInitialValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+
+        assertEquals(List.of(5), changes);
+    }
+
+    @Test
+    void repeatedHeartbeatsDoNotPublishUnchangedValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+        changes.clear();
+
+        for (int i = 0; i < 10; i++) {
+            operator.heartbeat();
+            assertTrue(changes.isEmpty());
+        }
+    }
+
+    @Test
+    void changedValueIsPublishedOnHeartbeat() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+        changes.clear();
+
+        num.set(15);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertEquals(List.of(15), changes);
+    }
+
+    @Test
+    void detachedWatcherDoesNotPublishChanges() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+
+        assertFalse(watcher.isAttached());
+
+        operator.heartbeat();
+        assertTrue(changes.isEmpty());
+
+        num.set(20);
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+        assertTrue(changes.isEmpty());
+    }
+
+    @Test
+    void reattachedWatcherPublishesCurrentValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+        num.set(20);
+
+        watcher.attach(operator);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertEquals(List.of(20), changes);
+    }
+
+    @Test
+    void reattachedWatcherDoesNotPublishWhenValueReturnsToLastPublishedValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+
+        num.set(20);
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+
+        num.set(15);
+        num.set(20);
+
+        watcher.attach(operator);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertTrue(changes.isEmpty());
     }
 
     @Test

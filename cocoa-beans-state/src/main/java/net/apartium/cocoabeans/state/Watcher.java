@@ -15,9 +15,9 @@ import java.util.Objects;
 public abstract class Watcher<T> implements Observer {
 
     protected final Observable<T> depends;
-    private boolean first = true;
-    private boolean isDirty = true;
-    private T prevValue;
+    protected boolean first = true;
+    protected boolean isDirty = true;
+    protected T prevValue;
 
     /**
      * Constructs a new instance
