@@ -2,6 +2,12 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttachedWatcherTest {
@@ -16,7 +22,17 @@ class AttachedWatcherTest {
             }
         };
 
-        WatcherOperator operator = w -> {};
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+        };
 
         watcher.attach(operator);
 
@@ -29,6 +45,142 @@ class AttachedWatcherTest {
     }
 
     @Test
+    void watcherIsAttachedAfterCreation() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        assertTrue(watcher.isAttached());
+        assertEquals(operator, watcher.getManager());
+        assertTrue(changes.isEmpty());
+    }
+
+    @Test
+    void firstHeartbeatPublishesInitialValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+
+        assertEquals(List.of(5), changes);
+    }
+
+    @Test
+    void repeatedHeartbeatsDoNotPublishUnchangedValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+        changes.clear();
+
+        for (int i = 0; i < 10; i++) {
+            operator.heartbeat();
+            assertTrue(changes.isEmpty());
+        }
+    }
+
+    @Test
+    void changedValueIsPublishedOnHeartbeat() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        operator.watch(num, changes::add);
+        operator.heartbeat();
+        changes.clear();
+
+        num.set(15);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertEquals(List.of(15), changes);
+    }
+
+    @Test
+    void detachedWatcherDoesNotPublishChanges() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+
+        assertFalse(watcher.isAttached());
+
+        operator.heartbeat();
+        assertTrue(changes.isEmpty());
+
+        num.set(20);
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+        assertTrue(changes.isEmpty());
+    }
+
+    @Test
+    void reattachedWatcherPublishesCurrentValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+        num.set(20);
+
+        watcher.attach(operator);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertEquals(List.of(20), changes);
+    }
+
+    @Test
+    void reattachedWatcherDoesNotPublishWhenValueReturnsToLastPublishedValue() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        List<Integer> changes = new ArrayList<>();
+        WatcherManager operator = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = operator.watch(num, changes::add);
+
+        operator.heartbeat();
+
+        num.set(20);
+        operator.heartbeat();
+        changes.clear();
+
+        watcher.detach();
+
+        num.set(15);
+        num.set(20);
+
+        watcher.attach(operator);
+
+        assertTrue(changes.isEmpty());
+
+        operator.heartbeat();
+
+        assertTrue(changes.isEmpty());
+    }
+
+    @Test
     void attachToAlreadyAttached() {
         Observable<Integer> num = Observable.mutable(5);
         AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
@@ -38,7 +190,17 @@ class AttachedWatcherTest {
             }
         };
 
-        WatcherOperator operator = w -> {};
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+        };
 
         watcher.attach(operator);
 
@@ -58,6 +220,255 @@ class AttachedWatcherTest {
             }
         };
         assertThrowsExactly(IllegalArgumentException.class, watcher::detach);
+    }
+
+    @Test
+    void attachWithNullManager() {
+        Observable<Integer> num = Observable.mutable(5);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                /* ignore */
+            }
+        };
+
+        assertThrowsExactly(NullPointerException.class, () -> watcher.attach(null));
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+    }
+
+    @Test
+    void attachRollsBackWhenOperatorAttachThrows() {
+        Observable<Integer> num = Observable.mutable(5);
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                /* ignore */
+            }
+        };
+
+        WatcherOperator failingOperator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                throw new RuntimeException("operator rejected");
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                /* ignore */
+            }
+        };
+
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(failingOperator));
+        assertEquals("operator rejected", ex.getMessage());
+
+        // watcher should be rolled back to unattached state
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+
+        // should still be attachable after the failed attempt
+        WatcherManager manager = new WatcherManager();
+        watcher.attach(manager);
+        assertTrue(watcher.isAttached());
+        assertEquals(manager, watcher.getManager());
+        watcher.detach();
+    }
+
+    @Test
+    void attachRollsBackWhenObserveThrows() {
+        AtomicBoolean shouldThrow = new AtomicBoolean(false);
+        AtomicBoolean detachCalled = new AtomicBoolean(false);
+
+        Observable<Integer> throwingObservable = new Observable<>() {
+            @Override
+            public Integer get() {
+                return 0;
+            }
+
+            @Override
+            public void observe(Observer observer) {
+                if (shouldThrow.get())
+                    throw new RuntimeException("observe failed");
+            }
+
+            @Override
+            public boolean removeObserver(Observer observer) {
+                return true;
+            }
+        };
+
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
+            @Override
+            public void onChange(Integer newValue) {
+                /* ignore */
+            }
+        };
+
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* accept */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                detachCalled.set(true);
+            }
+        };
+
+        // observe throws after operator.attach succeeds → should rollback by calling operator.detach
+        shouldThrow.set(true);
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(operator));
+        assertEquals("observe failed", ex.getMessage());
+
+        // operator.detach was called to rollback
+        assertTrue(detachCalled.get());
+
+        // watcher is not attached
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+    }
+
+    @Test
+    void attachRollbackDetachThrowsSuppressed() {
+        AtomicBoolean shouldThrow = new AtomicBoolean(false);
+
+        Observable<Integer> throwingObservable = new Observable<>() {
+            @Override
+            public Integer get() {
+                return 0;
+            }
+
+            @Override
+            public void observe(Observer observer) {
+                if (shouldThrow.get())
+                    throw new RuntimeException("observe failed");
+            }
+
+            @Override
+            public boolean removeObserver(Observer observer) {
+                return true;
+            }
+        };
+
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(throwingObservable) {
+            @Override
+            public void onChange(Integer newValue) {
+                /* ignore */
+            }
+        };
+
+        WatcherOperator operator = new WatcherOperator() {
+            @Override
+            public void attach(AttachedWatcher<?> watcher) {
+                /* accept */
+            }
+
+            @Override
+            public void detach(AttachedWatcher<?> watcher) {
+                throw new RuntimeException("detach also failed");
+            }
+        };
+
+        // observe throws, then rollback detach also throws → detach exception is suppressed
+        shouldThrow.set(true);
+        RuntimeException ex = assertThrowsExactly(RuntimeException.class, () -> watcher.attach(operator));
+        assertEquals("observe failed", ex.getMessage());
+        assertEquals(1, ex.getSuppressed().length);
+        assertEquals("detach also failed", ex.getSuppressed()[0].getMessage());
+
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+    }
+
+    @Test
+    void reAttachToDifferentOperator() {
+        MutableObservable<Integer> num = Observable.mutable(5);
+        AtomicInteger callCount = new AtomicInteger();
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                callCount.incrementAndGet();
+            }
+        };
+
+        WatcherManager firstManager = new WatcherManager();
+        WatcherManager secondManager = new WatcherManager();
+
+        watcher.attach(firstManager);
+        assertTrue(watcher.isAttached());
+        assertEquals(firstManager, watcher.getManager());
+
+        // heartbeat on first manager triggers the watcher
+        firstManager.heartbeat();
+        assertEquals(1, callCount.get());
+
+        num.set(10);
+        firstManager.heartbeat();
+        assertEquals(2, callCount.get());
+
+        // detach from first manager
+        watcher.detach();
+        assertFalse(watcher.isAttached());
+        assertNull(watcher.getManager());
+
+        // heartbeat on first manager should no longer trigger
+        num.set(20);
+        firstManager.heartbeat();
+        assertEquals(2, callCount.get());
+
+        // re-attach to second manager
+        watcher.attach(secondManager);
+        assertTrue(watcher.isAttached());
+        assertEquals(secondManager, watcher.getManager());
+
+        // changes while detached are not observed, so set a new value
+        num.set(25);
+        secondManager.heartbeat();
+        assertEquals(3, callCount.get());
+
+        num.set(30);
+        secondManager.heartbeat();
+        assertEquals(4, callCount.get());
+
+        // first manager still does not trigger
+        num.set(40);
+        firstManager.heartbeat();
+        assertEquals(4, callCount.get());
+
+        watcher.detach();
+        assertFalse(watcher.isAttached());
+    }
+
+    @Test
+    void reAttachToSameOperator() {
+        MutableObservable<Integer> num = Observable.mutable(1);
+        AtomicInteger callCount = new AtomicInteger();
+        AttachedWatcher<Integer> watcher = new AttachedWatcher<>(num) {
+            @Override
+            public void onChange(Integer newValue) {
+                callCount.incrementAndGet();
+            }
+        };
+
+        WatcherManager manager = new WatcherManager();
+
+        watcher.attach(manager);
+        manager.heartbeat();
+        assertEquals(1, callCount.get());
+
+        watcher.detach();
+
+        // re-attach to the same manager
+        watcher.attach(manager);
+        assertTrue(watcher.isAttached());
+        assertEquals(manager, watcher.getManager());
+
+        num.set(42);
+        manager.heartbeat();
+        assertEquals(2, callCount.get());
+
+        watcher.detach();
     }
 
 }

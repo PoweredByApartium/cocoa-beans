@@ -56,14 +56,27 @@ public class WatcherManager implements WatcherOperator {
                 consumer.accept(newValue);
             }
         };
+
+        watcher.attach(this);
+        return watcher;
+    }
+
+    /**
+     * Attaches a watcher to the current instance
+     * @param watcher watcher to attach
+     */
+    @ApiStatus.AvailableSince("0.0.52")
+    @Override
+    public void attach(AttachedWatcher<?> watcher) {
+        if (watcher.getManager() != this)
+            throw new IllegalArgumentException("Not attached to this manager");
+
         lock.writeLock().lock();
         try {
             watchers.add(watcher);
         } finally {
             lock.writeLock().unlock();
         }
-        watcher.attach(this);
-        return watcher;
     }
 
     /**

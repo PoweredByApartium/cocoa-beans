@@ -573,6 +573,49 @@ class CodeSnippets {
     }
 
     @Test
+    void reAttachWatcher() {
+        MutableObservable<Integer> observable = Observable.mutable(1);
+        AtomicInteger count = new AtomicInteger();
+
+        WatcherManager firstManager = new WatcherManager();
+        WatcherManager secondManager = new WatcherManager();
+
+        AttachedWatcher<Integer> watcher = observable.lazyWatch(firstManager, num -> {
+            count.incrementAndGet();
+        });
+
+        // watcher reacts to the first manager's heartbeat
+        firstManager.heartbeat();
+        assertEquals(1, count.get());
+
+        observable.set(10);
+        firstManager.heartbeat();
+        assertEquals(2, count.get());
+
+        // detach from the first manager
+        watcher.detach();
+
+        // first manager no longer triggers the watcher
+        observable.set(20);
+        firstManager.heartbeat();
+        assertEquals(2, count.get());
+
+        // re-attach to a different manager
+        watcher.attach(secondManager);
+
+        // now the second manager drives the watcher
+        observable.set(25);
+        secondManager.heartbeat();
+        assertEquals(3, count.get());
+
+        observable.set(30);
+        secondManager.heartbeat();
+        assertEquals(4, count.get());
+
+        watcher.detach();
+    }
+
+    @Test
     void sortedObservableComparatorSample() {
         ListObservable<Integer> scores = Observable.list();
         scores.addAll(List.of(3, 1, 4, 1, 5, 9));

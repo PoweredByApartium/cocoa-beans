@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.52
+- [state] Add `WatcherOperator#attach` to allow re-attaching a detached watcher to a new operator
+
 ## 0.0.51
 - [commands] Add prioritization for tab completions
 - [commands] Keywords will now be prioritized in tab completion
