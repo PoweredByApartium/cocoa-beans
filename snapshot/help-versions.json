@@ -3,6 +3,10 @@
   "isCurrent" : true,
   "url" : "/snapshot/"
 }, {
+  "version" : "0.0.51",
+  "isCurrent" : false,
+  "url" : "/0.0.51/"
+}, {
   "version" : "0.0.50",
   "isCurrent" : false,
   "url" : "/0.0.50/"
