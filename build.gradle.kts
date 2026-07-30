@@ -6,10 +6,10 @@ import org.sonarqube.gradle.SonarTask
 plugins {
     id("java-library")
     id("maven-publish")
-    id("com.gradleup.shadow") version "9.0.2"
-    id("io.papermc.hangar-publish-plugin") version "0.1.2"
+    id("com.gradleup.shadow") version "9.4.3"
+    id("io.papermc.hangar-publish-plugin") version "0.1.4"
     id("apartium-maven-publish")
-    id("org.sonarqube") version "5.1.0.4882"
+    id("org.sonarqube") version "7.3.1.8318"
     id("idea")
     id("com.gradleup.nmcp") version "0.0.8"
     id("signing")
@@ -146,8 +146,6 @@ allprojects {
 
     sonar {
         properties {
-            property("sonar.coverage.jacoco.xmlReportPaths", "${rootProject.rootDir}/code-coverage-report/build/reports/jacoco/unifiedCoverageReport/unifiedCoverageReport.xml")
-
             if (isCi) {
                 val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
                 if (tokenFromEnv.isEmpty())
@@ -189,6 +187,19 @@ allprojects {
         sourceCompatibility = javaVersion
     }
 
+}
+
+// Imported once at project level by JacocoAggregateSensor, which resolves source files across
+// every module. Setting this per-module instead makes each module try to import the whole
+// aggregate against its own file index and warn about every file it doesn't own.
+sonar {
+    properties {
+        property("sonar.coverage.jacoco.aggregateXmlReportPaths", "${rootProject.rootDir}/code-coverage-report/build/reports/jacoco/unifiedCoverageReport/unifiedCoverageReport.xml")
+    }
+}
+
+tasks.withType<SonarTask> {
+    dependsOn(":code-coverage-report:unifiedCoverageReport")
 }
 
 hangarPublish {
