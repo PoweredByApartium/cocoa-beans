@@ -1,89 +1,65 @@
 [ {
-  "version" : "snapshot",
-  "isCurrent" : true,
-  "url" : "/snapshot/"
-}, {
-  "version" : "0.0.52",
+  "version" : "0.0.38",
   "isCurrent" : false,
-  "url" : "/0.0.52/"
-}, {
-  "version" : "0.0.51",
-  "isCurrent" : false,
-  "url" : "/0.0.51/"
-}, {
-  "version" : "0.0.50",
-  "isCurrent" : false,
-  "url" : "/0.0.50/"
-}, {
-  "version" : "0.0.49",
-  "isCurrent" : false,
-  "url" : "/0.0.49/"
-}, {
-  "version" : "0.0.48",
-  "isCurrent" : false,
-  "url" : "/0.0.48/"
-}, {
-  "version" : "0.0.47",
-  "isCurrent" : false,
-  "url" : "/0.0.47/"
-}, {
-  "version" : "0.0.46",
-  "isCurrent" : false,
-  "url" : "/0.0.46/"
-}, {
-  "version" : "0.0.45",
-  "isCurrent" : false,
-  "url" : "/0.0.45/"
-}, {
-  "version" : "0.0.44",
-  "isCurrent" : false,
-  "url" : "/0.0.44/"
-}, {
-  "version" : "0.0.43",
-  "isCurrent" : false,
-  "url" : "/0.0.43/"
-}, {
-  "version" : "0.0.42",
-  "isCurrent" : false,
-  "url" : "/0.0.42/"
-}, {
-  "version" : "0.0.41",
-  "isCurrent" : false,
-  "url" : "/0.0.41/"
-}, {
-  "version" : "0.0.40",
-  "isCurrent" : false,
-  "url" : "/0.0.40/"
+  "url" : "/0.0.38/"
 }, {
   "version" : "0.0.39",
   "isCurrent" : false,
   "url" : "/0.0.39/"
 }, {
-  "version" : "0.0.38",
+  "version" : "0.0.40",
   "isCurrent" : false,
-  "url" : "/0.0.38/"
+  "url" : "/0.0.40/"
 }, {
-  "version" : "0.0.37",
+  "version" : "0.0.41",
   "isCurrent" : false,
-  "url" : "/0.0.37/"
+  "url" : "/0.0.41/"
 }, {
-  "version" : "0.0.36",
+  "version" : "0.0.42",
   "isCurrent" : false,
-  "url" : "/0.0.36/"
+  "url" : "/0.0.42/"
 }, {
-  "version" : "0.0.35",
+  "version" : "0.0.43",
   "isCurrent" : false,
-  "url" : "/0.0.35/"
+  "url" : "/0.0.43/"
 }, {
-  "version" : "0.0.34",
+  "version" : "0.0.44",
   "isCurrent" : false,
-  "url" : "/0.0.34/"
+  "url" : "/0.0.44/"
 }, {
-  "version" : "0.0.33",
+  "version" : "0.0.45",
   "isCurrent" : false,
-  "url" : "/0.0.33/"
+  "url" : "/0.0.45/"
 }, {
-  "version" : "0.0.32",
+  "version" : "0.0.46",
   "isCurrent" : false,
-  "url" : "/0.0.32/"
+  "url" : "/0.0.46/"
+}, {
+  "version" : "0.0.47",
+  "isCurrent" : false,
+  "url" : "/0.0.47/"
+}, {
+  "version" : "0.0.48",
+  "isCurrent" : false,
+  "url" : "/0.0.48/"
+}, {
+  "version" : "0.0.49",
+  "isCurrent" : false,
+  "url" : "/0.0.49/"
+}, {
+  "version" : "0.0.50",
+  "isCurrent" : false,
+  "url" : "/0.0.50/"
+}, {
+  "version" : "0.0.51",
+  "isCurrent" : false,
+  "url" : "/0.0.51/"
+}, {
+  "version" : "0.0.52",
+  "isCurrent" : false,
+  "url" : "/0.0.52/"
+}, {
+  "version" : "snapshot",
+  "isCurrent" : true,
+  "url" : "/snapshot/"
 } ]
