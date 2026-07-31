@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"net.apartium.cocoabeans.spigot.scoreboard"},{"l":"net.apartium.cocoabeans.spigot.tab"}];updateSearchResults();

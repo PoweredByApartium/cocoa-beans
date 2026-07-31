@@ -1,9 +1,0 @@
-net.apartium.cocoabeans.commands
-net.apartium.cocoabeans.commands.exception
-net.apartium.cocoabeans.commands.lexer
-net.apartium.cocoabeans.commands.parsers
-net.apartium.cocoabeans.commands.parsers.exception
-net.apartium.cocoabeans.commands.parsers.factory
-net.apartium.cocoabeans.commands.requirements
-net.apartium.cocoabeans.commands.requirements.argument
-net.apartium.cocoabeans.commands.virtual
