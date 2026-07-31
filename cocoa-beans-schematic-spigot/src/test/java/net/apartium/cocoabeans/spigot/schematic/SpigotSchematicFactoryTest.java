@@ -176,4 +176,19 @@ class SpigotSchematicFactoryTest {
         while (it.hasNext()) { it.next(); count++; }
         assertEquals(3, count);
     }
+
+    @Test
+    void test() {
+        MutableBlockChunkImpl chunk = new MutableBlockChunkImpl(AxisOrder.XYZ, 1, Position.ZERO, Position.ZERO);
+        chunk.setBlock(new BlockPlacement(new Position(0, 0, 0), stone()));
+        chunk.setBlock(new BlockPlacement(new Position(1, 0, 0), stone()));
+        chunk.setBlock(new BlockPlacement(new Position(2, 0, 0), stone()));
+
+        SpigotSchematic schematic = create(
+                new SpigotSchematicFactory(),
+                new BlockChunkIterator(chunk),
+                new AreaSize(3, 1, 1)
+        );
+        schematic.test();
+    }
 }

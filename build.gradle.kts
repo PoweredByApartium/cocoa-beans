@@ -134,6 +134,16 @@ allprojects {
 
     tasks.withType<JacocoReport> {
         dependsOn(tasks.test)
+
+        // Report this module's own classes against execution data from *every* module, so
+        // coverage produced by another module's tests is counted. Each report still contains
+        // only the files this module owns, which is what lets Sonar import them per-module
+        // without complaining about files it can't resolve.
+        dependsOn(rootProject.subprojects.map { "${it.path}:test" })
+        executionData.setFrom(rootProject.fileTree(rootProject.rootDir) {
+            include("*/build/jacoco/test.exec")
+        })
+
         reports {
             xml.required = true
         }
@@ -189,17 +199,10 @@ allprojects {
 
 }
 
-// Imported once at project level by JacocoAggregateSensor, which resolves source files across
-// every module. Setting this per-module instead makes each module try to import the whole
-// aggregate against its own file index and warn about every file it doesn't own.
-sonar {
-    properties {
-        property("sonar.coverage.jacoco.aggregateXmlReportPaths", "${rootProject.rootDir}/code-coverage-report/build/reports/jacoco/unifiedCoverageReport/unifiedCoverageReport.xml")
-    }
-}
-
+// Only the root project has a sonar task, so it has to pull in every module's coverage report
+// itself - otherwise a bare `./gradlew sonar` analyses against stale or missing reports.
 tasks.withType<SonarTask> {
-    dependsOn(":code-coverage-report:unifiedCoverageReport")
+    dependsOn(subprojects.map { "${it.path}:jacocoTestReport" })
 }
 
 hangarPublish {

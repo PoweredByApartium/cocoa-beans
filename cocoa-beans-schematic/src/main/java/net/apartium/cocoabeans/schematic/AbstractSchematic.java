@@ -130,4 +130,13 @@ public abstract class AbstractSchematic implements Schematic {
         return new SortedAxisBlockIterator(this.blockChunk, size, axisOrder, reverseAxis);
     }
 
+    public void test() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+    }
+
 }
