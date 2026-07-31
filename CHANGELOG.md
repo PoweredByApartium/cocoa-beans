@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.53
+- [build] Gradle dependency verification
 - [repo] Fixes for Writerside versions list
 
 ## 0.0.52
