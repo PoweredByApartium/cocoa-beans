@@ -66,6 +66,11 @@ jobs:
         env:
           VERSION: ${{ inputs.VERSION }}
 
+      - name: Pre writerside
+        env:
+          new_version: ${{ inputs.VERSION }}
+        run: sh build-scripts/pre-writerside.sh
+
       - name: Build Writerside docs using Docker
         uses: JetBrains/writerside-github-action@v4
         with:

@@ -23,24 +23,25 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
 
-        val parent = File("gh-pages")
+        val parent = File(project.rootDir, "gh-pages")
         val target = File(parent, "help-versions.json")
         val content = objectMapper.createArrayNode()
-        content.add(createEntry(objectMapper, "snapshot", isCurrent = true))
 
         val releasePattern = Regex("""^\d+\.\d+\.\d+$""")
         val tagNames = Git.open(project.rootDir).use { git ->
             git.tagList().call()
                 .map { it.name.removePrefix("refs/tags/") }
                 .filter { releasePattern.matches(it) }
-                .reversed()
+                .filter { File(parent, it).isDirectory }
         }
         tagNames.forEach { content.add(createEntry(objectMapper, it)) }
 
-        if (currentVersion != "unknown" &&
+        if (currentVersion != "unknown" && currentVersion != "snapshot" &&
             content.none { it is ObjectNode && it["version"].asText() == currentVersion }) {
             content.add(createEntry(objectMapper, currentVersion))
         }
+
+        content.add(createEntry(objectMapper, "snapshot", isCurrent = true))
 
         objectMapper.writeValue(target, content)
    }
