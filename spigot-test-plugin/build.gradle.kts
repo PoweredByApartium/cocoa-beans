@@ -43,8 +43,7 @@ tasks {
     }
 }
 
+// sonar is not needed for this module, because it is used for the development of cocoa beans
 sonar {
-    properties {
-        property("sonar.exclusions", "**/*.java")
-    }
+    isSkipProject = true
 }
