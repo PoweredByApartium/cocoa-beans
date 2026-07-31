@@ -6,7 +6,7 @@ import org.sonarqube.gradle.SonarTask
 plugins {
     id("java-library")
     id("maven-publish")
-    id("com.gradleup.shadow") version "9.4.3"
+    id("com.gradleup.shadow") version "9.2.2"
     id("io.papermc.hangar-publish-plugin") version "0.1.4"
     id("apartium-maven-publish")
     id("org.sonarqube") version "7.3.1.8318"
