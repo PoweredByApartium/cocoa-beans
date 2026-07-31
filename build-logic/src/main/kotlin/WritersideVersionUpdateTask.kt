@@ -23,7 +23,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
 
-        val parent = File("gh-pages")
+        val parent = File(project.rootDir, "gh-pages")
         val target = File(parent, "help-versions.json")
         val content = objectMapper.createArrayNode()
         content.add(createEntry(objectMapper, "snapshot", isCurrent = true))
@@ -33,6 +33,7 @@ open class WritersideVersionUpdateTask : DefaultTask() {
             git.tagList().call()
                 .map { it.name.removePrefix("refs/tags/") }
                 .filter { releasePattern.matches(it) }
+                .filter { File(parent, it).isDirectory }
                 .reversed()
         }
         tagNames.forEach { content.add(createEntry(objectMapper, it)) }

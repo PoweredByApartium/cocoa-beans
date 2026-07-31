@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.53
+- [repo] Fixes for Writerside versions list
+
 ## 0.0.52
 - [state] Add `WatcherOperator#attach` to allow re-attaching a detached watcher to a new operator
 
