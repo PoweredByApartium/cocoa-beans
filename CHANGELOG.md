@@ -3,6 +3,7 @@
 ## 0.0.53
 - [build] Gradle dependency verification
 - [repo] Fixes for Writerside versions list
+- [common] Add 26.2 to MinecraftVersion
 
 ## 0.0.52
 - [state] Add `WatcherOperator#attach` to allow re-attaching a detached watcher to a new operator
