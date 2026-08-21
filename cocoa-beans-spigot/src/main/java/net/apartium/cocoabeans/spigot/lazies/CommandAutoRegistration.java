@@ -103,7 +103,7 @@ public class CommandAutoRegistration {
         try {
             classPath = ClassPath.from(classLoader);
         } catch (IOException e) {
-            e.printStackTrace();
+            Dispensers.dispense(e);
             return;
         }
 
@@ -112,7 +112,7 @@ public class CommandAutoRegistration {
             try {
                 clazz = classLoader.loadClass(classInfo.getName());
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                // class discovered by the classpath scan but not resolvable (e.g. optional/shaded dependency) - skip it and keep scanning
                 continue;
             }
 

@@ -20,35 +20,28 @@ on:
           - net.apartium.cocoa-beans
           - dev.apartium.cocoa-beans
 
-permissions:
-  pull-requests: write
-  contents: write
-  repository-projects: write
-  packages: write
-  pages: write
-  id-token: write
-
 jobs:
   checkout:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.VERSION }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Output version
-        run: echo "The version is ${{ steps.get_version.outputs.VERSION }}"
-
   test_writerside:
     needs: checkout
+    permissions:
+      contents: read
     uses: ./.github/workflows/callable.writerside.yml
 
   publish_writerside:
     if: github.event_name != 'pull_request'
     needs: test_writerside
+    permissions:
+      contents: read
     uses: ./.github/workflows/callable.writerside-publish.yml
     with:
       VERSION: ${{ github.event.inputs.name || 'snapshot' }}
@@ -57,12 +50,17 @@ jobs:
 
   run_tests:
     needs: checkout
+    permissions:
+      contents: read
+      checks: write
     uses: ./.github/workflows/callable.test.yml
     secrets:
       SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
 
   build:
     needs: run_tests
+    permissions:
+      contents: read
     uses: ./.github/workflows/callable.build.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
@@ -70,12 +68,16 @@ jobs:
   release:
     if: github.event_name == 'workflow_dispatch'
     needs: run_tests
+    permissions:
+      contents: write
     uses: ./.github/workflows/callable.release.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
   hangar:
     if: github.event_name == 'workflow_dispatch'
     needs: release
+    permissions:
+      contents: read
     uses: ./.github/workflows/callable.hangar.yml
     secrets:
       HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
@@ -85,6 +87,8 @@ jobs:
   maven:
     if: github.event_name == 'workflow_dispatch'
     needs: release
+    permissions:
+      contents: read
     uses: ./.github/workflows/callable.maven.yml
     with:
       VERSION: ${{ github.event.inputs.name }}
