@@ -256,14 +256,20 @@ implements <a href="ListLikeObservable.html" title="interface in net.apartium.co
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Remove all elements not in given collection</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,E)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&nbsp;element)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Replaces the element at the specified position with the given element.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Observable.html" title="interface in net.apartium.cocoabeans.state">Observable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns an observable representing the size of the observable.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sort(java.util.Comparator)" class="member-name-link">sort</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;? super <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;&nbsp;comparator)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sort(java.util.Comparator)" class="member-name-link">sort</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;? super <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;&nbsp;comparator)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sort list elements by given comparator</div>
 </div>
 </div>
@@ -355,6 +361,33 @@ implements <a href="ListLikeObservable.html" title="interface in net.apartium.co
 <dd>
 <ul class="see-list-long">
 <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html#add(int,E)" title="class or interface in java.util" class="external-link"><code>List.add(int, Object)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="set(int,E)">
+<h3 id="set(int,java.lang.Object)">set</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a></span>&nbsp;<span class="element-name">set</span><wbr><span class="parameters">(int&nbsp;index,
+ <a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&nbsp;element)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="ListLikeObservable.html#set(int,E)">ListLikeObservable</a></code></span></div>
+<div class="block">Replaces the element at the specified position with the given element.
+ <p>
+ Observers are notified only when the stored element actually changes — replacing
+ an element with an equal one leaves the list untouched and notifies nobody.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ListLikeObservable.html#set(int,E)">set</a></code>&nbsp;in interface&nbsp;<code><a href="ListLikeObservable.html" title="interface in net.apartium.cocoabeans.state">ListLikeObservable</a>&lt;<a href="LinkedListObservable.html" title="type parameter in LinkedListObservable">E</a>&gt;</code></dd>
+<dt>Parameters:</dt>
+<dd><code>index</code> - the index of the element to replace</dd>
+<dd><code>element</code> - the element to store at the specified position</dd>
+<dt>Returns:</dt>
+<dd>the element previously stored at the specified position</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html#set(int,E)" title="class or interface in java.util" class="external-link"><code>List.set(int, Object)</code></a></li>
 </ul>
 </dd>
 </dl>
