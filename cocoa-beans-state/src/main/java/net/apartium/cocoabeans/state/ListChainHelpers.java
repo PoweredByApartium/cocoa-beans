@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 /* package-private */ final class ListChainHelpers {
 
     private static final String NO_ADD = "ListObservable derived view does not support adding elements";
+    private static final String NO_SET = "ListObservable derived view does not support set elements";
     private static final String NO_REMOVE = "ListObservable derived view does not support removing elements";
     private static final String NO_SORT = "ListObservable derived view does not support sorting";
 
@@ -20,6 +21,10 @@ import java.util.function.Predicate;
 
     static UnsupportedOperationException unsupportedAdd() {
         return new UnsupportedOperationException(NO_ADD);
+    }
+
+    static UnsupportedOperationException unsupportedSet() {
+        return new UnsupportedOperationException(NO_SET);
     }
 
     static UnsupportedOperationException unsupportedRemove() {

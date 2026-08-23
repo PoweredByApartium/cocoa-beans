@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.53
+- [state] Add `ListObservable#set` for replacing an element by index
 - [build] Gradle dependency verification
 - [repo] Fixes for Writerside versions list
 - [common] Add 26.2 to MinecraftVersion

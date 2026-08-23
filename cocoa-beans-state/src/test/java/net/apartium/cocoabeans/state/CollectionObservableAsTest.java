@@ -125,6 +125,7 @@ class CollectionObservableAsTest {
         assertThrows(UnsupportedOperationException.class, () -> copy.retainAll(emptyList));
         assertThrows(UnsupportedOperationException.class, copy::clear);
         assertThrows(UnsupportedOperationException.class, () -> copy.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> copy.set(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> copy.remove(0));
 
         Comparator<Integer> comparator = Comparator.naturalOrder();
@@ -215,6 +216,7 @@ class CollectionObservableAsTest {
         assertThrows(UnsupportedOperationException.class, () -> list.add(1));
         assertThrows(UnsupportedOperationException.class, () -> list.remove((Integer) 1));
         assertThrows(UnsupportedOperationException.class, () -> list.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> list.set(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> list.remove(0));
 
         Comparator<Integer> comparator = Comparator.naturalOrder();

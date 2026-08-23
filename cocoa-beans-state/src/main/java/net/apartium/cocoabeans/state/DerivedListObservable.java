@@ -15,6 +15,11 @@ import java.util.function.Predicate;
     default void add(int index, E element) { throw ListChainHelpers.unsupportedAdd(); }
 
     @Override
+    default E set(int index, E element) {
+        throw ListChainHelpers.unsupportedSet();
+    }
+
+    @Override
     default E remove(int index) { throw ListChainHelpers.unsupportedRemove(); }
 
     @Override

@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.state;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -165,6 +166,26 @@ class CodeSnippets {
 
         names.remove("Kfir");
         assertEquals(List.of("Lior", "Kfir", "Tom"), names.get());
+    }
+
+    @Test
+    void listSet() {
+        ListObservable<String> names = Observable.list(new ArrayList<>(List.of("Kfir", "Lior", "Tom")));
+        Observable<String> joined = names.map(list -> String.join(", ", list));
+
+        assertEquals("Kfir, Lior, Tom", joined.get());
+
+        // set() returns the element it replaced, just like List#set
+        assertEquals("Lior", names.set(1, "Voigon"));
+        assertEquals(List.of("Kfir", "Voigon", "Tom"), names.get());
+        assertEquals("Kfir, Voigon, Tom", joined.get());
+
+        // replacing an element with an equal one is a no-op: nothing changes, nobody is notified
+        assertEquals("Voigon", names.set(1, "Voigon"));
+        assertEquals(List.of("Kfir", "Voigon", "Tom"), names.get());
+
+        // set() never changes the size of the list
+        assertEquals(3, names.size().get());
     }
 
     public class MyObserver<T> implements Observer {
