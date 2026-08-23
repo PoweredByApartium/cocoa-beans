@@ -6,10 +6,10 @@ import org.sonarqube.gradle.SonarTask
 plugins {
     id("java-library")
     id("maven-publish")
-    id("com.gradleup.shadow") version "9.0.2"
-    id("io.papermc.hangar-publish-plugin") version "0.1.2"
+    id("com.gradleup.shadow") version "9.2.2"
+    id("io.papermc.hangar-publish-plugin") version "0.1.4"
     id("apartium-maven-publish")
-    id("org.sonarqube") version "5.1.0.4882"
+    id("org.sonarqube") version "7.3.1.8318"
     id("idea")
     id("com.gradleup.nmcp") version "0.0.8"
     id("signing")
@@ -134,6 +134,16 @@ allprojects {
 
     tasks.withType<JacocoReport> {
         dependsOn(tasks.test)
+
+        // Report this module's own classes against execution data from *every* module, so
+        // coverage produced by another module's tests is counted. Each report still contains
+        // only the files this module owns, which is what lets Sonar import them per-module
+        // without complaining about files it can't resolve.
+        dependsOn(rootProject.subprojects.map { "${it.path}:test" })
+        executionData.setFrom(rootProject.fileTree(rootProject.rootDir) {
+            include("*/build/jacoco/test.exec")
+        })
+
         reports {
             xml.required = true
         }
@@ -146,8 +156,6 @@ allprojects {
 
     sonar {
         properties {
-            property("sonar.coverage.jacoco.xmlReportPaths", "${rootProject.rootDir}/code-coverage-report/build/reports/jacoco/unifiedCoverageReport/unifiedCoverageReport.xml")
-
             if (isCi) {
                 val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
                 if (tokenFromEnv.isEmpty())
@@ -189,6 +197,12 @@ allprojects {
         sourceCompatibility = javaVersion
     }
 
+}
+
+// Only the root project has a sonar task, so it has to pull in every module's coverage report
+// itself - otherwise a bare `./gradlew sonar` analyses against stale or missing reports.
+tasks.withType<SonarTask> {
+    dependsOn(subprojects.map { "${it.path}:jacocoTestReport" })
 }
 
 hangarPublish {

@@ -16,16 +16,7 @@ package net.apartium.cocoabeans.utils;
  */
 public class CallerUtils {
 
-    private static final Impl impl = getImplementation();
-
-    private static Impl getImplementation() {
-        try {
-            Class.forName("java.lang.StackWalker");
-            return new StackWalkerImpl();
-        } catch (Exception e) {
-            return new LegacyImpl();
-        }
-    }
+    private static final StackWalker WALKER_WITH_CLASS_REF = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
      * Find caller class, excluding given clazz
@@ -33,7 +24,12 @@ public class CallerUtils {
      * @return class instance
      */
     public static Class<?> getCallerClassExcept(Class<?> clazz) {
-        return impl.getCallerClassExcept(clazz);
+        return WALKER_WITH_CLASS_REF.walk(stream ->
+                stream
+                        .map(StackWalker.StackFrame::getDeclaringClass)
+                        .filter(cls -> !cls.equals(clazz) && !cls.equals(CallerUtils.class))
+                        .findFirst()
+        ).orElse(null);
     }
 
     /**
@@ -42,73 +38,14 @@ public class CallerUtils {
      * @return class name
      */
     public static String getCallerClassNameExcept(Class<?> clazz) {
-        return impl.getCallerClassNameExpect(clazz);
+        return StackWalker.getInstance().walk(stream ->
+                stream
+                        .map(StackWalker.StackFrame::getClassName)
+                        .filter(cls -> (clazz == null || !cls.equals(clazz.getName())) && !cls.equals(CallerUtils.class.getName()))
+                        .findFirst()
+        ).orElse(null);
     }
 
+    private CallerUtils() {}
 
-    private interface Impl {
-
-        Class<?> getCallerClassExcept(Class<?> clazz);
-
-        String getCallerClassNameExpect(Class<?> clazz);
-
-    }
-
-    private static class StackWalkerImpl implements Impl {
-
-        private static final StackWalker WALKER_WITH_CLASS_REF = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-
-        @Override
-        public Class<?> getCallerClassExcept(Class<?> clazz) {
-            return WALKER_WITH_CLASS_REF.walk(stream ->
-                    stream
-                            .map(StackWalker.StackFrame::getDeclaringClass)
-                            .filter(cls -> !cls.equals(clazz) && !cls.equals(CallerUtils.class) && !cls.equals(StackWalkerImpl.class))
-                            .findFirst()
-            ).orElse(null);
-        }
-
-        @Override
-        public String getCallerClassNameExpect(Class<?> clazz) {
-            return StackWalker.getInstance().walk(stream ->
-                    stream
-                            .map(StackWalker.StackFrame::getClassName)
-                            .filter(cls -> (clazz == null || !cls.equals(clazz.getName())) && !cls.equals(CallerUtils.class.getName()) && !cls.equals(StackWalkerImpl.class.getName()))
-                            .findFirst()
-            ).orElse(null);
-        }
-    }
-
-    private static class LegacyImpl implements Impl {
-
-        @Override
-        public Class<?> getCallerClassExcept(Class<?> clazz) {
-            try {
-                return Class.forName(getCallerClassNameExpect(clazz));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        public String getCallerClassNameExpect(Class<?> clazz) {
-            // Taken from: https://stackoverflow.com/a/35411095
-            final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            final String className = clazz.getName();
-            boolean classFound = false;
-            for (int i = 2; i < stackTrace.length; i++) {
-                final StackTraceElement element = stackTrace[i];
-                final String callerClassName = element.getClassName();
-                // check if class name is the requested class
-                if (callerClassName.equals(className))
-                    classFound = true;
-                else if (classFound)
-                    return callerClassName;
-
-            }
-
-            return null;
-        }
-    }
 }
