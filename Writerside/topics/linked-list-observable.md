@@ -28,10 +28,27 @@ LinkedListObservable<Integer> scores = Observable.linkedList(existing);
 
 ## Sorting and Index-based Access
 
-Because `LinkedListObservable` implements `AbstractListObservable`, you can insert or
+Because `LinkedListObservable` implements `ListLikeObservable`, you can insert, replace or
 remove elements at a specific position and sort the list:
 
 <code-block lang="java" src="state/CodeSnippets.java" include-symbol="linkedListSortAndIndex"/>
+
+`set(int, E)` replaces the element at the given index and returns the previous one. It never
+changes the size of the list, and — like every other mutation here — it only notifies
+observers when the stored element actually changes:
+
+```java
+LinkedListObservable<String> names = Observable.linkedList();
+names.addAll(List.of("Kfir", "Lior", "Tom"));
+
+String previous = names.set(1, "Voigon"); // "Lior"
+System.out.println(names.get());          // [Kfir, Voigon, Tom]
+
+names.set(1, "Voigon"); // equal element – observers are NOT notified
+```
+
+> Unlike `ListObservable`, a `LinkedListObservable` snapshot is a plain `LinkedList`, so
+> `set(index, null)` is allowed and observable.
 
 ## Queue Operations
 
@@ -53,7 +70,7 @@ method.
 
 ## Observing Changes
 
-All mutating operations (`add`, `remove`, `offer`, `poll`, `sort`, `clear`, …) flag
+All mutating operations (`add`, `set`, `remove`, `offer`, `poll`, `sort`, `clear`, …) flag
 downstream observables as dirty, which are recomputed lazily on the next `get()` call.
 Read-only operations (`peek`, `element`, `get`) never notify observers.
 

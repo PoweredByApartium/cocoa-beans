@@ -3,10 +3,7 @@ package net.apartium.cocoabeans.state;
 import net.apartium.cocoabeans.CollectionHelpers;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -30,6 +27,16 @@ import java.util.function.Predicate;
             return;
 
         notifyObservers();
+    }
+
+    @Override
+    public E set(int index, E element) {
+        E oldElement = collection.set(index, element);
+
+        if (!Objects.equals(oldElement, element))
+            notifyObservers();
+
+        return oldElement;
     }
 
     @Override

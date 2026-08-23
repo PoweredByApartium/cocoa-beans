@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.53
+- [state] Add `ListObservable#set` for replacing an element by index, notifying observers only when the stored element actually changes
+
 ## 0.0.52
 - [state] Add `WatcherOperator#attach` to allow re-attaching a detached watcher to a new operator
 
