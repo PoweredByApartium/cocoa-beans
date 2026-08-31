@@ -137,6 +137,136 @@ class LinkedListObservableTest {
     }
 
     // -------------------------------------------------------------------------
+    // set(int index, E element) — ListLikeObservable
+    // -------------------------------------------------------------------------
+
+    @Test
+    void setReplacesElementAndReturnsPrevious() {
+        LinkedListObservable<String> list = Observable.linkedList();
+        list.addAll(List.of("a", "b", "c"));
+
+        assertEquals("b", list.set(1, "z"));
+        assertEquals(List.of("a", "z", "c"), list.get());
+    }
+
+    @Test
+    void setHeadAndTail() {
+        LinkedListObservable<Integer> list = Observable.linkedList();
+        list.addAll(List.of(1, 2, 3));
+
+        assertEquals(1, list.set(0, 10)); // head
+        assertEquals(3, list.set(2, 30)); // tail
+
+        assertEquals(List.of(10, 2, 30), list.get());
+    }
+
+    @Test
+    void setDoesNotChangeSize() {
+        LinkedListObservable<Integer> list = Observable.linkedList();
+        list.addAll(List.of(1, 2, 3));
+
+        Observable<Integer> size = list.size();
+        assertEquals(3, size.get());
+
+        list.set(1, 20);
+
+        assertEquals(3, size.get());
+        assertEquals(List.of(1, 20, 3), list.get());
+    }
+
+    @Test
+    void setNotifiesObservers() {
+        LinkedListObservable<Integer> list = Observable.linkedList();
+        list.addAll(List.of(1, 2, 3));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        list.observe(obs -> counter.incrementAndGet());
+
+        list.set(1, 20);
+        assertEquals(1, counter.get());
+        assertEquals(List.of(1, 20, 3), list.get());
+    }
+
+    @Test
+    void setToEqualElementDoesNotNotify() {
+        // values outside the Integer cache, so the boxed replacement is a *different*
+        // instance that is merely equal() to the one already stored
+        LinkedListObservable<Integer> list = Observable.linkedList();
+        list.addAll(List.of(100, 200, 300));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        Observable<String> mapped = list.map(l -> {
+            counter.incrementAndGet();
+            return l.toString();
+        });
+
+        assertEquals("[100, 200, 300]", mapped.get());
+        assertEquals(1, counter.get());
+
+        assertEquals(200, list.set(1, 200));
+
+        assertEquals("[100, 200, 300]", mapped.get());
+        assertEquals(1, counter.get()); // no recomputation
+    }
+
+    @Test
+    void setAcceptsNullElements() {
+        LinkedListObservable<String> list = Observable.linkedList();
+        list.addAll(List.of("a", "b"));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        list.observe(obs -> counter.incrementAndGet());
+
+        assertEquals("b", list.set(1, null));
+        assertEquals(1, counter.get());
+        assertNull(list.get().get(1));
+
+        // null -> null is a no-op
+        assertNull(list.set(1, null));
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    void setOutOfBoundsThrows() {
+        LinkedListObservable<Integer> list = Observable.linkedList();
+
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(0, 1));
+
+        list.add(1);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(1, 2));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, 2));
+
+        assertEquals(List.of(1), list.get());
+    }
+
+    @Test
+    void setFailingOutOfBoundsDoesNotNotify() {
+        LinkedListObservable<Integer> list = Observable.linkedList();
+        list.add(1);
+
+        AtomicInteger counter = new AtomicInteger(0);
+        list.observe(obs -> counter.incrementAndGet());
+
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(5, 2));
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    void setDoesNotDisturbQueueHeadAndTail() {
+        LinkedListObservable<Integer> queue = Observable.linkedList();
+        queue.addAll(List.of(1, 2, 3));
+
+        queue.set(1, 20);
+
+        assertEquals(1, queue.peek());
+        assertEquals(1, queue.poll());
+        assertEquals(20, queue.poll());
+        assertEquals(3, queue.poll());
+        assertNull(queue.poll());
+    }
+
+    // -------------------------------------------------------------------------
     // remove(E element) / remove(int index)
     // -------------------------------------------------------------------------
 

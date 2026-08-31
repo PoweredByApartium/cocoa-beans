@@ -9,12 +9,7 @@ on:
         type: string
 
 permissions:
-  pull-requests: write
   contents: write
-  repository-projects: write
-  packages: write
-  pages: write
-  id-token: write
 
 jobs:
   publish:
@@ -25,7 +20,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload
-        uses: IdanKoblik/Changelog@prod
+        uses: IdanKoblik/Changelog@382488d650cdd085bf01e60683477c5fbc326616 # prod
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

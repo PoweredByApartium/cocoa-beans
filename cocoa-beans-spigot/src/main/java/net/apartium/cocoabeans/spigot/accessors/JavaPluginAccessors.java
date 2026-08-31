@@ -10,6 +10,7 @@
 
 package net.apartium.cocoabeans.spigot.accessors;
 
+import net.apartium.cocoabeans.Dispensers;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -34,7 +35,7 @@ public class JavaPluginAccessors {
             method.setAccessible(true);
             return MethodHandles.lookup().unreflect(method);
         } catch (IllegalAccessException | NoSuchMethodException e) {
-            e.printStackTrace();
+            Dispensers.dispense(e);
             return null;
         }
     }
@@ -48,7 +49,7 @@ public class JavaPluginAccessors {
         try {
             return (File) getFile.invoke(plugin);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            // reflective invocation on a caller-supplied plugin - failure (e.g. null plugin) yields no file rather than propagating
             return null;
         }
     }

@@ -42,6 +42,191 @@ class ListObservableTest {
     }
 
     // ---------------------------------------------------------------------
+    // set(int, E)
+    // ---------------------------------------------------------------------
+
+    @Test
+    void setReplacesElementAndReturnsPrevious() {
+        ListObservable<String> names = Observable.list(new ArrayList<>(List.of("kfir", "apartium", "voigon")));
+
+        assertEquals("apartium", names.set(1, "lior"));
+        assertEquals(List.of("kfir", "lior", "voigon"), names.get());
+    }
+
+    @Test
+    void setHeadAndTail() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
+
+        assertEquals(1, scores.set(0, 10));
+        assertEquals(3, scores.set(2, 30));
+
+        assertEquals(List.of(10, 2, 30), scores.get());
+    }
+
+    @Test
+    void setDoesNotChangeSize() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
+        Observable<Integer> size = scores.size();
+
+        assertEquals(3, size.get());
+
+        scores.set(1, 20);
+
+        assertEquals(3, size.get());
+        assertEquals(List.of(1, 20, 3), scores.get());
+    }
+
+    @Test
+    void setNotifiesObservers() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        scores.observe(obs -> counter.incrementAndGet());
+
+        scores.set(1, 20);
+        assertEquals(1, counter.get());
+
+        scores.set(2, 30);
+        assertEquals(2, counter.get());
+    }
+
+    @Test
+    void setToEqualElementDoesNotNotify() {
+        // values outside the Integer cache, so the boxed replacement is a *different*
+        // instance that is merely equal() to the one already stored
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(100, 200, 300)));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        Observable<String> mapped = scores.map(list -> {
+            counter.incrementAndGet();
+            return list.toString();
+        });
+
+        assertEquals("[100, 200, 300]", mapped.get());
+        assertEquals(1, counter.get());
+
+        assertEquals(200, scores.set(1, 200));
+
+        assertEquals("[100, 200, 300]", mapped.get());
+        assertEquals(1, counter.get()); // no recomputation
+    }
+
+    @Test
+    void setOnlyAffectsTheGivenIndexWhenDuplicatesArePresent() {
+        ListObservable<String> names = Observable.list(new ArrayList<>(List.of("kfir", "lior", "kfir")));
+
+        assertEquals("kfir", names.set(2, "voigon"));
+        assertEquals(List.of("kfir", "lior", "voigon"), names.get());
+    }
+
+    @Test
+    void setOutOfBoundsThrows() {
+        ListObservable<Integer> scores = Observable.list();
+
+        assertThrows(IndexOutOfBoundsException.class, () -> scores.set(0, 1));
+
+        scores.add(1);
+
+        assertThrows(IndexOutOfBoundsException.class, () -> scores.set(1, 2));
+        assertThrows(IndexOutOfBoundsException.class, () -> scores.set(-1, 2));
+
+        assertEquals(List.of(1), scores.get());
+    }
+
+    @Test
+    void setFailingOutOfBoundsDoesNotNotify() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1)));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        scores.observe(obs -> counter.incrementAndGet());
+
+        assertThrows(IndexOutOfBoundsException.class, () -> scores.set(5, 2));
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    void setPropagatesThroughMapEach() {
+        ListObservable<String> names = Observable.list(new ArrayList<>(List.of("kfir", "apartium")));
+        ListObservable<Integer> lengths = names.mapEach(String::length);
+
+        assertEquals(List.of(4, 8), lengths.get());
+
+        names.set(0, "voigon");
+        assertEquals(List.of(6, 8), lengths.get());
+        assertEquals(List.of("voigon", "apartium"), names.get());
+    }
+
+    @Test
+    void setPropagatesThroughFilter() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1, 2, 3, 4)));
+        ListObservable<Integer> even = scores.filter(n -> Observable.immutable(n % 2 == 0));
+
+        assertEquals(List.of(2, 4), even.get());
+
+        scores.set(0, 10);
+        assertEquals(List.of(10, 2, 4), even.get());
+
+        scores.set(1, 5);
+        assertEquals(List.of(10, 4), even.get());
+    }
+
+    @Test
+    void setPropagatesThroughFlatMapEach() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+
+        ListObservable<Member> members = Observable.list(new ArrayList<>(List.of(kfir)));
+        ListObservable<String> names = members.flatMapEach(Member::displayName);
+
+        assertEquals(List.of("kfir"), names.get());
+
+        assertEquals(kfir, members.set(0, apartium));
+        assertEquals(List.of("apartium"), names.get());
+
+        // the replaced member is no longer tracked
+        kfir.displayName().set("kfir-renamed");
+        assertEquals(List.of("apartium"), names.get());
+
+        // ...while the new one is
+        apartium.displayName().set("apartium-renamed");
+        assertEquals(List.of("apartium-renamed"), names.get());
+    }
+
+    @Test
+    void setPropagatesThroughSorted() {
+        Member kfir = new Member("kfir");
+        Member apartium = new Member("apartium");
+        Member voigon = new Member("voigon");
+
+        ListObservable<Member> members = Observable.list(new ArrayList<>(List.of(voigon, kfir)));
+        ListObservable<Member> sorted = members.sorted(Member::displayName, Comparator.naturalOrder());
+
+        assertEquals(List.of(kfir, voigon), sorted.get());
+
+        assertEquals(voigon, members.set(0, apartium));
+        assertEquals(List.of(apartium, kfir), sorted.get());
+    }
+
+    @Test
+    void setLazilyRecomputesOnce() {
+        ListObservable<Integer> scores = Observable.list(new ArrayList<>(List.of(1, 2, 3)));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        Observable<Integer> sum = scores.map(list -> {
+            counter.incrementAndGet();
+            return list.stream().reduce(0, Integer::sum);
+        });
+
+        scores.set(0, 10);
+        scores.set(1, 20);
+        scores.set(2, 30);
+
+        assertEquals(0, counter.get()); // nothing computed yet
+        assertEquals(60, sum.get());
+        assertEquals(1, counter.get()); // computed once despite 3 mutations
+    }
+
+    // ---------------------------------------------------------------------
     // mapEach edge cases
     // ---------------------------------------------------------------------
 
@@ -254,6 +439,7 @@ class ListObservableTest {
 
         // list-specific overrides
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.set(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove(0));
 
         Comparator<Integer> comparator = Comparator.naturalOrder();
@@ -583,6 +769,7 @@ class ListObservableTest {
 
         // list-specific overrides
         assertThrows(UnsupportedOperationException.class, () -> mapped.add(0, "x"));
+        assertThrows(UnsupportedOperationException.class, () -> mapped.set(0, "x"));
         assertThrows(UnsupportedOperationException.class, () -> mapped.remove(0));
 
         Comparator<String> comparator = Comparator.naturalOrder();
@@ -851,6 +1038,7 @@ class ListObservableTest {
 
         // list-specific overrides on ListFilterObservable
         assertThrows(UnsupportedOperationException.class, () -> filtered.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> filtered.set(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> filtered.remove(0));
 
         Comparator<Integer> comparator = Comparator.naturalOrder();
@@ -2431,6 +2619,7 @@ class ListObservableTest {
         assertThrows(UnsupportedOperationException.class, sorted::clear);
 
         assertThrows(UnsupportedOperationException.class, () -> sorted.add(0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> sorted.set(0, 1));
         assertThrows(UnsupportedOperationException.class, () -> sorted.remove(0));
 
         Comparator<Integer> comparator = Comparator.naturalOrder();

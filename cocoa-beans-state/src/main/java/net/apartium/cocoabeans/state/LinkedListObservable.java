@@ -3,10 +3,7 @@ package net.apartium.cocoabeans.state;
 import net.apartium.cocoabeans.CollectionHelpers;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * A concrete implementation of an observable linked list that allows observing changes
@@ -49,6 +46,16 @@ public class LinkedListObservable<E> extends AbstractCollectionObservable<E, Lin
             return;
 
         notifyObservers();
+    }
+
+    @Override
+    public E set(int index, E element) {
+        E oldElement = collection.set(index, element);
+
+        if (!Objects.equals(oldElement, element))
+            notifyObservers();
+
+        return oldElement;
     }
 
     @Override
