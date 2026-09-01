@@ -117,7 +117,7 @@ loadScripts(document, 'script');</script>
 <h2>Field Summary</h2>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-net.apartium.cocoabeans.schematic.AbstractSchematic">Fields inherited from class&nbsp;net.apartium.cocoabeans.schematic.AbstractSchematic</h3>
-<code>axes, blockChunk, created, metadata, offset, platform, size</code></div>
+<code>axes, blockChunk, bodyExtensions, created, metadata, offset, platform, size</code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -141,6 +141,17 @@ loadScripts(document, 'script');</script>
  net.apartium.cocoabeans.schematic.iterator.BlockIterator&nbsp;iterator)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a SpigotSchematic with explicit parameters.</div>
+</div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.apartium.cocoabeans.structs.MinecraftPlatform,java.time.Instant,net.apartium.cocoabeans.schematic.SchematicMetadata,net.apartium.cocoabeans.space.Position,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.iterator.BlockIterator,java.util.Set)" class="member-name-link">SpigotSchematic</a><wbr>(net.apartium.cocoabeans.structs.MinecraftPlatform&nbsp;platform,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;created,
+ net.apartium.cocoabeans.schematic.SchematicMetadata&nbsp;metadata,
+ net.apartium.cocoabeans.space.Position&nbsp;offset,
+ net.apartium.cocoabeans.space.AreaSize&nbsp;size,
+ net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axes,
+ net.apartium.cocoabeans.schematic.iterator.BlockIterator&nbsp;iterator,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;net.apartium.cocoabeans.schematic.format.BodyExtension&lt;?&gt;&gt;&nbsp;bodyExtensions)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a SpigotSchematic with explicit parameters and additional body extensions.</div>
 </div>
 </div>
 </section>
@@ -219,6 +230,31 @@ loadScripts(document, 'script');</script>
 <dd><code>size</code> - the area size</dd>
 <dd><code>axes</code> - the axis order</dd>
 <dd><code>iterator</code> - the block iterator</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(net.apartium.cocoabeans.structs.MinecraftPlatform,java.time.Instant,net.apartium.cocoabeans.schematic.SchematicMetadata,net.apartium.cocoabeans.space.Position,net.apartium.cocoabeans.space.AreaSize,net.apartium.cocoabeans.space.axis.AxisOrder,net.apartium.cocoabeans.schematic.iterator.BlockIterator,java.util.Set)">
+<h3>SpigotSchematic</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SpigotSchematic</span><wbr><span class="parameters">(net.apartium.cocoabeans.structs.MinecraftPlatform&nbsp;platform,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;created,
+ net.apartium.cocoabeans.schematic.SchematicMetadata&nbsp;metadata,
+ net.apartium.cocoabeans.space.Position&nbsp;offset,
+ net.apartium.cocoabeans.space.AreaSize&nbsp;size,
+ net.apartium.cocoabeans.space.axis.AxisOrder&nbsp;axes,
+ net.apartium.cocoabeans.schematic.iterator.BlockIterator&nbsp;iterator,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;net.apartium.cocoabeans.schematic.format.BodyExtension&lt;?&gt;&gt;&nbsp;bodyExtensions)</span></div>
+<div class="block">Constructs a SpigotSchematic with explicit parameters and additional body extensions.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>platform</code> - the Minecraft platform associated with the schematic</dd>
+<dd><code>created</code> - the timestamp indicating when the schematic was created</dd>
+<dd><code>metadata</code> - the metadata associated with the schematic, such as title and author</dd>
+<dd><code>offset</code> - the offset position of the schematic</dd>
+<dd><code>size</code> - the dimensions of the area covered by the schematic</dd>
+<dd><code>axes</code> - the order of axes used to interpret the schematic data</dd>
+<dd><code>iterator</code> - the block iterator used for traversing the schematic</dd>
+<dd><code>bodyExtensions</code> - additional body extensions that enhance or modify the schematic's functionality</dd>
 </dl>
 </section>
 </li>
