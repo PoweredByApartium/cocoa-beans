@@ -10,6 +10,7 @@ import net.apartium.cocoabeans.space.Position;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @ApiStatus.AvailableSince("0.0.46")
@@ -104,6 +105,10 @@ public class SortedAxisBlockIterator implements BlockIterator {
     public BlockPlacement next() {
         BlockPlacement placement = next;
         advance();
+
+        if (placement == null)
+            throw new NoSuchElementException();
+
         return placement;
     }
 

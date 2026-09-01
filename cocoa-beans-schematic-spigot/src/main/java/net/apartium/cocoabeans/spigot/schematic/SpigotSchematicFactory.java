@@ -69,7 +69,8 @@ public class SpigotSchematicFactory implements SchematicFactory<SpigotSchematic>
                 .metadata(metadata)
                 .translate(axisOrder)
                 .translate(offset)
-                .size(size);
+                .size(size)
+                .bodyExtensions(bodyExtensions.values());
 
         while (blocks.hasNext()) {
             BlockPlacement placement = blocks.next();

@@ -6,6 +6,7 @@ import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static net.apartium.cocoabeans.schematic.block.BlockChunkImpl.SIZE;
 
@@ -167,6 +168,10 @@ public class BlockChunkIterator implements BlockIterator {
     public BlockPlacement next() {
         BlockPlacement placement = next;
         advance();
+
+        if (placement == null)
+            throw new NoSuchElementException();
+
         return placement;
     }
 

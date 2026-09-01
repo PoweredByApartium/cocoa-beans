@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.schematic;
 
 import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.schematic.block.*;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.prop.FlippableProp;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
@@ -18,9 +19,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @hidden
@@ -36,6 +35,7 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
     protected MutableBlockChunk blockChunk = BlockChunk.empty();
     protected Position offset = Position.ZERO;
     protected AxisOrder axes = AxisOrder.XYZ;
+    protected Set<BodyExtension<?>> bodyExtensions = Set.of();
 
     protected AbstractSchematicBuilder() {
         this.metadata = null;
@@ -52,6 +52,8 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
 
         this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
         schematic.blocksIterator().forEachRemaining(this::setBlock);
+
+        this.bodyExtensions = Set.copyOf(schematic.bodyExtensions());
     }
 
     @Override
@@ -86,12 +88,17 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
 
     @Override
     public T rotate(int degrees) {
-        MutableBlockChunk newChunk = new MutableBlockChunkImpl(this.axes, this.blockChunk.getScaler(), this.blockChunk.getActualPos(), this.blockChunk.getChunkPos());
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(
+                this.axes,
+                this.blockChunk.getScaler(),
+                this.blockChunk.getActualPos(),
+                this.blockChunk.getChunkPos()
+        );
 
         Iterator<BlockPlacement> iterator = new BlockChunkIterator(this.blockChunk);
 
-        degrees = Math.abs(degrees + 360) % 360;
-
+        degrees = Math.floorMod(degrees, 360);
+        
         final boolean use0Degrees = degrees == 0;
         final boolean use90Degrees = degrees == 90;
         final boolean use180Degrees = degrees == 180;
@@ -242,7 +249,16 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
     @Override
     public T shift(Axis axis, int amount) {
         BlockChunkIterator iterator = new BlockChunkIterator(this.blockChunk);
-        this.blockChunk = new MutableBlockChunkImpl(this.axes, 1, Position.ZERO, Position.ZERO);
+
+        MutableBlockChunk newChunk = new MutableBlockChunkImpl(
+                this.axes,
+                1,
+                Position.ZERO,
+                Position.ZERO
+        );
+
+        AreaSize newSize = this.size;
+
         while (iterator.hasNext()) {
             BlockPlacement placement = iterator.next();
             Position position = new Position(placement.position());
@@ -253,15 +269,37 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
                 case Z -> position.add(new Position(0, 0, amount));
             }
 
-            placement = new BlockPlacement(
-                    position,
-                    placement.block()
+            if (position.getX() < 0 ||
+                    position.getY() < 0 ||
+                    position.getZ() < 0) {
+                throw new IllegalArgumentException(
+                        "Shift would move block outside schematic bounds: " + position
+                );
+            }
+
+            newSize = rescaleSizeIfNeeded(
+                    newSize,
+                    (int) position.getX(),
+                    (int) position.getY(),
+                    (int) position.getZ()
             );
 
-            rescaleSizeIfNeeded((int) position.getX(), (int) position.getY(), (int) position.getZ());
-            rescaleChunkIfNeeded(placement.position());
-            this.blockChunk.setBlock(placement);
+            newChunk = rescaleChunkIfNeeded(newChunk, position);
+
+            boolean success = newChunk.setBlock(new BlockPlacement(
+                    position,
+                    placement.block()
+            ));
+
+            if (!success) {
+                throw new IllegalStateException(
+                        "Failed to shift block to " + position
+                );
+            }
         }
+
+        this.blockChunk = newChunk;
+        this.size = newSize;
 
         return self();
     }
@@ -296,11 +334,16 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
         return self();
     }
 
+    public T bodyExtensions(Collection<? extends BodyExtension<?>> bodyExtensions) {
+        this.bodyExtensions = Set.copyOf(bodyExtensions);
+        return self();
+    }
+
     protected void rescaleSize() {
         this.size = blockChunk.getSizeOfEntireChunk();
     }
 
-    protected void rescaleSizeIfNeeded(int x, int y, int z) {
+    private AreaSize rescaleSizeIfNeeded(AreaSize size, int x, int y, int z) {
         AreaSize newSize = new AreaSize(size).floor();
 
         if (x >= size.width())
@@ -312,13 +355,33 @@ public abstract class AbstractSchematicBuilder<T extends AbstractSchematicBuilde
         if (z >= size.depth())
             newSize = new AreaSize(newSize.width(), newSize.height(), z + 1);
 
-        this.size = newSize;
+        return newSize;
+    }
+
+    protected void rescaleSizeIfNeeded(int x, int y, int z) {
+        this.size = rescaleSizeIfNeeded(this.size, x, y, z);
+    }
+
+    private MutableBlockChunk rescaleChunkIfNeeded(MutableBlockChunk chunk, Position pos) {
+        int maxAxis = (int) Math.max(
+                pos.getX(),
+                Math.max(pos.getY(), pos.getZ())
+        );
+
+        if (maxAxis < chunk.getScaler())
+            return chunk;
+
+        return new MutableBlockChunkImpl(
+                axes,
+                Mathf.nextPowerOfFour(maxAxis) * 4.0,
+                Position.ZERO,
+                Position.ZERO,
+                chunk
+        );
     }
 
     protected void rescaleChunkIfNeeded(Position pos) {
-        int maxAxis = (int) Math.max(pos.getX(), Math.max(pos.getY(), pos.getZ()));
-        if (maxAxis >= this.blockChunk.getScaler())
-            this.blockChunk = new MutableBlockChunkImpl(axes, Mathf.nextPowerOfFour(maxAxis) * 4.0, Position.ZERO, Position.ZERO, this.blockChunk);
+        this.blockChunk = rescaleChunkIfNeeded(this.blockChunk, pos);
     }
 
     @Override

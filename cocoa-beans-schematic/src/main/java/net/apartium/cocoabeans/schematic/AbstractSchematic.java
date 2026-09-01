@@ -32,7 +32,9 @@ public abstract class AbstractSchematic implements Schematic {
     protected final AreaSize size;
     protected final AxisOrder axes;
 
+
     protected final BlockChunk blockChunk;
+    protected final Set<BodyExtension<?>> bodyExtensions;
 
     protected AbstractSchematic(
             MinecraftPlatform platform,
@@ -41,7 +43,8 @@ public abstract class AbstractSchematic implements Schematic {
             Position offset,
             AreaSize size,
             AxisOrder axes,
-            BlockIterator iterator
+            BlockIterator iterator,
+            Set<BodyExtension<?>> bodyExtensions
     ) {
         this.platform = platform;
         this.created = created;
@@ -51,7 +54,7 @@ public abstract class AbstractSchematic implements Schematic {
         this.axes = axes;
 
         this.blockChunk = iterator.toBlockChunk(axes);
-
+        this.bodyExtensions = Set.copyOf(bodyExtensions);
     }
 
     protected AbstractSchematic(Schematic schematic) {
@@ -62,7 +65,8 @@ public abstract class AbstractSchematic implements Schematic {
                 schematic.offset(),
                 schematic.size(),
                 schematic.axisOrder(),
-                schematic.blocksIterator()
+                schematic.blocksIterator(),
+                schematic.bodyExtensions()
         );
     }
 
@@ -99,7 +103,7 @@ public abstract class AbstractSchematic implements Schematic {
 
     @Override
     public Set<BodyExtension<?>> bodyExtensions() {
-        return Set.of();
+        return bodyExtensions;
     }
 
     @Override

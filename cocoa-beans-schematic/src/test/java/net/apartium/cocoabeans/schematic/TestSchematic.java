@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NullMarked
 public class TestSchematic extends AbstractSchematic {
@@ -23,7 +24,7 @@ public class TestSchematic extends AbstractSchematic {
     }
 
     public TestSchematic(MinecraftPlatform platform, Instant created, SchematicMetadata metadata, Position offset, AreaSize size, AxisOrder axes, BlockIterator iterator, Map<Long, BodyExtension<?>> bodyExtensions) {
-        super(platform, created, metadata, offset, size, axes, iterator);
+        super(platform, created, metadata, offset, size, axes, iterator, new HashSet<>(bodyExtensions.values()));
         this.bodyExtensionMap = Map.copyOf(bodyExtensions);
     }
 

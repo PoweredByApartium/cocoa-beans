@@ -3,6 +3,7 @@ package net.apartium.cocoabeans.schematic.block;
 import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.space.AreaSize;
 import net.apartium.cocoabeans.space.Position;
+import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -141,15 +142,25 @@ public class BlockChunkImpl implements BlockChunk {
     }
 
     protected @Nullable Position getChunkPos(Position pos) {
-        Position chunkPos = new Position(pos).subtract(actualPos).divide(scaler).floor();
-        if (chunkPos.getX() >= SIZE ||  chunkPos.getY() >= SIZE || chunkPos.getZ() >= SIZE)
+        Position chunkPos = new Position(pos)
+                .subtract(actualPos)
+                .divide(scaler)
+                .floor();
+
+        if (chunkPos.getX() < 0 ||
+                chunkPos.getY() < 0 ||
+                chunkPos.getZ() < 0 ||
+                chunkPos.getX() >= SIZE ||
+                chunkPos.getY() >= SIZE ||
+                chunkPos.getZ() >= SIZE) {
             return null;
+        }
 
         return chunkPos;
     }
 
     protected OptionalInt getIndex(Position pos) {
-        if (axisOrder.compare(pos, actualPos) < 0)
+        if (isBeforeActualPos(pos))
             return OptionalInt.empty();
 
         Position chunkPos = getChunkPos(pos);
@@ -161,7 +172,11 @@ public class BlockChunkImpl implements BlockChunk {
         int i1 = (int) axisOrder.getSecond().getAlong(chunkPos);
         int i2 = (int) axisOrder.getThird().getAlong(chunkPos);
 
-        return OptionalInt.of(i0 + (i1 * SIZE) + (i2 * SIZE * SIZE));
+        return OptionalInt.of(
+                i0 +
+                        (i1 * SIZE) +
+                        (i2 * SIZE * SIZE)
+        );
     }
 
     protected OptionalInt getCountBits(Integer index) {
@@ -226,7 +241,7 @@ public class BlockChunkImpl implements BlockChunk {
      */
     @Override
     public List<Pointer> getPointers() {
-        return Arrays.asList(this.pointers);
+        return Arrays.asList(this.pointers.clone());
     }
 
     /**
@@ -284,25 +299,78 @@ public class BlockChunkImpl implements BlockChunk {
         if (mask == 0)
             return new AreaSize(0, 0, 0);
 
-        if (scaler == 1) {
-            int bitPos = Long.numberOfTrailingZeros(mask);
+        return new AreaSize(
+                getSizeAlong(Axis.X),
+                getSizeAlong(Axis.Y),
+                getSizeAlong(Axis.Z)
+        );
+    }
+    private double getSizeAlong(Axis axis) {
+        if (mask == 0)
+            return 0;
 
-            int i0 = bitPos % SIZE;
-            int i1 = (bitPos / SIZE) % SIZE;
-            int i2 = bitPos / (SIZE * SIZE);
+        int maxChunkCoordinate = getMaxChunkCoordinate(axis);
 
-            Position pos = axisOrder.position(i0, i1, i2).add(actualPos);
+        if (scaler == 1)
+            return axis.getAlong(actualPos) + maxChunkCoordinate + 1;
 
-            return new AreaSize(
-                    pos.getX() + 1,
-                    pos.getY() + 1,
-                    pos.getZ() + 1
-            );
+        double maxSize = 0;
+
+        long remainingMask = mask;
+        int pointerIndex = 0;
+
+        while (remainingMask != 0) {
+            int bitPos = Long.numberOfTrailingZeros(remainingMask);
+            int chunkCoordinate = getChunkCoordinate(bitPos, axis);
+
+            Pointer pointer = pointers[pointerIndex++];
+            if (chunkCoordinate == maxChunkCoordinate) {
+                if (!(pointer instanceof ChunkPointer chunkPointer))
+                    throw new IllegalStateException(
+                            "Expected ChunkPointer for scaler " + scaler
+                    );
+
+                BlockChunk chunk = chunkPointer.getChunk();
+
+                double childSize;
+                if (chunk instanceof BlockChunkImpl chunkImpl)
+                    childSize = chunkImpl.getSizeAlong(axis);
+                else
+                    childSize = axis.getAlong(chunk.getSizeOfEntireChunk());
+
+                maxSize = Math.max(maxSize, childSize);
+            }
+
+            remainingMask &= remainingMask - 1;
         }
 
-        return ((ChunkPointer) pointers[pointers.length - 1])
-                .getChunk()
-                .getSizeOfEntireChunk();
+        return maxSize;
+    }
+
+    private int getMaxChunkCoordinate(Axis axis) {
+        int max = -1;
+        long remainingMask = mask;
+
+        while (remainingMask != 0) {
+            int bitPos = Long.numberOfTrailingZeros(remainingMask);
+
+            max = Math.max(
+                    max,
+                    getChunkCoordinate(bitPos, axis)
+            );
+
+            remainingMask &= remainingMask - 1;
+        }
+
+        return max;
+    }
+
+    private int getChunkCoordinate(int bitPos, Axis axis) {
+        int i0 = bitPos % SIZE;
+        int i1 = (bitPos / SIZE) % SIZE;
+        int i2 = bitPos / (SIZE * SIZE);
+
+        return (int) axis.getAlong(axisOrder.position(i0, i1, i2));
     }
 
     /**
@@ -321,5 +389,11 @@ public class BlockChunkImpl implements BlockChunk {
     @Override
     public BlockChunk immutable() {
         return this;
+    }
+
+    protected boolean isBeforeActualPos(Position pos) {
+        return pos.getX() < actualPos.getX()
+                || pos.getY() < actualPos.getY()
+                || pos.getZ() < actualPos.getZ();
     }
 }

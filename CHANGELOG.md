@@ -5,6 +5,16 @@
 - [build] Gradle dependency verification
 - [repo] Fixes for Writerside versions list
 - [common] Add 26.2 to MinecraftVersion
+- [schematic] Fix incorrect schematic size calculation across multiple chunk branches
+- [schematic] Fix block index serialization relying on `BlockData` object identity
+- [schematic] Fix preferred block and index encoders not being registered for decoding
+- [schematic] Preserve body extensions when creating and rebuilding schematics
+- [schematic] Fix negative shifts silently dropping blocks
+- [schematic] Fix chunk bounds validation for negative coordinates
+- [schematic] Prevent BlockChunk#getPointers from exposing internal pointer storage
+- [schematic] Fix rotation normalization for negative and overflowing rotations
+- [schematic] Fix block iterators returning `null` instead of throwing `NoSuchElementException` when exhausted
+- [schematic-spigot] Fix legacy sign capture and placement using incompatible sign line representations
 
 ## 0.0.52
 - [state] Add `WatcherOperator#attach` to allow re-attaching a detached watcher to a new operator

@@ -397,4 +397,83 @@ class AbstractSchematicBuilderTest {
         assertTrue(copy.positions().contains(new Position(0, 0, 0)));
         assertTrue(copy.positions().contains(new Position(1, 0, 0)));
     }
+
+    @Test
+    void removeBlockRecalculatesSizeUsingAllRemainingBlocks() {
+        TestBuilder b = new TestBuilder();
+
+        b.setBlock(3, 0, 0, dirt());
+        b.setBlock(0, 3, 0, dirt());
+        b.setBlock(0, 0, 0, dirt());
+
+        b.removeBlock(0, 0, 0);
+
+        assertEquals(Set.of(
+                new Position(3, 0, 0),
+                new Position(0, 3, 0)
+        ), b.positions());
+
+        assertEquals(
+                new AreaSize(4, 4, 1),
+                b.size
+        );
+    }
+
+    @Test
+    void negativeShiftDoesNotSilentlyDropBlocks() {
+        TestBuilder b = new TestBuilder();
+
+        b.setBlock(0, 0, 0, dirt());
+        b.setBlock(1, 0, 0, dirt());
+
+        Set<Position> before = b.positions();
+
+        try {
+            b.shift(Axis.X, -1);
+        } catch (IllegalArgumentException expected) {
+            // Rejecting a shift that would create negative coordinates
+            assertEquals(before, b.positions());
+            return;
+        }
+
+        assertEquals(
+                before.size(),
+                b.positions().size(),
+                "Accepted shift silently removed blocks"
+        );
+    }
+
+    @Test
+    void rotateNegative450IsEquivalentTo270() {
+        TestBuilder negative = new TestBuilder();
+        negative.setBlock(bp(0, 0, 0));
+        negative.setBlock(bp(3, 0, 1));
+        negative.size(new AreaSize(4, 1, 6));
+        negative.translate(new Position(2, 0, 10));
+
+        TestBuilder positive = new TestBuilder();
+        positive.setBlock(bp(0, 0, 0));
+        positive.setBlock(bp(3, 0, 1));
+        positive.size(new AreaSize(4, 1, 6));
+        positive.translate(new Position(2, 0, 10));
+
+        negative.rotate(-450);
+        positive.rotate(270);
+
+        assertEquals(
+                positive.positions(),
+                negative.positions()
+        );
+
+        assertEquals(
+                positive.size,
+                negative.size
+        );
+
+        assertEquals(
+                positive.offset,
+                negative.offset
+        );
+    }
+
 }

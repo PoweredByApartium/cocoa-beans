@@ -1,5 +1,6 @@
 package net.apartium.cocoabeans.schematic.format;
 
+import net.apartium.cocoabeans.Ensures;
 import net.apartium.cocoabeans.Mathf;
 import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
@@ -255,6 +256,9 @@ public class CocoaSchematicFormat<T extends Schematic> implements SchematicForma
      * @param encoder the preferred encoder
      */
     public void setPreferBlockEncoder(int id, BlockDataEncoder encoder) {
+        Ensures.notNull(encoder, "encoder");
+
+        registerBlockEncoder(id, encoder);
         preferBlockEncoder = Map.entry(id, encoder);
     }
 
@@ -267,6 +271,9 @@ public class CocoaSchematicFormat<T extends Schematic> implements SchematicForma
      * @param encoder the preferred encoder
      */
     public void setPreferIndexEncoder(int id, IndexEncoder encoder) {
+        Ensures.notNull(encoder, "encoder");
+
+        registerIndexEncoder(id, encoder);
         preferIndexEncoder = Map.entry(id, encoder);
     }
 
@@ -377,7 +384,7 @@ public class CocoaSchematicFormat<T extends Schematic> implements SchematicForma
             out.write(headers);
 
             BlockIterator iterator = schematic.blocksIterator();
-            Map<BlockData, Long> blockIndexes = new IdentityHashMap<>();
+            Map<BlockData, Long> blockIndexes = new HashMap<>();
             ByteArrayOutputStream blockOut = new ByteArrayOutputStream();
             long offset = 0;
 

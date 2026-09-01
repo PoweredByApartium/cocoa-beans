@@ -177,7 +177,7 @@ public class MutableBlockChunkImpl extends BlockChunkImpl implements MutableBloc
     public boolean setBlock(BlockPlacement placement) {
         Position pos = placement.position();
 
-        if (axisOrder.compare(pos, actualPos) < 0)
+        if (isBeforeActualPos(pos))
             return false;
 
         Position chunkPos = getChunkPos(pos);
