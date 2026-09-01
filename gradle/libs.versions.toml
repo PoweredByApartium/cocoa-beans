@@ -23,3 +23,4 @@ jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-datab
 jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version = "1.17.0" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version = "5.17.0" }
+zstd-jni = { group = "com.github.luben", name = "zstd-jni", version = "1.5.6-4" }
