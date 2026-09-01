@@ -15,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ApiStatus.Internal
@@ -48,12 +49,16 @@ public class SpigotSchematicPlacer_1_8_R1 implements SpigotSchematicPlacer {
             if (prop == null)
                 return;
 
-            if (!(prop.value() instanceof String[] lines))
-                throw new IllegalArgumentException("Invalid legacy sign line");
+            if (!(prop.value() instanceof List<?> lines) || lines.size() != 4)
+                throw new IllegalArgumentException("Invalid legacy sign lines");
 
+            for (int i = 0; i < lines.size(); i++) {
+                Object line = lines.get(i);
+                if (!(line instanceof String text))
+                    throw new IllegalArgumentException("Invalid legacy sign line at index " + i);
 
-            for (int i = 0; i < lines.length; i++)
-                sign.setLine(i, lines[i]);
+                sign.setLine(i, text);
+            }
 
             sign.update();
         }

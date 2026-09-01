@@ -424,4 +424,112 @@ class MutableBlockChunkImplTest {
         assertEquals(0L, chunk.getMask());
         assertTrue(chunk.getPointers().isEmpty());
     }
+
+    @Test
+    void sizeUsesMaximumOfEveryAxisAcrossAllBlocks() {
+        MutableBlockChunkImpl chunk = chunk1();
+
+        chunk.setBlock(bp(3, 0, 0));
+        chunk.setBlock(bp(0, 3, 0));
+
+        assertEquals(
+                new AreaSize(4, 4, 1),
+                chunk.getSizeOfEntireChunk()
+        );
+    }
+
+    @Test
+    void sizeUsesMaximumOfEveryAxisAcrossAllBlocksNoRef() {
+        MutableBlockChunk chunk = BlockChunk.empty();
+
+        BlockData data = new GenericBlockData(
+                new NamespacedKey("minecraft", "stone"),
+                Map.of()
+        );
+
+        chunk.setBlock(new BlockPlacement(
+                new Position(3, 0, 0),
+                data
+        ));
+
+        chunk.setBlock(new BlockPlacement(
+                new Position(0, 3, 0),
+                data
+        ));
+
+        assertEquals(
+                new AreaSize(4, 4, 1),
+                chunk.getSizeOfEntireChunk()
+        );
+    }
+
+    @Test
+    void setBlockRejectsAnyCoordinateBeforeChunkOrigin() {
+        MutableBlockChunkImpl chunk = chunk4();
+
+        boolean result = assertDoesNotThrow(() ->
+                chunk.setBlock(new BlockPlacement(
+                        new Position(1, -1, 0),
+                        stone()
+                ))
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    void getPointersCannotBeUsedToMutateImmutableChunk() {
+        MutableBlockChunkImpl mutable = chunk1();
+        mutable.setBlock(new BlockPlacement(
+                Position.ZERO,
+                stone()
+        ));
+
+        BlockChunk immutable = mutable.immutable();
+
+        var pointers = immutable.getPointers();
+
+        try {
+            pointers.set(
+                    0,
+                    new BlockPointer(dirt())
+            );
+        } catch (UnsupportedOperationException ignored) {
+            // An unmodifiable returned list is also perfectly valid.
+        }
+
+        assertEquals(
+                stone(),
+                immutable.getBlock(Position.ZERO),
+                "Mutating getPointers() result changed immutable chunk state"
+        );
+    }
+
+    @Test
+    void setBlockReturnsFalseWhenAnyAxisIsBeforeActualPos() {
+        MutableBlockChunkImpl chunk = chunk1();
+
+        assertFalse(chunk.setBlock(new BlockPlacement(
+                new Position(1, -1, 0),
+                stone()
+        )));
+
+        assertFalse(chunk.setBlock(new BlockPlacement(
+                new Position(1, 0, -1),
+                stone()
+        )));
+
+        assertEquals(0L, chunk.getMask());
+        assertTrue(chunk.getPointers().isEmpty());
+    }
+
+    @Test
+    void getBlockReturnsNullWhenAnyAxisIsBeforeActualPos() {
+        MutableBlockChunkImpl chunk = chunk1();
+        chunk.setBlock(bp(1, 1, 1));
+
+        assertNull(chunk.getBlock(new Position(1, -1, 0)));
+        assertNull(chunk.getBlock(new Position(1, 0, -1)));
+    }
+
 }

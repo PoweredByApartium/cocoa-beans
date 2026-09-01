@@ -4,6 +4,7 @@ import net.apartium.cocoabeans.schematic.block.BlockData;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
 import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.prop.BlockProp;
+import net.apartium.cocoabeans.schematic.prop.ListStringBlockProp;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.spigot.schematic.prop.LegacyDataProp;
 import net.apartium.cocoabeans.structs.NamespacedKey;
@@ -15,12 +16,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,7 +74,10 @@ class SpigotSchematicPlacer_1_8_R1Test {
 
         Map<String, BlockProp<?>> props = new HashMap<>();
         props.put(BlockProp.Legacy.DATA, new LegacyDataProp((byte) 1));
-        props.put(BlockProp.Legacy.SIGN_LINES, (BlockProp<String[]>) () -> new String[] { "a", "b", "c", "d" });
+        props.put(
+                BlockProp.Legacy.SIGN_LINES,
+                new ListStringBlockProp(List.of("a", "b", "c", "d"))
+        );
         BlockData data = new GenericBlockData(new NamespacedKey("minecraft", "STONE"), props);
         BlockPlacement placement = new BlockPlacement(Position.ZERO, data);
 
@@ -134,5 +136,49 @@ class SpigotSchematicPlacer_1_8_R1Test {
         BlockProp<?> lines = data.props().get(BlockProp.Legacy.SIGN_LINES);
         assertNotNull(lines);
         assertEquals(Arrays.asList("l1", "l2", "l3", "l4"), lines.value());
+    }
+
+    @Test
+    void capturedSignCanBePlacedBack() {
+        Block sourceBlock = mock(Block.class);
+        Sign sourceSign = mock(Sign.class);
+
+        when(sourceBlock.getType()).thenReturn(Material.SIGN_POST);
+        when(sourceBlock.getData()).thenReturn((byte) 1);
+        when(sourceBlock.getState()).thenReturn(sourceSign);
+
+        when(sourceSign.getLines()).thenReturn(new String[]{
+                "line 1",
+                "line 2",
+                "line 3",
+                "line 4"
+        });
+
+        BlockData captured = placer.getBlockData(sourceBlock);
+        assertNotNull(captured);
+
+        Block targetBlock = mock(Block.class);
+        Sign targetSign = mock(Sign.class);
+
+        when(targetBlock.getState()).thenReturn(targetSign);
+
+        BlockPlacement placement = new BlockPlacement(
+                Position.ZERO,
+                captured
+        );
+
+        // Data produced by getBlockData() must be accepted by place().
+        assertDoesNotThrow(() ->
+                placer.place(targetBlock, placement)
+        );
+
+        verify(targetBlock).setType(Material.SIGN_POST, false);
+        verify(targetBlock).setData((byte) 1);
+
+        verify(targetSign).setLine(0, "line 1");
+        verify(targetSign).setLine(1, "line 2");
+        verify(targetSign).setLine(2, "line 3");
+        verify(targetSign).setLine(3, "line 4");
+        verify(targetSign).update();
     }
 }

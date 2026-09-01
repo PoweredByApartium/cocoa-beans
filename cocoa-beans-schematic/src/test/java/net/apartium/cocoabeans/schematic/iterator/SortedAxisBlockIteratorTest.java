@@ -156,4 +156,21 @@ class SortedAxisBlockIteratorTest {
             assertEquals(order, it.axisOrder());
         }
     }
+
+    @Test
+    void blockChunkIteratorNextThrowsAfterExhaustion() {
+        MutableBlockChunk chunk = chunkXYZ();
+        set(chunk, 0, 0, 0);
+
+        BlockChunkIterator iterator = new BlockChunkIterator(chunk);
+
+        assertTrue(iterator.hasNext());
+        assertNotNull(iterator.next());
+        assertFalse(iterator.hasNext());
+
+        assertThrows(
+                NoSuchElementException.class,
+                iterator::next
+        );
+    }
 }

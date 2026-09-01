@@ -1,8 +1,6 @@
 package net.apartium.cocoabeans.schematic.format;
 
-import net.apartium.cocoabeans.schematic.block.BlockChunk;
-import net.apartium.cocoabeans.schematic.block.BlockData;
-import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.block.*;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
@@ -10,7 +8,6 @@ import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.space.axis.Axis;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
-import net.apartium.cocoabeans.schematic.block.GenericBlockData;
 import net.apartium.cocoabeans.schematic.compression.CompressionType;
 import net.apartium.cocoabeans.schematic.compression.CompressionEngine;
 import net.apartium.cocoabeans.seekable.ByteArraySeekableChannel;
@@ -1348,6 +1345,160 @@ class CocoaSchematicFormatTest {
                     assertNull(schematic.getBlockData(-x, -y, -z), "Should be null at (" + -x + ", " + -y + ", " + -z + ")");
                 }
             }
+        }
+    }
+
+    @Test
+    void writeDoesNotDependOnBlockDataObjectIdentity() {
+        TestSchematic base = buildOneBlockSchematic(
+                SchematicMetadata.of(),
+                AxisOrder.XYZ
+        );
+
+        TestSchematic source = new TestSchematic(
+                base.originPlatform(),
+                base.created(),
+                base.metadata(),
+                base.offset(),
+                base.size(),
+                base.axisOrder(),
+                base.blocksIterator()
+        ) {
+            @Override
+            public BlockIterator blocksIterator() {
+                MutableBlockChunk chunk = BlockChunk.empty();
+
+                // Deliberately create a NEW BlockData object on every invocation.
+                BlockData blockData = new GenericBlockData(
+                        new NamespacedKey("minecraft", "dirt"),
+                        Map.of()
+                );
+
+                chunk.setBlock(new BlockPlacement(
+                        Position.ZERO,
+                        blockData
+                ));
+
+                return new BlockChunkIterator(chunk);
+            }
+        };
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            assertDoesNotThrow(() ->
+                    format.write(
+                            source,
+                            new SeekableOutputStream(channel)
+                    )
+            );
+        }
+
+    }
+
+    @Test
+    void setPreferBlockEncoderAlsoRegistersEncoderForReading() {
+        int customId = 42;
+
+        CocoaSchematicFormat<TestSchematic> format = new CocoaSchematicFormat<>(
+                Map.of(
+                        SimpleBlockDataEncoder.ID,
+                        new SimpleBlockDataEncoder(Map.of())
+                ),
+                Map.of(
+                        BlockChunkIndexEncoder.ID,
+                        new BlockChunkIndexEncoder()
+                ),
+                Set.of(
+                        CompressionEngine.gzip()
+                ),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+
+        format.setPreferBlockEncoder(
+                customId,
+                new SimpleBlockDataEncoder(Map.of())
+        );
+
+        TestSchematic source = buildOneBlockSchematic(
+                SchematicMetadata.of(),
+                AxisOrder.XYZ
+        );
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(
+                    source,
+                    new SeekableOutputStream(channel)
+            );
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+
+            TestSchematic result = assertDoesNotThrow(() ->
+                    format.read(in)
+            );
+
+            assertEquals(source.size(), result.size());
+            assertEquals(
+                    source.getBlockData(0, 0, 0),
+                    result.getBlockData(0, 0, 0)
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void setPreferIndexEncoderAlsoRegistersEncoderForReading() {
+        int customId = 99;
+
+        CocoaSchematicFormat<TestSchematic> format = new CocoaSchematicFormat<>(
+                Map.of(
+                        SimpleBlockDataEncoder.ID,
+                        new SimpleBlockDataEncoder(Map.of())
+                ),
+                Map.of(
+                        BlockChunkIndexEncoder.ID,
+                        new BlockChunkIndexEncoder()
+                ),
+                Set.of(
+                        CompressionEngine.gzip()
+                ),
+                CompressionType.GZIP.getId(),
+                CompressionType.GZIP.getId(),
+                new TestSchematicFactory()
+        );
+
+        format.setPreferIndexEncoder(
+                customId,
+                new BlockChunkIndexEncoder()
+        );
+
+        TestSchematic source = buildOneBlockSchematic(
+                SchematicMetadata.of(),
+                AxisOrder.XYZ
+        );
+
+        try (ByteArraySeekableChannel channel = new ByteArraySeekableChannel()) {
+            format.write(
+                    source,
+                    new SeekableOutputStream(channel)
+            );
+
+            SeekableInputStream in = new SeekableInputStream(channel);
+            in.position(0);
+
+            TestSchematic result = assertDoesNotThrow(() ->
+                    format.read(in)
+            );
+
+            assertEquals(source.size(), result.size());
+            assertEquals(
+                    source.getBlockData(0, 0, 0),
+                    result.getBlockData(0, 0, 0)
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

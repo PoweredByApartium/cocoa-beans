@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.block.*;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.iterator.BlockChunkIterator;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.AreaSize;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -176,4 +178,41 @@ class SpigotSchematicFactoryTest {
         while (it.hasNext()) { it.next(); count++; }
         assertEquals(3, count);
     }
+
+    @Test
+    void createSchematicPreservesBodyExtensions() {
+        TestExtension extension = new TestExtension(
+                42L,
+                "hello"
+        );
+
+        SpigotSchematic schematic =
+                new SpigotSchematicFactory().createSchematic(
+                        Instant.EPOCH,
+                        new MinecraftPlatform(
+                                MinecraftVersion.UNKNOWN,
+                                "test",
+                                "1.0"
+                        ),
+                        SchematicMetadata.of(),
+                        new BlockChunkIterator(BlockChunk.empty()),
+                        new AreaSize(0, 0, 0),
+                        AxisOrder.XYZ,
+                        Position.ZERO,
+                        Map.of(extension.id(), extension)
+                );
+
+        assertEquals(
+                Set.of(extension),
+                schematic.bodyExtensions()
+        );
+    }
+
+    private record TestExtension(
+            long id,
+            String data
+    ) implements BodyExtension<String> {
+
+    }
+
 }

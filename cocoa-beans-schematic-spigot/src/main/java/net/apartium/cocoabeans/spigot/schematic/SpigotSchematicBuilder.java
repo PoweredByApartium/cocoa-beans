@@ -72,7 +72,8 @@ public class SpigotSchematicBuilder extends AbstractSchematicBuilder<SpigotSchem
                 offset,
                 size,
                 axes,
-                new BlockChunkIterator(blockChunk)
+                new BlockChunkIterator(blockChunk),
+                bodyExtensions
         );
     }
 

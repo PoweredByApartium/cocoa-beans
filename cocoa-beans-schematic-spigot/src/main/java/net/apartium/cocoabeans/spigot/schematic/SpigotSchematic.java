@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.spigot.schematic;
 
 import net.apartium.cocoabeans.schematic.*;
 import net.apartium.cocoabeans.schematic.block.BlockPlacement;
+import net.apartium.cocoabeans.schematic.format.BodyExtension;
 import net.apartium.cocoabeans.schematic.iterator.BlockIterator;
 import net.apartium.cocoabeans.space.Position;
 import net.apartium.cocoabeans.space.axis.AxisOrder;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
+import java.util.Set;
 
 import static net.apartium.cocoabeans.spigot.Locations.toVector;
 
@@ -49,7 +51,41 @@ public class SpigotSchematic extends AbstractSchematic {
      * @param iterator the block iterator
      */
     public SpigotSchematic(MinecraftPlatform platform, Instant created, SchematicMetadata metadata, Position offset, AreaSize size, AxisOrder axes, BlockIterator iterator) {
-        super(platform, created, metadata, offset, size, axes, iterator);
+        super(platform, created, metadata, offset, size, axes, iterator, Set.of());
+    }
+
+    /**
+     * Constructs a SpigotSchematic with explicit parameters and additional body extensions.
+     *
+     * @param platform the Minecraft platform associated with the schematic
+     * @param created the timestamp indicating when the schematic was created
+     * @param metadata the metadata associated with the schematic, such as title and author
+     * @param offset the offset position of the schematic
+     * @param size the dimensions of the area covered by the schematic
+     * @param axes the order of axes used to interpret the schematic data
+     * @param iterator the block iterator used for traversing the schematic
+     * @param bodyExtensions additional body extensions that enhance or modify the schematic's functionality
+     */
+    public SpigotSchematic(
+            MinecraftPlatform platform,
+            Instant created,
+            SchematicMetadata metadata,
+            Position offset,
+            AreaSize size,
+            AxisOrder axes,
+            BlockIterator iterator,
+            Set<BodyExtension<?>> bodyExtensions
+    ) {
+        super(
+                platform,
+                created,
+                metadata,
+                offset,
+                size,
+                axes,
+                iterator,
+                bodyExtensions
+        );
     }
 
     /**
