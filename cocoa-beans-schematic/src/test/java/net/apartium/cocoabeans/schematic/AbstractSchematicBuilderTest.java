@@ -476,4 +476,74 @@ class AbstractSchematicBuilderTest {
         );
     }
 
+    @Test
+    void setBlockAfterCompactionCanInsertBeforeRemainingBlock() {
+        TestBuilder b = new TestBuilder();
+
+        b.setBlock(0, 0, 0, dirt());
+        b.setBlock(8, 0, 0, dirt());
+
+        b.removeBlock(0, 0, 0);
+
+        assertEquals(
+                Set.of(new Position(8, 0, 0)),
+                b.positions()
+        );
+
+        b.setBlock(0, 0, 0, dirt());
+
+        assertEquals(
+                Set.of(
+                        new Position(0, 0, 0),
+                        new Position(8, 0, 0)
+                ),
+                b.positions()
+        );
+    }
+
+    @Test
+    void setBlockAfterRemoveCompactionCanInsertBeforeRemainingBlock() {
+        TestBuilder b = new TestBuilder();
+
+        b.setBlock(0, 0, 0, dirt());
+        b.setBlock(8, 0, 0, dirt());
+
+        assertEquals(Set.of(
+                new Position(0, 0, 0),
+                new Position(8, 0, 0)
+        ), b.positions());
+
+        b.removeBlock(0, 0, 0);
+
+        assertEquals(
+                Set.of(new Position(8, 0, 0)),
+                b.positions()
+        );
+
+        b.setBlock(0, 0, 0, dirt());
+
+        assertEquals(Set.of(
+                new Position(0, 0, 0),
+                new Position(8, 0, 0)
+        ), b.positions());
+    }
+
+    @Test
+    void setBlockAfterRemoveCompactionCanInsertBeforeRemainingBlock_withAxisOrder() {
+        TestBuilder b = new TestBuilder();
+
+        b.setBlock(4000, 210, 733782, dirt());
+
+        assertEquals(Set.of(
+                new Position(4000, 210, 733782)
+        ), b.positions());
+
+        b.removeBlock(4000, 210, 733782);
+        b.setBlock(4000, 210, 733782, dirt());
+
+        assertEquals(Set.of(
+                new Position(4000, 210, 733782)
+        ), b.positions());
+    }
+
 }
