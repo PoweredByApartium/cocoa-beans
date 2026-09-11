@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"net.apartium.cocoabeans.spigot.schematic"},{"l":"net.apartium.cocoabeans.spigot.schematic.prop"},{"l":"net.apartium.cocoabeans.spigot.schematic.prop.format"}];updateSearchResults();
