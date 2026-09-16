@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.0.54
+- [repo] Upgrade to Gradle 9.7.1
+
 ## 0.0.53
 - [state] Add `ListObservable#set` for replacing an element by index
 - [build] Gradle dependency verification
