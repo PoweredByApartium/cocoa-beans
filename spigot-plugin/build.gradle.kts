@@ -12,8 +12,8 @@ dependencies {
     compileOnly(libs.spigot)
 
     implementation(project(":cocoa-beans-spigot"))
-    implementation(project(":cocoa-beans-spigot-1-8"))
-    implementation(project(":cocoa-beans-spigot-1-20"))
+    implementation(project(":cocoa-beans-spigot-1.8"))
+    implementation(project(":cocoa-beans-spigot-1.20"))
     implementation(project(":cocoa-beans-commands-spigot"))
     implementation(project(":cocoa-beans-state-spigot"))
     implementation(project(":cocoa-beans-scoreboard-spigot"))

@@ -35,8 +35,8 @@ rootProject.name = "cocoa-beans"
 
 include("cocoa-beans-spigot")
 include("cocoa-beans-common")
-include("cocoa-beans-spigot-1-8")
-include("cocoa-beans-spigot-1-20")
+include("cocoa-beans-spigot-1.8")
+include("cocoa-beans-spigot-1.20")
 include("cocoa-beans-commands")
 include("cocoa-beans-commands-spigot")
 include("cocoa-beans-scoreboard")

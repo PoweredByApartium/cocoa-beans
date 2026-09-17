@@ -123,6 +123,7 @@ allprojects {
         testCompileOnly(rootProject.libs.jspecify)
 
         testImplementation(platform(rootProject.libs.junit.bom))
+        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
 
     }
 
@@ -244,7 +245,7 @@ publishing {
 
                     val dependency = dependencies.appendNode("dependency")
                     dependency.appendNode("groupId", artifactGroup)
-                    dependency.appendNode("artifactId", it.mavenName)
+                    dependency.appendNode("artifactId", it.name)
                     dependency.appendNode("version", it.version)
 
                 }

@@ -7,7 +7,7 @@ group = parent!!.group
 version = parent!!.project.version
 
 dependencies {
-    api(project.project(":cocoa-beans-common"))
+    api(project(":cocoa-beans-common"))
     testImplementation(platform("org.junit:junit-bom:${libs.junit.bom.get().version}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.jackson.databind)
