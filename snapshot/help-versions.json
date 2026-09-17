@@ -59,6 +59,10 @@
   "isCurrent" : false,
   "url" : "/0.0.52/"
 }, {
+  "version" : "0.0.53",
+  "isCurrent" : false,
+  "url" : "/0.0.53/"
+}, {
   "version" : "snapshot",
   "isCurrent" : true,
   "url" : "/snapshot/"
