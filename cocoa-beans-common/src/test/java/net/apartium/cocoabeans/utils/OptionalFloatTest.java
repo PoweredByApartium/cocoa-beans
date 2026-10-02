@@ -92,4 +92,22 @@ class OptionalFloatTest {
         assertTrue(emptyActionCalled.get());
     }
 
+    @Test
+    void ifPresentOrElseWithNullSelectedActionThrows() {
+        assertThrows(NullPointerException.class, () -> OptionalFloat.of(5).ifPresentOrElse(null, () -> {}));
+        assertThrows(NullPointerException.class, () -> OptionalFloat.empty().ifPresentOrElse(value -> {}, null));
+    }
+
+    @Test
+    void ifPresentOrElseDoesNotRequireUnselectedAction() {
+        AtomicBoolean presentActionCalled = new AtomicBoolean(false);
+        AtomicBoolean emptyActionCalled = new AtomicBoolean(false);
+
+        OptionalFloat.of(5).ifPresentOrElse(value -> presentActionCalled.set(true), null);
+        OptionalFloat.empty().ifPresentOrElse(null, () -> emptyActionCalled.set(true));
+
+        assertTrue(presentActionCalled.get());
+        assertTrue(emptyActionCalled.get());
+    }
+
 }
