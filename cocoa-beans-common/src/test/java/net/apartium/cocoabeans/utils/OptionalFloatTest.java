@@ -70,4 +70,26 @@ class OptionalFloatTest {
 
     }
 
+    @Test
+    void ifPresentOrElseWithValue() {
+        float[] received = {Float.NaN};
+        AtomicBoolean emptyActionCalled = new AtomicBoolean(false);
+
+        OptionalFloat.of(5).ifPresentOrElse(value -> received[0] = value, () -> emptyActionCalled.set(true));
+
+        assertEquals(5, received[0]);
+        assertFalse(emptyActionCalled.get());
+    }
+
+    @Test
+    void ifPresentOrElseWhenEmpty() {
+        AtomicBoolean actionCalled = new AtomicBoolean(false);
+        AtomicBoolean emptyActionCalled = new AtomicBoolean(false);
+
+        OptionalFloat.empty().ifPresentOrElse(value -> actionCalled.set(true), () -> emptyActionCalled.set(true));
+
+        assertFalse(actionCalled.get());
+        assertTrue(emptyActionCalled.get());
+    }
+
 }

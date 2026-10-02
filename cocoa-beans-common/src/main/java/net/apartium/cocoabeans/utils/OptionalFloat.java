@@ -85,6 +85,19 @@ public final class OptionalFloat {
     }
 
     /**
+     * Executes the given action with the contained float, or executes the empty action when no value is present.
+     * @param action the action to execute with the contained value
+     * @param emptyAction the action to execute when no value is present
+     * @throws NullPointerException if the selected action is null
+     */
+    public void ifPresentOrElse(FloatConsumer action, Runnable emptyAction) {
+        if (isEmpty())
+            emptyAction.run();
+        else
+            action.accept(this.value);
+    }
+
+    /**
      * Retrieves current value, or throws given exception if nul
      * @param exceptionSupplier exception supplier
      * @return float value
