@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.54
+- [common] Add `OptionalFloat#ifPresentOrElse`
 - [repo] Upgrade to Gradle 9.7.1
 
 ## 0.0.53

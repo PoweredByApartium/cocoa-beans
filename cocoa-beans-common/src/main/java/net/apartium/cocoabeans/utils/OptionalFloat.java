@@ -10,6 +10,8 @@
 
 package net.apartium.cocoabeans.utils;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.apartium.cocoabeans.functions.FloatConsumer;
 import net.apartium.cocoabeans.functions.FloatPredicate;
 import net.apartium.cocoabeans.functions.FloatSupplier;
@@ -82,6 +84,21 @@ public final class OptionalFloat {
         if (!isEmpty())
             consumer.accept(this.value);
 
+    }
+
+    /**
+     * Executes the given action with the contained float, or executes the empty action when no value is present.
+     * @param action the action to execute with the contained value
+     * @param emptyAction the action to execute when no value is present
+     * @throws NullPointerException if the selected action is null
+     * @since 0.0.54
+     */
+    @ApiStatus.AvailableSince("0.0.54")
+    public void ifPresentOrElse(FloatConsumer action, Runnable emptyAction) {
+        if (isEmpty())
+            emptyAction.run();
+        else
+            action.accept(this.value);
     }
 
     /**
