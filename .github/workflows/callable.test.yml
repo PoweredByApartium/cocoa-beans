@@ -4,7 +4,7 @@ on:
   workflow_call:
     secrets:
       SONAR_PROP_TOKEN:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -16,6 +16,7 @@ jobs:
 
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -31,13 +32,30 @@ jobs:
       - name: Run integration tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
         run: |
           ls -la
-          ./gradlew check jacocoTestReport sonar -Dsonar.verbose=true
+          ./gradlew check jacocoTestReport
+
+      - name: Check Sonar token availability
+        id: sonar-token
+        env:
+          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
+        run: |
+          if [ -n "$SONAR_PROP_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Sonar analysis
+        if: steps.sonar-token.outputs.available == 'true'
+        env:
+          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
+        run: ./gradlew sonar -Dsonar.verbose=true
 
       - name: Generate dynamic test report paths and check names
         id: dynamic-paths
+        if: always() && steps.checkout.outcome == 'success'
         run: sh build-scripts/report.sh
 
       - name: Publish Test Report
