@@ -29,29 +29,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@d9c87d481d55275bb5441eef3fe0e46805f9ef70 # v3
 
-      - name: Run integration tests
+      - name: Run checks, coverage, and Sonar analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
         run: |
           ls -la
-          ./gradlew check jacocoTestReport
-
-      - name: Check Sonar token availability
-        id: sonar-token
-        env:
-          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
-        run: |
-          if [ -n "$SONAR_PROP_TOKEN" ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run Sonar analysis
-        if: steps.sonar-token.outputs.available == 'true'
-        env:
-          SONAR_PROP_TOKEN: ${{ secrets.SONAR_PROP_TOKEN }}
-        run: ./gradlew sonar -Dsonar.verbose=true
+          ./gradlew check jacocoTestReport sonar -Dsonar.verbose=true
 
       - name: Generate dynamic test report paths and check names
         id: dynamic-paths
