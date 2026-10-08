@@ -123,7 +123,10 @@ public record MinecraftVersion(
     public static final MinecraftVersion V26_1 = new MinecraftVersion(26, 1, 0, 775);
     public static final MinecraftVersion V26_1_1 = new MinecraftVersion(26, 1, 1, 775);
     public static final MinecraftVersion V26_1_2 = new MinecraftVersion(26, 1, 2, 775);
+
     public static final MinecraftVersion V26_2 = new MinecraftVersion(26, 2, 0, 776);
+
+    public static final MinecraftVersion V26_3 = new MinecraftVersion(26, 3, 0, 777);
 
     public static final List<MinecraftVersion> KNOWN_VERSIONS = List.of(
             // 1.8 - 1.8.9
@@ -230,7 +233,10 @@ public record MinecraftVersion(
             V26_1_2,
 
             // 26.2
-            V26_2
+            V26_2,
+
+            // 26.3
+            V26_3
     );
 
     /**

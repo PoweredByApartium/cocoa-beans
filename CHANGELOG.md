@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 0.0.54
+- [common] Add 26.3 to MinecraftVersion
 - [common] Add `OptionalFloat#ifPresentOrElse`
 - [repo] Upgrade to Gradle 9.7.1
 
