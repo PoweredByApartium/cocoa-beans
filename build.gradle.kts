@@ -17,6 +17,7 @@ plugins {
 }
 
 val snapshot: Boolean = System.getenv("GITHUB_EVENT_NAME") != "workflow_dispatch" && System.getenv("GITHUB_WORKFLOW_REF") == null
+val sonarToken: String? = System.getenv("SONAR_PROP_TOKEN")?.takeIf { it.isNotBlank() }
 
 fun figureVersion() : String {
     val prodVersion = System.getenv("VERSION")
@@ -151,18 +152,18 @@ allprojects {
     }
 
     tasks.withType<SonarTask> {
-        dependsOn(tasks.test)
-        dependsOn(tasks.jacocoTestReport)
+        if (isCi && sonarToken == null) {
+            enabled = false
+        } else {
+            dependsOn(tasks.test)
+            dependsOn(tasks.jacocoTestReport)
+        }
     }
 
     sonar {
         properties {
             if (isCi) {
-                val tokenFromEnv = System.getenv("SONAR_PROP_TOKEN") ?: throw RuntimeException("sonar.token is not set")
-                if (tokenFromEnv.isEmpty())
-                    throw RuntimeException("sonar.token cannot be empty")
-
-                property("sonar.token", tokenFromEnv)
+                sonarToken?.let { property("sonar.token", it) }
             } else {
                 property("sonar.token", project.findProperty("apartium.sonar.token").toString())
             }
@@ -203,7 +204,11 @@ allprojects {
 // Only the root project has a sonar task, so it has to pull in every module's coverage report
 // itself - otherwise a bare `./gradlew sonar` analyses against stale or missing reports.
 tasks.withType<SonarTask> {
-    dependsOn(subprojects.map { "${it.path}:jacocoTestReport" })
+    if (isCi && sonarToken == null) {
+        enabled = false
+    } else {
+        dependsOn(subprojects.map { "${it.path}:jacocoTestReport" })
+    }
 }
 
 hangarPublish {
