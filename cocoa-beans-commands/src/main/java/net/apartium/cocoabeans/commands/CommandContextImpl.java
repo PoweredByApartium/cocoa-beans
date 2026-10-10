@@ -20,15 +20,34 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-/* package-private */ record CommandContextImpl(
-        Sender sender,
-        @Nullable CommandInfo rawCommandInfo,
-        @Nullable CommandOption option,
-        @Nullable BadCommandResponse rawError,
-        String[] args,
-        String commandName,
-        Map<Class<?>, List<Object>> parsedArgs
-) implements CommandContext {
+/* package-private */ final class CommandContextImpl implements CommandContext {
+    private final Sender sender;
+    private final @Nullable CommandInfo rawCommandInfo;
+    private final @Nullable CommandOption option;
+    private final @Nullable BadCommandResponse rawError;
+    private final String[] args;
+    private final String commandName;
+    private final Map<Class<?>, List<Object>> parsedArgs;
+
+    private NamedArgumentResult namedArgumentResult;
+
+    CommandContextImpl(
+            Sender sender,
+            @Nullable CommandInfo rawCommandInfo,
+            @Nullable CommandOption option,
+            @Nullable BadCommandResponse rawError,
+            String[] args,
+            String commandName,
+            Map<Class<?>, List<Object>> parsedArgs
+    ) {
+        this.sender = sender;
+        this.rawCommandInfo = rawCommandInfo;
+        this.option = option;
+        this.rawError = rawError;
+        this.args = args;
+        this.commandName = commandName;
+        this.parsedArgs = parsedArgs;
+    }
 
     @Override
     public Optional<CommandInfo> commandInfo() {
@@ -47,12 +66,27 @@ import java.util.*;
         return argsTmp;
     }
 
+    private NamedArgumentResult namedArgumentResult() {
+        if (namedArgumentResult == null)
+            namedArgumentResult = Optional.ofNullable(parsedArgs.get(NamedArgumentResult.class))
+                    .map(List::getFirst)
+                    .map(obj -> {
+                        if (obj instanceof NamedArgumentResult result)
+                            return result;
+                        if (obj instanceof Optional<?> optional)
+                            return optional.orElse(null);
+
+                        return null;
+                    })
+                    .map(NamedArgumentResult.class::cast)
+                    .orElseGet(() -> new NamedArgumentResult(Set.of(), Map.of()));
+
+        return namedArgumentResult;
+    }
+
     @Override
     public <T> OptionArgumentValue<T> option(OptionArgument<T> option) {
-        return (OptionArgumentValue<T>) Optional.ofNullable(parsedArgs.get(NamedArgumentResult.class))
-                .map(List::getFirst)
-                .map(NamedArgumentResult.class::cast)
-                .map(n -> n.options().get(option))
+        return (OptionArgumentValue<T>) Optional.ofNullable(namedArgumentResult.options().get(option))
                 .orElseGet(() -> new OptionArgumentValue<>(
                         null,
                         null,
@@ -67,22 +101,12 @@ import java.util.*;
 
     @Override
     public Set<OptionArgumentValue<?>> options() {
-        return Optional.ofNullable(parsedArgs.get(NamedArgumentResult.class))
-                .map(List::getFirst)
-                .map(NamedArgumentResult.class::cast)
-                .map(NamedArgumentResult::options)
-                .map(Map::values)
-                .map(Set::copyOf)
-                .orElseGet(Set::of);
+        return Set.copyOf(namedArgumentResult().options().values());
     }
 
     @Override
     public Set<FlagArgument> flags() {
-        return Optional.ofNullable(parsedArgs.get(NamedArgumentResult.class))
-                .map(List::getFirst)
-                .map(NamedArgumentResult.class::cast)
-                .map(NamedArgumentResult::flags)
-                .orElseGet(Set::of);
+        return namedArgumentResult().flags();
     }
 
     @Override
@@ -97,4 +121,50 @@ import java.util.*;
                 ", parsedArgs=" + parsedArgs +
                 '}';
     }
+
+    @Override
+    public Sender sender() {
+        return sender;
+    }
+
+    public @Nullable CommandInfo rawCommandInfo() {
+        return rawCommandInfo;
+    }
+
+    public @Nullable CommandOption option() {
+        return option;
+    }
+
+    public @Nullable BadCommandResponse rawError() {
+        return rawError;
+    }
+
+    @Override
+    public String commandName() {
+        return commandName;
+    }
+
+    public Map<Class<?>, List<Object>> parsedArgs() {
+        return parsedArgs;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (CommandContextImpl) obj;
+        return Objects.equals(this.sender, that.sender) &&
+                Objects.equals(this.rawCommandInfo, that.rawCommandInfo) &&
+                Objects.equals(this.option, that.option) &&
+                Objects.equals(this.rawError, that.rawError) &&
+                Arrays.equals(this.args, that.args) &&
+                Objects.equals(this.commandName, that.commandName) &&
+                Objects.equals(this.parsedArgs, that.parsedArgs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sender, rawCommandInfo, option, rawError, Arrays.hashCode(args), commandName, parsedArgs);
+    }
+
 }

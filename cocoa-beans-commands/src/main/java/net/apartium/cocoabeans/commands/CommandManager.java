@@ -143,7 +143,7 @@ public abstract class CommandManager {
         }
         
 
-        for (RegisteredVariant method : ((CommandContextImpl) context).option().getRegisteredCommandVariants()) {
+        for (RegisteredVariant method : context.option().getRegisteredCommandVariants()) {
             try {
                 if (invoke(context, sender, method))
                     return true;

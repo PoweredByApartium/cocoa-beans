@@ -7,6 +7,8 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -61,6 +63,18 @@ public sealed interface OptionArgument<T> extends NamedArgument permits OptionAr
 
         public Builder<T> parser(ArgumentParser<T> parser) {
             this.parser = parser;
+            return this;
+        }
+
+        // TODO
+        public Builder<T> parser(String keyword) {
+            // TODO
+            return this;
+        }
+
+        // TODO
+        public Builder<T> validation(Predicate<T> validation) {
+            // TODO
             return this;
         }
 

@@ -136,6 +136,13 @@ class NamedArgumentTest extends CommandTestBase {
         evaluate("named", "test");
         assertEquals("test", sender.getMessages().remove(0));
         assertResult(null, false, null, false, null);
+
+        evaluate("named", new String[0]);
+        assertResult(null, false, null, false, null);
+
+        evaluate("named", "testB");
+        assertEquals("test2", sender.getMessages().remove(0));
+        assertResult(null, false, null, false, null);
     }
 
     @Test

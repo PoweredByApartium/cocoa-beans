@@ -12,6 +12,7 @@ package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.InvalidUsageResponse;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.EmptyInputCapableParser;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.structs.Entry;
@@ -123,8 +124,10 @@ import java.util.*;
 
             int newIndex = parse.get().newIndex();
 
-            if (newIndex < index)
-                throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that is smaller than current index");
+            if (newIndex <= index) {
+                if (newIndex != index || !(typeParser instanceof EmptyInputCapableParser))
+                    throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that is smaller than current index");
+            }
 
             CommandContextImpl result = entry.value().handle(
                     registeredCommand,

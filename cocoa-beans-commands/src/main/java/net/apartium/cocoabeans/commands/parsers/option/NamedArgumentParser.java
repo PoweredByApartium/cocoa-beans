@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.commands.IndexedCommandProcessingContext;
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
 import net.apartium.cocoabeans.commands.option.*;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.EmptyInputCapableParser;
 import net.apartium.cocoabeans.commands.parsers.UnionCappableParser;
 import net.apartium.cocoabeans.commands.parsers.exception.InvalidNamedArgumentResponse;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApiStatus.AvailableSince("0.0.54")
-public class NamedArgumentParser extends ArgumentParser<NamedArgumentResult> implements UnionCappableParser<NamedArgumentResult> {
+public class NamedArgumentParser extends ArgumentParser<NamedArgumentResult> implements UnionCappableParser<NamedArgumentResult>, EmptyInputCapableParser {
 
     public static final String DEFAULT_KEYWORD = "named-argument";
     public static final int DEFAULT_PRIORITY = 0;

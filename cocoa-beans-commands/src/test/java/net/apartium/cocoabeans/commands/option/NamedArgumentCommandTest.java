@@ -84,7 +84,7 @@ import net.apartium.cocoabeans.commands.parsers.option.WithFlagArgument;
         named(sender, context);
     }
 
-    @SubCommand("test <volume+loud-flag+pitch+fast-flag+priority-argument>")
+    @SubCommand("testB <volume+loud-flag+pitch+fast-flag+priority-argument>")
     public void named3(Sender sender, CommandContext context) {
         sender.sendMessage("test2");
         named(sender, context);

@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.lexer;
 
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.EmptyInputCapableParser;
 import net.apartium.cocoabeans.commands.parsers.UnionCappableParser;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -92,12 +93,16 @@ public class SimpleUnionArgumentParserToken extends UnionArgumentParserToken {
         }
 
         ArgumentParser<?> parser = argumentParsers.get(0);
+
         if (argumentParsers.size() == 1)
             return new RegisterArgumentParser<>(parser, optionalNotMatch, isOptional, parameterName);
 
         try {
             UnionCappableParser<?> unionCappableParser = (UnionCappableParser<?>) parser;
             ArgumentParser<?> union = unionCappableParser.union(argumentParsers.subList(1, argumentParsers.size()).toArray(new ArgumentParser[0]));
+
+            if (union instanceof EmptyInputCapableParser)
+                isOptional = true;
 
             return new RegisterArgumentParser<>(union, optionalNotMatch, isOptional, parameterName);
         } catch (Exception e) {

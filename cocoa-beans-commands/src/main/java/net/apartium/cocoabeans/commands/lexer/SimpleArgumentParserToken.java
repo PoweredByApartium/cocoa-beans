@@ -2,6 +2,7 @@ package net.apartium.cocoabeans.commands.lexer;
 
 import net.apartium.cocoabeans.commands.RegisterArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
+import net.apartium.cocoabeans.commands.parsers.EmptyInputCapableParser;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -78,6 +79,9 @@ public class SimpleArgumentParserToken extends ArgumentParserToken {
         ArgumentParser<?> argumentParser = parsers.get(parserKeyword);
         if (argumentParser == null)
             throw new IllegalArgumentException("Parser not found: " + parserKeyword);
+
+        if (argumentParser instanceof EmptyInputCapableParser)
+            isOptional = true;
 
         return new RegisterArgumentParser<>(argumentParser, optionalNotMatch, isOptional, parameterName);
     }
