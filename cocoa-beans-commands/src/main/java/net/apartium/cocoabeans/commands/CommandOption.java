@@ -35,10 +35,10 @@ import java.util.*;
         this.commandManager = commandManager;
     }
 
-    public CommandContext handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+    CommandContextImpl handle(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
         if (args.length == 0 && index == 0) {
             if (!registeredVariants.isEmpty() && argumentTypeOptionalHandlerMap.isEmpty())
-                return new CommandContext(
+                return new CommandContextImpl(
                     sender,
                     commandInfo,
                     this,
@@ -56,14 +56,13 @@ import java.util.*;
             return handleOptional(registeredCommand, commandName, args, sender, index);
 
 
-        CommandContext commandError = null;
+        CommandContextImpl commandError = null;
         CommandBranchProcessor commandBranchProcessor = keywordMap.get(args[index]);
         if (commandBranchProcessor == null)
             commandBranchProcessor = keywordIgnoreCaseMap.get(args[index].toLowerCase());
 
         if (commandBranchProcessor != null) {
-            CommandContext result;
-            result = commandBranchProcessor.handle(
+            CommandContextImpl result = commandBranchProcessor.handle(
                     registeredCommand,
                     commandName,
                     args,
@@ -90,13 +89,13 @@ import java.util.*;
                     if (context.getReport() == null)
                         continue;
 
-                    if (commandError == null || commandError.error().getDepth() < context.getReport().getDepth())
-                        commandError = new CommandContext(sender, null, null, context.getReport(), args, commandName, new HashMap<>());
+                    if (commandError == null || commandError.error().get().getDepth() < context.getReport().getDepth())
+                        commandError = new CommandContextImpl(sender, null, null, context.getReport(), args, commandName, new HashMap<>());
 
                     continue;
                 }
 
-                CommandContext result;
+                CommandContextImpl result;
 
                 result = entry.value().handle(
                         registeredCommand,
@@ -110,7 +109,7 @@ import java.util.*;
                     continue;
 
                 if (result.hasError()) {
-                    if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                    if (commandError == null || commandError.error().get().getDepth() < result.error().get().getDepth())
                         commandError = result;
                     continue;
                 }
@@ -124,10 +123,10 @@ import java.util.*;
 
             int newIndex = parse.get().newIndex();
 
-            if (newIndex <= index)
-                throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that isn't bigger than current index");
+            if (newIndex < index)
+                throw new RuntimeException("There is an exception with " + typeParser.getClass().getName() + " return new index that is smaller than current index");
 
-            CommandContext result = entry.value().handle(
+            CommandContextImpl result = entry.value().handle(
                     registeredCommand,
                     commandName,
                     args,
@@ -139,7 +138,7 @@ import java.util.*;
                 continue;
 
             if (result.hasError()) {
-                if (commandError == null || commandError.error().getDepth() < result.error().getDepth())
+                if (commandError == null || commandError.error().get().getDepth() < result.error().get().getDepth())
                     commandError = result;
 
                 continue;
@@ -156,7 +155,7 @@ import java.util.*;
             return commandError;
 
         // return invalid usage
-        return new CommandContext(
+        return new CommandContextImpl(
                 sender,
                 null,
                 null,
@@ -168,11 +167,11 @@ import java.util.*;
     }
 
     @Nullable
-    /* package-private */ CommandContext handleOptional(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
-        CommandContext error = null;
+    /* package-private */ CommandContextImpl handleOptional(RegisteredCommand registeredCommand, String commandName, String[] args, Sender sender, int index) {
+        CommandContextImpl error = null;
 
         for (var entry : argumentTypeOptionalHandlerMap) {
-            CommandContext result = entry.value().handle(
+            CommandContextImpl result = entry.value().handle(
                     registeredCommand,
                     commandName,
                     args,
@@ -183,7 +182,7 @@ import java.util.*;
 
             if (result == null) {
                 if (!registeredVariants.isEmpty())
-                    return new CommandContext(
+                    return new CommandContextImpl(
                             sender,
                             commandInfo,
                             this,
@@ -197,7 +196,7 @@ import java.util.*;
             }
 
             if (result.hasError()) {
-                if (error == null || error.error().getDepth() < result.error().getDepth())
+                if (error == null || error.error().get().getDepth() < result.error().get().getDepth())
                     error = result;
 
                 continue;

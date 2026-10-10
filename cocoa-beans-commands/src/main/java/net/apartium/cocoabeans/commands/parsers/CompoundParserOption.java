@@ -1,9 +1,6 @@
 package net.apartium.cocoabeans.commands.parsers;
 
-import net.apartium.cocoabeans.commands.CommandProcessingContext;
-import net.apartium.cocoabeans.commands.RegisterArgumentParser;
-import net.apartium.cocoabeans.commands.RegisteredVariant;
-import net.apartium.cocoabeans.commands.SimpleCommandProcessingContext;
+import net.apartium.cocoabeans.commands.*;
 import net.apartium.cocoabeans.structs.Entry;
 
 import java.util.*;
@@ -29,10 +26,8 @@ import java.util.*;
             if (parse.isEmpty())
                 continue;
 
-            Optional<CompoundParser.ParserResult> result = entry.value().parse(new SimpleCommandProcessingContext(
-                    processingContext.sender(),
-                    processingContext.label(),
-                    processingContext.args().toArray(new String[0]),
+            Optional<CompoundParser.ParserResult> result = entry.value().parse(new IndexedCommandProcessingContext(
+                    processingContext,
                     parse.get().newIndex()
             ));
 
@@ -99,11 +94,10 @@ import java.util.*;
             if (newIndex <= processingContext.index())
                 throw new IllegalStateException("There is an exception with " + parser.parser().getClass().getName() + " return new index that isn't bigger then current index");
 
-            Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.value().tabCompletion(new SimpleCommandProcessingContext(
-                    processingContext.sender(),
-                    processingContext.label(),
-                    processingContext.args().toArray(new String[0]), newIndex)
-            );
+            Optional<ArgumentParser.TabCompletionResult> tabCompletionResult = entry.value().tabCompletion(new IndexedCommandProcessingContext(
+                    processingContext,
+                    newIndex
+            ));
 
             if (tabCompletionResult.isEmpty())
                 continue;

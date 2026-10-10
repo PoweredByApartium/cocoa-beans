@@ -121,7 +121,7 @@ public abstract class CommandManager {
         if (registeredCommand == null)
             throw new UnknownCommandResponse(commandName).getError();
 
-        CommandContext context = registeredCommand.getCommandBranchProcessor().handle(
+        CommandContextImpl context = registeredCommand.getCommandBranchProcessor().handle(
                 registeredCommand,
                 commandName,
                 args,
@@ -134,15 +134,16 @@ public abstract class CommandManager {
 
 
         if (context.hasError()) {
-            if (handleError(context, sender, commandName, args, registeredCommand, context.error().getError()))
+            BadCommandResponse err = context.error().get();
+            if (handleError(context, sender, commandName, args, registeredCommand, err.getError()))
                 return true;
 
-            context.error().throwError();
+            err.throwError();
             return false; // should never reach here
         }
         
 
-        for (RegisteredVariant method : context.option().getRegisteredCommandVariants()) {
+        for (RegisteredVariant method : ((CommandContextImpl) context).option().getRegisteredCommandVariants()) {
             try {
                 if (invoke(context, sender, method))
                     return true;
@@ -189,7 +190,7 @@ public abstract class CommandManager {
                 return true;
         }
 
-        CommandContext context = new CommandContext(sender, registeredCommand.getCommandInfo(), null, null, args, commandName, Map.of());
+        CommandContext context = new CommandContextImpl(sender, registeredCommand.getCommandInfo(), null, null, args, commandName, Map.of());
         for (RegisteredCommand.VirtualCommandNode virtualNode : registeredCommand.getVirtualNodes()) {
             if (virtualNode.callback().apply(context))
                 return true;
@@ -250,9 +251,21 @@ public abstract class CommandManager {
         return true;
     }
 
-    private boolean invoke(CommandContext context, Sender sender, RegisteredVariant registeredVariant) {
+    private ArgumentContext createArgumentContext(CommandContextImpl context) {
+        Map<Class<?>, List<Object>> map = new HashMap<>(context.parsedArgs());
+
+        map.put(CommandContext.class, List.of(context));
+        return new ArgumentContext(
+                context.commandName(),
+                context.args(),
+                context.sender(),
+                Collections.unmodifiableMap(map)
+        );
+    }
+
+    private boolean invoke(CommandContextImpl context, Sender sender, RegisteredVariant registeredVariant) {
         List<Object> parameters = new ArrayList<>(registeredVariant.argumentIndexList().stream()
-                .<Object>map((argumentIndex -> argumentIndex.get(context.toArgumentContext())))
+                .<Object>map((argumentIndex -> argumentIndex.get(createArgumentContext(context))))
                 .toList());
 
         parameters.add(0, registeredVariant.node());

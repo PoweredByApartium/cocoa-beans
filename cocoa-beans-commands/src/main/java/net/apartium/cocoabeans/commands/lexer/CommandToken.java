@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @see CommandLexer
  */
 @ApiStatus.AvailableSince("0.0.37")
-public abstract class CommandToken implements Serializable {
+public sealed abstract class CommandToken implements Serializable permits ArgumentParserToken, KeywordToken, UnionArgumentParserToken {
 
     @Serial
     private static final long serialVersionUID = 1997193817846920361L;

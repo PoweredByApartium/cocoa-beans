@@ -11,7 +11,7 @@ import java.util.Optional;
  * A token that represents an argument parser.
  */
 @ApiStatus.AvailableSince("0.0.37")
-public abstract class ArgumentParserToken extends CommandToken {
+public abstract non-sealed class ArgumentParserToken extends CommandToken {
 
     /**
      * Create a new argument parser token

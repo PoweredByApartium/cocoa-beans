@@ -29,7 +29,7 @@ import java.util.*;
         this.commandManager = commandManager;
     }
 
-    /* package-private */ @Nullable CommandContext handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
+    /* package-private */ @Nullable CommandContextImpl handle(RegisteredCommand commandWrapper, String commandName, String[] args, Sender sender, int index) {
 
         BadCommandResponse commandError = null;
 
@@ -51,14 +51,15 @@ import java.util.*;
 
             if (args.length <= index) {
                 if (!entry.value().getOptionalArgumentTypeHandlerMap().isEmpty()) {
-                    CommandContext commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
+                    CommandContextImpl commandContext = entry.value().handleOptional(commandWrapper, commandName, args, sender, index);
 
                     if (commandContext == null)
                         continue;
 
                     if (commandContext.hasError()) {
-                        if (commandError == null || commandError.getDepth() < commandContext.error().getDepth())
-                            commandError = commandContext.error();
+                        BadCommandResponse err = commandContext.error().orElseThrow();
+                        if (commandError == null || commandError.getDepth() < err.getDepth())
+                            commandError = err;
 
                         continue;
                     }
@@ -70,7 +71,7 @@ import java.util.*;
                 if (entry.value().getRegisteredCommandVariants().isEmpty())
                     continue;
 
-                CommandContext commandContext = new CommandContext(
+                CommandContextImpl commandContext = new CommandContextImpl(
                         sender,
                         entry.value().getCommandInfo(),
                         entry.value(),
@@ -85,7 +86,7 @@ import java.util.*;
                 return commandContext;
             }
 
-            CommandContext result = commandOption.handle(
+            CommandContextImpl result = commandOption.handle(
                         commandWrapper,
                         commandName,
                         args,
@@ -97,8 +98,9 @@ import java.util.*;
                 continue;
 
             if (result.hasError()) {
-                if (commandError == null || commandError.getDepth() < result.error().getDepth())
-                    commandError = result.error();
+                BadCommandResponse err = result.error().orElseThrow();
+                if (commandError == null || commandError.getDepth() < err.getDepth())
+                    commandError = err;
                 continue;
             }
 
@@ -108,12 +110,12 @@ import java.util.*;
         }
 
         if (commandError != null)
-            return new CommandContext(sender, null, null, commandError, args, commandName, new HashMap<>());
+            return new CommandContextImpl(sender, null, null, commandError, args, commandName, new HashMap<>());
 
         return null;
     }
 
-    private void addToParserArgs(RequirementResult requirementResult, CommandContext context) {
+    private void addToParserArgs(RequirementResult requirementResult, CommandContextImpl context) {
         for (RequirementResult.Value value : requirementResult.getValues()) {
             context.parsedArgs()
                     .computeIfAbsent(value.clazz(), clazz -> new ArrayList<>())

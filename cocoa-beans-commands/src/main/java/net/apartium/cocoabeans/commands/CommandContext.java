@@ -11,60 +11,90 @@
 package net.apartium.cocoabeans.commands;
 
 import net.apartium.cocoabeans.commands.exception.BadCommandResponse;
+import net.apartium.cocoabeans.commands.option.FlagArgument;
+import net.apartium.cocoabeans.commands.option.NamedArgument;
+import net.apartium.cocoabeans.commands.option.OptionArgument;
+import net.apartium.cocoabeans.commands.option.OptionArgumentValue;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Represents the context of a command after it has been processed
- * @param sender The sender of the command
- * @param option The command option that was evaluated
- * @param args commands raw args
- * @param commandName command name
- * @param parsedArgs parsed args
  */
-// TODO change to interface
-public record CommandContext(Sender sender,
-                             CommandInfo commandInfo,
-                             @Nullable CommandOption option,
-                             @Nullable BadCommandResponse error,
-                             String[] args,
-                             String commandName,
-                             Map<Class<?>, List<Object>> parsedArgs
-) {
+public interface CommandContext {
 
-    boolean hasError() {
-        return error != null;
+    /**
+     * @return sender instance
+     */
+    Sender sender();
+
+    /**
+     * @return command info, or empty if error
+     * @see CommandContext#error()
+     */
+    Optional<CommandInfo> commandInfo();
+
+    /**
+     * @return error, or empty if no error
+     * @see CommandContext#commandInfo()
+     */
+    Optional<BadCommandResponse> error();
+
+    /**
+     * @return a copy of the raw arguments array
+     */
+    String[] args();
+
+    /**
+     * @return label used when executing the command
+     */
+    String commandName();
+
+    @ApiStatus.AvailableSince("0.0.54")
+    default boolean hasError() {
+        return error().isPresent();
     }
 
-    @ApiStatus.AvailableSince("0.0.36")
-    ArgumentContext toArgumentContext() {
-        Map<Class<?>, List<Object>> map = new HashMap<>(parsedArgs);
+    // new option / flag system
+    @ApiStatus.AvailableSince("0.0.54")
+    <T> OptionArgumentValue<T> option(OptionArgument<T> option);
 
-        map.put(CommandContext.class, List.of(this));
+    @ApiStatus.AvailableSince("0.0.54")
+    boolean flag(FlagArgument flag);
 
-        return new ArgumentContext(
-                commandName,
-                args,
-                sender,
-                map
-        );
+    @ApiStatus.AvailableSince("0.0.54")
+    Set<OptionArgumentValue<?>> options();
+
+    @ApiStatus.AvailableSince("0.0.54")
+    Set<FlagArgument> flags();
+
+    default <T> OptionArgumentValue<T> option(String form) {
+        return (OptionArgumentValue<T>) options().stream()
+                .filter(arg -> arg.argument().form().equalsIgnoreCase(form) || arg.argument().forms().contains(form))
+                .findFirst()
+                .orElseGet(() -> new OptionArgumentValue<>(
+                        null, null, null
+                ));
     }
 
-    @Override
-    public String toString() {
-        return "CommandContext{" +
-                "sender=" + sender +
-                ", commandInfo=" + commandInfo +
-                ", option=" + option +
-                ", error=" + error +
-                ", args=" + Arrays.toString(args) +
-                ", commandName='" + commandName + '\'' +
-                ", parsedArgs=" + parsedArgs +
-                '}';
+    default boolean flag(String form) {
+        return flags().stream()
+                .anyMatch(arg -> arg.form().equalsIgnoreCase(form) || arg.forms().contains(form));
     }
+
+    @ApiStatus.AvailableSince("0.0.54")
+    default NamedArgument namedArgument(String form) {
+        return Stream.concat(
+                        options().stream()
+                                .map(OptionArgumentValue::argument),
+                        flags().stream()
+                )
+                .filter(arg -> arg.form().equalsIgnoreCase(form) || arg.forms().contains(form))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

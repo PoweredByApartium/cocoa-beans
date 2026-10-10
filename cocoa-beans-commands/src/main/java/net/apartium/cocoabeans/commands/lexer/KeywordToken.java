@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
  * A Keyword token that represents an keyword
  */
 @ApiStatus.AvailableSince("0.0.37")
-public abstract class KeywordToken extends CommandToken {
+public non-sealed abstract class KeywordToken extends CommandToken {
 
     /**
      * Create a new keyword token

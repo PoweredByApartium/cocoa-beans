@@ -5,6 +5,7 @@ import net.apartium.cocoabeans.commands.requirements.Requirement;
 import net.apartium.cocoabeans.commands.requirements.RequirementEvaluationContext;
 import net.apartium.cocoabeans.commands.requirements.RequirementResult;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class TestCommandProcessingContext implements CommandProcessingContext {
     }
 
     @Override
-    public Sender sender() {
+    public @NotNull Sender sender() {
         return sender;
     }
 
@@ -53,7 +54,7 @@ public class TestCommandProcessingContext implements CommandProcessingContext {
     }
 
     @Override
-    public void report(Object source, BadCommandResponse response) {
+    public void report(Object source, @NotNull BadCommandResponse response) {
         reports.add(response);
     }
 

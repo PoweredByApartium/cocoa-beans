@@ -14,6 +14,7 @@ public class SimpleCommandLexer implements CommandLexer {
 
     private final CommandTokenSupplier<ArgumentParserToken> argumentSupplier;
     private final CommandTokenSupplier<KeywordToken> keywordSupplier;
+    private final CommandTokenSupplier<UnionArgumentParserToken> unionArgumentSupplier;
 
     /**
      * Create a new simple command lexer with SimpleArgumentParserToken and SimpleKeywordToken
@@ -28,8 +29,19 @@ public class SimpleCommandLexer implements CommandLexer {
      * @param keywordSupplier the keyword supplier to create keyword tokens
      */
     public SimpleCommandLexer(CommandTokenSupplier<ArgumentParserToken> argumentSupplier, CommandTokenSupplier<KeywordToken> keywordSupplier) {
+        this(argumentSupplier, keywordSupplier, SimpleUnionArgumentParserToken::new);
+    }
+
+    /**
+     * Create a new simple command lexer
+     * @param argumentSupplier the argument supplier to create argument parser tokens
+     * @param keywordSupplier the keyword supplier to create keyword tokens
+     */
+    @ApiStatus.AvailableSince("0.0.54")
+    public SimpleCommandLexer(CommandTokenSupplier<ArgumentParserToken> argumentSupplier, CommandTokenSupplier<KeywordToken> keywordSupplier, CommandTokenSupplier<UnionArgumentParserToken> unionArgumentSupplier) {
         this.argumentSupplier = argumentSupplier;
         this.keywordSupplier = keywordSupplier;
+        this.unionArgumentSupplier = unionArgumentSupplier;
     }
 
     /**
@@ -44,6 +56,7 @@ public class SimpleCommandLexer implements CommandLexer {
         int from = 0;
         boolean hasData = false;
         boolean argumentParser = false;
+        boolean unionArgumentParser = false;
 
         for (int i = 0; i < command.length(); i++) {
             char c = command.charAt(i);
@@ -59,6 +72,11 @@ public class SimpleCommandLexer implements CommandLexer {
                 continue;
             }
 
+            if (c == '+' && argumentParser) {
+                unionArgumentParser = true;
+                continue;
+            }
+
             if (c == '<') {
                 ensureCouldOpenArgument(argumentParser, hasData);
                 argumentParser = true;
@@ -66,9 +84,10 @@ public class SimpleCommandLexer implements CommandLexer {
             }
 
             if (c == '>') {
-                handleClosingArgument(tokens, from, i, command, argumentParser);
+                handleClosingArgument(tokens, from, i, command, argumentParser, unionArgumentParser);
 
                 argumentParser = false;
+                unionArgumentParser = false;
                 from = i + 1;
                 hasData = false;
                 continue;
@@ -98,14 +117,18 @@ public class SimpleCommandLexer implements CommandLexer {
         tokens.add(keywordSupplier.apply(from, to, command));
     }
 
-    private void handleClosingArgument(List<CommandToken> tokens, int from, int to, String command, boolean argumentParser) {
+    private void handleClosingArgument(List<CommandToken> tokens, int from, int to, String command, boolean argumentParser, boolean unionArgumentParser) {
         if (!argumentParser)
             throw new IllegalArgumentException("Missing argument parser");
 
         if (from == to - 1)
             throw new IllegalArgumentException("Empty argument parser");
 
-        tokens.add(argumentSupplier.apply(from, to + 1, command));
+        CommandTokenSupplier<?> supplier = unionArgumentParser
+                ? unionArgumentSupplier
+                : argumentSupplier;
+
+        tokens.add(supplier.apply(from, to + 1, command));
     }
 
     private void handleFinalArgument(List<CommandToken> tokens, int from, String command, boolean argumentParser) {

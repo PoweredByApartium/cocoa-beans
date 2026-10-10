@@ -9,6 +9,7 @@
     <toc-element topic="home.md"/>
     <toc-element topic="commands.md">
         <toc-element topic="examples.md">
+            <toc-element topic="named-argument.md"/>
             <toc-element topic="sub-command-fallback-handling.md"/>
             <toc-element topic="integer-arguments.md"/>
             <toc-element topic="simple-custom-argument-types.md"/>

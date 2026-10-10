@@ -18,6 +18,7 @@ import net.apartium.cocoabeans.commands.exception.UnknownTokenException;
 import net.apartium.cocoabeans.commands.lexer.ArgumentParserToken;
 import net.apartium.cocoabeans.commands.lexer.CommandToken;
 import net.apartium.cocoabeans.commands.lexer.KeywordToken;
+import net.apartium.cocoabeans.commands.lexer.UnionArgumentParserToken;
 import net.apartium.cocoabeans.commands.parsers.ArgumentParser;
 import net.apartium.cocoabeans.commands.parsers.ParserFactory;
 import net.apartium.cocoabeans.commands.requirements.Requirement;
@@ -252,6 +253,19 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                     continue;
                 }
 
+                if (token instanceof UnionArgumentParserToken unionArgumentParserToken) {
+                    currentOption = createArgumentOption(
+                            currentOption,
+                            unionArgumentParserToken,
+                            commandManager.argumentTypeHandlerMap,
+                            resolveRequirementsForBranch(i, methodRequirements),
+                            parsersResult,
+                            classRequirementsResult,
+                            fallbackParser
+                    );
+                    continue;
+                }
+
                 throw new UnknownTokenException(token);
             }
         }
@@ -435,6 +449,11 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
                 continue;
             }
 
+            if (token instanceof UnionArgumentParserToken unionArgumentParserToken) {
+                currentCommandOption = createArgumentOption(currentCommandOption, unionArgumentParserToken, methodArgumentTypeHandlerMap, requirements, parsersResult, requirementsResult, null);
+                continue;
+            }
+
             throw new UnknownTokenException(token);
         }
 
@@ -507,6 +526,37 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         return createCommandOption(requirements, branchProcessor, requirementsResult);
     }
 
+    private CommandOption createArgumentOption(CommandOption currentCommandOption, UnionArgumentParserToken unionArgumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, ArgumentParser<?> fallbackParser) {
+        RegisterArgumentParser<?> parser;
+        Exception exception = null;
+        try {
+            parser = unionArgumentParserToken.getParser(parserMap);
+        } catch (Exception e) {
+            exception = e;
+            parser = null;
+        }
+
+        if (parser == null && fallbackParser != null) {
+            commandManager.getLogger().warning("Parser not found for: [" + String.join(", ", unionArgumentParserToken.getParserNames()) + "] using fallback parser: " + fallbackParser.getClass().getSimpleName());
+            parser = new RegisterArgumentParser<>(
+                    fallbackParser,
+                    unionArgumentParserToken.optionalNotMatch(),
+                    unionArgumentParserToken.isOptional(),
+                    unionArgumentParserToken.getParameterName()
+                            .orElse(null)
+            );
+        }
+
+        if (parser == null) {
+            if (exception != null)
+                throw new RuntimeException(exception);
+
+            throw new IllegalArgumentException("Parser not found & no fallback: [" + String.join(", ", unionArgumentParserToken.getParserNames()) + "]");
+        }
+
+        return createArgumentOption(currentCommandOption, parser, requirements, parsersResult, requirementsResult);
+    }
+
     private CommandOption createArgumentOption(CommandOption currentCommandOption, ArgumentParserToken argumentParserToken, Map<String, ArgumentParser<?>> parserMap, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult, ArgumentParser<?> fallbackParser) {
         RegisterArgumentParser<?> parser;
         try {
@@ -529,13 +579,18 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
         if (parser == null)
             throw new IllegalArgumentException("Parser not found & no fallback: " + argumentParserToken.getParserName());
 
-        RegisterArgumentParser<?> finalParser = parser;
+        return createArgumentOption(currentCommandOption, parser, requirements, parsersResult, requirementsResult);
+    }
+
+    private CommandOption createArgumentOption(CommandOption currentCommandOption, RegisterArgumentParser<?> parser, RequirementSet requirements, List<RegisterArgumentParser<?>> parsersResult, List<Requirement> requirementsResult) {
         Entry<RegisterArgumentParser<?>, CommandBranchProcessor> entryArgument = currentCommandOption.getArgumentTypeHandlerMap().stream()
-                .filter(entry -> entry.key().equals(finalParser))
+                .filter(entry -> entry.key().equals(parser))
                 .findAny()
                 .orElse(null);
 
-        CommandBranchProcessor commandBranchProcessor = entryArgument == null ? null : entryArgument.value();
+        CommandBranchProcessor commandBranchProcessor = entryArgument == null
+                ? null
+                : entryArgument.value();
 
         if (commandBranchProcessor == null) {
             commandBranchProcessor = new CommandBranchProcessor(commandManager);
@@ -553,7 +608,7 @@ import static net.apartium.cocoabeans.commands.RegisteredVariant.REGISTERED_VARI
 
         if (parser.isOptional()) {
             CommandBranchProcessor branchProcessor = currentCommandOption.getOptionalArgumentTypeHandlerMap().stream()
-                    .filter(entry -> entry.key().equals(finalParser))
+                    .filter(entry -> entry.key().equals(parser))
                     .findAny()
                     .map(Entry::value)
                     .orElse(null);

@@ -8,5 +8,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.AvailableSince("0.0.37")
 public enum CommandTokenType {
     KEYWORD,
-    ARGUMENT_PARSER
+    ARGUMENT_PARSER,
+
+    @ApiStatus.AvailableSince("0.0.54")
+    UNION_ARGUMENT_PARSER,
 }
