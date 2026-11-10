@@ -1,64 +1,89 @@
+<div align="center">
+
+# 🫘 Cocoa Beans
+
+**A modular Java toolkit for Minecraft developers — stop copy-pasting the same code between projects.**
+
 ![main](https://github.com/poweredbyapartium/cocoa-beans/actions/workflows/main.yml/badge.svg)
-![GitHub](https://img.shields.io/github/license/PoweredByApartium/cocoa-beans)
+![License](https://img.shields.io/github/license/PoweredByApartium/cocoa-beans)
+![Java](https://img.shields.io/badge/Java-17+-orange)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=PoweredByApartium_cocoa-beans&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=PoweredByApartium_cocoa-beans)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PoweredByApartium_cocoa-beans&metric=coverage)](https://sonarcloud.io/summary/new_code?id=PoweredByApartium_cocoa-beans)
+[![Latest release](https://img.shields.io/github/v/release/PoweredByApartium/cocoa-beans)](https://github.com/PoweredByApartium/cocoa-beans/releases/latest)
 
-## Welcome to Cocoa beans!
-This library aims to be a very well-made and thought-out toolkit for developers to save the hassle
-of copying common code between projects. Cocoa beans is modular, it contains a spigot module 
-and a common java module and commands java module and commands spigot module inside of it, with more modules planned for the future.\
-**Contributions are welcome!**
+[📜 Docs & Wiki](https://cocoa-beans.apartium.net/) · [📦 Releases](https://github.com/PoweredByApartium/cocoa-beans/releases) · [🤝 Contributing](CONTRIBUTING.md)
 
-### Relevant Links
-* [🚰 Spigot javadocs](https://cocoa-beans.apartium.net/%version%/spigot/)
-* [📄 Common javadocs](https://cocoa-beans.apartium.net/%version%/common/)
-* [🖥️ Command javadocs](https://cocoa-beans.apartium.net/%version%/commands/)
-* [🤖 Command Spigot javadocs](https://cocoa-beans.apartium.net/%version%/commands-spigot/)
-* [📜 Our wiki](https://cocoa-beans.apartium.net/)
-<br/>
+</div>
 
->[!IMPORTANT]
-> ### Requirements
-> * Java 17
-> * Minecraft 1.8 and above (For the spigot modules)
+## ✨ What's inside
 
-### Installation
->[!NOTE]
-> Cocoabean could be included in your jar file, but if you are making a Spigot plugin you should consider downloading the library as a plugin from Hangar.
+| Module | What it gives you |
+|---|---|
+| 🧰 **common** | Core java utilities |
+| 🖥️ **commands** / **commands-spigot** | Annotation-based command system with parsers, tab completion and more |
+| 🔄 **state** / **state-spigot** / **state-animation** | Reactive state and observables, plus text animations |
+| 📊 **scoreboard** (+ spigot, minestom) | Minecraft scoreboards without the boilerplate |
+| 🗺️ **schematic** (+ spigot, minestom) | Schematic library with custom binary format |
+| 🚰 **spigot** | Spigot utilities |
+| ⛏️ **minestom** | Minestom utilities |
 
-![Latest release](https://github.com/PoweredByApartium/cocoa-beans/releases/latest)
+📚 **Javadocs:**
+[common](https://cocoa-beans.apartium.net/snapshot/common/) ·
+[commands](https://cocoa-beans.apartium.net/snapshot/commands/) ·
+[commands-spigot](https://cocoa-beans.apartium.net/snapshot/commands-spigot/) ·
+[state](https://cocoa-beans.apartium.net/snapshot/state/) ·
+[state-spigot](https://cocoa-beans.apartium.net/snapshot/state-spigot/) ·
+[scoreboard](https://cocoa-beans.apartium.net/snapshot/scoreboard/) ·
+[scoreboard-spigot](https://cocoa-beans.apartium.net/snapshot/scoreboard-spigot/) ·
+[scoreboard-minestom](https://cocoa-beans.apartium.net/snapshot/scoreboard-minestom/) ·
+[schematic](https://cocoa-beans.apartium.net/snapshot/schematic/) ·
+[schematic-spigot](https://cocoa-beans.apartium.net/snapshot/schematic-spigot/) ·
+[spigot](https://cocoa-beans.apartium.net/snapshot/spigot/)
+
+> [!IMPORTANT]
+> **Requirements:** Java 17+ · Minecraft 1.8 and above (for the Spigot modules)
+
+## 📦 Installation
+
+> [!NOTE]
+> Cocoa Beans can be shaded into your jar, but if you're making a Spigot plugin, consider using the library as a plugin from Hangar instead.
+
+Replace `[VERSION]` with the latest release.
+
+**Gradle (Kotlin DSL):**
+```kotlin
+dependencies {
+    implementation("dev.apartium.cocoa-beans:cocoa-beans-common:[VERSION]")
+
+    // Command system (use commands-spigot for the Spigot utilities)
+    implementation("dev.apartium.cocoa-beans:cocoa-beans-commands:[VERSION]")
+}
+```
 
 **Maven:**
 ```xml
 <dependencies>
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
-        <!-- You can also use 'spigot' instead to get the spigot utilities as well -->
         <artifactId>cocoa-beans-common</artifactId>
         <version>[VERSION]</version>
     </dependency>
 
-    <!-- For the command system itself -->
+    <!-- Command system (use commands-spigot for the Spigot utilities) -->
     <dependency>
         <groupId>dev.apartium.cocoa-beans</groupId>
-        <!-- You can also use 'commands-spigot' instead to get the spigot utilities as well -->
         <artifactId>cocoa-beans-commands</artifactId>
         <version>[VERSION]</version>
     </dependency>
 </dependencies>
 ```
 
-**Gradle:**
-```groovy
-dependencies {
-    // You can also use 'spigot' instead to get the spigot utilities as well
-    implementation('dev.apartium.cocoa-beans:cocoa-beans-common:[VERSION]')
+Swap `common` for `spigot` (or any other module above) to pull in its artifact: `cocoa-beans-<module>`.
 
-    // For the command system (You also could use 'commands-spigot' instead to get the spigot command utilities as well)
-    implementation('dev.apartium.cocoa-beans:cocoa-beans-commands:[VERSION]')
-}
-```
+## 🤝 Contributing
 
-## Contributing
-This project is at a very early stage right now, with a very minimal set of features included.
-Any contribution of high quality code is welcome. 
+Contributions are very welcome! Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started, and see the [CHANGELOG](CHANGELOG.md) for what's new.
 
-[Read more](https://github.com/PoweredByApartium/cocoa-beans/blob/main/CONTRIBUTING.md)
+## 📄 License
+
+See [LICENSE.md](LICENSE.md).
